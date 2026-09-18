@@ -1,0 +1,1000 @@
+{
+  "files": [
+    {
+      "file": "202503asiav1.pdf",
+      "status": "completed",
+      "drafts": 98,
+      "keyed": 98,
+      "visual": 27,
+      "byStatus": {
+        "has_suggested_key": 71,
+        "needs_review": 27
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 22,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 10,
+      "phantoms": []
+    },
+    {
+      "file": "202503asiav2.pdf",
+      "status": "completed",
+      "drafts": 98,
+      "keyed": 98,
+      "visual": 37,
+      "byStatus": {
+        "has_suggested_key": 61,
+        "needs_review": 37
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 22,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 3,
+      "phantoms": []
+    },
+    {
+      "file": "202503asiav3.pdf",
+      "status": "completed",
+      "drafts": 98,
+      "keyed": 98,
+      "visual": 26,
+      "byStatus": {
+        "has_suggested_key": 71,
+        "needs_review": 27
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 22,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 1,
+      "phantoms": []
+    },
+    {
+      "file": "202503asiav5.pdf",
+      "status": "completed",
+      "drafts": 88,
+      "keyed": 1,
+      "visual": 23,
+      "byStatus": {
+        "missing_key": 65,
+        "needs_review": 23
+      },
+      "byModule": {
+        "Question Bank – Math": 88
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202503asiav6.pdf",
+      "status": "completed",
+      "drafts": 97,
+      "keyed": 0,
+      "visual": 27,
+      "byStatus": {
+        "needs_review": 27,
+        "missing_key": 70
+      },
+      "byModule": {
+        "Math Module 2": 24,
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 25,
+        "Math Module 1": 21
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202503asiav8.pdf",
+      "status": "completed",
+      "drafts": 89,
+      "keyed": 0,
+      "visual": 15,
+      "byStatus": {
+        "missing_key": 74,
+        "needs_review": 15
+      },
+      "byModule": {
+        "Question Bank – Reading and Writing": 89
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202503asiav9.pdf",
+      "status": "completed",
+      "drafts": 89,
+      "keyed": 0,
+      "visual": 13,
+      "byStatus": {
+        "missing_key": 76,
+        "needs_review": 13
+      },
+      "byModule": {
+        "Question Bank – Reading and Writing": 89
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202503usv1.pdf",
+      "status": "completed",
+      "drafts": 98,
+      "keyed": 98,
+      "visual": 37,
+      "byStatus": {
+        "has_suggested_key": 61,
+        "needs_review": 37
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 22,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202503usv2.pdf",
+      "status": "completed",
+      "drafts": 98,
+      "keyed": 98,
+      "visual": 18,
+      "byStatus": {
+        "has_suggested_key": 78,
+        "needs_review": 20
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 22,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 3,
+      "phantoms": []
+    },
+    {
+      "file": "202503usv3.pdf",
+      "status": "completed",
+      "drafts": 88,
+      "keyed": 0,
+      "visual": 9,
+      "byStatus": {
+        "missing_key": 79,
+        "needs_review": 9
+      },
+      "byModule": {
+        "Question Bank – Reading and Writing": 88
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202505asiav1.pdf",
+      "status": "completed",
+      "drafts": 54,
+      "keyed": 54,
+      "visual": 7,
+      "byStatus": {
+        "has_suggested_key": 44,
+        "needs_review": 10
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27
+      },
+      "dupFlagged": 7,
+      "phantoms": []
+    },
+    {
+      "file": "202505asiav2.pdf",
+      "status": "completed",
+      "drafts": 97,
+      "keyed": 54,
+      "visual": 25,
+      "byStatus": {
+        "has_suggested_key": 49,
+        "needs_review": 25,
+        "missing_key": 23
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 21,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202505asiav3.pdf",
+      "status": "completed",
+      "drafts": 100,
+      "keyed": 0,
+      "visual": 42,
+      "byStatus": {
+        "missing_key": 58,
+        "needs_review": 42
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Math Module 1": 23,
+        "Reading and Writing Module 2": 28,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202505usv1.pdf",
+      "status": "completed",
+      "drafts": 97,
+      "keyed": 97,
+      "visual": 33,
+      "byStatus": {
+        "has_suggested_key": 60,
+        "needs_review": 37
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 21,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 5,
+      "phantoms": []
+    },
+    {
+      "file": "202505usv2.pdf",
+      "status": "completed",
+      "drafts": 129,
+      "keyed": 0,
+      "visual": 28,
+      "byStatus": {
+        "missing_key": 101,
+        "needs_review": 28
+      },
+      "byModule": {
+        "Question Bank – Reading and Writing": 129
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202506asiav1-rw.pdf",
+      "status": "completed",
+      "drafts": 54,
+      "keyed": 54,
+      "visual": 4,
+      "byStatus": {
+        "has_suggested_key": 50,
+        "needs_review": 4
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27
+      },
+      "dupFlagged": 3,
+      "phantoms": []
+    },
+    {
+      "file": "202506asiav2.pdf",
+      "status": "completed",
+      "drafts": 96,
+      "keyed": 96,
+      "visual": 22,
+      "byStatus": {
+        "has_suggested_key": 72,
+        "needs_review": 24
+      },
+      "byModule": {
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 20,
+        "Math Module 2": 22,
+        "Reading and Writing Module 1": 27
+      },
+      "dupFlagged": 2,
+      "phantoms": []
+    },
+    {
+      "file": "202506asiav3.pdf",
+      "status": "completed",
+      "drafts": 98,
+      "keyed": 98,
+      "visual": 40,
+      "byStatus": {
+        "has_suggested_key": 58,
+        "needs_review": 40
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 22,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202506asiav4.pdf",
+      "status": "completed",
+      "drafts": 98,
+      "keyed": 98,
+      "visual": 31,
+      "byStatus": {
+        "has_suggested_key": 67,
+        "needs_review": 31
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 22,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202506usv1.pdf",
+      "status": "completed",
+      "drafts": 98,
+      "keyed": 98,
+      "visual": 16,
+      "byStatus": {
+        "has_suggested_key": 82,
+        "needs_review": 16
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 22,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202506usv2.pdf",
+      "status": "completed",
+      "drafts": 98,
+      "keyed": 0,
+      "visual": 23,
+      "byStatus": {
+        "missing_key": 75,
+        "needs_review": 23
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 22,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202508asiav1.pdf",
+      "status": "completed",
+      "drafts": 98,
+      "keyed": 98,
+      "visual": 31,
+      "byStatus": {
+        "has_suggested_key": 65,
+        "needs_review": 33
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 22,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 2,
+      "phantoms": []
+    },
+    {
+      "file": "202508asiav2-rw.pdf",
+      "status": "completed",
+      "drafts": 54,
+      "keyed": 54,
+      "visual": 7,
+      "byStatus": {
+        "has_suggested_key": 47,
+        "needs_review": 7
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27
+      },
+      "dupFlagged": 28,
+      "phantoms": []
+    },
+    {
+      "file": "202508asiav3-rw.pdf",
+      "status": "completed",
+      "drafts": 54,
+      "keyed": 54,
+      "visual": 8,
+      "byStatus": {
+        "needs_review": 32,
+        "has_suggested_key": 22
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27
+      },
+      "dupFlagged": 28,
+      "phantoms": []
+    },
+    {
+      "file": "202508usv1.pdf",
+      "status": "completed",
+      "drafts": 88,
+      "keyed": 67,
+      "visual": 15,
+      "byStatus": {
+        "has_suggested_key": 63,
+        "missing_key": 10,
+        "needs_review": 15
+      },
+      "byModule": {
+        "Question Bank – Reading and Writing": 88
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202508usv2.pdf",
+      "status": "completed",
+      "drafts": 87,
+      "keyed": 63,
+      "visual": 11,
+      "byStatus": {
+        "has_suggested_key": 59,
+        "needs_review": 11,
+        "missing_key": 17
+      },
+      "byModule": {
+        "Question Bank – Reading and Writing": 87
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202508usv3.pdf",
+      "status": "completed",
+      "drafts": 92,
+      "keyed": 50,
+      "visual": 13,
+      "byStatus": {
+        "has_suggested_key": 49,
+        "missing_key": 30,
+        "needs_review": 13
+      },
+      "byModule": {
+        "Question Bank – Reading and Writing": 92
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202508usv4.pdf",
+      "status": "completed",
+      "drafts": 88,
+      "keyed": 60,
+      "visual": 10,
+      "byStatus": {
+        "has_suggested_key": 56,
+        "needs_review": 10,
+        "missing_key": 22
+      },
+      "byModule": {
+        "Question Bank – Reading and Writing": 88
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202509asiav1.pdf",
+      "status": "completed",
+      "drafts": 98,
+      "keyed": 98,
+      "visual": 37,
+      "byStatus": {
+        "has_suggested_key": 61,
+        "needs_review": 37
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 22,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202509asiav2-rw.pdf",
+      "status": "completed",
+      "drafts": 27,
+      "keyed": 27,
+      "visual": 4,
+      "byStatus": {
+        "has_suggested_key": 22,
+        "needs_review": 4,
+        "approved": 1
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202509asiav2.pdf",
+      "status": "completed",
+      "drafts": 98,
+      "keyed": 98,
+      "visual": 37,
+      "byStatus": {
+        "has_suggested_key": 61,
+        "needs_review": 37
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 22,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202509asiav4.pdf",
+      "status": "completed",
+      "drafts": 95,
+      "keyed": 0,
+      "visual": 35,
+      "byStatus": {
+        "missing_key": 18,
+        "needs_review": 77
+      },
+      "byModule": {
+        "Question Bank – Reading and Writing": 54,
+        "Question Bank – Math": 41
+      },
+      "dupFlagged": 47,
+      "phantoms": []
+    },
+    {
+      "file": "202509asiav4.pdf",
+      "status": "extracting",
+      "drafts": 48,
+      "keyed": 0,
+      "visual": 5,
+      "byStatus": {
+        "missing_key": 43,
+        "needs_review": 5
+      },
+      "byModule": {
+        "Question Bank – Reading and Writing": 48
+      },
+      "dupFlagged": 47,
+      "phantoms": []
+    },
+    {
+      "file": "202509us01.pdf",
+      "status": "completed",
+      "drafts": 98,
+      "keyed": 98,
+      "visual": 12,
+      "byStatus": {
+        "has_suggested_key": 86,
+        "needs_review": 12
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 22,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 1,
+      "phantoms": []
+    },
+    {
+      "file": "202509us02.pdf",
+      "status": "completed",
+      "drafts": 97,
+      "keyed": 97,
+      "visual": 13,
+      "byStatus": {
+        "has_suggested_key": 83,
+        "needs_review": 14
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 21,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 2,
+      "phantoms": []
+    },
+    {
+      "file": "202509us03.pdf",
+      "status": "completed",
+      "drafts": 91,
+      "keyed": 0,
+      "visual": 10,
+      "byStatus": {
+        "missing_key": 81,
+        "needs_review": 10
+      },
+      "byModule": {
+        "Question Bank – Reading and Writing": 69,
+        "Question Bank – Math": 22
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202509us04.pdf",
+      "status": "completed",
+      "drafts": 97,
+      "keyed": 97,
+      "visual": 14,
+      "byStatus": {
+        "has_suggested_key": 82,
+        "needs_review": 15
+      },
+      "byModule": {
+        "Math Module 1": 21,
+        "Math Module 2": 22,
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27
+      },
+      "dupFlagged": 1,
+      "phantoms": []
+    },
+    {
+      "file": "202509us05.pdf",
+      "status": "completed",
+      "drafts": 96,
+      "keyed": 96,
+      "visual": 12,
+      "byStatus": {
+        "has_suggested_key": 84,
+        "needs_review": 12
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 20,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202509us06.pdf",
+      "status": "completed",
+      "drafts": 98,
+      "keyed": 98,
+      "visual": 12,
+      "byStatus": {
+        "has_suggested_key": 86,
+        "needs_review": 12
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 22,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202509usv7.pdf",
+      "status": "completed",
+      "drafts": 98,
+      "keyed": 98,
+      "visual": 37,
+      "byStatus": {
+        "has_suggested_key": 61,
+        "needs_review": 37
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 22,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202510asiav1-new.pdf",
+      "status": "completed",
+      "drafts": 96,
+      "keyed": 96,
+      "visual": 42,
+      "byStatus": {
+        "has_suggested_key": 54,
+        "needs_review": 42
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 22,
+        "Math Module 2": 20
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202510asiav2-new.pdf",
+      "status": "completed",
+      "drafts": 97,
+      "keyed": 97,
+      "visual": 22,
+      "byStatus": {
+        "has_suggested_key": 72,
+        "needs_review": 25
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 22,
+        "Math Module 2": 21
+      },
+      "dupFlagged": 4,
+      "phantoms": []
+    },
+    {
+      "file": "202510asiav3.pdf",
+      "status": "completed",
+      "drafts": 38,
+      "keyed": 0,
+      "visual": 6,
+      "byStatus": {
+        "missing_key": 32,
+        "needs_review": 6
+      },
+      "byModule": {
+        "Question Bank – Reading and Writing": 38
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202510asiav4.pdf",
+      "status": "completed",
+      "drafts": 40,
+      "keyed": 0,
+      "visual": 9,
+      "byStatus": {
+        "missing_key": 31,
+        "needs_review": 9
+      },
+      "byModule": {
+        "Question Bank – Reading and Writing": 40
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202510usv1.pdf",
+      "status": "completed",
+      "drafts": 98,
+      "keyed": 98,
+      "visual": 12,
+      "byStatus": {
+        "has_suggested_key": 86,
+        "needs_review": 12
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 22,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202510usv2.pdf",
+      "status": "completed",
+      "drafts": 98,
+      "keyed": 98,
+      "visual": 22,
+      "byStatus": {
+        "has_suggested_key": 76,
+        "needs_review": 22
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 22,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202510usv3.pdf",
+      "status": "completed",
+      "drafts": 98,
+      "keyed": 98,
+      "visual": 39,
+      "byStatus": {
+        "has_suggested_key": 59,
+        "needs_review": 39
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 22,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202511asiav1.pdf",
+      "status": "completed",
+      "drafts": 88,
+      "keyed": 0,
+      "visual": 21,
+      "byStatus": {
+        "missing_key": 67,
+        "needs_review": 21
+      },
+      "byModule": {
+        "Question Bank – Reading and Writing": 88
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202511asiav2.pdf",
+      "status": "completed",
+      "drafts": 87,
+      "keyed": 0,
+      "visual": 20,
+      "byStatus": {
+        "missing_key": 67,
+        "needs_review": 20
+      },
+      "byModule": {
+        "Question Bank – Reading and Writing": 87
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202512asiav1.pdf",
+      "status": "completed",
+      "drafts": 98,
+      "keyed": 98,
+      "visual": 29,
+      "byStatus": {
+        "has_suggested_key": 69,
+        "needs_review": 29
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 22,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202605asIav1-rw.pdf",
+      "status": "completed",
+      "drafts": 54,
+      "keyed": 54,
+      "visual": 3,
+      "byStatus": {
+        "has_suggested_key": 51,
+        "needs_review": 3
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202605usv1-rw.pdf",
+      "status": "completed",
+      "drafts": 54,
+      "keyed": 54,
+      "visual": 5,
+      "byStatus": {
+        "has_suggested_key": 49,
+        "needs_review": 5
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202606asiav1.pdf",
+      "status": "completed",
+      "drafts": 98,
+      "keyed": 98,
+      "visual": 25,
+      "byStatus": {
+        "has_suggested_key": 73,
+        "needs_review": 25
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 22,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202606asiav2.pdf",
+      "status": "completed",
+      "drafts": 98,
+      "keyed": 98,
+      "visual": 25,
+      "byStatus": {
+        "has_suggested_key": 73,
+        "needs_review": 25
+      },
+      "byModule": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 22,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    },
+    {
+      "file": "202606asiav3.pdf",
+      "status": "completed",
+      "drafts": 98,
+      "keyed": 98,
+      "visual": 83,
+      "byStatus": {
+        "needs_review": 83,
+        "has_suggested_key": 15
+      },
+      "byModule": {
+        "Math Module 1": 22,
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 2": 22
+      },
+      "dupFlagged": 0,
+      "phantoms": []
+    }
+  ],
+  "totals": {
+    "imports": 55,
+    "drafts": 4802,
+    "keyed": 3380,
+    "phantoms": 0
+  }
+}

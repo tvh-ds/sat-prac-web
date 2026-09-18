@@ -1,0 +1,31 @@
+{
+  "dry_run": false,
+  "checked": 2701,
+  "changed": 4,
+  "rows": [
+    {
+      "id": "8c13eed3-3ad1-4495-905e-e61ea274cce6",
+      "file": "202508asiav1.pdf",
+      "before": 1038,
+      "after": 493
+    },
+    {
+      "id": "f5c5f19a-916d-4e7d-ac99-750901e43e69",
+      "file": "202508asiav1.pdf",
+      "before": 1166,
+      "after": 595
+    },
+    {
+      "id": "3b47913c-aa22-4d87-ad75-c311c1147a95",
+      "file": "202508asiav1.pdf",
+      "before": 829,
+      "after": 405
+    },
+    {
+      "id": "461e1680-5af9-49a0-b792-f36775cbc42d",
+      "file": "202509asiav2-rw.pdf",
+      "before": 1427,
+      "after": 781
+    }
+  ]
+}

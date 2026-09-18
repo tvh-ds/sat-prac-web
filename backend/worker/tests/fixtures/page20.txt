@@ -1,0 +1,33 @@
+C) That said,
+D) Consequently,
+
+While researching a topic, a student has taken the following notes:
+
+- In a 2021 study, researchers showed participants sets of images.
+- Each set contained an unaltered image of a different character or logo alongside two slightly altered versions.
+- Participants were asked to identify the correct version in each set.
+- In the set containing the Monopoly Man, 26.5% of participants selected the correct version, and 73.5% selected an altered version.
+- In the set containing the Target logo, 63.6% of participants selected the correct version, and 36.4% selected an altered version.
+
+The student wants to explain how participants performed on the set with the Target logo. Which choice most effectively uses relevant information from the notes to accomplish this goal?
+
+A) The Monopoly Man and the Target logo were both included in a 2021 study.
+B) While 63.6% of participants selected the correct version of the Target logo, just 26.5% selected the correct version of the Monopoly Man.
+C) In a 2021 study, researchers showed participants sets of images containing unaltered versions of popular characters or logos, such as the Target logo, alongside two altered versions.
+D) When shown an image set of the Target logo, 63.6% of participants identified the correct version, and 36.4% selected an altered version.
+
+While researching a topic, a student has taken the following notes:
+
+- The typical resting viscosity of oobleck (cornstarch mixed with water) is 5-100 centipoise (cP).
+- Oobleck increases in viscosity (becomes thicker) when shaken.
+- The typical resting viscosity of ketchup is 50,000-70,000 (cP).
+- Ketchup decreases in viscosity (becomes thinner) when shaken.
+- A fluid is Newtonian if its viscosity remains stable under shear (mechanical force such as being shaken or stirred).
+- A fluid is non-Newtonian if its viscosity changes under shear.
+
+The student wants to contrast how shear affects ketchup and oobleck. Which choice most effectively uses relevant information from the notes to accomplish this goal?
+
+A) Ketchup is non-Newtonian, meaning its viscosity decreases under shear; oobleck, by contrast, increases in viscosity.
+B) Though the viscosities of both oobleck and ketchup change under shear, oobleck's typical resting viscosity (5-100 cP) is lower than that of ketchup (50,000-70,000 cP).
+C) Ketchup becomes thinner when shaken, while oobleck becomes thicker.
+D) Oobleck has a much lower resting viscosity than ketchup but becomes thicker under shear.

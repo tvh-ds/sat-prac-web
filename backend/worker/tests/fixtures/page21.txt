@@ -1,0 +1,32 @@
+While researching a topic, a student has taken the following notes:
+
+- Fused deposition modeling (FDM) is one type of 3D printing technology
+- FDM is also called material extrusion
+- FDM printers eject a modeling medium through a heated nozzle to build an object layer by layer
+- Italian company Barilla uses FDM printers that extrude layers of semolina and water dough to create unique shapes of pasta.
+- Ukrainian entrepreneur Dinara Kasko uses an FDM printer that extrudes layers of silicone to create uniquely shaped molds for baking cakes.
+
+The student wants to emphasize a difference between Barilla's and Kasko's uses of FDM printing technology. Which choice most effectively uses relevant information from the notes to accomplish this goal?
+
+A) Barilla and Kasko have developed different uses for FDM printing, a 3D printing technology also known as material extrusion.
+B) FDM printing technology has many uses, from creating uniquely shaped pasta from semolina and water dough to constructing cake molds from silicone
+C) While both Barilla and Kasko use FDM printers to create uniquely shaped 3D objects, Barilla is using the technology to produce food and Kasko isn't.
+D) Barilla uses FDM printing to build layers of pasta dough into unique shapes, whereas Kasko uses FDM printing to build layers of uniquely shaped cakes.
+
+Math Module 1
+
+22 QUESTIONS
+
+Math Module 2
+
+22 QUESTIONS
+
+Reading and Writing Module 1 Answers
+
+1. B
+2. B
+3. A
+4. D
+5. B
+6. C
+7. D

@@ -1,0 +1,196 @@
+{
+  "folder": "D:\\SAT website\\Tests Unparsed\\Digital SAT Tests\\2026 06",
+  "ingested_at": "2026-09-16T18:37:39.530Z",
+  "files": [
+    {
+      "file": "202606asiav1.pdf",
+      "import_id": "095da767-1244-4118-ba4d-f36b0d5a7a59",
+      "status": "failed",
+      "pages": null,
+      "method": null,
+      "drafts": 0,
+      "modules": {},
+      "module_keys": {},
+      "draft_statuses": {},
+      "answer_key_status": null,
+      "ocr_pages": 0,
+      "warnings": [
+        "No readable SAT modules detected. The PDF may be scanned, malformed, or unsupported."
+      ],
+      "error": "No readable SAT modules detected. The PDF may be scanned, malformed, or unsupported."
+    },
+    {
+      "file": "202606asiav2.pdf",
+      "import_id": "080c39e9-59a2-41fa-ae94-1c8168bdb897",
+      "status": "failed",
+      "pages": null,
+      "method": null,
+      "drafts": 0,
+      "modules": {},
+      "module_keys": {},
+      "draft_statuses": {},
+      "answer_key_status": null,
+      "ocr_pages": 0,
+      "warnings": [
+        "No readable SAT modules detected. The PDF may be scanned, malformed, or unsupported."
+      ],
+      "error": "No readable SAT modules detected. The PDF may be scanned, malformed, or unsupported."
+    },
+    {
+      "file": "202606asiav3.pdf",
+      "import_id": "48a3029e-1860-472d-afb6-913ce3276d8c",
+      "status": "completed",
+      "pages": 8,
+      "method": "text",
+      "drafts": 70,
+      "modules": {
+        "Reading and Writing Module 1": 70
+      },
+      "module_keys": {
+        "Reading and Writing Module 1": {
+          "total": 70,
+          "with_key": 0
+        }
+      },
+      "draft_statuses": {
+        "missing_key": 70
+      },
+      "answer_key_status": "missing",
+      "ocr_pages": 0,
+      "warnings": [],
+      "error": null
+    },
+    {
+      "file": "202606asiav4.pdf",
+      "import_id": "48a4f12d-27a0-4707-bb55-0cd67b1ae607",
+      "status": "completed",
+      "pages": 7,
+      "method": "text",
+      "drafts": 62,
+      "modules": {
+        "Reading and Writing Module 1": 62
+      },
+      "module_keys": {
+        "Reading and Writing Module 1": {
+          "total": 62,
+          "with_key": 0
+        }
+      },
+      "draft_statuses": {
+        "missing_key": 62
+      },
+      "answer_key_status": "missing",
+      "ocr_pages": 0,
+      "warnings": [],
+      "error": null
+    },
+    {
+      "file": "202606asiav5.pdf",
+      "import_id": "b4cdb828-48fc-4d12-a41e-4bb1367312aa",
+      "status": "failed",
+      "pages": null,
+      "method": null,
+      "drafts": 0,
+      "modules": {},
+      "module_keys": {},
+      "draft_statuses": {},
+      "answer_key_status": null,
+      "ocr_pages": 0,
+      "warnings": [
+        "No readable SAT modules detected. The PDF may be scanned, malformed, or unsupported."
+      ],
+      "error": "No readable SAT modules detected. The PDF may be scanned, malformed, or unsupported."
+    },
+    {
+      "file": "202606usv1.pdf",
+      "import_id": "2c58e13b-d5e2-4ff7-ae69-6b0f2a0e9bc0",
+      "status": "failed",
+      "pages": null,
+      "method": null,
+      "drafts": 0,
+      "modules": {},
+      "module_keys": {},
+      "draft_statuses": {},
+      "answer_key_status": null,
+      "ocr_pages": 0,
+      "warnings": [
+        "No readable SAT modules detected. The PDF may be scanned, malformed, or unsupported."
+      ],
+      "error": "No readable SAT modules detected. The PDF may be scanned, malformed, or unsupported."
+    },
+    {
+      "file": "202606usv2.pdf",
+      "import_id": "a55a9fdc-69f5-48f6-a371-3db980244a55",
+      "status": "failed",
+      "pages": null,
+      "method": null,
+      "drafts": 0,
+      "modules": {},
+      "module_keys": {},
+      "draft_statuses": {},
+      "answer_key_status": null,
+      "ocr_pages": 0,
+      "warnings": [
+        "No readable SAT modules detected. The PDF may be scanned, malformed, or unsupported."
+      ],
+      "error": "No readable SAT modules detected. The PDF may be scanned, malformed, or unsupported."
+    },
+    {
+      "file": "202606usv3.pdf",
+      "import_id": "f65e8e3a-0f66-4882-9dba-5626acbadafe",
+      "status": "failed",
+      "pages": null,
+      "method": null,
+      "drafts": 0,
+      "modules": {},
+      "module_keys": {},
+      "draft_statuses": {},
+      "answer_key_status": null,
+      "ocr_pages": 0,
+      "warnings": [
+        "No readable SAT modules detected. The PDF may be scanned, malformed, or unsupported."
+      ],
+      "error": "No readable SAT modules detected. The PDF may be scanned, malformed, or unsupported."
+    },
+    {
+      "file": "202606usv4.pdf",
+      "import_id": "f6c18b52-5ba8-461a-ac57-6d5da0b581d8",
+      "status": "failed",
+      "pages": null,
+      "method": null,
+      "drafts": 0,
+      "modules": {},
+      "module_keys": {},
+      "draft_statuses": {},
+      "answer_key_status": null,
+      "ocr_pages": 0,
+      "warnings": [
+        "No readable SAT modules detected. The PDF may be scanned, malformed, or unsupported."
+      ],
+      "error": "No readable SAT modules detected. The PDF may be scanned, malformed, or unsupported."
+    },
+    {
+      "file": "202606usv5-rw.pdf",
+      "import_id": "14082636-f2d7-4ad7-b521-2a0afbfafaad",
+      "status": "failed",
+      "pages": null,
+      "method": null,
+      "drafts": 0,
+      "modules": {},
+      "module_keys": {},
+      "draft_statuses": {},
+      "answer_key_status": null,
+      "ocr_pages": 0,
+      "warnings": [
+        "No readable SAT modules detected. The PDF may be scanned, malformed, or unsupported."
+      ],
+      "error": "No readable SAT modules detected. The PDF may be scanned, malformed, or unsupported."
+    }
+  ],
+  "totals": {
+    "files": 10,
+    "completed": 2,
+    "failed": 8,
+    "drafts": 132
+  }
+}

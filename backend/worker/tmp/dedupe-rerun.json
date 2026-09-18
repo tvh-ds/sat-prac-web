@@ -1,0 +1,417 @@
+{
+  "imports": 54,
+  "drafts": 4754,
+  "duplicateGroups": [
+    {
+      "fingerprint": "170899db457838c3f8bdfd37b03460f9",
+      "size": 2,
+      "files": [
+        "202503asiav1.pdf",
+        "202503usv2.pdf"
+      ]
+    },
+    {
+      "fingerprint": "fc330acbb7b1e990b746e841289b6635",
+      "size": 2,
+      "files": [
+        "202503asiav1.pdf",
+        "202510asiav2-new.pdf"
+      ]
+    },
+    {
+      "fingerprint": "a3ec8ef4cbb9b0603f0c93c32201243e",
+      "size": 2,
+      "files": [
+        "202503asiav1.pdf",
+        "202505asiav1.pdf"
+      ]
+    },
+    {
+      "fingerprint": "8ff9edd27f38fa99d29c90c31857f4f3",
+      "size": 2,
+      "files": [
+        "202503asiav1.pdf",
+        "202503asiav3.pdf"
+      ]
+    },
+    {
+      "fingerprint": "d3ee52c6b8792c0b39bf61a8b2268689",
+      "size": 2,
+      "files": [
+        "202503asiav1.pdf",
+        "202510asiav2-new.pdf"
+      ]
+    },
+    {
+      "fingerprint": "3ad0d136f3a4dd6ee576e0afa8601ec6",
+      "size": 3,
+      "files": [
+        "202503asiav1.pdf",
+        "202503asiav2.pdf",
+        "202510asiav2-new.pdf"
+      ]
+    },
+    {
+      "fingerprint": "47cc57face14f2d07af92c6abed20d55",
+      "size": 2,
+      "files": [
+        "202503asiav1.pdf",
+        "202510asiav2-new.pdf"
+      ]
+    },
+    {
+      "fingerprint": "0999e7e2b8a872cfe0d8de51308b7550",
+      "size": 2,
+      "files": [
+        "202503asiav1.pdf",
+        "202503asiav2.pdf"
+      ]
+    },
+    {
+      "fingerprint": "36709d2195cd10e8dc6a794e1ee9e396",
+      "size": 2,
+      "files": [
+        "202503asiav1.pdf",
+        "202505asiav1.pdf"
+      ]
+    },
+    {
+      "fingerprint": "6d6107746300559b1a6559378c224042",
+      "size": 2,
+      "files": [
+        "202503asiav1.pdf",
+        "202505asiav1.pdf"
+      ]
+    },
+    {
+      "fingerprint": "45093d4c56bf10d5c3c9da5e1c296cb6",
+      "size": 2,
+      "files": [
+        "202503asiav2.pdf",
+        "202503usv2.pdf"
+      ]
+    },
+    {
+      "fingerprint": "fa8f29f9fce2360d52afe3fa7d74a5eb",
+      "size": 2,
+      "files": [
+        "202503usv2.pdf",
+        "202505usv1.pdf"
+      ]
+    },
+    {
+      "fingerprint": "06ea38d0c84ea58c2d55e57fe772c0b7",
+      "size": 2,
+      "files": [
+        "202505asiav1.pdf",
+        "202505usv1.pdf"
+      ]
+    },
+    {
+      "fingerprint": "d039ca7c1b83b503bae6fee038e98ad8",
+      "size": 2,
+      "files": [
+        "202505asiav1.pdf",
+        "202505usv1.pdf"
+      ]
+    },
+    {
+      "fingerprint": "388ea2ac7ee648d47108627d85bcc88d",
+      "size": 2,
+      "files": [
+        "202505asiav1.pdf",
+        "202505usv1.pdf"
+      ]
+    },
+    {
+      "fingerprint": "7b56153e1e954a492858a23a117f17af",
+      "size": 2,
+      "files": [
+        "202505asiav1.pdf",
+        "202505usv1.pdf"
+      ]
+    },
+    {
+      "fingerprint": "4b6d966b1eb0ae9c102fd3c3514403e5",
+      "size": 3,
+      "files": [
+        "202506asiav1-rw.pdf",
+        "202506asiav2.pdf",
+        "202508asiav1.pdf"
+      ]
+    },
+    {
+      "fingerprint": "b9193655b79845e640e1b8d07467beb8",
+      "size": 2,
+      "files": [
+        "202506asiav1-rw.pdf",
+        "202506asiav2.pdf"
+      ]
+    },
+    {
+      "fingerprint": "eb957647424909cb1b23130ec41fdbdc",
+      "size": 2,
+      "files": [
+        "202506asiav1-rw.pdf",
+        "202508asiav1.pdf"
+      ]
+    },
+    {
+      "fingerprint": "32806936e57af1b8d0d5be5f207fc58b",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "85eb8892dc6556467a42de199df6a827",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "d596fa2f81a0e50a6b4570a5120dd991",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "20a663b5553982064830965a9ea30d18",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "a19c9738c893129e3af3326f248f526b",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "a23f2060480f053b0f84814d11af593b",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "0cea0e7c4acfbe583940ab1df5bdce23",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "fe542bac72885738535e6aca7fd717c2",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "2e22b30cc4676dc58466626c6984c4c1",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "0ba8c0d4b2f0d966c7f0674c6ab692f0",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "82e0723f2835579b971419afaf49a3a2",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "e3a2915626cf4d7a9458aa5a39bb66ea",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "42ed57d2f33a3e200e15643e2042cbb2",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "d2ddbc0ad9986bc8fe146a62478da91f",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "d30d82df67ba9d19afddeed68384fd0f",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "e19417a3276a40f6f076632c4cddd80f",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "da0f31c354cb0cf96da7f56c046336f3",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "3b1df7da481496985ba7d92f7acdfb32",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "3672f09a5eb33f2ffef44fc3ed33bd74",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "618f317a9fbe196846b8fbcb82dbb22a",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "2f5e7a3beddb7cb6d59b1e010862b1a6",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "30616e54b25fbb54dd92423a4d4432e2",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "f97ee8d2f01573c493b17de9a9db4769",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "f3e9177f5d35627868609885664cc3af",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "965546f4ae81942ba801661c51b4ac54",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "77833e680741c01a3b39d391180b43d5",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "02725108b09c6187781582d913c9dfee",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "de52f2b04bc8aaa67e90b8d6df14cc1c",
+      "size": 2,
+      "files": [
+        "202508asiav2-rw.pdf",
+        "202508asiav3-rw.pdf"
+      ]
+    },
+    {
+      "fingerprint": "c0ebf875e3c57404cfaf735959da58cf",
+      "size": 2,
+      "files": [
+        "202505usv1.pdf",
+        "202510asiav2-new.pdf"
+      ]
+    },
+    {
+      "fingerprint": "2b85e16c6d3317bb7c934939fe4c69ca",
+      "size": 2,
+      "files": [
+        "202509us01.pdf",
+        "202509us02.pdf"
+      ]
+    },
+    {
+      "fingerprint": "7e8659c2e7b2a1dc99d790a5ef2682c7",
+      "size": 2,
+      "files": [
+        "202509us02.pdf",
+        "202509us04.pdf"
+      ]
+    },
+    {
+      "fingerprint": "4956dcac74e9019c18d6d7a382b20822",
+      "size": 2,
+      "files": [
+        "202509us02.pdf",
+        "202509us04.pdf"
+      ]
+    }
+  ],
+  "flagged": 53
+}

@@ -1,0 +1,24 @@
+{
+  "dry_run": true,
+  "checkedQuestions": 2651,
+  "checkedChoices": 9597,
+  "changed": 2,
+  "rows": [
+    {
+      "table": "draft_questions",
+      "id": "e553893e-67e0-4996-a49f-19e3ea6edf36",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 366,
+      "after": 361
+    },
+    {
+      "table": "draft_questions",
+      "id": "7d93788c-9836-49dd-8b93-a350add4a18d",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 302,
+      "after": 297
+    }
+  ]
+}

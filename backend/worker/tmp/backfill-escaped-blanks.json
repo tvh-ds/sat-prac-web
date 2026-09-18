@@ -1,0 +1,4616 @@
+{
+  "dry_run": false,
+  "checkedQuestions": 2651,
+  "checkedChoices": 9597,
+  "changed": 576,
+  "rows": [
+    {
+      "table": "draft_questions",
+      "id": "08564d1a-7a5e-4ae1-b0dd-24a85a9d577a",
+      "field": "passage_text",
+      "file": "202503asiav1.pdf",
+      "before": 274,
+      "after": 268
+    },
+    {
+      "table": "draft_questions",
+      "id": "08f17b4c-56f6-4357-9d43-49247013a5c3",
+      "field": "passage_text",
+      "file": "202503asiav1.pdf",
+      "before": 365,
+      "after": 359
+    },
+    {
+      "table": "draft_questions",
+      "id": "447c0dcf-374c-4900-94bc-5140bf3a742b",
+      "field": "passage_text",
+      "file": "202503asiav1.pdf",
+      "before": 442,
+      "after": 436
+    },
+    {
+      "table": "draft_questions",
+      "id": "90891c7d-b262-424b-bf27-bb4c363ba674",
+      "field": "passage_text",
+      "file": "202503asiav1.pdf",
+      "before": 833,
+      "after": 827
+    },
+    {
+      "table": "draft_questions",
+      "id": "1fee2110-31be-4b3c-81c0-bb515dcd4bba",
+      "field": "passage_text",
+      "file": "202503asiav1.pdf",
+      "before": 372,
+      "after": 367
+    },
+    {
+      "table": "draft_questions",
+      "id": "7c4f1259-8826-446a-80bc-fd927f544e8c",
+      "field": "passage_text",
+      "file": "202503asiav1.pdf",
+      "before": 458,
+      "after": 453
+    },
+    {
+      "table": "draft_questions",
+      "id": "599dac18-5fef-44c2-aa1c-512f0422d329",
+      "field": "passage_text",
+      "file": "202503asiav1.pdf",
+      "before": 377,
+      "after": 372
+    },
+    {
+      "table": "draft_questions",
+      "id": "3da52c3f-1cc6-4d06-9314-3acf831e6083",
+      "field": "passage_text",
+      "file": "202503asiav1.pdf",
+      "before": 242,
+      "after": 237
+    },
+    {
+      "table": "draft_questions",
+      "id": "8d31a51c-48fa-41e5-8ed8-f8d63b74e9e5",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 338,
+      "after": 333
+    },
+    {
+      "table": "draft_questions",
+      "id": "01f0dce1-d288-4ca1-a292-dfeba47639af",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 420,
+      "after": 415
+    },
+    {
+      "table": "draft_questions",
+      "id": "4c11e9d0-10b1-4ca9-83b9-a38f091f4f5d",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 384,
+      "after": 380
+    },
+    {
+      "table": "draft_questions",
+      "id": "557361a2-1746-4454-9878-e4866a5d2149",
+      "field": "prompt",
+      "file": "202503asiav2.pdf",
+      "before": 320,
+      "after": 315
+    },
+    {
+      "table": "draft_questions",
+      "id": "b55b804c-69d2-49c3-a17c-9667e82cde0d",
+      "field": "prompt",
+      "file": "202503asiav2.pdf",
+      "before": 689,
+      "after": 683
+    },
+    {
+      "table": "draft_questions",
+      "id": "f5e5581e-4461-4f99-8e3a-a67d7445ed3b",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 675,
+      "after": 669
+    },
+    {
+      "table": "draft_questions",
+      "id": "4f6d02e2-d4a1-424d-b4ed-f6dfe86cb279",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 502,
+      "after": 496
+    },
+    {
+      "table": "draft_questions",
+      "id": "ec3dbd73-0354-468b-80d7-3859220d3845",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 224,
+      "after": 218
+    },
+    {
+      "table": "draft_questions",
+      "id": "8ddfb408-7106-4c4d-bbc8-c6653a1c83fa",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 248,
+      "after": 243
+    },
+    {
+      "table": "draft_questions",
+      "id": "2d6e3f85-8078-44d7-8e23-7f14fa7343b0",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 298,
+      "after": 293
+    },
+    {
+      "table": "draft_questions",
+      "id": "e995e1e6-5f32-4ea9-9ee8-912ddb507857",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 296,
+      "after": 291
+    },
+    {
+      "table": "draft_questions",
+      "id": "c11f538f-70ec-4d18-80c0-5d79f7b2c313",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 379,
+      "after": 374
+    },
+    {
+      "table": "draft_questions",
+      "id": "6d609272-a3f1-496f-81ca-395ca5da620f",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 382,
+      "after": 377
+    },
+    {
+      "table": "draft_questions",
+      "id": "b7b0f743-0b35-4cab-b5ce-a9c9bfc3c87e",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 172,
+      "after": 167
+    },
+    {
+      "table": "draft_questions",
+      "id": "57d31fa1-61d9-4c61-bf54-625f5b77cf88",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 258,
+      "after": 253
+    },
+    {
+      "table": "draft_questions",
+      "id": "17e17a7d-64a7-4ede-91dc-289a4430e22e",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 377,
+      "after": 372
+    },
+    {
+      "table": "draft_questions",
+      "id": "8805fed9-d4a6-4dbc-bd4e-40c8109fcfff",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 272,
+      "after": 266
+    },
+    {
+      "table": "draft_questions",
+      "id": "dc2e23a9-40c1-49be-8395-8af503d9366b",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 411,
+      "after": 405
+    },
+    {
+      "table": "draft_questions",
+      "id": "7859bb08-8ace-4d5f-a4c5-c2c897adc25f",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 324,
+      "after": 318
+    },
+    {
+      "table": "draft_questions",
+      "id": "fda590c4-b080-4bb9-b3fb-1235791db6af",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 441,
+      "after": 435
+    },
+    {
+      "table": "draft_questions",
+      "id": "9020837d-57df-43cd-8353-b3e0bd6da4a0",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 713,
+      "after": 707
+    },
+    {
+      "table": "draft_questions",
+      "id": "346aa454-4be6-49a7-be0b-f7d5aba310d9",
+      "field": "prompt",
+      "file": "202503asiav2.pdf",
+      "before": 826,
+      "after": 821
+    },
+    {
+      "table": "draft_questions",
+      "id": "e6e855a9-41ce-4776-a238-72bfc40743e8",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 395,
+      "after": 390
+    },
+    {
+      "table": "draft_questions",
+      "id": "c418fd7d-8f7e-4520-87bd-be0ec3e24255",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 305,
+      "after": 300
+    },
+    {
+      "table": "draft_questions",
+      "id": "a11bea47-8a00-4209-83ee-719d95d7029c",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 378,
+      "after": 373
+    },
+    {
+      "table": "draft_questions",
+      "id": "34824bc1-d1b6-4ab0-b7c7-0aec6abe59c1",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 403,
+      "after": 398
+    },
+    {
+      "table": "draft_questions",
+      "id": "b0c55c62-9d85-46ea-8a33-83c895b38356",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 360,
+      "after": 355
+    },
+    {
+      "table": "draft_questions",
+      "id": "9451c754-ff1f-4970-902b-d0cb35dc0228",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 429,
+      "after": 424
+    },
+    {
+      "table": "draft_questions",
+      "id": "b4375ce5-4f04-457f-92a5-c4cf7ccea6f8",
+      "field": "passage_text",
+      "file": "202503asiav1.pdf",
+      "before": 392,
+      "after": 386
+    },
+    {
+      "table": "draft_questions",
+      "id": "e0aa5047-3d6e-4f8f-b791-3fc903c5678f",
+      "field": "passage_text",
+      "file": "202503asiav1.pdf",
+      "before": 388,
+      "after": 382
+    },
+    {
+      "table": "draft_questions",
+      "id": "a4df40ca-a11f-4476-8a51-8871af2c6fe0",
+      "field": "passage_text",
+      "file": "202503asiav1.pdf",
+      "before": 387,
+      "after": 381
+    },
+    {
+      "table": "draft_questions",
+      "id": "92ef039f-b496-42d5-890e-b62869bf073c",
+      "field": "passage_text",
+      "file": "202503asiav1.pdf",
+      "before": 193,
+      "after": 187
+    },
+    {
+      "table": "draft_questions",
+      "id": "6b5eb578-f833-4bd1-9d62-d0bd18b96b39",
+      "field": "passage_text",
+      "file": "202503asiav1.pdf",
+      "before": 332,
+      "after": 326
+    },
+    {
+      "table": "draft_questions",
+      "id": "aff2f5e0-751a-49ff-a5b9-b64676f63b4e",
+      "field": "passage_text",
+      "file": "202503asiav1.pdf",
+      "before": 337,
+      "after": 331
+    },
+    {
+      "table": "draft_questions",
+      "id": "9d95ee53-cd9d-4df4-8bfb-8c41da50305e",
+      "field": "passage_text",
+      "file": "202503asiav1.pdf",
+      "before": 260,
+      "after": 254
+    },
+    {
+      "table": "draft_questions",
+      "id": "ca5a873f-7314-4beb-9f22-8601a4cd68ee",
+      "field": "passage_text",
+      "file": "202503asiav1.pdf",
+      "before": 464,
+      "after": 458
+    },
+    {
+      "table": "draft_questions",
+      "id": "d48281c6-b210-498b-a3ed-2901dbc4b247",
+      "field": "passage_text",
+      "file": "202503asiav3.pdf",
+      "before": 290,
+      "after": 284
+    },
+    {
+      "table": "draft_questions",
+      "id": "3e486adf-410a-44c4-88d4-edca6788a1ab",
+      "field": "passage_text",
+      "file": "202503asiav3.pdf",
+      "before": 265,
+      "after": 259
+    },
+    {
+      "table": "draft_questions",
+      "id": "171b121d-7f67-492c-bd5a-52be68962ab7",
+      "field": "passage_text",
+      "file": "202503asiav3.pdf",
+      "before": 620,
+      "after": 614
+    },
+    {
+      "table": "draft_questions",
+      "id": "d6153480-aa64-4310-b9f3-3ba8d1852b00",
+      "field": "passage_text",
+      "file": "202503asiav3.pdf",
+      "before": 164,
+      "after": 158
+    },
+    {
+      "table": "draft_questions",
+      "id": "89544e32-ff5f-4b40-8d1b-105a552938e3",
+      "field": "passage_text",
+      "file": "202503asiav3.pdf",
+      "before": 159,
+      "after": 153
+    },
+    {
+      "table": "draft_questions",
+      "id": "a61517c7-27d3-4d33-b8f1-ae2666dc21e9",
+      "field": "passage_text",
+      "file": "202503asiav3.pdf",
+      "before": 163,
+      "after": 158
+    },
+    {
+      "table": "draft_questions",
+      "id": "05708b0c-8a2b-4e00-a983-19de94b689d3",
+      "field": "passage_text",
+      "file": "202503asiav3.pdf",
+      "before": 550,
+      "after": 545
+    },
+    {
+      "table": "draft_questions",
+      "id": "1027f42d-6fa5-411e-b2b3-35ffc78e9c5b",
+      "field": "passage_text",
+      "file": "202503asiav3.pdf",
+      "before": 373,
+      "after": 368
+    },
+    {
+      "table": "draft_questions",
+      "id": "a84de6f6-81e6-4f76-b32b-996b2bb08e4f",
+      "field": "passage_text",
+      "file": "202503asiav3.pdf",
+      "before": 420,
+      "after": 414
+    },
+    {
+      "table": "draft_questions",
+      "id": "d4801671-670d-4e0d-8730-d68f51c5a58f",
+      "field": "passage_text",
+      "file": "202503asiav3.pdf",
+      "before": 422,
+      "after": 416
+    },
+    {
+      "table": "draft_questions",
+      "id": "b19157e8-bf74-4316-a298-312a6d46855c",
+      "field": "passage_text",
+      "file": "202503asiav3.pdf",
+      "before": 416,
+      "after": 410
+    },
+    {
+      "table": "draft_questions",
+      "id": "39d397c5-0c46-48ef-95ae-88b01b76ec51",
+      "field": "passage_text",
+      "file": "202503asiav3.pdf",
+      "before": 442,
+      "after": 436
+    },
+    {
+      "table": "draft_questions",
+      "id": "84722cff-d24a-43db-a107-f7c60e236e5a",
+      "field": "prompt",
+      "file": "202503asiav3.pdf",
+      "before": 780,
+      "after": 775
+    },
+    {
+      "table": "draft_questions",
+      "id": "c2530496-5777-47d3-a7a8-6ae7462311c6",
+      "field": "passage_text",
+      "file": "202503asiav3.pdf",
+      "before": 286,
+      "after": 281
+    },
+    {
+      "table": "draft_questions",
+      "id": "a2dc7f0b-432d-492d-bcf2-000b796c3c74",
+      "field": "passage_text",
+      "file": "202503asiav3.pdf",
+      "before": 234,
+      "after": 229
+    },
+    {
+      "table": "draft_questions",
+      "id": "a6ecb3c3-4d42-45b3-bbe8-93698cbcfc18",
+      "field": "passage_text",
+      "file": "202503asiav3.pdf",
+      "before": 337,
+      "after": 332
+    },
+    {
+      "table": "draft_questions",
+      "id": "6ce0c603-15b3-49fa-a03d-eaa124d68731",
+      "field": "passage_text",
+      "file": "202503asiav3.pdf",
+      "before": 376,
+      "after": 370
+    },
+    {
+      "table": "draft_questions",
+      "id": "a636d282-fd40-4b97-904c-cda59e354df8",
+      "field": "passage_text",
+      "file": "202503asiav3.pdf",
+      "before": 460,
+      "after": 454
+    },
+    {
+      "table": "draft_questions",
+      "id": "37aa1306-4f51-4e61-9b19-6d14f5d7bdce",
+      "field": "passage_text",
+      "file": "202503asiav3.pdf",
+      "before": 343,
+      "after": 337
+    },
+    {
+      "table": "draft_questions",
+      "id": "0fdb6e1d-c3f0-4a29-8e98-9a8709e77173",
+      "field": "passage_text",
+      "file": "202503asiav3.pdf",
+      "before": 275,
+      "after": 269
+    },
+    {
+      "table": "draft_questions",
+      "id": "7de13f0c-5006-479f-9aac-dea884c5bb85",
+      "field": "passage_text",
+      "file": "202503usv1.pdf",
+      "before": 410,
+      "after": 405
+    },
+    {
+      "table": "draft_questions",
+      "id": "88d3067c-ef0f-40d3-a6cd-091ef813a290",
+      "field": "passage_text",
+      "file": "202503usv1.pdf",
+      "before": 486,
+      "after": 481
+    },
+    {
+      "table": "draft_questions",
+      "id": "a4653343-e8ea-4bf8-9df7-ac6f9f784551",
+      "field": "passage_text",
+      "file": "202503usv1.pdf",
+      "before": 425,
+      "after": 419
+    },
+    {
+      "table": "draft_questions",
+      "id": "2d63499e-2d1f-49a7-9616-42c4ac4f583e",
+      "field": "passage_text",
+      "file": "202503usv1.pdf",
+      "before": 400,
+      "after": 394
+    },
+    {
+      "table": "draft_questions",
+      "id": "12617c23-b7c4-4f10-a925-65678f953668",
+      "field": "passage_text",
+      "file": "202503usv1.pdf",
+      "before": 444,
+      "after": 438
+    },
+    {
+      "table": "draft_questions",
+      "id": "8f84446f-013a-46db-8de2-1915df3193e3",
+      "field": "passage_text",
+      "file": "202503usv1.pdf",
+      "before": 342,
+      "after": 336
+    },
+    {
+      "table": "draft_questions",
+      "id": "bc565578-1359-4d11-a680-3b06b9b73ffd",
+      "field": "passage_text",
+      "file": "202503usv1.pdf",
+      "before": 737,
+      "after": 731
+    },
+    {
+      "table": "draft_questions",
+      "id": "6f75dc78-d166-47e3-b894-0f109a577f4f",
+      "field": "passage_text",
+      "file": "202503usv1.pdf",
+      "before": 748,
+      "after": 742
+    },
+    {
+      "table": "draft_questions",
+      "id": "1a3dd215-9f3e-4ef8-8de9-b2240a7038a1",
+      "field": "passage_text",
+      "file": "202503usv1.pdf",
+      "before": 344,
+      "after": 338
+    },
+    {
+      "table": "draft_questions",
+      "id": "b2b2c612-ab00-42ec-a049-dd2c6455f54d",
+      "field": "passage_text",
+      "file": "202503usv1.pdf",
+      "before": 438,
+      "after": 433
+    },
+    {
+      "table": "draft_questions",
+      "id": "03a643bd-eace-4148-84ad-77ea8608fef5",
+      "field": "passage_text",
+      "file": "202503usv1.pdf",
+      "before": 380,
+      "after": 375
+    },
+    {
+      "table": "draft_questions",
+      "id": "2c2f1191-d556-4698-ba56-6ef0c93b82e7",
+      "field": "passage_text",
+      "file": "202503usv1.pdf",
+      "before": 380,
+      "after": 375
+    },
+    {
+      "table": "draft_questions",
+      "id": "667fe0f8-05e8-4724-a835-c85ed17a65ac",
+      "field": "passage_text",
+      "file": "202503usv2.pdf",
+      "before": 348,
+      "after": 343
+    },
+    {
+      "table": "draft_questions",
+      "id": "e7f3d563-d87f-4d54-bb9f-86417f673d65",
+      "field": "passage_text",
+      "file": "202503usv2.pdf",
+      "before": 412,
+      "after": 407
+    },
+    {
+      "table": "draft_questions",
+      "id": "be1ac7e3-633a-43ca-9ae1-0930707bd10c",
+      "field": "passage_text",
+      "file": "202503usv2.pdf",
+      "before": 426,
+      "after": 421
+    },
+    {
+      "table": "draft_questions",
+      "id": "489cd847-5d9b-4f53-9887-87ff5daace0f",
+      "field": "passage_text",
+      "file": "202503usv2.pdf",
+      "before": 283,
+      "after": 278
+    },
+    {
+      "table": "draft_questions",
+      "id": "5e94cf94-03d5-41e9-ab49-bf6537a3b5da",
+      "field": "passage_text",
+      "file": "202503usv2.pdf",
+      "before": 287,
+      "after": 282
+    },
+    {
+      "table": "draft_questions",
+      "id": "6af2479e-ed66-4e45-802a-d2240c8f347a",
+      "field": "passage_text",
+      "file": "202503usv2.pdf",
+      "before": 300,
+      "after": 295
+    },
+    {
+      "table": "draft_questions",
+      "id": "cdfbc277-bf49-4e77-9c13-5143da2e1fb8",
+      "field": "passage_text",
+      "file": "202503usv2.pdf",
+      "before": 366,
+      "after": 361
+    },
+    {
+      "table": "draft_questions",
+      "id": "0f0ad3eb-3f88-4c29-ab6a-75485eb5d2c5",
+      "field": "passage_text",
+      "file": "202503usv2.pdf",
+      "before": 173,
+      "after": 168
+    },
+    {
+      "table": "draft_questions",
+      "id": "56f861de-8803-4584-9211-7c408114826f",
+      "field": "passage_text",
+      "file": "202503usv2.pdf",
+      "before": 461,
+      "after": 456
+    },
+    {
+      "table": "draft_questions",
+      "id": "06c93a84-6da1-4aba-a425-fb2cb20857f3",
+      "field": "passage_text",
+      "file": "202503usv2.pdf",
+      "before": 313,
+      "after": 308
+    },
+    {
+      "table": "draft_questions",
+      "id": "84e664d9-345c-43ea-9fa5-fcc3f1750e8d",
+      "field": "passage_text",
+      "file": "202503usv2.pdf",
+      "before": 393,
+      "after": 388
+    },
+    {
+      "table": "draft_questions",
+      "id": "fd2791e4-76d2-4591-9063-e626a75c4d81",
+      "field": "passage_text",
+      "file": "202503usv2.pdf",
+      "before": 355,
+      "after": 350
+    },
+    {
+      "table": "draft_questions",
+      "id": "676a15af-3114-4da5-a6c3-32031b106d4f",
+      "field": "passage_text",
+      "file": "202503usv2.pdf",
+      "before": 439,
+      "after": 434
+    },
+    {
+      "table": "draft_questions",
+      "id": "f209ba51-9249-43d3-9324-7cd7e07714ba",
+      "field": "passage_text",
+      "file": "202503usv2.pdf",
+      "before": 336,
+      "after": 331
+    },
+    {
+      "table": "draft_questions",
+      "id": "06916693-2773-408b-a393-276636df8fcc",
+      "field": "passage_text",
+      "file": "202503usv2.pdf",
+      "before": 353,
+      "after": 348
+    },
+    {
+      "table": "draft_questions",
+      "id": "fb755c47-6643-447d-8609-9eaaefe5a334",
+      "field": "passage_text",
+      "file": "202503usv2.pdf",
+      "before": 394,
+      "after": 389
+    },
+    {
+      "table": "draft_questions",
+      "id": "1be11286-9f80-49c0-810a-ebf73dcf553f",
+      "field": "passage_text",
+      "file": "202503usv2.pdf",
+      "before": 370,
+      "after": 365
+    },
+    {
+      "table": "draft_questions",
+      "id": "b30cd619-277d-498e-bef6-1f05f3f4fb9b",
+      "field": "passage_text",
+      "file": "202503usv2.pdf",
+      "before": 299,
+      "after": 293
+    },
+    {
+      "table": "draft_questions",
+      "id": "0572d262-9866-4a4f-b1b7-e5983ed91bf6",
+      "field": "passage_text",
+      "file": "202503usv2.pdf",
+      "before": 408,
+      "after": 402
+    },
+    {
+      "table": "draft_questions",
+      "id": "e44062c0-d543-4c79-9043-6e05a195b90e",
+      "field": "passage_text",
+      "file": "202505asiav1.pdf",
+      "before": 265,
+      "after": 260
+    },
+    {
+      "table": "draft_questions",
+      "id": "dc0732de-ed15-4f9e-bf3a-e9f2aa50854c",
+      "field": "passage_text",
+      "file": "202505asiav1.pdf",
+      "before": 409,
+      "after": 403
+    },
+    {
+      "table": "draft_questions",
+      "id": "fec9cc7a-2948-43e3-84f7-878fe1bce6be",
+      "field": "passage_text",
+      "file": "202505asiav1.pdf",
+      "before": 392,
+      "after": 387
+    },
+    {
+      "table": "draft_questions",
+      "id": "3cbacd9d-57af-4ed7-b511-692d7bb9ea13",
+      "field": "passage_text",
+      "file": "202505asiav1.pdf",
+      "before": 343,
+      "after": 338
+    },
+    {
+      "table": "draft_questions",
+      "id": "c519c855-bca0-4ff4-9218-0a9ffa712aac",
+      "field": "passage_text",
+      "file": "202505asiav1.pdf",
+      "before": 215,
+      "after": 210
+    },
+    {
+      "table": "draft_questions",
+      "id": "971f87a4-740c-4bee-ae8f-af3e929f8013",
+      "field": "passage_text",
+      "file": "202505asiav1.pdf",
+      "before": 227,
+      "after": 222
+    },
+    {
+      "table": "draft_questions",
+      "id": "9d068871-c6f1-43d9-86ad-96f82e68c8cc",
+      "field": "passage_text",
+      "file": "202505asiav1.pdf",
+      "before": 296,
+      "after": 291
+    },
+    {
+      "table": "draft_questions",
+      "id": "2cf21f37-ce3a-4af8-a49d-ae45ab53755c",
+      "field": "passage_text",
+      "file": "202505asiav1.pdf",
+      "before": 334,
+      "after": 329
+    },
+    {
+      "table": "draft_questions",
+      "id": "f247b622-061a-46d1-8132-9d17ba98a251",
+      "field": "passage_text",
+      "file": "202505asiav1.pdf",
+      "before": 396,
+      "after": 391
+    },
+    {
+      "table": "draft_questions",
+      "id": "2165990e-6871-42a5-8607-6d0ecfc25dca",
+      "field": "passage_text",
+      "file": "202505asiav1.pdf",
+      "before": 356,
+      "after": 350
+    },
+    {
+      "table": "draft_questions",
+      "id": "faa5be2e-df71-41c0-be44-dd16d3d2572a",
+      "field": "passage_text",
+      "file": "202505asiav1.pdf",
+      "before": 460,
+      "after": 454
+    },
+    {
+      "table": "draft_questions",
+      "id": "f9c676aa-3b22-49ea-897d-e8cb3daf86c2",
+      "field": "passage_text",
+      "file": "202505asiav1.pdf",
+      "before": 367,
+      "after": 361
+    },
+    {
+      "table": "draft_questions",
+      "id": "c5d87f5d-8396-4b39-b46d-ca867ee277f9",
+      "field": "passage_text",
+      "file": "202505asiav1.pdf",
+      "before": 617,
+      "after": 611
+    },
+    {
+      "table": "draft_questions",
+      "id": "6f0985b9-dcce-434c-9c08-37b722ecceb5",
+      "field": "passage_text",
+      "file": "202505asiav1.pdf",
+      "before": 393,
+      "after": 387
+    },
+    {
+      "table": "draft_questions",
+      "id": "35553751-15b1-4abd-9640-10bc9a26a413",
+      "field": "passage_text",
+      "file": "202505asiav1.pdf",
+      "before": 672,
+      "after": 666
+    },
+    {
+      "table": "draft_questions",
+      "id": "c89e5d54-ed80-43b0-9695-416c9d1860c2",
+      "field": "passage_text",
+      "file": "202505asiav1.pdf",
+      "before": 404,
+      "after": 398
+    },
+    {
+      "table": "draft_questions",
+      "id": "3bd17653-eddd-46d8-86a0-7b7ec97352fb",
+      "field": "passage_text",
+      "file": "202505asiav1.pdf",
+      "before": 334,
+      "after": 328
+    },
+    {
+      "table": "draft_questions",
+      "id": "9733dc58-97ce-420a-982e-1b7c8cc015a1",
+      "field": "passage_text",
+      "file": "202505asiav1.pdf",
+      "before": 374,
+      "after": 368
+    },
+    {
+      "table": "draft_questions",
+      "id": "7f805cb5-52e6-444b-854d-f74cc599345b",
+      "field": "passage_text",
+      "file": "202505asiav1.pdf",
+      "before": 315,
+      "after": 309
+    },
+    {
+      "table": "draft_questions",
+      "id": "7ec0e94e-5b84-4258-8549-73edbfd2104f",
+      "field": "passage_text",
+      "file": "202505asiav1.pdf",
+      "before": 407,
+      "after": 401
+    },
+    {
+      "table": "draft_questions",
+      "id": "24e2509c-5d91-41f3-a2b9-bcb00ce05301",
+      "field": "passage_text",
+      "file": "202505asiav1.pdf",
+      "before": 417,
+      "after": 411
+    },
+    {
+      "table": "draft_questions",
+      "id": "36c1f4b0-4412-49b1-97d0-03b8f3f370cb",
+      "field": "passage_text",
+      "file": "202505asiav1.pdf",
+      "before": 375,
+      "after": 369
+    },
+    {
+      "table": "draft_questions",
+      "id": "557bd65b-47cf-4b12-8fa1-6c90b17d887b",
+      "field": "passage_text",
+      "file": "202506asiav1-rw.pdf",
+      "before": 651,
+      "after": 645
+    },
+    {
+      "table": "draft_questions",
+      "id": "e8062450-3052-4991-9323-6a6aa686a840",
+      "field": "passage_text",
+      "file": "202506asiav1-rw.pdf",
+      "before": 702,
+      "after": 696
+    },
+    {
+      "table": "draft_questions",
+      "id": "daa0b89b-7319-459c-a895-2c97df79d4e5",
+      "field": "passage_text",
+      "file": "202506asiav1-rw.pdf",
+      "before": 247,
+      "after": 241
+    },
+    {
+      "table": "draft_questions",
+      "id": "8decd04b-3756-4b10-aef6-0e5e30630657",
+      "field": "passage_text",
+      "file": "202506asiav1-rw.pdf",
+      "before": 264,
+      "after": 259
+    },
+    {
+      "table": "draft_questions",
+      "id": "4d6e61fa-fcbb-48d3-816d-403332461a6f",
+      "field": "passage_text",
+      "file": "202506asiav1-rw.pdf",
+      "before": 368,
+      "after": 362
+    },
+    {
+      "table": "draft_questions",
+      "id": "68c2fbe6-a29a-4b76-8ef6-6ee08769bc14",
+      "field": "passage_text",
+      "file": "202506asiav1-rw.pdf",
+      "before": 276,
+      "after": 271
+    },
+    {
+      "table": "draft_questions",
+      "id": "f8fa4f96-fbad-4388-a48b-933e456d6d78",
+      "field": "passage_text",
+      "file": "202506asiav1-rw.pdf",
+      "before": 392,
+      "after": 387
+    },
+    {
+      "table": "draft_questions",
+      "id": "81768e78-95c8-47d0-926d-5410ac660fc9",
+      "field": "passage_text",
+      "file": "202506asiav1-rw.pdf",
+      "before": 376,
+      "after": 371
+    },
+    {
+      "table": "draft_questions",
+      "id": "4f08c93a-9f5d-4e04-a25d-4103fde7d389",
+      "field": "passage_text",
+      "file": "202506asiav1-rw.pdf",
+      "before": 793,
+      "after": 788
+    },
+    {
+      "table": "draft_questions",
+      "id": "82c66444-4bc0-4e17-8d88-6c5c0d46d75d",
+      "field": "passage_text",
+      "file": "202506asiav1-rw.pdf",
+      "before": 752,
+      "after": 747
+    },
+    {
+      "table": "draft_questions",
+      "id": "96d20407-87cc-45b0-9b8a-a9c3ef64a0cf",
+      "field": "passage_text",
+      "file": "202506asiav1-rw.pdf",
+      "before": 168,
+      "after": 163
+    },
+    {
+      "table": "draft_questions",
+      "id": "825cbe9c-3f38-43d1-84ee-66570a83669e",
+      "field": "passage_text",
+      "file": "202506asiav1-rw.pdf",
+      "before": 272,
+      "after": 266
+    },
+    {
+      "table": "draft_questions",
+      "id": "1cedde1b-d41c-4681-b60e-e8522785e65e",
+      "field": "passage_text",
+      "file": "202506asiav1-rw.pdf",
+      "before": 269,
+      "after": 263
+    },
+    {
+      "table": "draft_questions",
+      "id": "a39c570a-cf37-4e75-b17d-603a87356036",
+      "field": "passage_text",
+      "file": "202506asiav1-rw.pdf",
+      "before": 349,
+      "after": 343
+    },
+    {
+      "table": "draft_questions",
+      "id": "2625c399-49c6-40b5-beba-a9e9351443cb",
+      "field": "passage_text",
+      "file": "202506asiav1-rw.pdf",
+      "before": 222,
+      "after": 217
+    },
+    {
+      "table": "draft_questions",
+      "id": "7a1358f9-12c4-4c8e-a8ab-32c95e6d7173",
+      "field": "passage_text",
+      "file": "202506asiav1-rw.pdf",
+      "before": 364,
+      "after": 359
+    },
+    {
+      "table": "draft_questions",
+      "id": "152df3c7-f90e-4dba-9d02-c619a79e5990",
+      "field": "passage_text",
+      "file": "202506asiav1-rw.pdf",
+      "before": 377,
+      "after": 372
+    },
+    {
+      "table": "draft_questions",
+      "id": "08c8b1e4-945f-4e6a-aeae-e7d3d0ac5d43",
+      "field": "passage_text",
+      "file": "202506asiav1-rw.pdf",
+      "before": 401,
+      "after": 396
+    },
+    {
+      "table": "draft_questions",
+      "id": "3ffd2742-df56-4503-ac3e-1991b91d8bb1",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 345,
+      "after": 339
+    },
+    {
+      "table": "draft_questions",
+      "id": "b528bd92-8ae7-48c4-8633-9050a3808c16",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 432,
+      "after": 426
+    },
+    {
+      "table": "draft_questions",
+      "id": "ac5fbbe3-c7b0-4bff-82d6-061ddc3f1aa6",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 334,
+      "after": 328
+    },
+    {
+      "table": "draft_questions",
+      "id": "552a6f29-9d97-4d01-9e41-8c034c2feda0",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 327,
+      "after": 321
+    },
+    {
+      "table": "draft_questions",
+      "id": "fde6ab34-96fe-48aa-b412-d40029d8877b",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 830,
+      "after": 824
+    },
+    {
+      "table": "draft_questions",
+      "id": "213a3e37-a748-4dc7-9d8f-b9c148eface3",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 921,
+      "after": 915
+    },
+    {
+      "table": "draft_questions",
+      "id": "1adaed53-c08b-4fe2-a053-369be2974e9c",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 203,
+      "after": 198
+    },
+    {
+      "table": "draft_questions",
+      "id": "1f6d1b49-4146-4f66-8037-b51d8fd0edfe",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 310,
+      "after": 305
+    },
+    {
+      "table": "draft_questions",
+      "id": "38ed2d02-97c6-44cf-9b9b-eaf17356af3c",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 295,
+      "after": 290
+    },
+    {
+      "table": "draft_questions",
+      "id": "e23897a6-0d16-4586-9f5c-2383ff652a1b",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 266,
+      "after": 261
+    },
+    {
+      "table": "draft_questions",
+      "id": "577cfbbc-3e86-4e61-862d-f2a9931dcab0",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 249,
+      "after": 243
+    },
+    {
+      "table": "draft_questions",
+      "id": "fe8ee231-95a2-4e7a-84de-45a77e74127e",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 327,
+      "after": 321
+    },
+    {
+      "table": "draft_questions",
+      "id": "70e18129-4c30-4b8b-afa2-20ab3548d53b",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 272,
+      "after": 266
+    },
+    {
+      "table": "draft_questions",
+      "id": "da2c1cb0-b4c2-4963-9dc1-e0e20b88deeb",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 382,
+      "after": 376
+    },
+    {
+      "table": "draft_questions",
+      "id": "414ff8a4-165b-4f6f-a62f-ea683347bdf8",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 417,
+      "after": 412
+    },
+    {
+      "table": "draft_questions",
+      "id": "6c43584e-fc5d-4447-b7d5-3c9dbb65f37a",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 272,
+      "after": 266
+    },
+    {
+      "table": "draft_questions",
+      "id": "7486aae4-6e93-454d-a569-c35c80b0f5be",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 276,
+      "after": 270
+    },
+    {
+      "table": "draft_questions",
+      "id": "457cf616-3ce4-43ad-9f20-cc22f94c83a1",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 340,
+      "after": 334
+    },
+    {
+      "table": "draft_questions",
+      "id": "48412a91-a9b4-4a3f-b6a3-3d76a00928aa",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 281,
+      "after": 275
+    },
+    {
+      "table": "draft_questions",
+      "id": "d81323b7-75d1-4772-9f8a-31fa990b35fa",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 401,
+      "after": 396
+    },
+    {
+      "table": "draft_questions",
+      "id": "455e22b9-084e-48e0-81d2-0b3cd1e3f467",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 733,
+      "after": 727
+    },
+    {
+      "table": "draft_questions",
+      "id": "152d5067-fe69-45cb-863c-4ce399b4656a",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 328,
+      "after": 323
+    },
+    {
+      "table": "draft_questions",
+      "id": "aad9e94f-ff23-4be0-ae82-d5c6e494f2ee",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 173,
+      "after": 168
+    },
+    {
+      "table": "draft_questions",
+      "id": "483ab0b2-6787-4afa-a41b-fbb7fbfb2c39",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 311,
+      "after": 306
+    },
+    {
+      "table": "draft_questions",
+      "id": "76504d40-0403-48c7-a6a3-9784d4a7ea56",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 313,
+      "after": 308
+    },
+    {
+      "table": "draft_questions",
+      "id": "bdc04b4b-b912-4233-8cb7-7710db5f7859",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 168,
+      "after": 162
+    },
+    {
+      "table": "draft_questions",
+      "id": "c66619e5-fa4d-48a2-8272-9269a8a92511",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 296,
+      "after": 290
+    },
+    {
+      "table": "draft_questions",
+      "id": "aecb0a3d-d571-4696-aa81-35d2b76087f8",
+      "field": "passage_text",
+      "file": "202506asiav3.pdf",
+      "before": 277,
+      "after": 271
+    },
+    {
+      "table": "draft_questions",
+      "id": "9908fe61-c2e7-4923-91c3-aab6e152cce6",
+      "field": "passage_text",
+      "file": "202506asiav4.pdf",
+      "before": 369,
+      "after": 364
+    },
+    {
+      "table": "draft_questions",
+      "id": "d28a372b-7d8a-4a3b-8d72-0de8925cf455",
+      "field": "passage_text",
+      "file": "202506asiav4.pdf",
+      "before": 395,
+      "after": 390
+    },
+    {
+      "table": "draft_questions",
+      "id": "4a5e1e5a-5bb0-4d49-a063-ce19a03c9b12",
+      "field": "passage_text",
+      "file": "202506asiav4.pdf",
+      "before": 242,
+      "after": 237
+    },
+    {
+      "table": "draft_questions",
+      "id": "2f8c324d-564e-47d9-9180-eec69ac49594",
+      "field": "passage_text",
+      "file": "202506asiav4.pdf",
+      "before": 663,
+      "after": 657
+    },
+    {
+      "table": "draft_questions",
+      "id": "bcf09759-146a-4a00-86af-a78ba38dace8",
+      "field": "passage_text",
+      "file": "202506asiav4.pdf",
+      "before": 404,
+      "after": 399
+    },
+    {
+      "table": "draft_questions",
+      "id": "507d6333-e426-4e00-b012-94ae097f6931",
+      "field": "passage_text",
+      "file": "202506asiav4.pdf",
+      "before": 345,
+      "after": 340
+    },
+    {
+      "table": "draft_questions",
+      "id": "28c1fe93-6563-4aa3-aca1-9865651759b7",
+      "field": "passage_text",
+      "file": "202506asiav4.pdf",
+      "before": 378,
+      "after": 373
+    },
+    {
+      "table": "draft_questions",
+      "id": "004b6d75-770f-49f4-9351-fc9d751431ae",
+      "field": "passage_text",
+      "file": "202506asiav4.pdf",
+      "before": 321,
+      "after": 316
+    },
+    {
+      "table": "draft_questions",
+      "id": "c6bf9da0-36be-49b7-b953-ad4b0607f84d",
+      "field": "passage_text",
+      "file": "202506asiav4.pdf",
+      "before": 272,
+      "after": 267
+    },
+    {
+      "table": "draft_questions",
+      "id": "5b7ac35e-8184-4bd5-bf52-25c2cd02568f",
+      "field": "passage_text",
+      "file": "202506asiav4.pdf",
+      "before": 362,
+      "after": 357
+    },
+    {
+      "table": "draft_questions",
+      "id": "4b56ddb7-f1e6-425c-9e4c-8220ba9c8423",
+      "field": "passage_text",
+      "file": "202506asiav4.pdf",
+      "before": 418,
+      "after": 413
+    },
+    {
+      "table": "draft_questions",
+      "id": "3dae2df1-386b-4c95-a636-24c3eb5d161a",
+      "field": "passage_text",
+      "file": "202506asiav4.pdf",
+      "before": 452,
+      "after": 447
+    },
+    {
+      "table": "draft_questions",
+      "id": "43e6f7fe-606e-4d53-8624-41a58429df09",
+      "field": "passage_text",
+      "file": "202506asiav4.pdf",
+      "before": 363,
+      "after": 358
+    },
+    {
+      "table": "draft_questions",
+      "id": "178b0a64-b1a3-4924-a5ae-fb3de55c85e3",
+      "field": "passage_text",
+      "file": "202506asiav4.pdf",
+      "before": 284,
+      "after": 279
+    },
+    {
+      "table": "draft_questions",
+      "id": "6bbdb8bf-1cc3-46ff-b597-88864dd2eeb9",
+      "field": "passage_text",
+      "file": "202506asiav4.pdf",
+      "before": 389,
+      "after": 384
+    },
+    {
+      "table": "draft_questions",
+      "id": "9feb53b5-f23e-45fe-a711-b7017fbb6385",
+      "field": "passage_text",
+      "file": "202506asiav4.pdf",
+      "before": 340,
+      "after": 335
+    },
+    {
+      "table": "draft_questions",
+      "id": "69c2d7c0-7334-47d3-9f97-77943f8a5e16",
+      "field": "passage_text",
+      "file": "202506asiav4.pdf",
+      "before": 423,
+      "after": 418
+    },
+    {
+      "table": "draft_questions",
+      "id": "79e4535c-0e38-45fd-bdf5-ab36e269cd58",
+      "field": "passage_text",
+      "file": "202506asiav4.pdf",
+      "before": 764,
+      "after": 758
+    },
+    {
+      "table": "draft_questions",
+      "id": "7c819af1-6bc0-4e90-a2ec-afc3615d7839",
+      "field": "passage_text",
+      "file": "202506asiav4.pdf",
+      "before": 327,
+      "after": 321
+    },
+    {
+      "table": "draft_questions",
+      "id": "95d5b9a0-8718-4262-a476-31624b336153",
+      "field": "passage_text",
+      "file": "202506asiav4.pdf",
+      "before": 283,
+      "after": 277
+    },
+    {
+      "table": "draft_questions",
+      "id": "a022ade7-8e1a-4048-bd3b-ab38b060c42d",
+      "field": "passage_text",
+      "file": "202506usv1.pdf",
+      "before": 416,
+      "after": 411
+    },
+    {
+      "table": "draft_questions",
+      "id": "e5dbc7f1-57c8-40d1-8410-7e67cb4cfc9b",
+      "field": "passage_text",
+      "file": "202506usv1.pdf",
+      "before": 652,
+      "after": 646
+    },
+    {
+      "table": "draft_questions",
+      "id": "68c03b8f-3514-4d5e-9bad-d9b338b39891",
+      "field": "passage_text",
+      "file": "202506usv1.pdf",
+      "before": 678,
+      "after": 672
+    },
+    {
+      "table": "draft_questions",
+      "id": "9191b1a1-860d-4eca-b2ed-8ee5257319ef",
+      "field": "passage_text",
+      "file": "202506usv1.pdf",
+      "before": 164,
+      "after": 158
+    },
+    {
+      "table": "draft_questions",
+      "id": "a4547fbe-f103-46e0-81cf-61aca55e4926",
+      "field": "passage_text",
+      "file": "202506usv1.pdf",
+      "before": 141,
+      "after": 135
+    },
+    {
+      "table": "draft_questions",
+      "id": "4e76cb93-96c1-4688-a300-3159ab0eda43",
+      "field": "passage_text",
+      "file": "202506usv1.pdf",
+      "before": 291,
+      "after": 286
+    },
+    {
+      "table": "draft_questions",
+      "id": "14aa450b-704b-4511-89df-f8c6a2a5ac23",
+      "field": "passage_text",
+      "file": "202506usv1.pdf",
+      "before": 299,
+      "after": 294
+    },
+    {
+      "table": "draft_questions",
+      "id": "3da3bb27-8c77-4240-b2ae-87e830b618a6",
+      "field": "passage_text",
+      "file": "202506usv1.pdf",
+      "before": 321,
+      "after": 316
+    },
+    {
+      "table": "draft_questions",
+      "id": "778bf3a2-e0e1-4631-a2be-838ccc7c78aa",
+      "field": "passage_text",
+      "file": "202506usv1.pdf",
+      "before": 293,
+      "after": 288
+    },
+    {
+      "table": "draft_questions",
+      "id": "477fbef5-3fa3-49fe-9975-a661d691c654",
+      "field": "passage_text",
+      "file": "202506usv1.pdf",
+      "before": 358,
+      "after": 353
+    },
+    {
+      "table": "draft_questions",
+      "id": "c531c42f-e2b0-4c6f-b87c-f3e4c0d0bc40",
+      "field": "passage_text",
+      "file": "202506usv1.pdf",
+      "before": 401,
+      "after": 395
+    },
+    {
+      "table": "draft_questions",
+      "id": "eaf098a1-acdd-48c5-9c41-d26fb16e343b",
+      "field": "passage_text",
+      "file": "202506usv1.pdf",
+      "before": 361,
+      "after": 355
+    },
+    {
+      "table": "draft_questions",
+      "id": "a952d75c-1008-47aa-90c9-498f0318c772",
+      "field": "passage_text",
+      "file": "202506usv1.pdf",
+      "before": 367,
+      "after": 361
+    },
+    {
+      "table": "draft_questions",
+      "id": "e2b3ed48-e236-4fd7-af30-51a5a2425a11",
+      "field": "passage_text",
+      "file": "202506usv1.pdf",
+      "before": 418,
+      "after": 412
+    },
+    {
+      "table": "draft_questions",
+      "id": "cd7c359b-0d83-4791-89a3-4b6d45c4c88a",
+      "field": "passage_text",
+      "file": "202506usv1.pdf",
+      "before": 770,
+      "after": 764
+    },
+    {
+      "table": "draft_questions",
+      "id": "4a48f0c0-c1d6-4578-8c0f-b82123449c88",
+      "field": "passage_text",
+      "file": "202506usv1.pdf",
+      "before": 774,
+      "after": 768
+    },
+    {
+      "table": "draft_questions",
+      "id": "e387f09c-d895-42a1-b03e-4c9b4a785b42",
+      "field": "passage_text",
+      "file": "202506usv1.pdf",
+      "before": 156,
+      "after": 150
+    },
+    {
+      "table": "draft_questions",
+      "id": "850d9b00-e9b1-4928-af32-cd0d80fc3143",
+      "field": "passage_text",
+      "file": "202506usv1.pdf",
+      "before": 288,
+      "after": 282
+    },
+    {
+      "table": "draft_questions",
+      "id": "c81a0a50-31a8-4627-8725-5302446dca66",
+      "field": "passage_text",
+      "file": "202506usv1.pdf",
+      "before": 459,
+      "after": 453
+    },
+    {
+      "table": "draft_questions",
+      "id": "1814ded4-9cc2-4a9f-a5c8-fbd1fd7171ae",
+      "field": "passage_text",
+      "file": "202506usv1.pdf",
+      "before": 357,
+      "after": 351
+    },
+    {
+      "table": "draft_questions",
+      "id": "37ffff09-326e-49cd-bd7f-9090e0744998",
+      "field": "passage_text",
+      "file": "202506usv1.pdf",
+      "before": 258,
+      "after": 252
+    },
+    {
+      "table": "draft_questions",
+      "id": "90bae5ff-0336-43bb-9526-49022cc79f06",
+      "field": "passage_text",
+      "file": "202506usv1.pdf",
+      "before": 369,
+      "after": 363
+    },
+    {
+      "table": "draft_questions",
+      "id": "92b21ecb-0d22-4828-b186-d38b9e13e77f",
+      "field": "passage_text",
+      "file": "202506usv1.pdf",
+      "before": 412,
+      "after": 406
+    },
+    {
+      "table": "draft_questions",
+      "id": "288fdc70-21cc-4262-b4a6-75d78b6a051d",
+      "field": "passage_text",
+      "file": "202508asiav1.pdf",
+      "before": 352,
+      "after": 347
+    },
+    {
+      "table": "draft_questions",
+      "id": "27d7e98e-5f24-492e-b2ae-6f425448a56b",
+      "field": "passage_text",
+      "file": "202508asiav1.pdf",
+      "before": 392,
+      "after": 387
+    },
+    {
+      "table": "draft_questions",
+      "id": "b5c3f1ce-1145-42de-83d4-fd7a1a17b4a9",
+      "field": "passage_text",
+      "file": "202508asiav1.pdf",
+      "before": 412,
+      "after": 406
+    },
+    {
+      "table": "draft_questions",
+      "id": "3b9a7d7d-39b8-4c64-ab9f-5a89827213b6",
+      "field": "passage_text",
+      "file": "202508asiav1.pdf",
+      "before": 250,
+      "after": 245
+    },
+    {
+      "table": "draft_questions",
+      "id": "e5340e2d-a752-4b18-b42c-b288cdbb2e79",
+      "field": "passage_text",
+      "file": "202508asiav1.pdf",
+      "before": 187,
+      "after": 182
+    },
+    {
+      "table": "draft_questions",
+      "id": "f63826d4-a8c2-461c-a5cc-84353087e749",
+      "field": "passage_text",
+      "file": "202508asiav1.pdf",
+      "before": 340,
+      "after": 335
+    },
+    {
+      "table": "draft_questions",
+      "id": "ce3b8979-e8f5-4c17-93ad-c24f6f99ed50",
+      "field": "passage_text",
+      "file": "202508asiav1.pdf",
+      "before": 316,
+      "after": 311
+    },
+    {
+      "table": "draft_questions",
+      "id": "9c1fac00-0500-4d72-bccd-85ea5cb4be0d",
+      "field": "passage_text",
+      "file": "202508asiav1.pdf",
+      "before": 322,
+      "after": 317
+    },
+    {
+      "table": "draft_questions",
+      "id": "74a571c5-0723-4888-b6e3-927b176ec720",
+      "field": "passage_text",
+      "file": "202508asiav1.pdf",
+      "before": 277,
+      "after": 272
+    },
+    {
+      "table": "draft_questions",
+      "id": "bea39ed1-f754-4cce-8a11-1bd1254bf010",
+      "field": "passage_text",
+      "file": "202508asiav1.pdf",
+      "before": 355,
+      "after": 350
+    },
+    {
+      "table": "draft_questions",
+      "id": "348eeee9-0b5c-42e1-87e0-d8c7cf24ac60",
+      "field": "passage_text",
+      "file": "202508asiav1.pdf",
+      "before": 244,
+      "after": 239
+    },
+    {
+      "table": "draft_questions",
+      "id": "a281a556-bfd6-4e73-950b-8d2bc5f372e5",
+      "field": "passage_text",
+      "file": "202508asiav1.pdf",
+      "before": 292,
+      "after": 287
+    },
+    {
+      "table": "draft_questions",
+      "id": "db7cd5d7-e965-4295-9f8d-e83e0c5b1caa",
+      "field": "passage_text",
+      "file": "202508asiav1.pdf",
+      "before": 329,
+      "after": 324
+    },
+    {
+      "table": "draft_questions",
+      "id": "7c1dc05e-7b5d-4c3e-bcc1-2c46fb026099",
+      "field": "passage_text",
+      "file": "202508asiav1.pdf",
+      "before": 385,
+      "after": 379
+    },
+    {
+      "table": "draft_questions",
+      "id": "3444eb8f-e953-4e14-beb3-fc9864af57a6",
+      "field": "passage_text",
+      "file": "202508asiav1.pdf",
+      "before": 732,
+      "after": 726
+    },
+    {
+      "table": "draft_questions",
+      "id": "4be42744-4f41-421c-9463-ca98d149f316",
+      "field": "passage_text",
+      "file": "202508asiav1.pdf",
+      "before": 314,
+      "after": 308
+    },
+    {
+      "table": "draft_questions",
+      "id": "e0f09eb4-8b22-4da7-b796-c98c3bd61d3c",
+      "field": "passage_text",
+      "file": "202508asiav1.pdf",
+      "before": 273,
+      "after": 267
+    },
+    {
+      "table": "draft_questions",
+      "id": "40408507-796c-4fa6-809a-136d7a24a0b7",
+      "field": "passage_text",
+      "file": "202508asiav1.pdf",
+      "before": 363,
+      "after": 357
+    },
+    {
+      "table": "draft_questions",
+      "id": "50fa1318-71c9-46f3-a927-8ec0d4dd544f",
+      "field": "passage_text",
+      "file": "202508asiav1.pdf",
+      "before": 469,
+      "after": 463
+    },
+    {
+      "table": "draft_questions",
+      "id": "ada6bab9-ef59-4c7f-acf6-afef154e2477",
+      "field": "passage_text",
+      "file": "202508asiav1.pdf",
+      "before": 354,
+      "after": 348
+    },
+    {
+      "table": "draft_questions",
+      "id": "026482b7-f828-463c-948d-e5564483dfc9",
+      "field": "passage_text",
+      "file": "202508asiav1.pdf",
+      "before": 409,
+      "after": 403
+    },
+    {
+      "table": "draft_questions",
+      "id": "5fd0bfec-a6a6-45a1-bec6-2801d1d25d61",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 275,
+      "after": 269
+    },
+    {
+      "table": "draft_questions",
+      "id": "be4f7689-d65c-4493-a2a6-b331c247632a",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 434,
+      "after": 428
+    },
+    {
+      "table": "draft_questions",
+      "id": "68103833-8845-4ac5-a7bf-77864725fd37",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 202,
+      "after": 196
+    },
+    {
+      "table": "draft_questions",
+      "id": "10bf56fb-d5df-4a64-a683-667c04fda254",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 374,
+      "after": 368
+    },
+    {
+      "table": "draft_questions",
+      "id": "4d0f12be-ef15-413a-b32d-f596f9172ff6",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 247,
+      "after": 241
+    },
+    {
+      "table": "draft_questions",
+      "id": "873ba4a9-0a70-41e9-a30a-cf04b34a6b21",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 760,
+      "after": 754
+    },
+    {
+      "table": "draft_questions",
+      "id": "dcdbe77d-a6a4-45a0-9106-104064d5f761",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 225,
+      "after": 220
+    },
+    {
+      "table": "draft_questions",
+      "id": "f8a51a04-325e-4b98-8c5f-963171ce925c",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 426,
+      "after": 421
+    },
+    {
+      "table": "draft_questions",
+      "id": "9a41eba4-da2d-4a21-8ae5-74d48871ea8c",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 376,
+      "after": 370
+    },
+    {
+      "table": "draft_questions",
+      "id": "95e2baf8-b5a3-48e9-961d-0633c481942e",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 276,
+      "after": 270
+    },
+    {
+      "table": "draft_questions",
+      "id": "8fb909fe-1828-4497-aa0f-01fcd2409fbc",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 449,
+      "after": 443
+    },
+    {
+      "table": "draft_questions",
+      "id": "e3b60354-9250-4d24-b200-1a9665982079",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 390,
+      "after": 385
+    },
+    {
+      "table": "draft_questions",
+      "id": "e764da0e-f5a7-4dee-b577-c668e6516ef9",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 616,
+      "after": 610
+    },
+    {
+      "table": "draft_questions",
+      "id": "f05c2ac6-532d-48d4-8650-914c403365fe",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 321,
+      "after": 315
+    },
+    {
+      "table": "draft_questions",
+      "id": "35422006-50d6-4dbe-9fc5-8997529e107a",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 270,
+      "after": 264
+    },
+    {
+      "table": "draft_questions",
+      "id": "55df8a28-ea3e-4970-864a-58982f7d2e1e",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 363,
+      "after": 357
+    },
+    {
+      "table": "draft_questions",
+      "id": "6848386e-a674-489a-b8d0-e736cc351311",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 488,
+      "after": 482
+    },
+    {
+      "table": "draft_questions",
+      "id": "6c6275ac-8df3-4845-8d3c-323d9e073754",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 354,
+      "after": 348
+    },
+    {
+      "table": "draft_questions",
+      "id": "9e080ecd-1542-4ffb-93d9-1c37d6ca9027",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 409,
+      "after": 403
+    },
+    {
+      "table": "draft_questions",
+      "id": "2e0838c3-7467-4e4f-8c5d-b0f45bda4e5f",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 259,
+      "after": 253
+    },
+    {
+      "table": "draft_questions",
+      "id": "b3bc0d42-4db0-456d-8c39-367a7a672a5a",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 464,
+      "after": 458
+    },
+    {
+      "table": "draft_questions",
+      "id": "ed3f53a4-5752-4992-9e6d-1d3ae5152643",
+      "field": "passage_text",
+      "file": "202508asiav3-rw.pdf",
+      "before": 383,
+      "after": 377
+    },
+    {
+      "table": "draft_questions",
+      "id": "db759544-61d3-4dd7-a5e6-c4a96540f330",
+      "field": "passage_text",
+      "file": "202508asiav3-rw.pdf",
+      "before": 202,
+      "after": 196
+    },
+    {
+      "table": "draft_questions",
+      "id": "d0d55ace-70f1-4153-86a2-f8f0214b88fd",
+      "field": "passage_text",
+      "file": "202508asiav3-rw.pdf",
+      "before": 287,
+      "after": 281
+    },
+    {
+      "table": "draft_questions",
+      "id": "68cad888-617f-4243-a802-def947805b2f",
+      "field": "passage_text",
+      "file": "202508asiav3-rw.pdf",
+      "before": 434,
+      "after": 428
+    },
+    {
+      "table": "draft_questions",
+      "id": "558a6c46-7d65-4a8d-9611-4cab375525d4",
+      "field": "passage_text",
+      "file": "202508asiav3-rw.pdf",
+      "before": 305,
+      "after": 300
+    },
+    {
+      "table": "draft_questions",
+      "id": "1d433339-febd-4fe1-8178-36cadda57d9f",
+      "field": "passage_text",
+      "file": "202508asiav3-rw.pdf",
+      "before": 408,
+      "after": 402
+    },
+    {
+      "table": "draft_questions",
+      "id": "bb2e095a-69fc-4854-a3e1-305d16c87bb6",
+      "field": "passage_text",
+      "file": "202508asiav3-rw.pdf",
+      "before": 371,
+      "after": 365
+    },
+    {
+      "table": "draft_questions",
+      "id": "3dde9faf-7393-496c-83f6-163f69ecef57",
+      "field": "passage_text",
+      "file": "202508asiav3-rw.pdf",
+      "before": 988,
+      "after": 982
+    },
+    {
+      "table": "draft_questions",
+      "id": "b1d47b87-f899-48b7-8512-98c909aeb554",
+      "field": "passage_text",
+      "file": "202508asiav3-rw.pdf",
+      "before": 717,
+      "after": 711
+    },
+    {
+      "table": "draft_questions",
+      "id": "f1200fc0-508f-4bfc-bf9a-97a3a8b3ff81",
+      "field": "passage_text",
+      "file": "202508asiav3-rw.pdf",
+      "before": 305,
+      "after": 299
+    },
+    {
+      "table": "draft_questions",
+      "id": "e2a10de4-262d-40f0-aaab-8a31cc3fc4ad",
+      "field": "passage_text",
+      "file": "202508asiav3-rw.pdf",
+      "before": 410,
+      "after": 404
+    },
+    {
+      "table": "draft_questions",
+      "id": "9d21854e-b6c8-4368-b8a1-415edf9e4970",
+      "field": "passage_text",
+      "file": "202508asiav3-rw.pdf",
+      "before": 395,
+      "after": 389
+    },
+    {
+      "table": "draft_questions",
+      "id": "77454007-6cd7-4ba0-b0d5-19f755f2e15b",
+      "field": "passage_text",
+      "file": "202508asiav3-rw.pdf",
+      "before": 517,
+      "after": 511
+    },
+    {
+      "table": "draft_questions",
+      "id": "46c6b0b8-b226-4e79-b0aa-e2359cbc1a61",
+      "field": "passage_text",
+      "file": "202509asiav1.pdf",
+      "before": 388,
+      "after": 383
+    },
+    {
+      "table": "draft_questions",
+      "id": "926c31b8-f382-419d-98bc-de1bf347d994",
+      "field": "passage_text",
+      "file": "202509asiav1.pdf",
+      "before": 388,
+      "after": 383
+    },
+    {
+      "table": "draft_questions",
+      "id": "4fe729ed-8cf0-454c-90d6-ad166001c7ce",
+      "field": "passage_text",
+      "file": "202509asiav1.pdf",
+      "before": 398,
+      "after": 393
+    },
+    {
+      "table": "draft_questions",
+      "id": "ff54a506-19f1-4076-818d-036bc4532e7f",
+      "field": "passage_text",
+      "file": "202509asiav1.pdf",
+      "before": 311,
+      "after": 306
+    },
+    {
+      "table": "draft_questions",
+      "id": "92414c37-1abf-4915-8a00-787527e9bdd9",
+      "field": "passage_text",
+      "file": "202509asiav1.pdf",
+      "before": 492,
+      "after": 487
+    },
+    {
+      "table": "draft_questions",
+      "id": "293af6e4-3584-4d34-9f7e-4cc20f23329b",
+      "field": "passage_text",
+      "file": "202509asiav1.pdf",
+      "before": 264,
+      "after": 259
+    },
+    {
+      "table": "draft_questions",
+      "id": "d7a75c3b-f58d-469e-9210-5d5e4e93feb1",
+      "field": "passage_text",
+      "file": "202509asiav1.pdf",
+      "before": 394,
+      "after": 389
+    },
+    {
+      "table": "draft_questions",
+      "id": "07d3de8b-f4c8-4e2a-a75b-db5cb8c5e6a8",
+      "field": "passage_text",
+      "file": "202509asiav1.pdf",
+      "before": 364,
+      "after": 361
+    },
+    {
+      "table": "draft_questions",
+      "id": "d9b4eaee-c8a3-4009-b391-9da6c3932620",
+      "field": "passage_text",
+      "file": "202509asiav1.pdf",
+      "before": 417,
+      "after": 412
+    },
+    {
+      "table": "draft_questions",
+      "id": "a8a15e69-79ab-4499-bc41-ce9842c3a625",
+      "field": "passage_text",
+      "file": "202509asiav1.pdf",
+      "before": 374,
+      "after": 369
+    },
+    {
+      "table": "draft_questions",
+      "id": "836516e5-9d23-435b-b49a-288301fc88d8",
+      "field": "passage_text",
+      "file": "202509asiav1.pdf",
+      "before": 358,
+      "after": 352
+    },
+    {
+      "table": "draft_questions",
+      "id": "b6d4db21-30b6-4527-8d1c-4318c26c9e0b",
+      "field": "passage_text",
+      "file": "202509asiav1.pdf",
+      "before": 437,
+      "after": 431
+    },
+    {
+      "table": "draft_questions",
+      "id": "c0878e65-35c5-4f30-b390-1b2d4a5542de",
+      "field": "passage_text",
+      "file": "202509asiav1.pdf",
+      "before": 482,
+      "after": 476
+    },
+    {
+      "table": "draft_questions",
+      "id": "2eb75470-ff12-428f-9d6a-db780fc65219",
+      "field": "passage_text",
+      "file": "202509asiav2-rw.pdf",
+      "before": 235,
+      "after": 230
+    },
+    {
+      "table": "draft_questions",
+      "id": "e52d69c6-c4a6-4e57-b14e-79ab808eb5e8",
+      "field": "passage_text",
+      "file": "202509asiav2-rw.pdf",
+      "before": 414,
+      "after": 408
+    },
+    {
+      "table": "draft_questions",
+      "id": "447965c1-221a-416c-ad0e-0f4b44e8df5c",
+      "field": "passage_text",
+      "file": "202509asiav2-rw.pdf",
+      "before": 395,
+      "after": 389
+    },
+    {
+      "table": "draft_questions",
+      "id": "ff9a9399-4b10-4ef7-bf45-52aaaff774c3",
+      "field": "passage_text",
+      "file": "202509asiav2-rw.pdf",
+      "before": 303,
+      "after": 298
+    },
+    {
+      "table": "draft_questions",
+      "id": "0a94e438-bf1e-422a-ad37-a548819166b5",
+      "field": "passage_text",
+      "file": "202509asiav2-rw.pdf",
+      "before": 436,
+      "after": 430
+    },
+    {
+      "table": "draft_questions",
+      "id": "49c6c644-031c-4d76-ac26-91349db6e4e7",
+      "field": "passage_text",
+      "file": "202509asiav2-rw.pdf",
+      "before": 353,
+      "after": 348
+    },
+    {
+      "table": "draft_questions",
+      "id": "993871e3-d99b-43d4-9b99-f7d2e8f34424",
+      "field": "passage_text",
+      "file": "202509asiav2-rw.pdf",
+      "before": 431,
+      "after": 425
+    },
+    {
+      "table": "draft_questions",
+      "id": "da2e0e56-d9e2-4031-a06f-f3f7b88e0c0a",
+      "field": "passage_text",
+      "file": "202509asiav2.pdf",
+      "before": 353,
+      "after": 348
+    },
+    {
+      "table": "draft_questions",
+      "id": "b9ea9b15-5867-447f-932b-c0cc6749ec60",
+      "field": "passage_text",
+      "file": "202509asiav2.pdf",
+      "before": 397,
+      "after": 392
+    },
+    {
+      "table": "draft_questions",
+      "id": "5f283804-c66f-49bd-87ec-4ed1adbec948",
+      "field": "passage_text",
+      "file": "202509asiav2.pdf",
+      "before": 322,
+      "after": 317
+    },
+    {
+      "table": "draft_questions",
+      "id": "28766efe-efbe-425c-9881-fe9eee52bc94",
+      "field": "passage_text",
+      "file": "202509asiav2.pdf",
+      "before": 199,
+      "after": 194
+    },
+    {
+      "table": "draft_questions",
+      "id": "0b6ff01b-14d7-4d77-b6df-5acd20cfa776",
+      "field": "passage_text",
+      "file": "202509asiav2.pdf",
+      "before": 226,
+      "after": 221
+    },
+    {
+      "table": "draft_questions",
+      "id": "3d4c19a3-f282-4529-96e6-99f3e9411ff1",
+      "field": "passage_text",
+      "file": "202509asiav2.pdf",
+      "before": 222,
+      "after": 217
+    },
+    {
+      "table": "draft_questions",
+      "id": "c7c1e9dc-1246-4124-80c5-61a039618486",
+      "field": "passage_text",
+      "file": "202509asiav2.pdf",
+      "before": 328,
+      "after": 322
+    },
+    {
+      "table": "draft_questions",
+      "id": "96701dc8-13b0-46a8-b277-106ec4506b10",
+      "field": "passage_text",
+      "file": "202509asiav2.pdf",
+      "before": 324,
+      "after": 318
+    },
+    {
+      "table": "draft_questions",
+      "id": "2850dcdc-3d0e-42a6-a1e1-92a7dc53a42b",
+      "field": "passage_text",
+      "file": "202509asiav2.pdf",
+      "before": 224,
+      "after": 219
+    },
+    {
+      "table": "draft_questions",
+      "id": "da57cd1f-cc5a-4847-befe-db9f60c5743f",
+      "field": "passage_text",
+      "file": "202509asiav2.pdf",
+      "before": 302,
+      "after": 297
+    },
+    {
+      "table": "draft_questions",
+      "id": "b5e7d4d4-1fa8-4a1e-a2b6-2f955b4c2657",
+      "field": "passage_text",
+      "file": "202509asiav2.pdf",
+      "before": 335,
+      "after": 329
+    },
+    {
+      "table": "draft_questions",
+      "id": "4ae008e6-ae4c-4340-bae8-0137001d24b9",
+      "field": "passage_text",
+      "file": "202509asiav2.pdf",
+      "before": 259,
+      "after": 253
+    },
+    {
+      "table": "draft_questions",
+      "id": "8edd47c8-0a49-4714-943a-a9160b95c105",
+      "field": "passage_text",
+      "file": "202509asiav2.pdf",
+      "before": 391,
+      "after": 386
+    },
+    {
+      "table": "draft_questions",
+      "id": "1b432d45-fc8f-40ca-8bc2-3602adcd67e1",
+      "field": "passage_text",
+      "file": "202509asiav2.pdf",
+      "before": 363,
+      "after": 358
+    },
+    {
+      "table": "draft_questions",
+      "id": "50bc214c-080e-40c8-a62e-ec197f993350",
+      "field": "passage_text",
+      "file": "202509asiav2.pdf",
+      "before": 340,
+      "after": 335
+    },
+    {
+      "table": "draft_questions",
+      "id": "9aa130a0-4afd-4ef2-89ed-bbab95af4ab6",
+      "field": "passage_text",
+      "file": "202509asiav2.pdf",
+      "before": 370,
+      "after": 364
+    },
+    {
+      "table": "draft_questions",
+      "id": "fcdf7f27-e48a-4235-9334-c730331fa3c5",
+      "field": "passage_text",
+      "file": "202509asiav2.pdf",
+      "before": 784,
+      "after": 778
+    },
+    {
+      "table": "draft_questions",
+      "id": "3b11d76a-c43d-4687-b0ab-4cdbc33c9547",
+      "field": "passage_text",
+      "file": "202509asiav2.pdf",
+      "before": 374,
+      "after": 368
+    },
+    {
+      "table": "draft_questions",
+      "id": "c753d499-24dd-4af7-924c-bcf81a5fc589",
+      "field": "passage_text",
+      "file": "202509us01.pdf",
+      "before": 362,
+      "after": 356
+    },
+    {
+      "table": "draft_questions",
+      "id": "acb9ed12-5b0e-4dee-9cfc-b3d35518e87c",
+      "field": "passage_text",
+      "file": "202509us01.pdf",
+      "before": 428,
+      "after": 422
+    },
+    {
+      "table": "draft_questions",
+      "id": "a09869c9-cda4-4d74-bb0a-b2f75a7edd08",
+      "field": "passage_text",
+      "file": "202509us01.pdf",
+      "before": 295,
+      "after": 289
+    },
+    {
+      "table": "draft_questions",
+      "id": "a3920b50-b1ba-4c1e-8bf8-3471dcbee30e",
+      "field": "passage_text",
+      "file": "202509us01.pdf",
+      "before": 787,
+      "after": 779
+    },
+    {
+      "table": "draft_questions",
+      "id": "658ac9c1-ce05-4d50-a132-c10d0c98439b",
+      "field": "passage_text",
+      "file": "202509us01.pdf",
+      "before": 401,
+      "after": 393
+    },
+    {
+      "table": "draft_questions",
+      "id": "1e4508fd-e209-4dcb-a850-247c7b563607",
+      "field": "passage_text",
+      "file": "202509us01.pdf",
+      "before": 431,
+      "after": 423
+    },
+    {
+      "table": "draft_questions",
+      "id": "0bdf248c-1eff-4a22-9435-a9ba82362ddf",
+      "field": "passage_text",
+      "file": "202509us01.pdf",
+      "before": 328,
+      "after": 320
+    },
+    {
+      "table": "draft_questions",
+      "id": "0f37cebe-3563-4978-a769-17886dcc81d6",
+      "field": "passage_text",
+      "file": "202509us01.pdf",
+      "before": 396,
+      "after": 388
+    },
+    {
+      "table": "draft_questions",
+      "id": "7db2e94e-3de8-433f-bf55-18ed47efb13e",
+      "field": "passage_text",
+      "file": "202509us01.pdf",
+      "before": 427,
+      "after": 419
+    },
+    {
+      "table": "draft_questions",
+      "id": "8d83afe8-ff49-4067-96cc-7f3980e7650e",
+      "field": "passage_text",
+      "file": "202509us01.pdf",
+      "before": 433,
+      "after": 425
+    },
+    {
+      "table": "draft_questions",
+      "id": "54b0e8d9-f2a8-47d8-a03c-2cbe7ab4bdb4",
+      "field": "passage_text",
+      "file": "202509us01.pdf",
+      "before": 326,
+      "after": 322
+    },
+    {
+      "table": "draft_questions",
+      "id": "d2519a47-20b1-4f30-81d8-813e07c88907",
+      "field": "passage_text",
+      "file": "202509us01.pdf",
+      "before": 279,
+      "after": 274
+    },
+    {
+      "table": "draft_questions",
+      "id": "a7a59b2c-c85a-4f50-ad09-4fe03c8b9e20",
+      "field": "passage_text",
+      "file": "202509us01.pdf",
+      "before": 400,
+      "after": 392
+    },
+    {
+      "table": "draft_questions",
+      "id": "11a6c75d-1dc4-4d0c-b2d5-cbd2a0bea874",
+      "field": "passage_text",
+      "file": "202509us01.pdf",
+      "before": 407,
+      "after": 399
+    },
+    {
+      "table": "draft_questions",
+      "id": "334ab575-5b49-43db-b429-523ba1aab877",
+      "field": "passage_text",
+      "file": "202509us01.pdf",
+      "before": 481,
+      "after": 474
+    },
+    {
+      "table": "draft_questions",
+      "id": "69b5bb0b-a73c-45c0-9800-98c13eef197c",
+      "field": "passage_text",
+      "file": "202509us01.pdf",
+      "before": 446,
+      "after": 440
+    },
+    {
+      "table": "draft_questions",
+      "id": "9dc38568-8999-45e4-95df-1a261c402aa7",
+      "field": "passage_text",
+      "file": "202509us06.pdf",
+      "before": 343,
+      "after": 336
+    },
+    {
+      "table": "draft_questions",
+      "id": "c5ee61a9-81fc-4efa-870f-03937ded9a76",
+      "field": "passage_text",
+      "file": "202509us06.pdf",
+      "before": 245,
+      "after": 238
+    },
+    {
+      "table": "draft_questions",
+      "id": "b9dc5efc-9f5e-4b4e-b48d-ce6ee26fe711",
+      "field": "passage_text",
+      "file": "202509us06.pdf",
+      "before": 169,
+      "after": 165
+    },
+    {
+      "table": "draft_questions",
+      "id": "7eeb7af1-3ff9-423b-8566-38ed9c57845a",
+      "field": "passage_text",
+      "file": "202509us06.pdf",
+      "before": 232,
+      "after": 226
+    },
+    {
+      "table": "draft_questions",
+      "id": "38c8e3bd-cfc5-442c-9020-3e748002ab4e",
+      "field": "passage_text",
+      "file": "202509us06.pdf",
+      "before": 955,
+      "after": 947
+    },
+    {
+      "table": "draft_questions",
+      "id": "2567e20a-b87f-4db6-abfc-154667801eee",
+      "field": "passage_text",
+      "file": "202509us06.pdf",
+      "before": 487,
+      "after": 480
+    },
+    {
+      "table": "draft_questions",
+      "id": "ef3c3213-bc72-4671-9fc2-cd3c7dfff928",
+      "field": "passage_text",
+      "file": "202509us06.pdf",
+      "before": 202,
+      "after": 195
+    },
+    {
+      "table": "draft_questions",
+      "id": "89bcd7d7-e24f-4ce4-a86c-d567d25c7ce7",
+      "field": "passage_text",
+      "file": "202509us06.pdf",
+      "before": 204,
+      "after": 200
+    },
+    {
+      "table": "draft_questions",
+      "id": "548687f4-7a12-4433-bd4d-ecd583c672fb",
+      "field": "passage_text",
+      "file": "202509us06.pdf",
+      "before": 342,
+      "after": 335
+    },
+    {
+      "table": "draft_questions",
+      "id": "03b1530e-7ab7-403f-b9bf-eb281b8b274f",
+      "field": "passage_text",
+      "file": "202509us06.pdf",
+      "before": 430,
+      "after": 423
+    },
+    {
+      "table": "draft_questions",
+      "id": "e2ae8e27-bd57-4496-8554-8459d312cbff",
+      "field": "passage_text",
+      "file": "202509us06.pdf",
+      "before": 392,
+      "after": 386
+    },
+    {
+      "table": "draft_questions",
+      "id": "e872f3fc-12e3-447f-aa8c-af7d38fb67cc",
+      "field": "passage_text",
+      "file": "202509us06.pdf",
+      "before": 443,
+      "after": 435
+    },
+    {
+      "table": "draft_questions",
+      "id": "12f88c5a-6c13-4533-b63f-fe06329229e1",
+      "field": "passage_text",
+      "file": "202509us06.pdf",
+      "before": 433,
+      "after": 425
+    },
+    {
+      "table": "draft_questions",
+      "id": "14cfbb13-f40a-4496-a0b0-2672a9d28c47",
+      "field": "passage_text",
+      "file": "202509us06.pdf",
+      "before": 275,
+      "after": 271
+    },
+    {
+      "table": "draft_questions",
+      "id": "b3b5de1b-4c88-4071-9e08-63e4037526c7",
+      "field": "passage_text",
+      "file": "202509us06.pdf",
+      "before": 310,
+      "after": 304
+    },
+    {
+      "table": "draft_questions",
+      "id": "edbf429f-31ee-48c4-9b03-0db912c102ab",
+      "field": "passage_text",
+      "file": "202509us06.pdf",
+      "before": 359,
+      "after": 354
+    },
+    {
+      "table": "draft_questions",
+      "id": "702c2c76-afa4-49b5-a12e-ad402c15807c",
+      "field": "passage_text",
+      "file": "202509us06.pdf",
+      "before": 369,
+      "after": 363
+    },
+    {
+      "table": "draft_questions",
+      "id": "28e5c411-d3f3-48ca-8381-3e9956308b63",
+      "field": "passage_text",
+      "file": "202509us06.pdf",
+      "before": 389,
+      "after": 381
+    },
+    {
+      "table": "draft_questions",
+      "id": "4321832e-f0d6-41b9-8d0f-525b66bc97ab",
+      "field": "passage_text",
+      "file": "202509us06.pdf",
+      "before": 405,
+      "after": 397
+    },
+    {
+      "table": "draft_questions",
+      "id": "bea22324-cdb8-4206-bc41-6df8263570a8",
+      "field": "passage_text",
+      "file": "202509us06.pdf",
+      "before": 372,
+      "after": 365
+    },
+    {
+      "table": "draft_questions",
+      "id": "070e055d-b124-4431-a6f3-c069be0ee33f",
+      "field": "passage_text",
+      "file": "202509us06.pdf",
+      "before": 450,
+      "after": 443
+    },
+    {
+      "table": "draft_questions",
+      "id": "777e2a4e-341a-4829-a583-dea0c26df78a",
+      "field": "passage_text",
+      "file": "202509us06.pdf",
+      "before": 459,
+      "after": 451
+    },
+    {
+      "table": "draft_questions",
+      "id": "2ba20c0a-17d1-4a76-8fe3-8e8cf5d47a62",
+      "field": "passage_text",
+      "file": "202509usv7.pdf",
+      "before": 333,
+      "after": 328
+    },
+    {
+      "table": "draft_questions",
+      "id": "60e2e93b-9265-4dca-8731-91367a83421a",
+      "field": "passage_text",
+      "file": "202509usv7.pdf",
+      "before": 331,
+      "after": 326
+    },
+    {
+      "table": "draft_questions",
+      "id": "032c5a60-8ab9-4f1d-8b26-6d80e5b241a8",
+      "field": "passage_text",
+      "file": "202509usv7.pdf",
+      "before": 335,
+      "after": 330
+    },
+    {
+      "table": "draft_questions",
+      "id": "4ac004cb-7dd3-4261-802f-e108baa97b8b",
+      "field": "passage_text",
+      "file": "202509usv7.pdf",
+      "before": 711,
+      "after": 705
+    },
+    {
+      "table": "draft_questions",
+      "id": "b5da9d58-e125-4229-a3e5-58041236c39b",
+      "field": "passage_text",
+      "file": "202509usv7.pdf",
+      "before": 940,
+      "after": 934
+    },
+    {
+      "table": "draft_questions",
+      "id": "31ead62c-9e0e-44d7-b401-8ed658812f09",
+      "field": "passage_text",
+      "file": "202509usv7.pdf",
+      "before": 403,
+      "after": 398
+    },
+    {
+      "table": "draft_questions",
+      "id": "d9fe7ed0-f848-417e-a177-82ef87f5eb2e",
+      "field": "passage_text",
+      "file": "202509usv7.pdf",
+      "before": 295,
+      "after": 290
+    },
+    {
+      "table": "draft_questions",
+      "id": "b8456819-cd49-4a6f-b52e-22e42b39abfb",
+      "field": "passage_text",
+      "file": "202509usv7.pdf",
+      "before": 395,
+      "after": 390
+    },
+    {
+      "table": "draft_questions",
+      "id": "004b60ae-597c-484c-b2f2-a9fbd20de05d",
+      "field": "passage_text",
+      "file": "202509usv7.pdf",
+      "before": 244,
+      "after": 239
+    },
+    {
+      "table": "draft_questions",
+      "id": "5826e356-5111-4d91-8bfb-0d15e7445845",
+      "field": "passage_text",
+      "file": "202509usv7.pdf",
+      "before": 389,
+      "after": 384
+    },
+    {
+      "table": "draft_questions",
+      "id": "9037fecc-cb8a-47cc-926c-da3a368c9084",
+      "field": "passage_text",
+      "file": "202509usv7.pdf",
+      "before": 366,
+      "after": 361
+    },
+    {
+      "table": "draft_questions",
+      "id": "f22d9157-1143-4675-8d7f-9fd6d57a1232",
+      "field": "passage_text",
+      "file": "202509usv7.pdf",
+      "before": 351,
+      "after": 346
+    },
+    {
+      "table": "draft_questions",
+      "id": "4c2447ac-95f1-492a-8d1d-35c838fa64c5",
+      "field": "passage_text",
+      "file": "202509usv7.pdf",
+      "before": 368,
+      "after": 363
+    },
+    {
+      "table": "draft_questions",
+      "id": "d0ec7006-b4c9-432f-b898-ae6fb55a592e",
+      "field": "passage_text",
+      "file": "202509usv7.pdf",
+      "before": 366,
+      "after": 361
+    },
+    {
+      "table": "draft_questions",
+      "id": "f3598cc8-75d5-4d0a-a457-813225fda6f2",
+      "field": "passage_text",
+      "file": "202509usv7.pdf",
+      "before": 393,
+      "after": 388
+    },
+    {
+      "table": "draft_questions",
+      "id": "ecba6fa4-dd53-4eec-8ab4-0cfcca307926",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 435,
+      "after": 429
+    },
+    {
+      "table": "draft_questions",
+      "id": "c23dedd1-38ba-4c3a-8bac-4443de174eb8",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 199,
+      "after": 193
+    },
+    {
+      "table": "draft_questions",
+      "id": "a94cede1-a084-4a96-9bdf-3c8b70439ff9",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 446,
+      "after": 440
+    },
+    {
+      "table": "draft_questions",
+      "id": "4a2e7eaa-ee5e-430f-a462-05267362d9fe",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 267,
+      "after": 261
+    },
+    {
+      "table": "draft_questions",
+      "id": "2b2efac2-7858-40b6-b117-b81118c30512",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 225,
+      "after": 219
+    },
+    {
+      "table": "draft_questions",
+      "id": "5e295bdd-5b61-4651-9aa5-9f405bc36d5f",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 272,
+      "after": 266
+    },
+    {
+      "table": "draft_questions",
+      "id": "a123ada5-ef66-4fef-b975-d864001752e3",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 278,
+      "after": 272
+    },
+    {
+      "table": "draft_questions",
+      "id": "ffd06356-8522-4b08-896a-184864f2bb08",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 228,
+      "after": 222
+    },
+    {
+      "table": "draft_questions",
+      "id": "ca12b867-1776-4b9e-bd59-a634c126e2c0",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 671,
+      "after": 663
+    },
+    {
+      "table": "draft_questions",
+      "id": "76ea9532-a77a-4dbe-862e-2b5977822033",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 681,
+      "after": 675
+    },
+    {
+      "table": "draft_questions",
+      "id": "c2031436-9d80-4dd0-bc94-98228c0bf8f6",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 357,
+      "after": 351
+    },
+    {
+      "table": "draft_questions",
+      "id": "54337bdf-96a8-4091-a1e8-e99a92917e73",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 332,
+      "after": 326
+    },
+    {
+      "table": "draft_questions",
+      "id": "d5237020-42ac-4f2f-adcc-cec6a059cd1d",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 413,
+      "after": 407
+    },
+    {
+      "table": "draft_questions",
+      "id": "c675a148-95c8-4300-affd-d985cc54c32b",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 352,
+      "after": 346
+    },
+    {
+      "table": "draft_questions",
+      "id": "4d85cd35-c3f3-4fb8-931d-96dc7bf4fd14",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 382,
+      "after": 376
+    },
+    {
+      "table": "draft_questions",
+      "id": "7a83d1c9-1a65-4580-a4ff-febd83486025",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 302,
+      "after": 296
+    },
+    {
+      "table": "draft_questions",
+      "id": "4cad000b-1e67-4ea9-bd6c-8b9e4e950c18",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 409,
+      "after": 403
+    },
+    {
+      "table": "draft_questions",
+      "id": "efaf2950-88cd-43db-9c31-ba0c761f19f0",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 469,
+      "after": 463
+    },
+    {
+      "table": "draft_questions",
+      "id": "4b3c58f0-14d0-4dba-ae83-afa8e1cc68f2",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 669,
+      "after": 663
+    },
+    {
+      "table": "draft_questions",
+      "id": "5beb3f41-beaa-4af6-b75b-5f17872f5f83",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 338,
+      "after": 332
+    },
+    {
+      "table": "draft_questions",
+      "id": "88cc7b15-1cc9-40ab-8ee5-c733480c687b",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 218,
+      "after": 212
+    },
+    {
+      "table": "draft_questions",
+      "id": "f9f37997-a46a-4692-90f9-9972d2eba980",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 342,
+      "after": 336
+    },
+    {
+      "table": "draft_questions",
+      "id": "373d009d-2fbe-41b3-a2d6-1455838d4948",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 552,
+      "after": 546
+    },
+    {
+      "table": "draft_questions",
+      "id": "6e043327-691f-4f1d-abd0-022d1438871d",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 165,
+      "after": 159
+    },
+    {
+      "table": "draft_questions",
+      "id": "933789dc-e409-447f-a18b-8e0fec1ea944",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 165,
+      "after": 159
+    },
+    {
+      "table": "draft_questions",
+      "id": "f4a5f0b8-ff52-410a-a3ca-3b551cdb3c8e",
+      "field": "passage_text",
+      "file": "202510usv1.pdf",
+      "before": 386,
+      "after": 380
+    },
+    {
+      "table": "draft_questions",
+      "id": "61100fe7-d0be-4588-818a-7c5cc766d063",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 451,
+      "after": 445
+    },
+    {
+      "table": "draft_questions",
+      "id": "c8600920-a6d2-4774-8dad-2a7c92ce0f17",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 170,
+      "after": 164
+    },
+    {
+      "table": "draft_questions",
+      "id": "cc59c39a-c4d1-409a-b749-8e1ca7b6320c",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 445,
+      "after": 439
+    },
+    {
+      "table": "draft_questions",
+      "id": "81dc6217-d18e-4485-ad44-8a27ec0d81ff",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 668,
+      "after": 660
+    },
+    {
+      "table": "draft_questions",
+      "id": "1fbe72dc-033a-4249-9222-c72b2a4fefb3",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 709,
+      "after": 693
+    },
+    {
+      "table": "draft_questions",
+      "id": "f858ebb7-efde-4368-a2f1-7f2d61e2fa4f",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 267,
+      "after": 261
+    },
+    {
+      "table": "draft_questions",
+      "id": "54693011-913a-4ec1-8523-f04a07a201e8",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 340,
+      "after": 334
+    },
+    {
+      "table": "draft_questions",
+      "id": "1a335443-09e2-4b0e-a946-65bcca4d2a09",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 274,
+      "after": 268
+    },
+    {
+      "table": "draft_questions",
+      "id": "33b52576-f4fc-4489-8fe9-4b71e604a442",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 316,
+      "after": 310
+    },
+    {
+      "table": "draft_questions",
+      "id": "c51aa33b-3c18-4bb2-883b-cb0e47fcc951",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 428,
+      "after": 422
+    },
+    {
+      "table": "draft_questions",
+      "id": "e48edc9b-5606-4d26-ac61-1d719207bf20",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 386,
+      "after": 380
+    },
+    {
+      "table": "draft_questions",
+      "id": "cc5a1965-920f-4896-8a3d-79acb267006b",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 803,
+      "after": 797
+    },
+    {
+      "table": "draft_questions",
+      "id": "be73714b-2995-4308-a642-366e0cd44671",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 665,
+      "after": 659
+    },
+    {
+      "table": "draft_questions",
+      "id": "ea4706f6-8860-4562-8ca1-b913def0ffe9",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 187,
+      "after": 181
+    },
+    {
+      "table": "draft_questions",
+      "id": "1ff63a56-213c-4351-b98f-59a24061b4fd",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 473,
+      "after": 467
+    },
+    {
+      "table": "draft_questions",
+      "id": "6bbfc15d-5bfd-4bc4-b625-e6e9612bcdab",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 544,
+      "after": 538
+    },
+    {
+      "table": "draft_questions",
+      "id": "7ab19ed6-a85c-4249-b640-366c2bbb996b",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 190,
+      "after": 184
+    },
+    {
+      "table": "draft_questions",
+      "id": "fc124d06-780c-4792-a33a-684223d0a379",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 166,
+      "after": 160
+    },
+    {
+      "table": "draft_questions",
+      "id": "0695adc2-cea8-4870-932b-e3f9bff24afd",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 355,
+      "after": 349
+    },
+    {
+      "table": "draft_questions",
+      "id": "9aa170bb-194f-4ba9-a443-25a7c07a1abf",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 342,
+      "after": 336
+    },
+    {
+      "table": "draft_questions",
+      "id": "542a5b2e-de07-4683-9a27-d28fd7ac5ce2",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 229,
+      "after": 223
+    },
+    {
+      "table": "draft_questions",
+      "id": "08f135cc-0376-4913-85ea-2b902e028fb4",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 386,
+      "after": 380
+    },
+    {
+      "table": "draft_questions",
+      "id": "906627fb-1f90-4a28-9d54-bd0cee225838",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 413,
+      "after": 407
+    },
+    {
+      "table": "draft_questions",
+      "id": "ae788203-2c80-4f38-9bcc-5f41ea3ea718",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 162,
+      "after": 156
+    },
+    {
+      "table": "draft_questions",
+      "id": "e478c3f7-33f7-4388-b823-15c919af8055",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 444,
+      "after": 438
+    },
+    {
+      "table": "draft_questions",
+      "id": "bf95857b-cfb5-4adb-8eb0-f30844ebd83b",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 275,
+      "after": 270
+    },
+    {
+      "table": "draft_questions",
+      "id": "e335dc97-15b0-46e9-b103-9301d894092c",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 379,
+      "after": 373
+    },
+    {
+      "table": "draft_questions",
+      "id": "ba703299-789b-4185-85a2-98e26573ffc6",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 241,
+      "after": 235
+    },
+    {
+      "table": "draft_questions",
+      "id": "4dd0721e-5bc7-4609-b0b7-4b68cee28289",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 631,
+      "after": 625
+    },
+    {
+      "table": "draft_questions",
+      "id": "85e90c23-a100-41ab-806e-4d39972bdf32",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 635,
+      "after": 629
+    },
+    {
+      "table": "draft_questions",
+      "id": "8bae5b0b-2e9d-4d2e-9285-91ed4552a40c",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 230,
+      "after": 224
+    },
+    {
+      "table": "draft_questions",
+      "id": "12319395-8fdc-4f4e-9cef-f3d095661e56",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 398,
+      "after": 392
+    },
+    {
+      "table": "draft_questions",
+      "id": "6d85e9c3-3d3f-4dd9-af67-de5c06214e32",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 268,
+      "after": 262
+    },
+    {
+      "table": "draft_questions",
+      "id": "b6d1f477-5b48-4cff-9d00-aa9b0353886a",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 263,
+      "after": 257
+    },
+    {
+      "table": "draft_questions",
+      "id": "ed109678-6bad-4226-8b70-7f6845de2a3a",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 369,
+      "after": 363
+    },
+    {
+      "table": "draft_questions",
+      "id": "f9d5c1db-633e-47b2-a00a-03969daa3b14",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 448,
+      "after": 442
+    },
+    {
+      "table": "draft_questions",
+      "id": "748c046e-8762-4160-aea1-164b6a5af820",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 415,
+      "after": 410
+    },
+    {
+      "table": "draft_questions",
+      "id": "ad4925ab-e72a-43bd-bb33-b8daed045538",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 343,
+      "after": 337
+    },
+    {
+      "table": "draft_questions",
+      "id": "7483206f-41b3-4b37-b6ca-abbb7c14373b",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 369,
+      "after": 363
+    },
+    {
+      "table": "draft_questions",
+      "id": "12c4688d-725f-4060-b68a-50399c1802ca",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 379,
+      "after": 374
+    },
+    {
+      "table": "draft_questions",
+      "id": "b05f678b-d006-4d9b-a135-cccf438123fd",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 397,
+      "after": 392
+    },
+    {
+      "table": "draft_questions",
+      "id": "a8332841-bdfe-4be9-9faa-e9aaeffff02a",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 953,
+      "after": 947
+    },
+    {
+      "table": "draft_questions",
+      "id": "69642fe1-2eb2-4374-a93d-271738838544",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 432,
+      "after": 426
+    },
+    {
+      "table": "draft_questions",
+      "id": "d87c333c-6af6-4dce-8d5a-a33bf83d9bab",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 778,
+      "after": 773
+    },
+    {
+      "table": "draft_questions",
+      "id": "02ef61c6-8d8e-46b8-8bbb-ec9ab008b145",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 738,
+      "after": 733
+    },
+    {
+      "table": "draft_questions",
+      "id": "f45a06c9-f8c5-4bb1-b93b-ad3b60f928c6",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 774,
+      "after": 768
+    },
+    {
+      "table": "draft_questions",
+      "id": "083d8126-54e5-487c-8bfa-2f1e719ad369",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 262,
+      "after": 256
+    },
+    {
+      "table": "draft_questions",
+      "id": "8653c56e-1419-45e4-8123-fad3c7f92ea9",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 462,
+      "after": 457
+    },
+    {
+      "table": "draft_questions",
+      "id": "f8be84c7-25bb-449e-a5a3-6c9749cd4fee",
+      "field": "passage_text",
+      "file": "202510usv3.pdf",
+      "before": 422,
+      "after": 417
+    },
+    {
+      "table": "draft_questions",
+      "id": "96cd96ea-9667-49a1-8698-d2382f63d8c5",
+      "field": "passage_text",
+      "file": "202512asiav1.pdf",
+      "before": 402,
+      "after": 396
+    },
+    {
+      "table": "draft_questions",
+      "id": "cf9a83e2-9cc6-4a0f-a13c-f466f77a6da6",
+      "field": "passage_text",
+      "file": "202512asiav1.pdf",
+      "before": 372,
+      "after": 367
+    },
+    {
+      "table": "draft_questions",
+      "id": "ca574b32-01bb-4b36-aaa0-121fb17136a3",
+      "field": "passage_text",
+      "file": "202512asiav1.pdf",
+      "before": 421,
+      "after": 415
+    },
+    {
+      "table": "draft_questions",
+      "id": "152aae3c-1442-4c1b-acf1-27b7ae925542",
+      "field": "passage_text",
+      "file": "202512asiav1.pdf",
+      "before": 235,
+      "after": 229
+    },
+    {
+      "table": "draft_questions",
+      "id": "f166ec23-40a4-469f-aec6-f23fc62e2a77",
+      "field": "passage_text",
+      "file": "202512asiav1.pdf",
+      "before": 400,
+      "after": 395
+    },
+    {
+      "table": "draft_questions",
+      "id": "cad5a696-7e0f-44d9-9242-0838bccfebee",
+      "field": "passage_text",
+      "file": "202512asiav1.pdf",
+      "before": 306,
+      "after": 300
+    },
+    {
+      "table": "draft_questions",
+      "id": "92465d80-9d26-4f7a-81ff-11ecdf0d69b3",
+      "field": "passage_text",
+      "file": "202512asiav1.pdf",
+      "before": 237,
+      "after": 232
+    },
+    {
+      "table": "draft_questions",
+      "id": "ab7f1885-845d-4ad3-b99c-9cd61203352d",
+      "field": "passage_text",
+      "file": "202512asiav1.pdf",
+      "before": 247,
+      "after": 242
+    },
+    {
+      "table": "draft_questions",
+      "id": "4ea9e378-7a10-40f8-9770-7ae5e85645c0",
+      "field": "passage_text",
+      "file": "202512asiav1.pdf",
+      "before": 343,
+      "after": 338
+    },
+    {
+      "table": "draft_questions",
+      "id": "4a0d649d-bfe4-4943-a4a2-2244baf4a985",
+      "field": "passage_text",
+      "file": "202512asiav1.pdf",
+      "before": 342,
+      "after": 337
+    },
+    {
+      "table": "draft_questions",
+      "id": "b27dd08d-7c5d-4d11-8487-266d5fe64723",
+      "field": "passage_text",
+      "file": "202512asiav1.pdf",
+      "before": 400,
+      "after": 394
+    },
+    {
+      "table": "draft_questions",
+      "id": "a1fa2e98-0176-4228-a459-221818eb0c76",
+      "field": "passage_text",
+      "file": "202512asiav1.pdf",
+      "before": 408,
+      "after": 403
+    },
+    {
+      "table": "draft_questions",
+      "id": "ff7c0b81-572d-49c5-96f0-d8a4eaaa6a30",
+      "field": "passage_text",
+      "file": "202512asiav1.pdf",
+      "before": 356,
+      "after": 350
+    },
+    {
+      "table": "draft_questions",
+      "id": "3a4d86c3-033a-4e47-98f1-ecef3d2ee07a",
+      "field": "passage_text",
+      "file": "202512asiav1.pdf",
+      "before": 307,
+      "after": 302
+    },
+    {
+      "table": "draft_questions",
+      "id": "92a451e6-39fd-4203-96a2-2aefbc04903f",
+      "field": "passage_text",
+      "file": "202512asiav1.pdf",
+      "before": 1075,
+      "after": 1069
+    },
+    {
+      "table": "draft_questions",
+      "id": "6512de76-b4b4-4e28-9c7c-b926fba392fe",
+      "field": "passage_text",
+      "file": "202512asiav1.pdf",
+      "before": 652,
+      "after": 646
+    },
+    {
+      "table": "draft_questions",
+      "id": "9f535e76-4676-4d56-9572-43f335fd65df",
+      "field": "passage_text",
+      "file": "202512asiav1.pdf",
+      "before": 335,
+      "after": 330
+    },
+    {
+      "table": "draft_questions",
+      "id": "bc17bf94-ed6d-4b66-a200-b28938f1241a",
+      "field": "passage_text",
+      "file": "202512asiav1.pdf",
+      "before": 322,
+      "after": 317
+    },
+    {
+      "table": "draft_questions",
+      "id": "3d97fd0a-92fa-44e3-8935-5c024733ef13",
+      "field": "passage_text",
+      "file": "202512asiav1.pdf",
+      "before": 322,
+      "after": 317
+    },
+    {
+      "table": "draft_questions",
+      "id": "7a04ab1d-07a2-46bc-8a7b-2f2cc42f8a2f",
+      "field": "passage_text",
+      "file": "202512asiav1.pdf",
+      "before": 794,
+      "after": 788
+    },
+    {
+      "table": "draft_questions",
+      "id": "224c317b-c76b-47c6-80f1-c6ea2a1a837c",
+      "field": "passage_text",
+      "file": "202512asiav1.pdf",
+      "before": 260,
+      "after": 255
+    },
+    {
+      "table": "draft_questions",
+      "id": "64e99105-995c-4e96-9968-6e1eb40dbd29",
+      "field": "passage_text",
+      "file": "202512asiav1.pdf",
+      "before": 410,
+      "after": 404
+    },
+    {
+      "table": "draft_questions",
+      "id": "ecf3e2ad-27cc-43cb-ab2e-200ed64fb0e5",
+      "field": "passage_text",
+      "file": "202512asiav1.pdf",
+      "before": 422,
+      "after": 416
+    },
+    {
+      "table": "draft_questions",
+      "id": "2fc326ed-d224-4983-8e7f-4e81147df931",
+      "field": "passage_text",
+      "file": "202605asIav1-rw.pdf",
+      "before": 411,
+      "after": 399
+    },
+    {
+      "table": "draft_questions",
+      "id": "0e8d3e56-c929-4016-8764-55be6c1ee3fe",
+      "field": "passage_text",
+      "file": "202605asIav1-rw.pdf",
+      "before": 298,
+      "after": 292
+    },
+    {
+      "table": "draft_questions",
+      "id": "eb8d97f6-2dbf-4c26-a2b8-a1c2dccf34f1",
+      "field": "passage_text",
+      "file": "202605asIav1-rw.pdf",
+      "before": 266,
+      "after": 260
+    },
+    {
+      "table": "draft_questions",
+      "id": "541c9408-d237-4e01-b76b-c089fc52de3e",
+      "field": "passage_text",
+      "file": "202605asIav1-rw.pdf",
+      "before": 387,
+      "after": 382
+    },
+    {
+      "table": "draft_questions",
+      "id": "2dbfb762-ea46-48a4-af4f-b6b182a4d31f",
+      "field": "passage_text",
+      "file": "202605asIav1-rw.pdf",
+      "before": 347,
+      "after": 342
+    },
+    {
+      "table": "draft_questions",
+      "id": "dd3b2b37-ddae-4716-94e2-4b57f4fcf863",
+      "field": "passage_text",
+      "file": "202605asIav1-rw.pdf",
+      "before": 329,
+      "after": 323
+    },
+    {
+      "table": "draft_questions",
+      "id": "862ef25b-78c4-4479-8609-9515032efb34",
+      "field": "passage_text",
+      "file": "202605asIav1-rw.pdf",
+      "before": 422,
+      "after": 417
+    },
+    {
+      "table": "draft_questions",
+      "id": "37a46c32-5e5b-4b70-a6d3-7ac2e2a77660",
+      "field": "passage_text",
+      "file": "202605asIav1-rw.pdf",
+      "before": 406,
+      "after": 400
+    },
+    {
+      "table": "draft_questions",
+      "id": "58a17618-7bfa-4ff2-bfa8-cbbfc510716e",
+      "field": "passage_text",
+      "file": "202605asIav1-rw.pdf",
+      "before": 673,
+      "after": 667
+    },
+    {
+      "table": "draft_questions",
+      "id": "c2623b7a-c44c-4b14-8b6a-be9916e81442",
+      "field": "passage_text",
+      "file": "202605asIav1-rw.pdf",
+      "before": 377,
+      "after": 371
+    },
+    {
+      "table": "draft_questions",
+      "id": "e67e6686-6870-49a1-99c8-df1161285050",
+      "field": "passage_text",
+      "file": "202605asIav1-rw.pdf",
+      "before": 381,
+      "after": 375
+    },
+    {
+      "table": "draft_questions",
+      "id": "cdf68b87-542f-4871-a65d-d9624d544f9b",
+      "field": "passage_text",
+      "file": "202605asIav1-rw.pdf",
+      "before": 250,
+      "after": 245
+    },
+    {
+      "table": "draft_questions",
+      "id": "818e560a-8b92-4575-a707-2574bb25117c",
+      "field": "passage_text",
+      "file": "202605asIav1-rw.pdf",
+      "before": 377,
+      "after": 372
+    },
+    {
+      "table": "draft_questions",
+      "id": "c24d63d7-2b5d-48ea-90e1-20ecea845313",
+      "field": "passage_text",
+      "file": "202605asIav1-rw.pdf",
+      "before": 349,
+      "after": 343
+    },
+    {
+      "table": "draft_questions",
+      "id": "037e66b9-f09b-471b-ae04-9dbdca4cee59",
+      "field": "passage_text",
+      "file": "202605asIav1-rw.pdf",
+      "before": 365,
+      "after": 359
+    },
+    {
+      "table": "draft_questions",
+      "id": "d57d5cc8-aef1-4a39-a4a2-37121890e310",
+      "field": "passage_text",
+      "file": "202605asIav1-rw.pdf",
+      "before": 338,
+      "after": 333
+    },
+    {
+      "table": "draft_questions",
+      "id": "536fed30-f2c1-4999-b384-63a83f9385f4",
+      "field": "passage_text",
+      "file": "202605asIav1-rw.pdf",
+      "before": 283,
+      "after": 278
+    },
+    {
+      "table": "draft_questions",
+      "id": "7d956ed4-0077-4fe1-8660-5179889082a9",
+      "field": "passage_text",
+      "file": "202605asIav1-rw.pdf",
+      "before": 462,
+      "after": 456
+    },
+    {
+      "table": "draft_questions",
+      "id": "1c38c42c-edef-41e2-8c99-d96c3edc302e",
+      "field": "passage_text",
+      "file": "202605asIav1-rw.pdf",
+      "before": 473,
+      "after": 467
+    },
+    {
+      "table": "draft_questions",
+      "id": "b02b522b-34e1-4c98-b994-1b654bb1743f",
+      "field": "passage_text",
+      "file": "202605asIav1-rw.pdf",
+      "before": 418,
+      "after": 412
+    },
+    {
+      "table": "draft_questions",
+      "id": "a425b914-aa03-4e55-9948-4ed037a3f359",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 375,
+      "after": 369
+    },
+    {
+      "table": "draft_questions",
+      "id": "d225fa4a-16b4-4f4a-b57b-14198c772917",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 343,
+      "after": 337
+    },
+    {
+      "table": "draft_questions",
+      "id": "2528f5f3-e908-4088-a3e8-040bb34758b3",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 259,
+      "after": 253
+    },
+    {
+      "table": "draft_questions",
+      "id": "f32bed3a-b600-40f5-8d67-66260720b848",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 937,
+      "after": 929
+    },
+    {
+      "table": "draft_questions",
+      "id": "0d217e1d-7259-476a-b0d1-98c06104aa12",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 223,
+      "after": 213
+    },
+    {
+      "table": "draft_questions",
+      "id": "e9d97aba-dd36-4bea-89c6-27839fa33229",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 561,
+      "after": 555
+    },
+    {
+      "table": "draft_questions",
+      "id": "41e6c5e3-56dd-43e4-8675-b169cbc63959",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 204,
+      "after": 196
+    },
+    {
+      "table": "draft_questions",
+      "id": "0903bdec-4e6f-4559-a991-2f11af5a4ddd",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 231,
+      "after": 225
+    },
+    {
+      "table": "draft_questions",
+      "id": "04048769-c26b-4de3-9e72-46c725679997",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 327,
+      "after": 320
+    },
+    {
+      "table": "draft_questions",
+      "id": "76f52b50-3192-480a-a173-c1a4a532eff7",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 226,
+      "after": 218
+    },
+    {
+      "table": "draft_questions",
+      "id": "2bfe40ac-c0f7-4fe2-ad25-6475bb0690ed",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 191,
+      "after": 183
+    },
+    {
+      "table": "draft_questions",
+      "id": "8458e2dd-f1ee-4099-8e92-cef5e6cebf2b",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 412,
+      "after": 406
+    },
+    {
+      "table": "draft_questions",
+      "id": "c7b5712e-6c2a-4a01-9972-dd4cfd028216",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 342,
+      "after": 335
+    },
+    {
+      "table": "draft_questions",
+      "id": "6938c24a-bcad-4e24-b7b1-7866cfedac0c",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 316,
+      "after": 310
+    },
+    {
+      "table": "draft_questions",
+      "id": "66e7e9fa-99ab-425f-b49e-51004de0cb74",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 775,
+      "after": 767
+    },
+    {
+      "table": "draft_questions",
+      "id": "dee4609d-8c41-42b5-92ae-7cf05d8ae77d",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 204,
+      "after": 196
+    },
+    {
+      "table": "draft_questions",
+      "id": "bf4ffa56-c893-4f3f-a0fc-5f63cc8a6c1c",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 342,
+      "after": 336
+    },
+    {
+      "table": "draft_questions",
+      "id": "4e57c8a4-2d77-465e-aecb-2922726100a7",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 339,
+      "after": 332
+    },
+    {
+      "table": "draft_questions",
+      "id": "61abec01-d8eb-41ca-affb-483d92bffdf1",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 620,
+      "after": 612
+    },
+    {
+      "table": "draft_questions",
+      "id": "afbf3fd4-777e-4f6d-a4e9-cdd7f78d4d7e",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 739,
+      "after": 731
+    },
+    {
+      "table": "draft_questions",
+      "id": "4076447a-9fdd-44f8-9189-8b621bcbf936",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 269,
+      "after": 263
+    },
+    {
+      "table": "draft_questions",
+      "id": "aa1f3b80-116a-4493-a3fa-26e53e69a7fb",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 328,
+      "after": 321
+    },
+    {
+      "table": "draft_questions",
+      "id": "515be3d5-e125-4da1-a156-2a23deae2a05",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 335,
+      "after": 328
+    },
+    {
+      "table": "draft_questions",
+      "id": "183f19ce-1a27-4b9e-9b7f-6cf7aba8c300",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 342,
+      "after": 335
+    },
+    {
+      "table": "draft_questions",
+      "id": "601b22af-fdf8-4fe1-8a8f-745661c939d2",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 353,
+      "after": 346
+    },
+    {
+      "table": "draft_questions",
+      "id": "4ed5a943-46fc-4805-af0b-6c4c56e4d649",
+      "field": "passage_text",
+      "file": "202606asiav1.pdf",
+      "before": 367,
+      "after": 362
+    },
+    {
+      "table": "draft_questions",
+      "id": "ad54d220-c849-492f-882c-d339db23106c",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 292,
+      "after": 285
+    },
+    {
+      "table": "draft_questions",
+      "id": "0724a5b2-ebe3-4b5d-ab3c-c6f262021261",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 481,
+      "after": 474
+    },
+    {
+      "table": "draft_questions",
+      "id": "7f8031c1-f909-4127-bf65-154fb8c07f4e",
+      "field": "passage_text",
+      "file": "202605usv1-rw.pdf",
+      "before": 388,
+      "after": 380
+    },
+    {
+      "table": "draft_questions",
+      "id": "3935f01c-261a-4bf0-bceb-161273af0710",
+      "field": "passage_text",
+      "file": "202606asiav1.pdf",
+      "before": 381,
+      "after": 376
+    },
+    {
+      "table": "draft_questions",
+      "id": "a7ef6c34-e084-4418-bf76-7898e63012e9",
+      "field": "passage_text",
+      "file": "202606asiav1.pdf",
+      "before": 377,
+      "after": 371
+    },
+    {
+      "table": "draft_questions",
+      "id": "f21902d8-8ec8-4e90-b419-ae9061f4db29",
+      "field": "passage_text",
+      "file": "202606asiav1.pdf",
+      "before": 250,
+      "after": 244
+    },
+    {
+      "table": "draft_questions",
+      "id": "5140415a-9959-4d82-a5e6-746d6b63867a",
+      "field": "passage_text",
+      "file": "202606asiav1.pdf",
+      "before": 269,
+      "after": 264
+    },
+    {
+      "table": "draft_questions",
+      "id": "f3ecd4e8-3978-489b-b7e6-074ea3fb06c0",
+      "field": "passage_text",
+      "file": "202606asiav1.pdf",
+      "before": 346,
+      "after": 341
+    },
+    {
+      "table": "draft_questions",
+      "id": "eb317d89-a873-4986-967f-4563e93a416f",
+      "field": "passage_text",
+      "file": "202606asiav1.pdf",
+      "before": 473,
+      "after": 468
+    },
+    {
+      "table": "draft_questions",
+      "id": "b942f410-9869-4e9d-88a4-95f8c0659460",
+      "field": "passage_text",
+      "file": "202606asiav1.pdf",
+      "before": 431,
+      "after": 426
+    },
+    {
+      "table": "draft_questions",
+      "id": "049d70be-02d6-4e1e-ab9c-6fa64c013be6",
+      "field": "passage_text",
+      "file": "202606asiav1.pdf",
+      "before": 217,
+      "after": 212
+    },
+    {
+      "table": "draft_questions",
+      "id": "3c141290-d756-4da4-aa6a-ee682340aead",
+      "field": "passage_text",
+      "file": "202606asiav1.pdf",
+      "before": 307,
+      "after": 302
+    },
+    {
+      "table": "draft_questions",
+      "id": "69fc0a96-ea2f-4197-869c-383b7bb9f033",
+      "field": "passage_text",
+      "file": "202606asiav1.pdf",
+      "before": 379,
+      "after": 374
+    },
+    {
+      "table": "draft_questions",
+      "id": "e14e83ca-15c2-44ef-94b0-4245ab2ec6bf",
+      "field": "passage_text",
+      "file": "202606asiav1.pdf",
+      "before": 432,
+      "after": 426
+    },
+    {
+      "table": "draft_questions",
+      "id": "86227c8f-fd3f-4384-8d2c-bcb567b6a1e8",
+      "field": "passage_text",
+      "file": "202606asiav1.pdf",
+      "before": 388,
+      "after": 383
+    },
+    {
+      "table": "draft_questions",
+      "id": "f9e71a4d-0118-4382-9120-6b354422eae9",
+      "field": "passage_text",
+      "file": "202606asiav1.pdf",
+      "before": 284,
+      "after": 279
+    },
+    {
+      "table": "draft_questions",
+      "id": "1c8746fa-3f3a-4f5e-84c9-a34d28b7f3eb",
+      "field": "passage_text",
+      "file": "202606asiav1.pdf",
+      "before": 733,
+      "after": 727
+    },
+    {
+      "table": "draft_questions",
+      "id": "7a97815c-c507-4bd6-8943-93b4d881ac2f",
+      "field": "passage_text",
+      "file": "202606asiav1.pdf",
+      "before": 309,
+      "after": 303
+    },
+    {
+      "table": "draft_questions",
+      "id": "dd28133f-b171-4baa-80d5-11161352a15c",
+      "field": "passage_text",
+      "file": "202606asiav1.pdf",
+      "before": 781,
+      "after": 775
+    },
+    {
+      "table": "draft_questions",
+      "id": "c6a7d337-e01d-47b1-b999-c7de40e289a7",
+      "field": "passage_text",
+      "file": "202606asiav1.pdf",
+      "before": 270,
+      "after": 264
+    },
+    {
+      "table": "draft_questions",
+      "id": "4d3bddcc-0d71-4e9e-9246-ed36a5e476a0",
+      "field": "passage_text",
+      "file": "202606asiav1.pdf",
+      "before": 320,
+      "after": 314
+    },
+    {
+      "table": "draft_questions",
+      "id": "fd526763-ce4f-43f9-890d-728618bd0d96",
+      "field": "passage_text",
+      "file": "202606asiav2.pdf",
+      "before": 375,
+      "after": 369
+    },
+    {
+      "table": "draft_questions",
+      "id": "b21505eb-f5e3-4b96-8fa3-6a0ca3fc2244",
+      "field": "passage_text",
+      "file": "202606asiav2.pdf",
+      "before": 367,
+      "after": 362
+    },
+    {
+      "table": "draft_questions",
+      "id": "0d407748-2519-4792-975f-c835ec37ca22",
+      "field": "passage_text",
+      "file": "202606asiav2.pdf",
+      "before": 250,
+      "after": 245
+    },
+    {
+      "table": "draft_questions",
+      "id": "9fb0de7c-1b21-45ae-b8b3-2393f3280a0b",
+      "field": "passage_text",
+      "file": "202606asiav2.pdf",
+      "before": 349,
+      "after": 344
+    },
+    {
+      "table": "draft_questions",
+      "id": "c5618522-3d42-4720-9671-9e220956f13f",
+      "field": "passage_text",
+      "file": "202606asiav2.pdf",
+      "before": 234,
+      "after": 229
+    },
+    {
+      "table": "draft_questions",
+      "id": "76ae4802-1ef3-455a-ae7e-9c0d59f8bf19",
+      "field": "passage_text",
+      "file": "202606asiav2.pdf",
+      "before": 406,
+      "after": 401
+    },
+    {
+      "table": "draft_questions",
+      "id": "b6f6c041-9103-493a-ad47-06d2db3cd889",
+      "field": "passage_text",
+      "file": "202606asiav2.pdf",
+      "before": 418,
+      "after": 413
+    },
+    {
+      "table": "draft_questions",
+      "id": "1b882f38-3020-45b8-a64b-70ce31369383",
+      "field": "passage_text",
+      "file": "202606asiav2.pdf",
+      "before": 404,
+      "after": 399
+    },
+    {
+      "table": "draft_questions",
+      "id": "9f7b12c2-442d-4933-ba88-e31f4fdfcc05",
+      "field": "passage_text",
+      "file": "202606asiav2.pdf",
+      "before": 405,
+      "after": 400
+    },
+    {
+      "table": "draft_questions",
+      "id": "f9c260bf-a0af-4de1-82fc-7a15760458f5",
+      "field": "passage_text",
+      "file": "202606asiav2.pdf",
+      "before": 747,
+      "after": 741
+    },
+    {
+      "table": "draft_questions",
+      "id": "35c53546-0e7f-471b-be97-49bc0074de56",
+      "field": "passage_text",
+      "file": "202606asiav2.pdf",
+      "before": 203,
+      "after": 197
+    },
+    {
+      "table": "draft_questions",
+      "id": "eeae8e2f-28f5-4bf3-9a13-760f71e2f912",
+      "field": "passage_text",
+      "file": "202606asiav2.pdf",
+      "before": 444,
+      "after": 438
+    },
+    {
+      "table": "draft_questions",
+      "id": "6cf97253-820b-4c7a-9670-699bcb053513",
+      "field": "passage_text",
+      "file": "202606asiav2.pdf",
+      "before": 417,
+      "after": 412
+    },
+    {
+      "table": "draft_questions",
+      "id": "276a7881-8aaf-42d0-b77c-14abdbc9d0b3",
+      "field": "passage_text",
+      "file": "202606asiav2.pdf",
+      "before": 1225,
+      "after": 1219
+    },
+    {
+      "table": "draft_questions",
+      "id": "27dbf025-03b2-4217-a37b-02efa3132c2e",
+      "field": "passage_text",
+      "file": "202606asiav2.pdf",
+      "before": 764,
+      "after": 758
+    },
+    {
+      "table": "draft_questions",
+      "id": "54496941-1d7a-4af9-87f6-de6e2e8b21ac",
+      "field": "passage_text",
+      "file": "202606asiav2.pdf",
+      "before": 383,
+      "after": 377
+    },
+    {
+      "table": "draft_questions",
+      "id": "c078d803-f34a-490b-83f4-6bfe047effed",
+      "field": "passage_text",
+      "file": "202606asiav2.pdf",
+      "before": 437,
+      "after": 431
+    },
+    {
+      "table": "draft_questions",
+      "id": "f3dde799-b2db-4632-b6fc-0b44527721f8",
+      "field": "passage_text",
+      "file": "202606asiav2.pdf",
+      "before": 353,
+      "after": 347
+    },
+    {
+      "table": "draft_questions",
+      "id": "c5de6afb-6ae7-4b3d-aa2f-3a7c4a19a704",
+      "field": "passage_text",
+      "file": "202606asiav2.pdf",
+      "before": 310,
+      "after": 305
+    },
+    {
+      "table": "draft_questions",
+      "id": "2395267b-77a3-42d6-bda1-eac860b04844",
+      "field": "passage_text",
+      "file": "202606asiav2.pdf",
+      "before": 418,
+      "after": 413
+    },
+    {
+      "table": "draft_questions",
+      "id": "f628e2c1-c9ad-445e-86e4-1567da5dd2ed",
+      "field": "passage_text",
+      "file": "202606asiav2.pdf",
+      "before": 438,
+      "after": 433
+    },
+    {
+      "table": "draft_questions",
+      "id": "7181a86d-d3c3-4021-b0fd-5c416f40b888",
+      "field": "prompt",
+      "file": "202606asiav3.pdf",
+      "before": 1050,
+      "after": 1044
+    },
+    {
+      "table": "draft_questions",
+      "id": "5a2dab5f-d36e-444a-b3b9-b2d3bcac5b26",
+      "field": "prompt",
+      "file": "202606asiav3.pdf",
+      "before": 1027,
+      "after": 1021
+    },
+    {
+      "table": "draft_questions",
+      "id": "d70985dc-3ada-4698-90e3-2f2149a78bcc",
+      "field": "passage_text",
+      "file": "202508asiav3-rw.pdf",
+      "before": 352,
+      "after": 346
+    },
+    {
+      "table": "draft_questions",
+      "id": "62162f99-8c25-47d8-a1d2-86dab03ee098",
+      "field": "passage_text",
+      "file": "202508asiav3-rw.pdf",
+      "before": 434,
+      "after": 428
+    },
+    {
+      "table": "draft_questions",
+      "id": "d5d6c27f-402a-436e-888e-d121663a8f29",
+      "field": "passage_text",
+      "file": "202508asiav3-rw.pdf",
+      "before": 426,
+      "after": 421
+    },
+    {
+      "table": "draft_questions",
+      "id": "5cf96e9b-3d13-47b7-af0e-496a55330826",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 305,
+      "after": 300
+    },
+    {
+      "table": "draft_questions",
+      "id": "d6b7d806-2a83-414c-8c05-c152e55a834e",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 434,
+      "after": 428
+    },
+    {
+      "table": "draft_questions",
+      "id": "467e233e-abb7-4f03-ae09-2b58384f59a8",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 351,
+      "after": 345
+    },
+    {
+      "table": "draft_questions",
+      "id": "bd75096d-0247-49a3-8a35-51660e6ed748",
+      "field": "passage_text",
+      "file": "202506asiav1-rw.pdf",
+      "before": 413,
+      "after": 408
+    },
+    {
+      "table": "draft_questions",
+      "id": "3a3d0a90-8d00-4cdf-a2de-3486af1dfc5e",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 352,
+      "after": 346
+    },
+    {
+      "table": "draft_questions",
+      "id": "2af5d548-109c-4b7a-9c19-2cb07b1256c6",
+      "field": "passage_text",
+      "file": "202508asiav3-rw.pdf",
+      "before": 760,
+      "after": 754
+    },
+    {
+      "table": "draft_questions",
+      "id": "a71bdf75-4a31-46ab-8584-e30dfa2b278f",
+      "field": "passage_text",
+      "file": "202508asiav3-rw.pdf",
+      "before": 374,
+      "after": 368
+    },
+    {
+      "table": "draft_questions",
+      "id": "5b727c1a-9a48-42b4-a669-ab241273fb10",
+      "field": "passage_text",
+      "file": "202508asiav3-rw.pdf",
+      "before": 247,
+      "after": 241
+    },
+    {
+      "table": "draft_questions",
+      "id": "4b88ce50-a6f1-4be7-a74d-80e74b084ea8",
+      "field": "passage_text",
+      "file": "202508asiav3-rw.pdf",
+      "before": 225,
+      "after": 220
+    },
+    {
+      "table": "draft_questions",
+      "id": "0ceac530-65cd-4512-b5fc-eae9913f3df8",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 287,
+      "after": 281
+    },
+    {
+      "table": "draft_questions",
+      "id": "49b6af00-a169-4320-bfdb-4dfe078b4090",
+      "field": "passage_text",
+      "file": "202503asiav2.pdf",
+      "before": 591,
+      "after": 585
+    },
+    {
+      "table": "draft_questions",
+      "id": "9950647c-4190-4ff4-a546-233b2d1b7304",
+      "field": "passage_text",
+      "file": "202503usv1.pdf",
+      "before": 310,
+      "after": 304
+    },
+    {
+      "table": "draft_questions",
+      "id": "fcd32632-4b59-467e-9d26-c524cb36bfe3",
+      "field": "passage_text",
+      "file": "202503usv2.pdf",
+      "before": 591,
+      "after": 585
+    },
+    {
+      "table": "draft_questions",
+      "id": "c71ac3b9-3f30-4a20-b5ae-4d0730b2d180",
+      "field": "passage_text",
+      "file": "202503asiav1.pdf",
+      "before": 593,
+      "after": 587
+    },
+    {
+      "table": "draft_questions",
+      "id": "6df286ca-43be-428c-8ef7-6cc7fc213cb2",
+      "field": "passage_text",
+      "file": "202503usv1.pdf",
+      "before": 709,
+      "after": 703
+    },
+    {
+      "table": "draft_questions",
+      "id": "a7e1a7c2-fb17-423e-8af5-9a49c8627f59",
+      "field": "prompt",
+      "file": "202503usv1.pdf",
+      "before": 731,
+      "after": 725
+    },
+    {
+      "table": "draft_questions",
+      "id": "3892500a-6629-4538-9e2f-076742e3d8bb",
+      "field": "passage_text",
+      "file": "202509asiav1.pdf",
+      "before": 704,
+      "after": 698
+    },
+    {
+      "table": "draft_questions",
+      "id": "89fc8d0b-76f5-4c9f-8e66-ba6c29e9e980",
+      "field": "passage_text",
+      "file": "202506asiav1-rw.pdf",
+      "before": 485,
+      "after": 479
+    },
+    {
+      "table": "draft_questions",
+      "id": "c6637303-4944-48ac-97b6-a3302427a9f6",
+      "field": "passage_text",
+      "file": "202509asiav1.pdf",
+      "before": 424,
+      "after": 418
+    },
+    {
+      "table": "draft_questions",
+      "id": "197a2deb-4863-43cf-ad94-05578044184d",
+      "field": "passage_text",
+      "file": "202509us06.pdf",
+      "before": 2133,
+      "after": 2125
+    },
+    {
+      "table": "draft_questions",
+      "id": "3a6f03a5-61b1-40e8-abbc-5886b0728e02",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 219,
+      "after": 213
+    },
+    {
+      "table": "draft_questions",
+      "id": "dfca381f-7f13-497a-8f1f-cc9bb8e0b964",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 241,
+      "after": 235
+    },
+    {
+      "table": "draft_questions",
+      "id": "9f48e56f-efd6-4983-9186-0c51991c2fc1",
+      "field": "passage_text",
+      "file": "202510usv2.pdf",
+      "before": 353,
+      "after": 347
+    },
+    {
+      "table": "draft_questions",
+      "id": "00d63982-311c-4260-90b4-047a889d6974",
+      "field": "passage_text",
+      "file": "202605asIav1-rw.pdf",
+      "before": 810,
+      "after": 805
+    },
+    {
+      "table": "draft_questions",
+      "id": "b4dfa664-5c62-477d-8331-5d4827a2e123",
+      "field": "prompt",
+      "file": "202605usv1-rw.pdf",
+      "before": 153,
+      "after": 145
+    },
+    {
+      "table": "draft_questions",
+      "id": "68cbd59c-2f6e-4589-b308-dd9470acd746",
+      "field": "passage_text",
+      "file": "202605asIav1-rw.pdf",
+      "before": 806,
+      "after": 800
+    },
+    {
+      "table": "draft_questions",
+      "id": "68599c99-1d11-4d97-99a6-2bb63dd8a457",
+      "field": "passage_text",
+      "file": "202503usv2.pdf",
+      "before": 258,
+      "after": 253
+    },
+    {
+      "table": "draft_questions",
+      "id": "9feb4360-6020-450b-b026-485142721907",
+      "field": "passage_text",
+      "file": "202508asiav3-rw.pdf",
+      "before": 351,
+      "after": 345
+    },
+    {
+      "table": "draft_questions",
+      "id": "c0617f57-01bd-4505-8653-e8209adfb47a",
+      "field": "passage_text",
+      "file": "202508asiav3-rw.pdf",
+      "before": 275,
+      "after": 269
+    },
+    {
+      "table": "draft_questions",
+      "id": "e780ada8-3035-46a3-af06-26917723c43a",
+      "field": "passage_text",
+      "file": "202508asiav1.pdf",
+      "before": 413,
+      "after": 408
+    },
+    {
+      "table": "draft_questions",
+      "id": "d2c29a1f-e0d2-4284-b5b1-807aacb38521",
+      "field": "passage_text",
+      "file": "202508asiav2-rw.pdf",
+      "before": 383,
+      "after": 377
+    },
+    {
+      "table": "draft_questions",
+      "id": "32d86f9a-9711-4f79-9d50-09c8a8075ed0",
+      "field": "passage_text",
+      "file": "202506asiav1-rw.pdf",
+      "before": 312,
+      "after": 307
+    },
+    {
+      "table": "draft_questions",
+      "id": "f271dd58-3151-489a-95d9-948cb126771d",
+      "field": "passage_text",
+      "file": "202509us01.pdf",
+      "before": 368,
+      "after": 361
+    }
+  ]
+}

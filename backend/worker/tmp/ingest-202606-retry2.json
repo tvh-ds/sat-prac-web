@@ -1,0 +1,55 @@
+{
+  "folder": "C:\\Users\\Admin\\AppData\\Local\\Temp\\reingest-202606",
+  "ingested_at": "2026-09-16T18:49:01.589Z",
+  "files": [
+    {
+      "file": "202606asiav3.pdf",
+      "import_id": "885c3e5e-fc88-4097-ba26-351c97d5f3cc",
+      "status": "completed",
+      "pages": 8,
+      "method": "mixed",
+      "drafts": 92,
+      "modules": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 26,
+        "Math Module 1": 18,
+        "Math Module 2": 21
+      },
+      "module_keys": {
+        "Reading and Writing Module 1": {
+          "total": 27,
+          "with_key": 0
+        },
+        "Reading and Writing Module 2": {
+          "total": 26,
+          "with_key": 0
+        },
+        "Math Module 1": {
+          "total": 18,
+          "with_key": 0
+        },
+        "Math Module 2": {
+          "total": 21,
+          "with_key": 0
+        }
+      },
+      "draft_statuses": {
+        "missing_key": 92
+      },
+      "answer_key_status": "missing",
+      "ocr_pages": 1,
+      "warnings": [
+        "Reading and Writing Module 2: 26/27 questions (short of complete, no OCR attempted).",
+        "Math Module 1: 18/22 questions after OCR fallback.",
+        "Math Module 2: 21/22 questions (short of complete, no OCR attempted)."
+      ],
+      "error": null
+    }
+  ],
+  "totals": {
+    "files": 1,
+    "completed": 1,
+    "failed": 0,
+    "drafts": 92
+  }
+}

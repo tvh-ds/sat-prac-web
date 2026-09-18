@@ -1,0 +1,27 @@
+{
+  "folder": "C:\\Users\\Admin\\AppData\\Local\\Temp\\reingest-202606",
+  "ingested_at": "2026-09-16T19:12:35.954Z",
+  "files": [
+    {
+      "file": "202606asiav3.pdf",
+      "import_id": "b78fdf37-df0b-4504-8e4e-b3d2bd069106",
+      "status": "script_error",
+      "pages": 8,
+      "method": null,
+      "drafts": 0,
+      "modules": {},
+      "module_keys": {},
+      "draft_statuses": {},
+      "answer_key_status": null,
+      "ocr_pages": 0,
+      "warnings": [],
+      "error": "body is not defined"
+    }
+  ],
+  "totals": {
+    "files": 1,
+    "completed": 0,
+    "failed": 1,
+    "drafts": 0
+  }
+}

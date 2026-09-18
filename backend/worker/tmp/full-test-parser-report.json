@@ -1,0 +1,3166 @@
+{
+  "generatedAt": "2026-09-14T15:08:35.518Z",
+  "summary": {
+    "scanned": 139,
+    "success": 54,
+    "partial": 11,
+    "needsOcr": 74,
+    "failed": 0
+  },
+  "files": [
+    {
+      "file": "2023 03 - Compiled.pdf",
+      "path": "Digital SAT Tests/2023/2023 03 - Compiled.pdf",
+      "pages": 24,
+      "pagesNeedingOcr": 23,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2023 05 - Compiled.pdf",
+      "path": "Digital SAT Tests/2023/2023 05 - Compiled.pdf",
+      "pages": 20,
+      "pagesNeedingOcr": 19,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2023 06 - 2 - Compiled.pdf",
+      "path": "Digital SAT Tests/2023/2023 06 - 2 - Compiled.pdf",
+      "pages": 46,
+      "pagesNeedingOcr": 46,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2023 06- 1 - Compiled.pdf",
+      "path": "Digital SAT Tests/2023/2023 06- 1 - Compiled.pdf",
+      "pages": 41,
+      "pagesNeedingOcr": 39,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "partial",
+      "questions": 6,
+      "modules": {
+        "Reading and Writing Module 1": 6
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "only 6 questions parsed; likely needs OCR for full coverage",
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2023 10 - Compiled - No Math Mol 2.pdf",
+      "path": "Digital SAT Tests/2023/2023 10 - Compiled - No Math Mol 2.pdf",
+      "pages": 37,
+      "pagesNeedingOcr": 37,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2023 11 - Compiled.pdf",
+      "path": "Digital SAT Tests/2023/2023 11 - Compiled.pdf",
+      "pages": 99,
+      "pagesNeedingOcr": 98,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "partial",
+      "questions": 1,
+      "modules": {
+        "Reading and Writing Module 1": 1
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "only 1 questions parsed; likely needs OCR for full coverage",
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2023 12 - 1.pdf",
+      "path": "Digital SAT Tests/2023/2023 12 - 1.pdf",
+      "pages": 30,
+      "pagesNeedingOcr": 29,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2023 12 - 2 - Compiled - No Math.pdf",
+      "path": "Digital SAT Tests/2023/2023 12 - 2 - Compiled - No Math.pdf",
+      "pages": 52,
+      "pagesNeedingOcr": 49,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "partial",
+      "questions": 3,
+      "modules": {
+        "Reading and Writing Module 1": 3
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "only 3 questions parsed; likely needs OCR for full coverage",
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2023 12 - 3 - Compiled - No Math Key.pdf",
+      "path": "Digital SAT Tests/2023/2023 12 - 3 - Compiled - No Math Key.pdf",
+      "pages": 82,
+      "pagesNeedingOcr": 82,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2023 12 - 4 - Compiled.pdf",
+      "path": "Digital SAT Tests/2023/2023 12 - 4 - Compiled.pdf",
+      "pages": 43,
+      "pagesNeedingOcr": 43,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "SAT Suite Question Bank - Math - Hard - With.pdf",
+      "path": "Digital SAT Tests/2023/SAT Suite Question Bank - Math - Hard - With.pdf",
+      "pages": 532,
+      "pagesNeedingOcr": 9,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 63,
+      "modules": {
+        "Math Module 1": 63
+      },
+      "moduleNames": [
+        "Math Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2024 03 1.pdf",
+      "path": "Digital SAT Tests/2024 03/2024 03 1.pdf",
+      "pages": 102,
+      "pagesNeedingOcr": 102,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2024 03 2.pdf",
+      "path": "Digital SAT Tests/2024 03/2024 03 2.pdf",
+      "pages": 94,
+      "pagesNeedingOcr": 93,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {
+        "Math Module 2": 0
+      },
+      "moduleNames": [
+        "Math Module 2"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2024 03 3.pdf",
+      "path": "Digital SAT Tests/2024 03/2024 03 3.pdf",
+      "pages": 104,
+      "pagesNeedingOcr": 103,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2024 03 4 - No Math.pdf",
+      "path": "Digital SAT Tests/2024 03/2024 03 4 - No Math.pdf",
+      "pages": 38,
+      "pagesNeedingOcr": 1,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 51,
+      "modules": {
+        "Reading and Writing Module 1": 51
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2024 05 Int 1.pdf",
+      "path": "Digital SAT Tests/2024 05/2024 05 Int 1.pdf",
+      "pages": 39,
+      "pagesNeedingOcr": 39,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2024 05 Int 2.pdf",
+      "path": "Digital SAT Tests/2024 05/2024 05 Int 2.pdf",
+      "pages": 24,
+      "pagesNeedingOcr": 24,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {
+        "Math Module 2": 0
+      },
+      "moduleNames": [
+        "Math Module 2"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2024 05 US.pdf",
+      "path": "Digital SAT Tests/2024 05/2024 05 US.pdf",
+      "pages": 63,
+      "pagesNeedingOcr": 63,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2024 06 Int 3.1.pdf",
+      "path": "Digital SAT Tests/2024 06/2024 06 Int 3.1.pdf",
+      "pages": 55,
+      "pagesNeedingOcr": 55,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2024 06 Int 3.2.pdf",
+      "path": "Digital SAT Tests/2024 06/2024 06 Int 3.2.pdf",
+      "pages": 55,
+      "pagesNeedingOcr": 55,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2024 06 Int 4.pdf",
+      "path": "Digital SAT Tests/2024 06/2024 06 Int 4.pdf",
+      "pages": 87,
+      "pagesNeedingOcr": 87,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2024 06 US.pdf",
+      "path": "Digital SAT Tests/2024 06/2024 06 US.pdf",
+      "pages": 98,
+      "pagesNeedingOcr": 98,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202406 Int 1.pdf",
+      "path": "Digital SAT Tests/2024 06/202406 Int 1.pdf",
+      "pages": 32,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 59,
+      "modules": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 26,
+        "Math Module 1": 1,
+        "Math Module 2": 5
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 99,
+      "keyConfidence": 1,
+      "bank": false,
+      "notes": []
+    },
+    {
+      "file": "202406 Int 2.pdf",
+      "path": "Digital SAT Tests/2024 06/202406 Int 2.pdf",
+      "pages": 95,
+      "pagesNeedingOcr": 95,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202408asiav1.pdf",
+      "path": "Digital SAT Tests/2024 08/202408asiav1.pdf",
+      "pages": 115,
+      "pagesNeedingOcr": 114,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202408asiav2.pdf",
+      "path": "Digital SAT Tests/2024 08/202408asiav2.pdf",
+      "pages": 106,
+      "pagesNeedingOcr": 105,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202408usv1.pdf",
+      "path": "Digital SAT Tests/2024 08/202408usv1.pdf",
+      "pages": 90,
+      "pagesNeedingOcr": 88,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "partial",
+      "questions": 4,
+      "modules": {
+        "Math Module 1": 2,
+        "Math Module 2": 2
+      },
+      "moduleNames": [
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "only 4 questions parsed; likely needs OCR for full coverage",
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202408usv2.pdf",
+      "path": "Digital SAT Tests/2024 08/202408usv2.pdf",
+      "pages": 26,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 56,
+      "modules": {
+        "Reading and Writing Module 1": 26,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 1,
+        "Math Module 2": 2
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 1,
+      "keyConfidence": 0.01,
+      "bank": false,
+      "notes": [
+        "low key confidence (1%)"
+      ]
+    },
+    {
+      "file": "202408usv3.pdf",
+      "path": "Digital SAT Tests/2024 08/202408usv3.pdf",
+      "pages": 17,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 51,
+      "modules": {
+        "Reading and Writing Module 1": 24,
+        "Reading and Writing Module 2": 27
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2"
+      ],
+      "keyEntries": 1,
+      "keyConfidence": 0.01,
+      "bank": false,
+      "notes": [
+        "low key confidence (1%)"
+      ]
+    },
+    {
+      "file": "202408usv4.pdf",
+      "path": "Digital SAT Tests/2024 08/202408usv4.pdf",
+      "pages": 55,
+      "pagesNeedingOcr": 54,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202408usv5.pdf",
+      "path": "Digital SAT Tests/2024 08/202408usv5.pdf",
+      "pages": 99,
+      "pagesNeedingOcr": 98,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202410asiav1.pdf",
+      "path": "Digital SAT Tests/2024 10/202410asiav1.pdf",
+      "pages": 99,
+      "pagesNeedingOcr": 99,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202410asiav2.pdf",
+      "path": "Digital SAT Tests/2024 10/202410asiav2.pdf",
+      "pages": 97,
+      "pagesNeedingOcr": 97,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202410asiav3.pdf",
+      "path": "Digital SAT Tests/2024 10/202410asiav3.pdf",
+      "pages": 100,
+      "pagesNeedingOcr": 99,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202410asiav4-rw.pdf",
+      "path": "Digital SAT Tests/2024 10/202410asiav4-rw.pdf",
+      "pages": 17,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 53,
+      "modules": {
+        "Reading and Writing Module 1": 25,
+        "Reading and Writing Module 2": 28
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2"
+      ],
+      "keyEntries": 1,
+      "keyConfidence": 0.01,
+      "bank": false,
+      "notes": [
+        "low key confidence (1%)"
+      ]
+    },
+    {
+      "file": "202410usv1.pdf",
+      "path": "Digital SAT Tests/2024 10/202410usv1.pdf",
+      "pages": 98,
+      "pagesNeedingOcr": 98,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202410usv2.pdf",
+      "path": "Digital SAT Tests/2024 10/202410usv2.pdf",
+      "pages": 98,
+      "pagesNeedingOcr": 98,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202410usv3.pdf",
+      "path": "Digital SAT Tests/2024 10/202410usv3.pdf",
+      "pages": 59,
+      "pagesNeedingOcr": 43,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 50,
+      "modules": {
+        "Reading and Writing Module 1": 23,
+        "Reading and Writing Module 2": 27
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2"
+      ],
+      "keyEntries": 1,
+      "keyConfidence": 0.01,
+      "bank": false,
+      "notes": [
+        "low key confidence (1%)"
+      ]
+    },
+    {
+      "file": "202411-math.pdf",
+      "path": "Digital SAT Tests/2024 11/202411-math.pdf",
+      "pages": 46,
+      "pagesNeedingOcr": 46,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202411asiav1.pdf",
+      "path": "Digital SAT Tests/2024 11/202411asiav1.pdf",
+      "pages": 100,
+      "pagesNeedingOcr": 100,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {
+        "Math Module 1": 0
+      },
+      "moduleNames": [
+        "Math Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202411asiav2.pdf",
+      "path": "Digital SAT Tests/2024 11/202411asiav2.pdf",
+      "pages": 65,
+      "pagesNeedingOcr": 45,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 54,
+      "modules": {
+        "Reading and Writing Module 1": 25,
+        "Reading and Writing Module 2": 29
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2"
+      ],
+      "keyEntries": 1,
+      "keyConfidence": 0.01,
+      "bank": false,
+      "notes": [
+        "low key confidence (1%)"
+      ]
+    },
+    {
+      "file": "202411asiav3.pdf",
+      "path": "Digital SAT Tests/2024 11/202411asiav3.pdf",
+      "pages": 70,
+      "pagesNeedingOcr": 70,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202411asiav4.pdf",
+      "path": "Digital SAT Tests/2024 11/202411asiav4.pdf",
+      "pages": 98,
+      "pagesNeedingOcr": 98,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202411usv1.pdf",
+      "path": "Digital SAT Tests/2024 11/202411usv1.pdf",
+      "pages": 98,
+      "pagesNeedingOcr": 98,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202411usv2.pdf",
+      "path": "Digital SAT Tests/2024 11/202411usv2.pdf",
+      "pages": 107,
+      "pagesNeedingOcr": 107,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202412aisav1.pdf",
+      "path": "Digital SAT Tests/2024 12/202412aisav1.pdf",
+      "pages": 34,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 57,
+      "modules": {
+        "Reading and Writing Module 1": 26,
+        "Reading and Writing Module 2": 24,
+        "Math Module 1": 5,
+        "Math Module 2": 2
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 30,
+      "keyConfidence": 0.47,
+      "bank": false,
+      "notes": [
+        "low key confidence (47%)"
+      ]
+    },
+    {
+      "file": "202412aisav2.pdf",
+      "path": "Digital SAT Tests/2024 12/202412aisav2.pdf",
+      "pages": 100,
+      "pagesNeedingOcr": 100,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202412aisav3.pdf",
+      "path": "Digital SAT Tests/2024 12/202412aisav3.pdf",
+      "pages": 100,
+      "pagesNeedingOcr": 100,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202412aisav4.pdf",
+      "path": "Digital SAT Tests/2024 12/202412aisav4.pdf",
+      "pages": 85,
+      "pagesNeedingOcr": 85,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202412usv1.pdf",
+      "path": "Digital SAT Tests/2024 12/202412usv1.pdf",
+      "pages": 32,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 54,
+      "modules": {
+        "Reading and Writing Module 1": 23,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 3,
+        "Math Module 2": 1
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 34,
+      "keyConfidence": 0.57,
+      "bank": false,
+      "notes": []
+    },
+    {
+      "file": "202412usv2.pdf",
+      "path": "Digital SAT Tests/2024 12/202412usv2.pdf",
+      "pages": 34,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 56,
+      "modules": {
+        "Reading and Writing Module 1": 26,
+        "Reading and Writing Module 2": 26,
+        "Math Module 1": 3,
+        "Math Module 2": 1
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 26,
+      "keyConfidence": 0.42,
+      "bank": false,
+      "notes": [
+        "low key confidence (42%)"
+      ]
+    },
+    {
+      "file": "202503asiav1.pdf",
+      "path": "Digital SAT Tests/2025 03/202503asiav1.pdf",
+      "pages": 35,
+      "pagesNeedingOcr": 1,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 55,
+      "modules": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 23,
+        "Math Module 1": 3,
+        "Math Module 2": 2
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 40,
+      "keyConfidence": 0.65,
+      "bank": false,
+      "notes": []
+    },
+    {
+      "file": "202503asiav2.pdf",
+      "path": "Digital SAT Tests/2025 03/202503asiav2.pdf",
+      "pages": 32,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 52,
+      "modules": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 21,
+        "Math Module 1": 2,
+        "Math Module 2": 2
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 28,
+      "keyConfidence": 0.48,
+      "bank": false,
+      "notes": [
+        "low key confidence (48%)"
+      ]
+    },
+    {
+      "file": "202503asiav3.pdf",
+      "path": "Digital SAT Tests/2025 03/202503asiav3.pdf",
+      "pages": 33,
+      "pagesNeedingOcr": 1,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 53,
+      "modules": {
+        "Reading and Writing Module 1": 26,
+        "Reading and Writing Module 2": 24,
+        "Math Module 1": 2,
+        "Math Module 2": 1
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 25,
+      "keyConfidence": 0.42,
+      "bank": false,
+      "notes": [
+        "low key confidence (42%)"
+      ]
+    },
+    {
+      "file": "202503asiav4.pdf",
+      "path": "Digital SAT Tests/2025 03/202503asiav4.pdf",
+      "pages": 71,
+      "pagesNeedingOcr": 47,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "partial",
+      "questions": 2,
+      "modules": {
+        "Reading and Writing Module 1": 2
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "only 2 questions parsed; likely needs OCR for full coverage",
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202503asiav5.pdf",
+      "path": "Digital SAT Tests/2025 03/202503asiav5.pdf",
+      "pages": 46,
+      "pagesNeedingOcr": 2,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "partial",
+      "questions": 4,
+      "modules": {
+        "Reading and Writing Module 1": 4
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "only 4 questions parsed; likely needs OCR for full coverage",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202503asiav6.pdf",
+      "path": "Digital SAT Tests/2025 03/202503asiav6.pdf",
+      "pages": 100,
+      "pagesNeedingOcr": 100,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202503asiav8.pdf",
+      "path": "Digital SAT Tests/2025 03/202503asiav8.pdf",
+      "pages": 39,
+      "pagesNeedingOcr": 1,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "partial",
+      "questions": 4,
+      "modules": {
+        "Reading and Writing Module 1": 4
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "only 4 questions parsed; likely needs OCR for full coverage",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202503asiav9.pdf",
+      "path": "Digital SAT Tests/2025 03/202503asiav9.pdf",
+      "pages": 38,
+      "pagesNeedingOcr": 1,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "partial",
+      "questions": 4,
+      "modules": {
+        "Reading and Writing Module 1": 4
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "only 4 questions parsed; likely needs OCR for full coverage",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202503usv1.pdf",
+      "path": "Digital SAT Tests/2025 03/202503usv1.pdf",
+      "pages": 33,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 54,
+      "modules": {
+        "Reading and Writing Module 1": 25,
+        "Reading and Writing Module 2": 25,
+        "Math Module 1": 3,
+        "Math Module 2": 1
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 32,
+      "keyConfidence": 0.53,
+      "bank": false,
+      "notes": []
+    },
+    {
+      "file": "202503usv2.pdf",
+      "path": "Digital SAT Tests/2025 03/202503usv2.pdf",
+      "pages": 32,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 51,
+      "modules": {
+        "Reading and Writing Module 1": 23,
+        "Reading and Writing Module 2": 26,
+        "Math Module 1": 2,
+        "Math Module 2": 0
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 17,
+      "keyConfidence": 0.3,
+      "bank": false,
+      "notes": [
+        "low key confidence (30%)"
+      ]
+    },
+    {
+      "file": "202503usv3.pdf",
+      "path": "Digital SAT Tests/2025 03/202503usv3.pdf",
+      "pages": 37,
+      "pagesNeedingOcr": 2,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "partial",
+      "questions": 5,
+      "modules": {
+        "Reading and Writing Module 1": 5
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "only 5 questions parsed; likely needs OCR for full coverage",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202505asiav1.pdf",
+      "path": "Digital SAT Tests/2025 05/202505asiav1.pdf",
+      "pages": 22,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 52,
+      "modules": {
+        "Reading and Writing Module 1": 23,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 2
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1"
+      ],
+      "keyEntries": 51,
+      "keyConfidence": 0.88,
+      "bank": false,
+      "notes": []
+    },
+    {
+      "file": "202505asiav2.pdf",
+      "path": "Digital SAT Tests/2025 05/202505asiav2.pdf",
+      "pages": 64,
+      "pagesNeedingOcr": 44,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 50,
+      "modules": {
+        "Reading and Writing Module 1": 23,
+        "Reading and Writing Module 2": 27
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2"
+      ],
+      "keyEntries": 38,
+      "keyConfidence": 0.68,
+      "bank": false,
+      "notes": []
+    },
+    {
+      "file": "202505asiav3.pdf",
+      "path": "Digital SAT Tests/2025 05/202505asiav3.pdf",
+      "pages": 101,
+      "pagesNeedingOcr": 101,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202505usv1.pdf",
+      "path": "Digital SAT Tests/2025 05/202505usv1.pdf",
+      "pages": 36,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 51,
+      "modules": {
+        "Reading and Writing Module 1": 25,
+        "Reading and Writing Module 2": 24,
+        "Math Module 1": 2,
+        "Math Module 2": 0
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 13,
+      "keyConfidence": 0.23,
+      "bank": false,
+      "notes": [
+        "low key confidence (23%)"
+      ]
+    },
+    {
+      "file": "202505usv2.pdf",
+      "path": "Digital SAT Tests/2025 05/202505usv2.pdf",
+      "pages": 53,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "partial",
+      "questions": 9,
+      "modules": {
+        "Reading and Writing Module 1": 9
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "only 9 questions parsed; likely needs OCR for full coverage",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202506asiav1-rw M2 8A 19D 20 C.pdf",
+      "path": "Digital SAT Tests/2025 06/202506asiav1-rw M2 8A 19D 20 C.pdf",
+      "pages": 23,
+      "pagesNeedingOcr": 1,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 53,
+      "modules": {
+        "Reading and Writing Module 1": 25,
+        "Reading and Writing Module 2": 28
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2"
+      ],
+      "keyEntries": 17,
+      "keyConfidence": 0.29,
+      "bank": false,
+      "notes": [
+        "low key confidence (29%)"
+      ]
+    },
+    {
+      "file": "202506asiav1-rw.pdf",
+      "path": "Digital SAT Tests/2025 06/202506asiav1-rw.pdf",
+      "pages": 23,
+      "pagesNeedingOcr": 1,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 53,
+      "modules": {
+        "Reading and Writing Module 1": 25,
+        "Reading and Writing Module 2": 28
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2"
+      ],
+      "keyEntries": 17,
+      "keyConfidence": 0.29,
+      "bank": false,
+      "notes": [
+        "low key confidence (29%)"
+      ]
+    },
+    {
+      "file": "202506asiav2.pdf",
+      "path": "Digital SAT Tests/2025 06/202506asiav2.pdf",
+      "pages": 34,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 53,
+      "modules": {
+        "Reading and Writing Module 1": 25,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 1,
+        "Math Module 2": 0
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 43,
+      "keyConfidence": 0.73,
+      "bank": false,
+      "notes": []
+    },
+    {
+      "file": "202506asiav3.pdf",
+      "path": "Digital SAT Tests/2025 06/202506asiav3.pdf",
+      "pages": 32,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 55,
+      "modules": {
+        "Reading and Writing Module 1": 25,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 1,
+        "Math Module 2": 2
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 33,
+      "keyConfidence": 0.54,
+      "bank": false,
+      "notes": []
+    },
+    {
+      "file": "202506asiav4.pdf",
+      "path": "Digital SAT Tests/2025 06/202506asiav4.pdf",
+      "pages": 34,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 58,
+      "modules": {
+        "Reading and Writing Module 1": 26,
+        "Reading and Writing Module 2": 28,
+        "Math Module 1": 4,
+        "Math Module 2": 0
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 25,
+      "keyConfidence": 0.39,
+      "bank": false,
+      "notes": [
+        "low key confidence (39%)"
+      ]
+    },
+    {
+      "file": "202506usv1.pdf",
+      "path": "Digital SAT Tests/2025 06/202506usv1.pdf",
+      "pages": 52,
+      "pagesNeedingOcr": 30,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 51,
+      "modules": {
+        "Reading and Writing Module 1": 26,
+        "Reading and Writing Module 2": 25
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2"
+      ],
+      "keyEntries": 1,
+      "keyConfidence": 0.01,
+      "bank": false,
+      "notes": [
+        "low key confidence (1%)"
+      ]
+    },
+    {
+      "file": "202506usv2.pdf",
+      "path": "Digital SAT Tests/2025 06/202506usv2.pdf",
+      "pages": 99,
+      "pagesNeedingOcr": 98,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "SAT June 7th 2025 R&W Module 1 @CookingSAT.pdf",
+      "path": "Digital SAT Tests/2025 06/SAT June 7th 2025 R&W Module 1 @CookingSAT.pdf",
+      "pages": 22,
+      "pagesNeedingOcr": 22,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202508asiav1-screenshot.pdf",
+      "path": "Digital SAT Tests/2025 08/202508asiav1-screenshot.pdf",
+      "pages": 98,
+      "pagesNeedingOcr": 98,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202508asiav1.pdf",
+      "path": "Digital SAT Tests/2025 08/202508asiav1.pdf",
+      "pages": 36,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 54,
+      "modules": {
+        "Reading and Writing Module 1": 25,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 2,
+        "Math Module 2": 0
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 33,
+      "keyConfidence": 0.55,
+      "bank": false,
+      "notes": []
+    },
+    {
+      "file": "202508asiav2-rw-screenshot.pdf",
+      "path": "Digital SAT Tests/2025 08/202508asiav2-rw-screenshot.pdf",
+      "pages": 54,
+      "pagesNeedingOcr": 54,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202508asiav2-rw.pdf",
+      "path": "Digital SAT Tests/2025 08/202508asiav2-rw.pdf",
+      "pages": 23,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 53,
+      "modules": {
+        "Reading and Writing Module 1": 26,
+        "Reading and Writing Module 2": 27
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2"
+      ],
+      "keyEntries": 55,
+      "keyConfidence": 0.93,
+      "bank": false,
+      "notes": []
+    },
+    {
+      "file": "202508asiav3-rw.pdf",
+      "path": "Digital SAT Tests/2025 08/202508asiav3-rw.pdf",
+      "pages": 23,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 52,
+      "modules": {
+        "Reading and Writing Module 1": 26,
+        "Reading and Writing Module 2": 26
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2"
+      ],
+      "keyEntries": 6,
+      "keyConfidence": 0.1,
+      "bank": false,
+      "notes": [
+        "low key confidence (10%)"
+      ]
+    },
+    {
+      "file": "202508usv1.pdf",
+      "path": "Digital SAT Tests/2025 08/202508usv1.pdf",
+      "pages": 98,
+      "pagesNeedingOcr": 98,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202508usv2.pdf",
+      "path": "Digital SAT Tests/2025 08/202508usv2.pdf",
+      "pages": 99,
+      "pagesNeedingOcr": 99,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202508usv3.pdf",
+      "path": "Digital SAT Tests/2025 08/202508usv3.pdf",
+      "pages": 99,
+      "pagesNeedingOcr": 99,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202508usv4.pdf",
+      "path": "Digital SAT Tests/2025 08/202508usv4.pdf",
+      "pages": 94,
+      "pagesNeedingOcr": 94,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202509asiav1-rw.pdf",
+      "path": "Digital SAT Tests/2025 09/202509asiav1-rw.pdf",
+      "pages": 55,
+      "pagesNeedingOcr": 55,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202509asiav1.pdf",
+      "path": "Digital SAT Tests/2025 09/202509asiav1.pdf",
+      "pages": 36,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 50,
+      "modules": {
+        "Reading and Writing Module 1": 25,
+        "Reading and Writing Module 2": 25,
+        "Math Module 1": 0,
+        "Math Module 2": 0
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 33,
+      "keyConfidence": 0.59,
+      "bank": false,
+      "notes": []
+    },
+    {
+      "file": "202509asiav2-rw.pdf",
+      "path": "Digital SAT Tests/2025 09/202509asiav2-rw.pdf",
+      "pages": 28,
+      "pagesNeedingOcr": 27,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "partial",
+      "questions": 1,
+      "modules": {
+        "Reading and Writing Module 1": 1
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "only 1 questions parsed; likely needs OCR for full coverage",
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202509asiav2.pdf",
+      "path": "Digital SAT Tests/2025 09/202509asiav2.pdf",
+      "pages": 35,
+      "pagesNeedingOcr": 2,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 53,
+      "modules": {
+        "Reading and Writing Module 1": 24,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 1,
+        "Math Module 2": 1
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 22,
+      "keyConfidence": 0.37,
+      "bank": false,
+      "notes": [
+        "low key confidence (37%)"
+      ]
+    },
+    {
+      "file": "202509asiav3.pdf",
+      "path": "Digital SAT Tests/2025 09/202509asiav3.pdf",
+      "pages": 45,
+      "pagesNeedingOcr": 34,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 27,
+      "modules": {
+        "Reading and Writing Module 1": 26,
+        "Math Module 1": 1,
+        "Math Module 2": 0
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202509asiav4.pdf",
+      "path": "Digital SAT Tests/2025 09/202509asiav4.pdf",
+      "pages": 33,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 94,
+      "modules": {
+        "Reading and Writing Module 1": 94
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202509us01.pdf",
+      "path": "Digital SAT Tests/2025 09/202509us01.pdf",
+      "pages": 63,
+      "pagesNeedingOcr": 1,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 35,
+      "modules": {
+        "Reading and Writing Module 1": 35
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202509us02.pdf",
+      "path": "Digital SAT Tests/2025 09/202509us02.pdf",
+      "pages": 66,
+      "pagesNeedingOcr": 1,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 37,
+      "modules": {
+        "Reading and Writing Module 1": 37
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202509us03.pdf",
+      "path": "Digital SAT Tests/2025 09/202509us03.pdf",
+      "pages": 63,
+      "pagesNeedingOcr": 1,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 39,
+      "modules": {
+        "Reading and Writing Module 1": 39
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202509us04.pdf",
+      "path": "Digital SAT Tests/2025 09/202509us04.pdf",
+      "pages": 65,
+      "pagesNeedingOcr": 1,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 40,
+      "modules": {
+        "Reading and Writing Module 1": 40
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202509us05.pdf",
+      "path": "Digital SAT Tests/2025 09/202509us05.pdf",
+      "pages": 63,
+      "pagesNeedingOcr": 1,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 38,
+      "modules": {
+        "Reading and Writing Module 1": 38
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202509us06.pdf",
+      "path": "Digital SAT Tests/2025 09/202509us06.pdf",
+      "pages": 71,
+      "pagesNeedingOcr": 3,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 38,
+      "modules": {
+        "Reading and Writing Module 1": 38
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202509usv7.pdf",
+      "path": "Digital SAT Tests/2025 09/202509usv7.pdf",
+      "pages": 35,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 55,
+      "modules": {
+        "Reading and Writing Module 1": 24,
+        "Reading and Writing Module 2": 29,
+        "Math Module 1": 1,
+        "Math Module 2": 1
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 40,
+      "keyConfidence": 0.65,
+      "bank": false,
+      "notes": []
+    },
+    {
+      "file": "202510asiav1-new.pdf",
+      "path": "Digital SAT Tests/2025 10/202510asiav1-new.pdf",
+      "pages": 36,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 54,
+      "modules": {
+        "Reading and Writing Module 1": 26,
+        "Reading and Writing Module 2": 26,
+        "Math Module 1": 2,
+        "Math Module 2": 0
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 34,
+      "keyConfidence": 0.57,
+      "bank": false,
+      "notes": []
+    },
+    {
+      "file": "202510asiav2-new.pdf",
+      "path": "Digital SAT Tests/2025 10/202510asiav2-new.pdf",
+      "pages": 32,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 52,
+      "modules": {
+        "Reading and Writing Module 1": 25,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 0,
+        "Math Module 2": 0
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 29,
+      "keyConfidence": 0.5,
+      "bank": false,
+      "notes": []
+    },
+    {
+      "file": "202510asiav3.pdf",
+      "path": "Digital SAT Tests/2025 10/202510asiav3.pdf",
+      "pages": 61,
+      "pagesNeedingOcr": 61,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202510asiav4.pdf",
+      "path": "Digital SAT Tests/2025 10/202510asiav4.pdf",
+      "pages": 68,
+      "pagesNeedingOcr": 68,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202510usv1.pdf",
+      "path": "Digital SAT Tests/2025 10/202510usv1.pdf",
+      "pages": 111,
+      "pagesNeedingOcr": 8,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 52,
+      "modules": {
+        "Reading and Writing Module 1": 52
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202510usv2.pdf",
+      "path": "Digital SAT Tests/2025 10/202510usv2.pdf",
+      "pages": 112,
+      "pagesNeedingOcr": 8,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 54,
+      "modules": {
+        "Reading and Writing Module 1": 54
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202510usv3.pdf",
+      "path": "Digital SAT Tests/2025 10/202510usv3.pdf",
+      "pages": 34,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 54,
+      "modules": {
+        "Reading and Writing Module 1": 24,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 3,
+        "Math Module 2": 0
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 34,
+      "keyConfidence": 0.57,
+      "bank": false,
+      "notes": []
+    },
+    {
+      "file": "202511asiav1.pdf",
+      "path": "Digital SAT Tests/2025 11/202511asiav1.pdf",
+      "pages": 51,
+      "pagesNeedingOcr": 1,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 57,
+      "modules": {
+        "Reading and Writing Module 1": 57
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202511asiav2.pdf",
+      "path": "Digital SAT Tests/2025 11/202511asiav2.pdf",
+      "pages": 51,
+      "pagesNeedingOcr": 1,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 59,
+      "modules": {
+        "Reading and Writing Module 1": 59
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202512asiav1.pdf",
+      "path": "Digital SAT Tests/2025 12/202512asiav1.pdf",
+      "pages": 35,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 52,
+      "modules": {
+        "Reading and Writing Module 1": 25,
+        "Reading and Writing Module 2": 26,
+        "Math Module 1": 1,
+        "Math Module 2": 0
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 34,
+      "keyConfidence": 0.59,
+      "bank": false,
+      "notes": []
+    },
+    {
+      "file": "202512asiav2.pdf",
+      "path": "Digital SAT Tests/2025 12/202512asiav2.pdf",
+      "pages": 41,
+      "pagesNeedingOcr": 6,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 51,
+      "modules": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 23,
+        "Math Module 1": 1,
+        "Math Module 2": 0
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
+      ],
+      "keyEntries": 22,
+      "keyConfidence": 0.39,
+      "bank": false,
+      "notes": [
+        "low key confidence (39%)"
+      ]
+    },
+    {
+      "file": "202512asiav3.pdf",
+      "path": "Digital SAT Tests/2025 12/202512asiav3.pdf",
+      "pages": 22,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 51,
+      "modules": {
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 24
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2"
+      ],
+      "keyEntries": 18,
+      "keyConfidence": 0.32,
+      "bank": false,
+      "notes": [
+        "low key confidence (32%)"
+      ]
+    },
+    {
+      "file": "202512asiav4.pdf",
+      "path": "Digital SAT Tests/2025 12/202512asiav4.pdf",
+      "pages": 99,
+      "pagesNeedingOcr": 99,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202512asiav5.pdf",
+      "path": "Digital SAT Tests/2025 12/202512asiav5.pdf",
+      "pages": 97,
+      "pagesNeedingOcr": 97,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202512asiav6.pdf",
+      "path": "Digital SAT Tests/2025 12/202512asiav6.pdf",
+      "pages": 98,
+      "pagesNeedingOcr": 98,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202512asiav7.pdf",
+      "path": "Digital SAT Tests/2025 12/202512asiav7.pdf",
+      "pages": 97,
+      "pagesNeedingOcr": 97,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202512asiav8.pdf",
+      "path": "Digital SAT Tests/2025 12/202512asiav8.pdf",
+      "pages": 129,
+      "pagesNeedingOcr": 128,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2025usv1.pdf",
+      "path": "Digital SAT Tests/2025 12/2025usv1.pdf",
+      "pages": 75,
+      "pagesNeedingOcr": 75,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2025usv2.pdf",
+      "path": "Digital SAT Tests/2025 12/2025usv2.pdf",
+      "pages": 75,
+      "pagesNeedingOcr": 75,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2025usv3.pdf",
+      "path": "Digital SAT Tests/2025 12/2025usv3.pdf",
+      "pages": 72,
+      "pagesNeedingOcr": 72,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "2025usv4.pdf",
+      "path": "Digital SAT Tests/2025 12/2025usv4.pdf",
+      "pages": 73,
+      "pagesNeedingOcr": 66,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202603asiav1.pdf",
+      "path": "Digital SAT Tests/2026 03/202603asiav1.pdf",
+      "pages": 36,
+      "pagesNeedingOcr": 36,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202603asiav2-new.pdf",
+      "path": "Digital SAT Tests/2026 03/202603asiav2-new.pdf",
+      "pages": 33,
+      "pagesNeedingOcr": 33,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202603asiav3.pdf",
+      "path": "Digital SAT Tests/2026 03/202603asiav3.pdf",
+      "pages": 99,
+      "pagesNeedingOcr": 99,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {
+        "Math Module 2": 0
+      },
+      "moduleNames": [
+        "Math Module 2"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202603usv1.pdf",
+      "path": "Digital SAT Tests/2026 03/202603usv1.pdf",
+      "pages": 99,
+      "pagesNeedingOcr": 99,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {
+        "Math Module 2": 0
+      },
+      "moduleNames": [
+        "Math Module 2"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202603usv2.pdf",
+      "path": "Digital SAT Tests/2026 03/202603usv2.pdf",
+      "pages": 99,
+      "pagesNeedingOcr": 99,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {
+        "Math Module 2": 0
+      },
+      "moduleNames": [
+        "Math Module 2"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202605asIav1-rw.pdf",
+      "path": "Digital SAT Tests/2026 05/202605asIav1-rw.pdf",
+      "pages": 23,
+      "pagesNeedingOcr": 23,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202605asIav2-rw.pdf",
+      "path": "Digital SAT Tests/2026 05/202605asIav2-rw.pdf",
+      "pages": 23,
+      "pagesNeedingOcr": 23,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202605math-105q.pdf",
+      "path": "Digital SAT Tests/2026 05/202605math-105q.pdf",
+      "pages": 124,
+      "pagesNeedingOcr": 124,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202605usv1-rw.pdf",
+      "path": "Digital SAT Tests/2026 05/202605usv1-rw.pdf",
+      "pages": 36,
+      "pagesNeedingOcr": 1,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 50,
+      "modules": {
+        "Reading and Writing Module 1": 25,
+        "Reading and Writing Module 2": 25
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202605usv2-rw.pdf",
+      "path": "Digital SAT Tests/2026 05/202605usv2-rw.pdf",
+      "pages": 55,
+      "pagesNeedingOcr": 1,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 52,
+      "modules": {
+        "Reading and Writing Module 1": 52
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202606asiav1.pdf",
+      "path": "Digital SAT Tests/2026 06/202606asiav1.pdf",
+      "pages": 50,
+      "pagesNeedingOcr": 50,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202606asiav2.pdf",
+      "path": "Digital SAT Tests/2026 06/202606asiav2.pdf",
+      "pages": 39,
+      "pagesNeedingOcr": 39,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202606asiav3.pdf",
+      "path": "Digital SAT Tests/2026 06/202606asiav3.pdf",
+      "pages": 8,
+      "pagesNeedingOcr": 2,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 72,
+      "modules": {
+        "Reading and Writing Module 1": 72
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202606asiav4.pdf",
+      "path": "Digital SAT Tests/2026 06/202606asiav4.pdf",
+      "pages": 7,
+      "pagesNeedingOcr": 1,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "full-test",
+      "status": "success",
+      "questions": 65,
+      "modules": {
+        "Reading and Writing Module 1": 65
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202606asiav5.pdf",
+      "path": "Digital SAT Tests/2026 06/202606asiav5.pdf",
+      "pages": 55,
+      "pagesNeedingOcr": 55,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202606usv1.pdf",
+      "path": "Digital SAT Tests/2026 06/202606usv1.pdf",
+      "pages": 53,
+      "pagesNeedingOcr": 53,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202606usv2.pdf",
+      "path": "Digital SAT Tests/2026 06/202606usv2.pdf",
+      "pages": 55,
+      "pagesNeedingOcr": 55,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202606usv3.pdf",
+      "path": "Digital SAT Tests/2026 06/202606usv3.pdf",
+      "pages": 56,
+      "pagesNeedingOcr": 56,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202606usv4.pdf",
+      "path": "Digital SAT Tests/2026 06/202606usv4.pdf",
+      "pages": 53,
+      "pagesNeedingOcr": 53,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "202606usv5-rw.pdf",
+      "path": "Digital SAT Tests/2026 06/202606usv5-rw.pdf",
+      "pages": 37,
+      "pagesNeedingOcr": 37,
+      "textQuality": "poor",
+      "method": "text",
+      "parser": "full-test",
+      "status": "needs_ocr",
+      "questions": 0,
+      "modules": {},
+      "moduleNames": [],
+      "keyEntries": 0,
+      "keyConfidence": 0,
+      "bank": false,
+      "notes": [
+        "high OCR-need ratio (1%) suggests image-heavy PDF",
+        "no answer key entries found"
+      ]
+    },
+    {
+      "file": "Full RW Question Bank With Key.pdf",
+      "path": "Full RW Question Bank With Key.pdf",
+      "pages": 1977,
+      "pagesNeedingOcr": 0,
+      "textQuality": "good",
+      "method": "text",
+      "parser": "question-bank",
+      "status": "success",
+      "questions": 1844,
+      "modules": {
+        "RW Question Bank": 1844
+      },
+      "moduleNames": [],
+      "keyEntries": 1844,
+      "keyConfidence": 0.99,
+      "bank": true,
+      "notes": [
+        "1 parse errors"
+      ]
+    }
+  ]
+}

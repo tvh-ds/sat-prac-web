@@ -1,0 +1,4825 @@
+{
+  "files": [
+    {
+      "file": "2025 03\\202503asiav1.ocr.txt",
+      "pages": 35,
+      "questions": 98,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 10
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 10,
+          "endPage": 19
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 19,
+          "endPage": 27
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 27,
+          "endPage": 32
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        4,
+        5,
+        13,
+        14,
+        20,
+        21,
+        22,
+        23,
+        25,
+        28,
+        30,
+        31
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2025 03\\202503asiav2.ocr.txt",
+      "pages": 32,
+      "questions": 98,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 10
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 10,
+          "endPage": 18
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 18,
+          "endPage": 24
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 24,
+          "endPage": 30
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        3,
+        4,
+        5,
+        19,
+        20,
+        21,
+        22,
+        23,
+        25,
+        26,
+        28,
+        29
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2025 03\\202503asiav3.ocr.txt",
+      "pages": 33,
+      "questions": 98,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 11
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 11,
+          "endPage": 20
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 20,
+          "endPage": 26
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 26,
+          "endPage": 30
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        4,
+        5,
+        6,
+        14,
+        15,
+        21,
+        22,
+        24,
+        25,
+        29
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2025 03\\202503asiav4.ocr.txt",
+      "pages": 71,
+      "questions": 84,
+      "keyEntries": 52,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 59,
+          "expected": 27,
+          "status": "OVER",
+          "startPage": 1,
+          "endPage": 31
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 20,
+          "expected": 22,
+          "status": "PARTIAL",
+          "startPage": 32,
+          "endPage": 58
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 5,
+          "expected": 22,
+          "status": "PARTIAL",
+          "startPage": 59,
+          "endPage": 71
+        }
+      ],
+      "keysMatched": "39/84",
+      "unmatched": [
+        "Reading and Writing Module 1#14",
+        "Reading and Writing Module 1#15",
+        "Reading and Writing Module 1#16",
+        "Reading and Writing Module 1#17",
+        "Reading and Writing Module 1#18",
+        "Reading and Writing Module 1#19",
+        "Reading and Writing Module 1#20",
+        "Reading and Writing Module 1#28",
+        "Reading and Writing Module 1#29",
+        "Reading and Writing Module 1#30"
+      ],
+      "visualPages": [
+        3,
+        4,
+        15,
+        16,
+        17,
+        26,
+        27,
+        29,
+        31,
+        34,
+        35,
+        36,
+        40,
+        42,
+        45,
+        46,
+        56,
+        59,
+        61,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 03\\202503asiav5.ocr.txt",
+      "pages": 46,
+      "questions": 88,
+      "keyEntries": 54,
+      "modules": [
+        {
+          "name": "Question Bank – Math",
+          "actual": 88,
+          "expected": 22,
+          "status": "OVER",
+          "startPage": 1,
+          "endPage": 46
+        }
+      ],
+      "keysMatched": "0/88",
+      "unmatched": [
+        "Question Bank – Math#1",
+        "Question Bank – Math#2",
+        "Question Bank – Math#3",
+        "Question Bank – Math#4",
+        "Question Bank – Math#5",
+        "Question Bank – Math#6",
+        "Question Bank – Math#7",
+        "Question Bank – Math#8",
+        "Question Bank – Math#9",
+        "Question Bank – Math#10"
+      ],
+      "visualPages": [
+        6,
+        17,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        36,
+        38,
+        39,
+        41,
+        42,
+        43,
+        46
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 03\\202503asiav6.ocr.txt",
+      "pages": 100,
+      "questions": 97,
+      "keyEntries": 0,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 2,
+          "endPage": 27
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 25,
+          "expected": 27,
+          "status": "PARTIAL",
+          "startPage": 28,
+          "endPage": 54
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 21,
+          "expected": 22,
+          "status": "PARTIAL",
+          "startPage": 55,
+          "endPage": 76
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 24,
+          "expected": 22,
+          "status": "OVER",
+          "startPage": 77,
+          "endPage": 100
+        }
+      ],
+      "keysMatched": "0/97",
+      "unmatched": [
+        "Reading and Writing Module 1#1",
+        "Reading and Writing Module 1#2",
+        "Reading and Writing Module 1#3",
+        "Reading and Writing Module 1#4",
+        "Reading and Writing Module 1#5",
+        "Reading and Writing Module 1#6",
+        "Reading and Writing Module 1#7",
+        "Reading and Writing Module 1#8",
+        "Reading and Writing Module 1#9",
+        "Reading and Writing Module 1#10"
+      ],
+      "visualPages": [
+        12,
+        13,
+        37,
+        56,
+        58,
+        60,
+        61,
+        63,
+        64,
+        65,
+        66,
+        68,
+        70,
+        71,
+        72,
+        75,
+        82,
+        83,
+        84,
+        86,
+        88,
+        89,
+        92,
+        93,
+        94,
+        98,
+        99,
+        100
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 03\\202503asiav8.ocr.txt",
+      "pages": 39,
+      "questions": 89,
+      "keyEntries": 0,
+      "modules": [
+        {
+          "name": "Question Bank – Reading and Writing",
+          "actual": 89,
+          "expected": 27,
+          "status": "OVER",
+          "startPage": 1,
+          "endPage": 39
+        }
+      ],
+      "keysMatched": "0/89",
+      "unmatched": [
+        "Question Bank – Reading and Writing#1",
+        "Question Bank – Reading and Writing#2",
+        "Question Bank – Reading and Writing#3",
+        "Question Bank – Reading and Writing#4",
+        "Question Bank – Reading and Writing#5",
+        "Question Bank – Reading and Writing#6",
+        "Question Bank – Reading and Writing#7",
+        "Question Bank – Reading and Writing#8",
+        "Question Bank – Reading and Writing#9",
+        "Question Bank – Reading and Writing#10"
+      ],
+      "visualPages": [
+        4,
+        5,
+        6,
+        18,
+        20,
+        28,
+        30,
+        34,
+        36,
+        39
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 03\\202503asiav9.ocr.txt",
+      "pages": 38,
+      "questions": 89,
+      "keyEntries": 0,
+      "modules": [
+        {
+          "name": "Question Bank – Reading and Writing",
+          "actual": 89,
+          "expected": 27,
+          "status": "OVER",
+          "startPage": 1,
+          "endPage": 38
+        }
+      ],
+      "keysMatched": "0/89",
+      "unmatched": [
+        "Question Bank – Reading and Writing#1",
+        "Question Bank – Reading and Writing#2",
+        "Question Bank – Reading and Writing#3",
+        "Question Bank – Reading and Writing#4",
+        "Question Bank – Reading and Writing#5",
+        "Question Bank – Reading and Writing#6",
+        "Question Bank – Reading and Writing#7",
+        "Question Bank – Reading and Writing#8",
+        "Question Bank – Reading and Writing#9",
+        "Question Bank – Reading and Writing#10"
+      ],
+      "visualPages": [
+        4,
+        5,
+        18,
+        28,
+        29,
+        30,
+        32,
+        35,
+        38
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 03\\202503usv1.ocr.txt",
+      "pages": 33,
+      "questions": 98,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 10
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 10,
+          "endPage": 19
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 19,
+          "endPage": 25
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 25,
+          "endPage": 31
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        4,
+        5,
+        14,
+        20,
+        21,
+        22,
+        23,
+        25,
+        26,
+        27,
+        28,
+        30
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2025 03\\202503usv2.ocr.txt",
+      "pages": 32,
+      "questions": 98,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 9
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 9,
+          "endPage": 19
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 19,
+          "endPage": 24
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 24,
+          "endPage": 30
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        5,
+        12,
+        13,
+        20,
+        21,
+        27,
+        28
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2025 03\\202503usv3.ocr.txt",
+      "pages": 37,
+      "questions": 88,
+      "keyEntries": 54,
+      "modules": [
+        {
+          "name": "Question Bank – Reading and Writing",
+          "actual": 88,
+          "expected": 27,
+          "status": "OVER",
+          "startPage": 2,
+          "endPage": 37
+        }
+      ],
+      "keysMatched": "0/88",
+      "unmatched": [
+        "Question Bank – Reading and Writing#1",
+        "Question Bank – Reading and Writing#2",
+        "Question Bank – Reading and Writing#3",
+        "Question Bank – Reading and Writing#4",
+        "Question Bank – Reading and Writing#5",
+        "Question Bank – Reading and Writing#6",
+        "Question Bank – Reading and Writing#7",
+        "Question Bank – Reading and Writing#8",
+        "Question Bank – Reading and Writing#9",
+        "Question Bank – Reading and Writing#10"
+      ],
+      "visualPages": [
+        24,
+        25,
+        26,
+        28,
+        32,
+        34,
+        37
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 05\\202505asiav1.ocr.txt",
+      "pages": 22,
+      "questions": 54,
+      "keyEntries": 54,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 10
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 10,
+          "endPage": 21
+        }
+      ],
+      "keysMatched": "54/54",
+      "unmatched": [],
+      "visualPages": [
+        4,
+        5,
+        14,
+        15
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2025 05\\202505asiav2.ocr.txt",
+      "pages": 64,
+      "questions": 97,
+      "keyEntries": 54,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 10
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 10,
+          "endPage": 19
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 21,
+          "expected": 22,
+          "status": "PARTIAL",
+          "startPage": 20,
+          "endPage": 41
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 42,
+          "endPage": 63
+        }
+      ],
+      "keysMatched": "54/97",
+      "unmatched": [
+        "Math Module 1#1",
+        "Math Module 1#2",
+        "Math Module 1#3",
+        "Math Module 1#4",
+        "Math Module 1#5",
+        "Math Module 1#6",
+        "Math Module 1#7",
+        "Math Module 1#8",
+        "Math Module 1#9",
+        "Math Module 1#10"
+      ],
+      "visualPages": [
+        4,
+        5,
+        13,
+        20,
+        26,
+        28,
+        32,
+        34,
+        35,
+        36,
+        37,
+        38,
+        41,
+        43,
+        44,
+        45,
+        48,
+        51,
+        53,
+        54,
+        55,
+        59,
+        61,
+        62
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 05\\202505asiav3.ocr.txt",
+      "pages": 101,
+      "questions": 100,
+      "keyEntries": 0,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 28
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 28,
+          "expected": 27,
+          "status": "OVER",
+          "startPage": 29,
+          "endPage": 56
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 23,
+          "expected": 22,
+          "status": "OVER",
+          "startPage": 57,
+          "endPage": 79
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 80,
+          "endPage": 101
+        }
+      ],
+      "keysMatched": "0/100",
+      "unmatched": [
+        "Reading and Writing Module 1#1",
+        "Reading and Writing Module 1#2",
+        "Reading and Writing Module 1#3",
+        "Reading and Writing Module 1#4",
+        "Reading and Writing Module 1#5",
+        "Reading and Writing Module 1#6",
+        "Reading and Writing Module 1#7",
+        "Reading and Writing Module 1#8",
+        "Reading and Writing Module 1#9",
+        "Reading and Writing Module 1#10"
+      ],
+      "visualPages": [
+        8,
+        9,
+        11,
+        12,
+        13,
+        14,
+        15,
+        17,
+        24,
+        28,
+        29,
+        32,
+        34,
+        37,
+        38,
+        49,
+        52,
+        54,
+        59,
+        60,
+        61,
+        66,
+        67,
+        70,
+        71,
+        72,
+        74,
+        75,
+        76,
+        78,
+        81,
+        82,
+        85,
+        86,
+        87,
+        88,
+        90,
+        91,
+        94,
+        95,
+        96,
+        99,
+        101
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 05\\202505usv1.ocr.txt",
+      "pages": 36,
+      "questions": 97,
+      "keyEntries": 97,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 10
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 11,
+          "endPage": 21
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 21,
+          "expected": 22,
+          "status": "PARTIAL",
+          "startPage": 21,
+          "endPage": 28
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 28,
+          "endPage": 34
+        }
+      ],
+      "keysMatched": "97/97",
+      "unmatched": [],
+      "visualPages": [
+        5,
+        6,
+        15,
+        16,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 05\\202505usv2.ocr.txt",
+      "pages": 53,
+      "questions": 129,
+      "keyEntries": 0,
+      "modules": [
+        {
+          "name": "Question Bank – Reading and Writing",
+          "actual": 129,
+          "expected": 27,
+          "status": "OVER",
+          "startPage": 1,
+          "endPage": 53
+        }
+      ],
+      "keysMatched": "0/129",
+      "unmatched": [
+        "Question Bank – Reading and Writing#1",
+        "Question Bank – Reading and Writing#2",
+        "Question Bank – Reading and Writing#3",
+        "Question Bank – Reading and Writing#4",
+        "Question Bank – Reading and Writing#5",
+        "Question Bank – Reading and Writing#6",
+        "Question Bank – Reading and Writing#7",
+        "Question Bank – Reading and Writing#8",
+        "Question Bank – Reading and Writing#9",
+        "Question Bank – Reading and Writing#10"
+      ],
+      "visualPages": [
+        4,
+        5,
+        14,
+        15,
+        26,
+        37,
+        39,
+        41,
+        42,
+        44,
+        45,
+        46,
+        47,
+        48,
+        50,
+        51
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 06\\202506asiav1-rw.ocr.txt",
+      "pages": 23,
+      "questions": 54,
+      "keyEntries": 54,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 11
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 11,
+          "endPage": 21
+        }
+      ],
+      "keysMatched": "54/54",
+      "unmatched": [],
+      "visualPages": [
+        5,
+        6,
+        15
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2025 06\\202506asiav2.ocr.txt",
+      "pages": 34,
+      "questions": 96,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 10
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 10,
+          "endPage": 20
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 20,
+          "expected": 22,
+          "status": "PARTIAL",
+          "startPage": 20,
+          "endPage": 26
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 26,
+          "endPage": 31
+        }
+      ],
+      "keysMatched": "96/96",
+      "unmatched": [],
+      "visualPages": [
+        4,
+        5,
+        14,
+        20,
+        22,
+        24,
+        25,
+        26,
+        28
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 06\\202506asiav3.ocr.txt",
+      "pages": 32,
+      "questions": 98,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 10
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 10,
+          "endPage": 19
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 19,
+          "endPage": 24
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 24,
+          "endPage": 30
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        4,
+        5,
+        13,
+        14,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2025 06\\202506asiav4.ocr.txt",
+      "pages": 34,
+      "questions": 98,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 11
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 11,
+          "endPage": 21
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 21,
+          "endPage": 26
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 27,
+          "endPage": 32
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        5,
+        6,
+        15,
+        22,
+        23,
+        25,
+        26,
+        27,
+        29,
+        31,
+        32
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2025 06\\202506usv1.ocr.txt",
+      "pages": 52,
+      "questions": 98,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 11
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 11,
+          "endPage": 20
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 21,
+          "endPage": 38
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 38,
+          "endPage": 52
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        4,
+        5,
+        15,
+        24,
+        27,
+        29,
+        31,
+        38,
+        46,
+        49,
+        52
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2025 06\\202506usv2.ocr.txt",
+      "pages": 99,
+      "questions": 98,
+      "keyEntries": 0,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 3,
+          "endPage": 28
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 29,
+          "endPage": 55
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 56,
+          "endPage": 77
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 78,
+          "endPage": 99
+        }
+      ],
+      "keysMatched": "0/98",
+      "unmatched": [
+        "Reading and Writing Module 1#1",
+        "Reading and Writing Module 1#2",
+        "Reading and Writing Module 1#3",
+        "Reading and Writing Module 1#4",
+        "Reading and Writing Module 1#5",
+        "Reading and Writing Module 1#6",
+        "Reading and Writing Module 1#7",
+        "Reading and Writing Module 1#8",
+        "Reading and Writing Module 1#9",
+        "Reading and Writing Module 1#10"
+      ],
+      "visualPages": [
+        1,
+        12,
+        14,
+        38,
+        56,
+        57,
+        61,
+        64,
+        65,
+        66,
+        67,
+        71,
+        73,
+        76,
+        77,
+        79,
+        80,
+        84,
+        86,
+        88,
+        92,
+        97,
+        98,
+        99
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 08\\202508asiav1.ocr.txt",
+      "pages": 36,
+      "questions": 98,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 11
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 11,
+          "endPage": 21
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 21,
+          "endPage": 27
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 27,
+          "endPage": 33
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        3,
+        4,
+        5,
+        6,
+        16,
+        23,
+        25,
+        26,
+        29,
+        30,
+        32,
+        33
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2025 08\\202508asiav2-rw.ocr.txt",
+      "pages": 23,
+      "questions": 54,
+      "keyEntries": 54,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 11
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 11,
+          "endPage": 22
+        }
+      ],
+      "keysMatched": "54/54",
+      "unmatched": [],
+      "visualPages": [
+        4,
+        5,
+        15,
+        16
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2025 08\\202508asiav3-rw.ocr.txt",
+      "pages": 23,
+      "questions": 54,
+      "keyEntries": 54,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 11
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 11,
+          "endPage": 22
+        }
+      ],
+      "keysMatched": "54/54",
+      "unmatched": [],
+      "visualPages": [
+        4,
+        5,
+        15,
+        16,
+        17
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2025 08\\202508usv1.ocr.txt",
+      "pages": 98,
+      "questions": 88,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Question Bank – Reading and Writing",
+          "actual": 88,
+          "expected": 27,
+          "status": "OVER",
+          "startPage": 2,
+          "endPage": 98
+        }
+      ],
+      "keysMatched": "67/88",
+      "unmatched": [
+        "Question Bank – Reading and Writing#-1",
+        "Question Bank – Reading and Writing#-1",
+        "Question Bank – Reading and Writing#-1",
+        "Question Bank – Reading and Writing#-1",
+        "Question Bank – Reading and Writing#-1",
+        "Question Bank – Reading and Writing#-1",
+        "Question Bank – Reading and Writing#-1",
+        "Question Bank – Reading and Writing#-1",
+        "Question Bank – Reading and Writing#-1",
+        "Question Bank – Reading and Writing#-1"
+      ],
+      "visualPages": [
+        9,
+        12,
+        36,
+        37,
+        55,
+        60,
+        62,
+        64,
+        72,
+        74,
+        78,
+        83,
+        84,
+        87,
+        93,
+        95,
+        98
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 08\\202508usv2.ocr.txt",
+      "pages": 99,
+      "questions": 87,
+      "keyEntries": 94,
+      "modules": [
+        {
+          "name": "Question Bank – Reading and Writing",
+          "actual": 87,
+          "expected": 27,
+          "status": "OVER",
+          "startPage": 2,
+          "endPage": 99
+        }
+      ],
+      "keysMatched": "63/87",
+      "unmatched": [
+        "Question Bank – Reading and Writing#80",
+        "Question Bank – Reading and Writing#81",
+        "Question Bank – Reading and Writing#10",
+        "Question Bank – Reading and Writing#218",
+        "Question Bank – Reading and Writing#21",
+        "Question Bank – Reading and Writing#-1",
+        "Question Bank – Reading and Writing#-1",
+        "Question Bank – Reading and Writing#-1",
+        "Question Bank – Reading and Writing#-1",
+        "Question Bank – Reading and Writing#-1"
+      ],
+      "visualPages": [
+        5,
+        6,
+        37,
+        39,
+        59,
+        68,
+        69,
+        73,
+        82,
+        85,
+        89,
+        93,
+        96,
+        99
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 08\\202508usv3.ocr.txt",
+      "pages": 99,
+      "questions": 92,
+      "keyEntries": 102,
+      "modules": [
+        {
+          "name": "Question Bank – Reading and Writing",
+          "actual": 92,
+          "expected": 27,
+          "status": "OVER",
+          "startPage": 2,
+          "endPage": 99
+        }
+      ],
+      "keysMatched": "50/92",
+      "unmatched": [
+        "Question Bank – Reading and Writing#22",
+        "Question Bank – Reading and Writing#23",
+        "Question Bank – Reading and Writing#22",
+        "Question Bank – Reading and Writing#22",
+        "Question Bank – Reading and Writing#23",
+        "Question Bank – Reading and Writing#24",
+        "Question Bank – Reading and Writing#-1",
+        "Question Bank – Reading and Writing#-1",
+        "Question Bank – Reading and Writing#24",
+        "Question Bank – Reading and Writing#25"
+      ],
+      "visualPages": [
+        8,
+        31,
+        32,
+        56,
+        57,
+        58,
+        60,
+        63,
+        71,
+        74,
+        75,
+        78,
+        93,
+        94,
+        98,
+        99
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 08\\202508usv4.ocr.txt",
+      "pages": 94,
+      "questions": 88,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Question Bank – Reading and Writing",
+          "actual": 88,
+          "expected": 27,
+          "status": "OVER",
+          "startPage": 2,
+          "endPage": 94
+        }
+      ],
+      "keysMatched": "60/88",
+      "unmatched": [
+        "Question Bank – Reading and Writing#27",
+        "Question Bank – Reading and Writing#-1",
+        "Question Bank – Reading and Writing#28",
+        "Question Bank – Reading and Writing#29",
+        "Question Bank – Reading and Writing#-1",
+        "Question Bank – Reading and Writing#-1",
+        "Question Bank – Reading and Writing#30",
+        "Question Bank – Reading and Writing#30",
+        "Question Bank – Reading and Writing#-1",
+        "Question Bank – Reading and Writing#31"
+      ],
+      "visualPages": [
+        2,
+        24,
+        49,
+        51,
+        57,
+        58,
+        67,
+        71,
+        86,
+        87,
+        88,
+        94
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 09\\202509asiav1.ocr.txt",
+      "pages": 36,
+      "questions": 98,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 12
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 12,
+          "endPage": 21
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 22,
+          "endPage": 27
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 27,
+          "endPage": 34
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        5,
+        6,
+        15,
+        22,
+        23,
+        24,
+        25,
+        26,
+        29,
+        30,
+        31,
+        32,
+        33
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2025 09\\202509asiav2-rw.ocr.txt",
+      "pages": 28,
+      "questions": 27,
+      "keyEntries": 27,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 2,
+          "endPage": 28
+        }
+      ],
+      "keysMatched": "27/27",
+      "unmatched": [],
+      "visualPages": [
+        10,
+        18,
+        23,
+        25,
+        28
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2025 09\\202509asiav2.ocr.txt",
+      "pages": 35,
+      "questions": 98,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 9
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 9,
+          "endPage": 19
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 19,
+          "endPage": 28
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 28,
+          "endPage": 33
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        4,
+        12,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        29,
+        30,
+        32
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2025 09\\202509asiav3.ocr.txt",
+      "pages": 45,
+      "questions": 86,
+      "keyEntries": 54,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 54,
+          "expected": 27,
+          "status": "OVER",
+          "startPage": 2,
+          "endPage": 37
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 16,
+          "expected": 22,
+          "status": "PARTIAL",
+          "startPage": 37,
+          "endPage": 41
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 16,
+          "expected": 22,
+          "status": "PARTIAL",
+          "startPage": 41,
+          "endPage": 45
+        }
+      ],
+      "keysMatched": "43/86",
+      "unmatched": [
+        "Reading and Writing Module 1#28",
+        "Reading and Writing Module 1#29",
+        "Reading and Writing Module 1#30",
+        "Reading and Writing Module 1#31",
+        "Reading and Writing Module 1#32",
+        "Reading and Writing Module 1#33",
+        "Reading and Writing Module 1#34",
+        "Reading and Writing Module 1#35",
+        "Reading and Writing Module 1#36",
+        "Reading and Writing Module 1#37"
+      ],
+      "visualPages": [
+        10,
+        18,
+        23,
+        25,
+        30,
+        37,
+        38,
+        40,
+        42,
+        43,
+        44,
+        45
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 09\\202509asiav4.ocr.txt",
+      "pages": 33,
+      "questions": 95,
+      "keyEntries": 54,
+      "modules": [
+        {
+          "name": "Question Bank – Reading and Writing",
+          "actual": 54,
+          "expected": 27,
+          "status": "OVER",
+          "startPage": 1,
+          "endPage": 23
+        },
+        {
+          "name": "Question Bank – Math",
+          "actual": 41,
+          "expected": 22,
+          "status": "OVER",
+          "startPage": 24,
+          "endPage": 33
+        }
+      ],
+      "keysMatched": "0/95",
+      "unmatched": [
+        "Question Bank – Reading and Writing#1",
+        "Question Bank – Reading and Writing#2",
+        "Question Bank – Reading and Writing#3",
+        "Question Bank – Reading and Writing#4",
+        "Question Bank – Reading and Writing#5",
+        "Question Bank – Reading and Writing#6",
+        "Question Bank – Reading and Writing#7",
+        "Question Bank – Reading and Writing#8",
+        "Question Bank – Reading and Writing#9",
+        "Question Bank – Reading and Writing#10"
+      ],
+      "visualPages": [
+        4,
+        5,
+        15,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        31,
+        32
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 09\\202509us01.ocr.txt",
+      "pages": 63,
+      "questions": 98,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 2,
+          "endPage": 17
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 17,
+          "endPage": 37
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 37,
+          "endPage": 51
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 51,
+          "endPage": 63
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        7,
+        23,
+        24,
+        39,
+        40,
+        41,
+        46,
+        47,
+        53,
+        57,
+        63
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2025 09\\202509us02.ocr.txt",
+      "pages": 66,
+      "questions": 97,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 2,
+          "endPage": 19
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 19,
+          "endPage": 38
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 21,
+          "expected": 22,
+          "status": "PARTIAL",
+          "startPage": 38,
+          "endPage": 52
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 52,
+          "endPage": 66
+        }
+      ],
+      "keysMatched": "97/97",
+      "unmatched": [],
+      "visualPages": [
+        8,
+        10,
+        26,
+        27,
+        40,
+        42,
+        43,
+        46,
+        47,
+        58,
+        60,
+        62,
+        66
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 09\\202509us03.ocr.txt",
+      "pages": 63,
+      "questions": 91,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Question Bank – Reading and Writing",
+          "actual": 69,
+          "expected": 27,
+          "status": "OVER",
+          "startPage": 2,
+          "endPage": 50
+        },
+        {
+          "name": "Question Bank – Math",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 51,
+          "endPage": 63
+        }
+      ],
+      "keysMatched": "49/91",
+      "unmatched": [
+        "Question Bank – Reading and Writing#28",
+        "Question Bank – Reading and Writing#29",
+        "Question Bank – Reading and Writing#30",
+        "Question Bank – Reading and Writing#31",
+        "Question Bank – Reading and Writing#32",
+        "Question Bank – Reading and Writing#33",
+        "Question Bank – Reading and Writing#34",
+        "Question Bank – Reading and Writing#35",
+        "Question Bank – Reading and Writing#36",
+        "Question Bank – Reading and Writing#37"
+      ],
+      "visualPages": [
+        9,
+        24,
+        25,
+        39,
+        41,
+        42,
+        44,
+        46,
+        53,
+        57,
+        63
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 09\\202509us04.ocr.txt",
+      "pages": 65,
+      "questions": 97,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 2,
+          "endPage": 19
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 19,
+          "endPage": 38
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 21,
+          "expected": 22,
+          "status": "PARTIAL",
+          "startPage": 38,
+          "endPage": 51
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 51,
+          "endPage": 65
+        }
+      ],
+      "keysMatched": "97/97",
+      "unmatched": [],
+      "visualPages": [
+        8,
+        10,
+        25,
+        26,
+        40,
+        42,
+        43,
+        45,
+        46,
+        57,
+        59,
+        61,
+        65
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 09\\202509us05.ocr.txt",
+      "pages": 63,
+      "questions": 96,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 2,
+          "endPage": 18
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 18,
+          "endPage": 37
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 20,
+          "expected": 22,
+          "status": "PARTIAL",
+          "startPage": 37,
+          "endPage": 50
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 51,
+          "endPage": 63
+        }
+      ],
+      "keysMatched": "96/96",
+      "unmatched": [],
+      "visualPages": [
+        8,
+        10,
+        25,
+        26,
+        39,
+        41,
+        42,
+        44,
+        46,
+        52,
+        56,
+        63
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 09\\202509us06.ocr.txt",
+      "pages": 71,
+      "questions": 98,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 2,
+          "endPage": 20
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 20,
+          "endPage": 44
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 44,
+          "endPage": 58
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 58,
+          "endPage": 71
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        8,
+        10,
+        27,
+        30,
+        32,
+        46,
+        47,
+        48,
+        53,
+        54,
+        61,
+        65,
+        71
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2025 09\\202509usv7.ocr.txt",
+      "pages": 35,
+      "questions": 98,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 11
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 11,
+          "endPage": 22
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 22,
+          "endPage": 26
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 27,
+          "endPage": 33
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        4,
+        5,
+        15,
+        16,
+        22,
+        24,
+        25,
+        26,
+        28,
+        29,
+        30,
+        32,
+        33
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2025 10\\202510asiav1-new.ocr.txt",
+      "pages": 36,
+      "questions": 96,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 9
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 10,
+          "endPage": 21
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 21,
+          "endPage": 27
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 20,
+          "expected": 22,
+          "status": "PARTIAL",
+          "startPage": 27,
+          "endPage": 33
+        }
+      ],
+      "keysMatched": "96/96",
+      "unmatched": [],
+      "visualPages": [
+        5,
+        12,
+        13,
+        14,
+        16,
+        21,
+        22,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        33
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 10\\202510asiav2-new.ocr.txt",
+      "pages": 32,
+      "questions": 97,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 9
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 10,
+          "endPage": 20
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 20,
+          "endPage": 25
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 21,
+          "expected": 22,
+          "status": "PARTIAL",
+          "startPage": 25,
+          "endPage": 30
+        }
+      ],
+      "keysMatched": "97/97",
+      "unmatched": [],
+      "visualPages": [
+        4,
+        5,
+        12,
+        13,
+        20,
+        22,
+        23,
+        26,
+        28
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 10\\202510asiav3.ocr.txt",
+      "pages": 61,
+      "questions": 38,
+      "keyEntries": 0,
+      "modules": [
+        {
+          "name": "Question Bank – Reading and Writing",
+          "actual": 38,
+          "expected": 27,
+          "status": "OVER",
+          "startPage": 1,
+          "endPage": 61
+        }
+      ],
+      "keysMatched": "0/38",
+      "unmatched": [
+        "Question Bank – Reading and Writing#1",
+        "Question Bank – Reading and Writing#2",
+        "Question Bank – Reading and Writing#3",
+        "Question Bank – Reading and Writing#4",
+        "Question Bank – Reading and Writing#5",
+        "Question Bank – Reading and Writing#6",
+        "Question Bank – Reading and Writing#7",
+        "Question Bank – Reading and Writing#8",
+        "Question Bank – Reading and Writing#9",
+        "Question Bank – Reading and Writing#10"
+      ],
+      "visualPages": [
+        1,
+        5,
+        17,
+        20,
+        21,
+        22,
+        35,
+        37,
+        43,
+        44,
+        45,
+        46,
+        48,
+        50,
+        51,
+        54,
+        55,
+        57,
+        58
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 10\\202510asiav4.ocr.txt",
+      "pages": 68,
+      "questions": 40,
+      "keyEntries": 0,
+      "modules": [
+        {
+          "name": "Question Bank – Reading and Writing",
+          "actual": 40,
+          "expected": 27,
+          "status": "OVER",
+          "startPage": 3,
+          "endPage": 68
+        }
+      ],
+      "keysMatched": "0/40",
+      "unmatched": [
+        "Question Bank – Reading and Writing#1",
+        "Question Bank – Reading and Writing#2",
+        "Question Bank – Reading and Writing#3",
+        "Question Bank – Reading and Writing#4",
+        "Question Bank – Reading and Writing#5",
+        "Question Bank – Reading and Writing#6",
+        "Question Bank – Reading and Writing#7",
+        "Question Bank – Reading and Writing#8",
+        "Question Bank – Reading and Writing#9",
+        "Question Bank – Reading and Writing#10"
+      ],
+      "visualPages": [
+        7,
+        8,
+        15,
+        17,
+        20,
+        33,
+        34,
+        36,
+        43,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        57,
+        61,
+        63,
+        65,
+        68
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 10\\202510usv1.ocr.txt",
+      "pages": 111,
+      "questions": 98,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 3,
+          "endPage": 28
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 29,
+          "endPage": 56
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 57,
+          "endPage": 82
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 83,
+          "endPage": 111
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        13,
+        38,
+        61,
+        62,
+        72,
+        76,
+        77,
+        80,
+        84,
+        85,
+        86,
+        87,
+        89,
+        93,
+        97,
+        98,
+        111
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2025 10\\202510usv2.ocr.txt",
+      "pages": 112,
+      "questions": 98,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 3,
+          "endPage": 29
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 30,
+          "endPage": 59
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 60,
+          "endPage": 85
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 86,
+          "endPage": 112
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        7,
+        13,
+        19,
+        22,
+        24,
+        25,
+        26,
+        41,
+        43,
+        54,
+        55,
+        62,
+        68,
+        69,
+        70,
+        74,
+        78,
+        82,
+        87,
+        88,
+        91,
+        99,
+        101,
+        103,
+        106,
+        112
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2025 10\\202510usv3.ocr.txt",
+      "pages": 34,
+      "questions": 98,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 9
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 9,
+          "endPage": 20
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 20,
+          "endPage": 26
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 26,
+          "endPage": 32
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        4,
+        11,
+        12,
+        13,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        27,
+        30,
+        31
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2025 11\\202511asiav1.ocr.txt",
+      "pages": 51,
+      "questions": 88,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Question Bank – Reading and Writing",
+          "actual": 88,
+          "expected": 27,
+          "status": "OVER",
+          "startPage": 1,
+          "endPage": 51
+        }
+      ],
+      "keysMatched": "27/88",
+      "unmatched": [
+        "Question Bank – Reading and Writing#28",
+        "Question Bank – Reading and Writing#29",
+        "Question Bank – Reading and Writing#30",
+        "Question Bank – Reading and Writing#31",
+        "Question Bank – Reading and Writing#32",
+        "Question Bank – Reading and Writing#33",
+        "Question Bank – Reading and Writing#34",
+        "Question Bank – Reading and Writing#35",
+        "Question Bank – Reading and Writing#36",
+        "Question Bank – Reading and Writing#37"
+      ],
+      "visualPages": [
+        6,
+        20,
+        21,
+        31,
+        34,
+        36,
+        37,
+        38,
+        41,
+        42,
+        44,
+        47,
+        48,
+        49,
+        51
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 11\\202511asiav2.ocr.txt",
+      "pages": 51,
+      "questions": 87,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Question Bank – Reading and Writing",
+          "actual": 87,
+          "expected": 27,
+          "status": "OVER",
+          "startPage": 1,
+          "endPage": 51
+        }
+      ],
+      "keysMatched": "27/87",
+      "unmatched": [
+        "Question Bank – Reading and Writing#28",
+        "Question Bank – Reading and Writing#29",
+        "Question Bank – Reading and Writing#30",
+        "Question Bank – Reading and Writing#31",
+        "Question Bank – Reading and Writing#32",
+        "Question Bank – Reading and Writing#33",
+        "Question Bank – Reading and Writing#34",
+        "Question Bank – Reading and Writing#35",
+        "Question Bank – Reading and Writing#36",
+        "Question Bank – Reading and Writing#37"
+      ],
+      "visualPages": [
+        6,
+        7,
+        8,
+        24,
+        33,
+        34,
+        35,
+        36,
+        37,
+        39,
+        42,
+        46,
+        47,
+        50,
+        51
+      ],
+      "status": "FAIL"
+    },
+    {
+      "file": "2025 12\\202512asiav1.ocr.txt",
+      "pages": 35,
+      "questions": 98,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 10
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 10,
+          "endPage": 20
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 20,
+          "endPage": 27
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 27,
+          "endPage": 33
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        4,
+        5,
+        14,
+        15,
+        21,
+        23,
+        24,
+        25,
+        27,
+        28,
+        29
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2026 05\\202605asIav1-rw.ocr.txt",
+      "pages": 23,
+      "questions": 54,
+      "keyEntries": 54,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 9
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 9,
+          "endPage": 21
+        }
+      ],
+      "keysMatched": "54/54",
+      "unmatched": [],
+      "visualPages": [
+        13,
+        14,
+        15,
+        23
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2026 05\\202605usv1-rw.ocr.txt",
+      "pages": 36,
+      "questions": 54,
+      "keyEntries": 54,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 18
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 19,
+          "endPage": 36
+        }
+      ],
+      "keysMatched": "54/54",
+      "unmatched": [],
+      "visualPages": [
+        7,
+        9,
+        23,
+        36
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2026 06\\202606asiav1.ocr.txt",
+      "pages": 50,
+      "questions": 98,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 9
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 10,
+          "endPage": 19
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 20,
+          "endPage": 33
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 34,
+          "endPage": 48
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        4,
+        13,
+        21,
+        22,
+        23,
+        28,
+        29,
+        30,
+        31,
+        34,
+        38,
+        39,
+        40,
+        41,
+        42,
+        44,
+        47,
+        48
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2026 06\\202606asiav2.ocr.txt",
+      "pages": 39,
+      "questions": 98,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 9
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 9,
+          "endPage": 20
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 20,
+          "endPage": 28
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 28,
+          "endPage": 37
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        4,
+        13,
+        14,
+        20,
+        23,
+        26,
+        29,
+        31,
+        33,
+        34,
+        35
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2026 06\\202606asiav3.ocr.txt",
+      "pages": 8,
+      "questions": 98,
+      "keyEntries": 99,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 1
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 2,
+          "endPage": 3
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 4,
+          "endPage": 5
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 6,
+          "endPage": 8
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        1,
+        2,
+        4,
+        6,
+        7,
+        8
+      ],
+      "status": "PASS"
+    }
+  ],
+  "duplicateGroups": [
+    {
+      "fingerprint": "89b537ca34e02fea62dac575c79fdf08",
+      "size": 3,
+      "occurrences": [
+        {
+          "file": "2025 06\\202506asiav1-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 2,
+          "pageNumber": 1
+        },
+        {
+          "file": "2025 06\\202506asiav2.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 2,
+          "pageNumber": 1
+        },
+        {
+          "file": "2025 08\\202508asiav1.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 2,
+          "pageNumber": 1
+        }
+      ]
+    },
+    {
+      "fingerprint": "d2850dbee9132b869958fa0d97506bee",
+      "size": 3,
+      "occurrences": [
+        {
+          "file": "2025 05\\202505asiav2.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 9,
+          "pageNumber": 28
+        },
+        {
+          "file": "2025 05\\202505usv1.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 9,
+          "pageNumber": 24
+        },
+        {
+          "file": "2025 10\\202510asiav2-new.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 13,
+          "pageNumber": 23
+        }
+      ]
+    },
+    {
+      "fingerprint": "ecd406dba3815ebd916b5d67ce42197c",
+      "size": 3,
+      "occurrences": [
+        {
+          "file": "2025 03\\202503asiav1.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 17,
+          "pageNumber": 26
+        },
+        {
+          "file": "2025 03\\202503asiav2.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 17,
+          "pageNumber": 23
+        },
+        {
+          "file": "2025 10\\202510asiav2-new.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 17,
+          "pageNumber": 24
+        }
+      ]
+    },
+    {
+      "fingerprint": "02afcab46cbc88f39f55839efb73fbfc",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 05\\202505asiav2.ocr.txt",
+          "moduleName": "Math Module 2",
+          "questionNumber": 22,
+          "pageNumber": 63
+        },
+        {
+          "file": "2025 05\\202505usv1.ocr.txt",
+          "moduleName": "Math Module 2",
+          "questionNumber": 22,
+          "pageNumber": 34
+        }
+      ]
+    },
+    {
+      "fingerprint": "036cd6cfa5f2eb0da2ed7adbab97285e",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 05\\202505asiav2.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 4,
+          "pageNumber": 23
+        },
+        {
+          "file": "2025 05\\202505usv1.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 4,
+          "pageNumber": 22
+        }
+      ]
+    },
+    {
+      "fingerprint": "043dd2626196c772e2fb84f160b38d6e",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 3,
+          "pageNumber": 1
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 3,
+          "pageNumber": 1
+        }
+      ]
+    },
+    {
+      "fingerprint": "0910e9bf552546927d083234f0d355e7",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 23,
+          "pageNumber": 23
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 23,
+          "pageNumber": 23
+        }
+      ]
+    },
+    {
+      "fingerprint": "0e235ce2858e42b0d214f7955c55e3b5",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 10,
+          "pageNumber": 10
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 10,
+          "pageNumber": 10
+        }
+      ]
+    },
+    {
+      "fingerprint": "1322f2dd3dc53039d4175bba00e78ca3",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 11,
+          "pageNumber": 11
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 11,
+          "pageNumber": 11
+        }
+      ]
+    },
+    {
+      "fingerprint": "13c1a44a99d44c6bc6cd29812fdf5926",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 6,
+          "pageNumber": 2
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 6,
+          "pageNumber": 2
+        }
+      ]
+    },
+    {
+      "fingerprint": "15ed506792a1f2ae84fe33ae5b736220",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 03\\202503asiav1.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 1,
+          "pageNumber": 20
+        },
+        {
+          "file": "2025 03\\202503asiav3.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 1,
+          "pageNumber": 20
+        }
+      ]
+    },
+    {
+      "fingerprint": "19d831bff03571912a9b482239c99706",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 24,
+          "pageNumber": 24
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 24,
+          "pageNumber": 24
+        }
+      ]
+    },
+    {
+      "fingerprint": "1a2d677031aebe664e139c72c1ea9ce9",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 27,
+          "pageNumber": 27
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 27,
+          "pageNumber": 27
+        }
+      ]
+    },
+    {
+      "fingerprint": "1dbecb1c802b4a6f209209f6a69b60bf",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 05\\202505asiav3.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 10,
+          "pageNumber": 66
+        },
+        {
+          "file": "2025 10\\202510asiav2-new.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 14,
+          "pageNumber": 23
+        }
+      ]
+    },
+    {
+      "fingerprint": "1e709f204b32d3731037b19fde075314",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 8,
+          "pageNumber": 3
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 8,
+          "pageNumber": 3
+        }
+      ]
+    },
+    {
+      "fingerprint": "1ea34c8857b0bed096f098ac6cdb77a7",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 03\\202503asiav1.ocr.txt",
+          "moduleName": "Math Module 2",
+          "questionNumber": 9,
+          "pageNumber": 29
+        },
+        {
+          "file": "2025 10\\202510asiav2-new.ocr.txt",
+          "moduleName": "Math Module 2",
+          "questionNumber": 9,
+          "pageNumber": 27
+        }
+      ]
+    },
+    {
+      "fingerprint": "21cb206cb9a7089e9be7392730601e3c",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 22,
+          "pageNumber": 22
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 22,
+          "pageNumber": 22
+        }
+      ]
+    },
+    {
+      "fingerprint": "28137b372284b618fd4b21b74b857e42",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 03\\202503asiav1.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 27,
+          "pageNumber": 9
+        },
+        {
+          "file": "2025 03\\202503usv2.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 27,
+          "pageNumber": 9
+        }
+      ]
+    },
+    {
+      "fingerprint": "2e45268cbdb06654273dcda6ec47cc25",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 05\\202505asiav1.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 27,
+          "pageNumber": 10
+        },
+        {
+          "file": "2025 05\\202505usv1.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 27,
+          "pageNumber": 10
+        }
+      ]
+    },
+    {
+      "fingerprint": "31dfec04af9ca1295b0897d19eeeb76c",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 13,
+          "pageNumber": 13
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 13,
+          "pageNumber": 13
+        }
+      ]
+    },
+    {
+      "fingerprint": "32faf4009dc84172bcec3c24f6b5bab1",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 10,
+          "pageNumber": 4
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 10,
+          "pageNumber": 4
+        }
+      ]
+    },
+    {
+      "fingerprint": "35bbb18a16bb51f034c8633c75d557b8",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 06\\202506asiav1-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 4,
+          "pageNumber": 2
+        },
+        {
+          "file": "2025 08\\202508asiav1.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 4,
+          "pageNumber": 2
+        }
+      ]
+    },
+    {
+      "fingerprint": "3708463680c4f2512e02b03431f39032",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 05\\202505asiav2.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 18,
+          "pageNumber": 38
+        },
+        {
+          "file": "2025 05\\202505usv1.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 18,
+          "pageNumber": 27
+        }
+      ]
+    },
+    {
+      "fingerprint": "3c8c84e3f2fa3fcaa909eac3e20b253a",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 7,
+          "pageNumber": 7
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 7,
+          "pageNumber": 7
+        }
+      ]
+    },
+    {
+      "fingerprint": "43cc55a59612c92bd2042025985606f5",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 24,
+          "pageNumber": 9
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 24,
+          "pageNumber": 9
+        }
+      ]
+    },
+    {
+      "fingerprint": "44cb66fa6fd8d014b804fc10ac97c419",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 05\\202505asiav2.ocr.txt",
+          "moduleName": "Math Module 2",
+          "questionNumber": 16,
+          "pageNumber": 57
+        },
+        {
+          "file": "2025 05\\202505usv1.ocr.txt",
+          "moduleName": "Math Module 2",
+          "questionNumber": 16,
+          "pageNumber": 33
+        }
+      ]
+    },
+    {
+      "fingerprint": "4d2e62bdf33875e5db04e3a59047d6e1",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 15,
+          "pageNumber": 15
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 15,
+          "pageNumber": 15
+        }
+      ]
+    },
+    {
+      "fingerprint": "4f1aacbcf8f202ff96fe69dbf04d626b",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 03\\202503asiav3.ocr.txt",
+          "moduleName": "Math Module 2",
+          "questionNumber": 3,
+          "pageNumber": 26
+        },
+        {
+          "file": "2025 03\\202503asiav4.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 11,
+          "pageNumber": 49
+        }
+      ]
+    },
+    {
+      "fingerprint": "4fd336f2ae08478c3defa54be57e9105",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 4,
+          "pageNumber": 4
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 4,
+          "pageNumber": 4
+        }
+      ]
+    },
+    {
+      "fingerprint": "5000820a666bd4194c94e022800815fe",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 14,
+          "pageNumber": 14
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 14,
+          "pageNumber": 14
+        }
+      ]
+    },
+    {
+      "fingerprint": "5174b2631a87be26a84f3edbdda95af7",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 05\\202505asiav2.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 1,
+          "pageNumber": 20
+        },
+        {
+          "file": "2025 05\\202505usv1.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 1,
+          "pageNumber": 22
+        }
+      ]
+    },
+    {
+      "fingerprint": "564c561143a2e8650c32e5cebb13d633",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 03\\202503asiav1.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 6,
+          "pageNumber": 2
+        },
+        {
+          "file": "2025 05\\202505asiav1.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 6,
+          "pageNumber": 2
+        }
+      ]
+    },
+    {
+      "fingerprint": "58bdd41519d2255ff1be50ff022acef6",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 13,
+          "pageNumber": 6
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 13,
+          "pageNumber": 6
+        }
+      ]
+    },
+    {
+      "fingerprint": "59b052acb7771eecb9cb0b42ac290f52",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 22,
+          "pageNumber": 8
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 22,
+          "pageNumber": 8
+        }
+      ]
+    },
+    {
+      "fingerprint": "5b335e3a284d4e39bef710d2ed0fe048",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 03\\202503asiav1.ocr.txt",
+          "moduleName": "Math Module 2",
+          "questionNumber": 16,
+          "pageNumber": 31
+        },
+        {
+          "file": "2025 03\\202503asiav2.ocr.txt",
+          "moduleName": "Math Module 2",
+          "questionNumber": 16,
+          "pageNumber": 29
+        }
+      ]
+    },
+    {
+      "fingerprint": "5b7f822ec67c9be983314d0bb4354adf",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 21,
+          "pageNumber": 8
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 21,
+          "pageNumber": 8
+        }
+      ]
+    },
+    {
+      "fingerprint": "5ca7304550f25b56d175304fd8ab565f",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 1,
+          "pageNumber": 1
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 1,
+          "pageNumber": 1
+        }
+      ]
+    },
+    {
+      "fingerprint": "60feafc9ed3084ea3f51b27c7e8be57f",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 03\\202503asiav1.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 12,
+          "pageNumber": 24
+        },
+        {
+          "file": "2025 10\\202510asiav2-new.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 12,
+          "pageNumber": 22
+        }
+      ]
+    },
+    {
+      "fingerprint": "6274ee156f43ca05d731bf82dd4d5e0b",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 18,
+          "pageNumber": 7
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 18,
+          "pageNumber": 7
+        }
+      ]
+    },
+    {
+      "fingerprint": "66d3e528fa2d3f9ab2b2e7ae57e3ea3e",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 05\\202505asiav1.ocr.txt",
+          "moduleName": "Reading and Writing Module 2",
+          "questionNumber": 5,
+          "pageNumber": 12
+        },
+        {
+          "file": "2025 05\\202505usv1.ocr.txt",
+          "moduleName": "Reading and Writing Module 2",
+          "questionNumber": 5,
+          "pageNumber": 12
+        }
+      ]
+    },
+    {
+      "fingerprint": "66f0b53796afb418f7eaaf481d6925c8",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 03\\202503asiav1.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 3,
+          "pageNumber": 22
+        },
+        {
+          "file": "2025 03\\202503asiav3.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 3,
+          "pageNumber": 21
+        }
+      ]
+    },
+    {
+      "fingerprint": "68bcb3c8f723760f96b8444309873053",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 03\\202503asiav1.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 26,
+          "pageNumber": 9
+        },
+        {
+          "file": "2025 05\\202505asiav1.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 26,
+          "pageNumber": 10
+        }
+      ]
+    },
+    {
+      "fingerprint": "6903cc83fd7e44a16551be2c242e3786",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 5,
+          "pageNumber": 2
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 5,
+          "pageNumber": 2
+        }
+      ]
+    },
+    {
+      "fingerprint": "6a11bf60a77ab51d3594057509a6b79c",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 8,
+          "pageNumber": 8
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 8,
+          "pageNumber": 8
+        }
+      ]
+    },
+    {
+      "fingerprint": "6b0d68e65d30855baa9ff906a81b2a9a",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 03\\202503asiav1.ocr.txt",
+          "moduleName": "Reading and Writing Module 2",
+          "questionNumber": 26,
+          "pageNumber": 19
+        },
+        {
+          "file": "2025 05\\202505asiav1.ocr.txt",
+          "moduleName": "Reading and Writing Module 2",
+          "questionNumber": 26,
+          "pageNumber": 20
+        }
+      ]
+    },
+    {
+      "fingerprint": "6ba65cd6853847e9c7e461bfda8a83e4",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509us01.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 3,
+          "pageNumber": 40
+        },
+        {
+          "file": "2025 09\\202509us06.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 3,
+          "pageNumber": 47
+        }
+      ]
+    },
+    {
+      "fingerprint": "6ec1798567d2936f5d56d87c97134ac0",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 26,
+          "pageNumber": 26
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 26,
+          "pageNumber": 26
+        }
+      ]
+    },
+    {
+      "fingerprint": "70f11ae04faf0966adb49a1e7ed0183f",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 03\\202503asiav1.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 7,
+          "pageNumber": 23
+        },
+        {
+          "file": "2025 03\\202503asiav2.ocr.txt",
+          "moduleName": "Math Module 2",
+          "questionNumber": 1,
+          "pageNumber": 25
+        }
+      ]
+    },
+    {
+      "fingerprint": "7203c1ca05b62a9006b271baa66b6e5a",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 4,
+          "pageNumber": 2
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 4,
+          "pageNumber": 2
+        }
+      ]
+    },
+    {
+      "fingerprint": "76d87d56ab021fb38a1368c70d36c335",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 03\\202503asiav2.ocr.txt",
+          "moduleName": "Math Module 2",
+          "questionNumber": 22,
+          "pageNumber": 30
+        },
+        {
+          "file": "2025 03\\202503usv2.ocr.txt",
+          "moduleName": "Math Module 2",
+          "questionNumber": 22,
+          "pageNumber": 30
+        }
+      ]
+    },
+    {
+      "fingerprint": "787677cfd7d30e1c0ab7d8d5ec38b962",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 12,
+          "pageNumber": 5
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 12,
+          "pageNumber": 5
+        }
+      ]
+    },
+    {
+      "fingerprint": "78bc9d8dd86ae9affa9878576c6918fa",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 05\\202505asiav1.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 24,
+          "pageNumber": 9
+        },
+        {
+          "file": "2025 05\\202505usv1.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 24,
+          "pageNumber": 9
+        }
+      ]
+    },
+    {
+      "fingerprint": "79204f0de1b8b820b7e03286f7acedd3",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 6,
+          "pageNumber": 6
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 6,
+          "pageNumber": 6
+        }
+      ]
+    },
+    {
+      "fingerprint": "79eada3c705b11f5a127fbf8d1b83e3e",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 2",
+          "questionNumber": 8,
+          "pageNumber": 13
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 2",
+          "questionNumber": 8,
+          "pageNumber": 13
+        }
+      ]
+    },
+    {
+      "fingerprint": "7c6627bcc6daaee24ac17e6d1beeb87c",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 7,
+          "pageNumber": 3
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 7,
+          "pageNumber": 3
+        }
+      ]
+    },
+    {
+      "fingerprint": "7edf420654e846b459572bf235253b09",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 17,
+          "pageNumber": 17
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 17,
+          "pageNumber": 17
+        }
+      ]
+    },
+    {
+      "fingerprint": "7f0e7f059600a646cb6ac753c4210d9a",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 25,
+          "pageNumber": 10
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 25,
+          "pageNumber": 10
+        }
+      ]
+    },
+    {
+      "fingerprint": "811f8def40d7e16c3a7b39a7544c6f3f",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 14,
+          "pageNumber": 6
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 14,
+          "pageNumber": 6
+        }
+      ]
+    },
+    {
+      "fingerprint": "83ac24432ebdac8c69a008eb4c5373eb",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 06\\202506asiav1-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 1,
+          "pageNumber": 1
+        },
+        {
+          "file": "2025 06\\202506asiav2.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 1,
+          "pageNumber": 1
+        }
+      ]
+    },
+    {
+      "fingerprint": "860698fa6d6a09697a67a8769ea1d85d",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 16,
+          "pageNumber": 7
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 16,
+          "pageNumber": 7
+        }
+      ]
+    },
+    {
+      "fingerprint": "89b74c0f9f01b678b0d6833de0c63389",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 03\\202503asiav6.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 3,
+          "pageNumber": 57
+        },
+        {
+          "file": "2025 03\\202503usv2.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 3,
+          "pageNumber": 20
+        }
+      ]
+    },
+    {
+      "fingerprint": "8bf1ecee1a4c97e211e9a3dd8a7ee426",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 03\\202503usv1.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 5,
+          "pageNumber": 21
+        },
+        {
+          "file": "2025 03\\202503usv2.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 5,
+          "pageNumber": 21
+        }
+      ]
+    },
+    {
+      "fingerprint": "8eb78e573caef90ff8e3259456e13ca2",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 9,
+          "pageNumber": 9
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 9,
+          "pageNumber": 9
+        }
+      ]
+    },
+    {
+      "fingerprint": "9020acc407525fe68641f46bc0ee373a",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 03\\202503asiav3.ocr.txt",
+          "moduleName": "Math Module 2",
+          "questionNumber": 21,
+          "pageNumber": 30
+        },
+        {
+          "file": "2025 10\\202510asiav2-new.ocr.txt",
+          "moduleName": "Math Module 2",
+          "questionNumber": 20,
+          "pageNumber": 30
+        }
+      ]
+    },
+    {
+      "fingerprint": "907979c265e76e0dd885ec37a3b05986",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 03\\202503asiav1.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 21,
+          "pageNumber": 26
+        },
+        {
+          "file": "2025 10\\202510asiav2-new.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 21,
+          "pageNumber": 24
+        }
+      ]
+    },
+    {
+      "fingerprint": "91730d4a338b187f7fc5ab25cee73f0b",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 03\\202503usv2.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 21,
+          "pageNumber": 7
+        },
+        {
+          "file": "2025 05\\202505usv1.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 21,
+          "pageNumber": 8
+        }
+      ]
+    },
+    {
+      "fingerprint": "91db5f65c48078ce9878f8664a172121",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 05\\202505asiav1.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 14,
+          "pageNumber": 6
+        },
+        {
+          "file": "2025 05\\202505usv1.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 14,
+          "pageNumber": 6
+        }
+      ]
+    },
+    {
+      "fingerprint": "957f0f67388752d5119b655f5cd631a7",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 25,
+          "pageNumber": 25
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 25,
+          "pageNumber": 25
+        }
+      ]
+    },
+    {
+      "fingerprint": "97d52232ec5cb9cb3db7eac14ef89c48",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav1.ocr.txt",
+          "moduleName": "Math Module 2",
+          "questionNumber": 12,
+          "pageNumber": 31
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Math Module 2",
+          "questionNumber": 11,
+          "pageNumber": 43
+        }
+      ]
+    },
+    {
+      "fingerprint": "97e9fc9c9115c9737ead68b19f3b755b",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 03\\202503asiav3.ocr.txt",
+          "moduleName": "Math Module 2",
+          "questionNumber": 2,
+          "pageNumber": 26
+        },
+        {
+          "file": "2025 03\\202503asiav4.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 10,
+          "pageNumber": 48
+        }
+      ]
+    },
+    {
+      "fingerprint": "99f8d991cb6a6834e0d8f8ed49e36935",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 27,
+          "pageNumber": 10
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 27,
+          "pageNumber": 10
+        }
+      ]
+    },
+    {
+      "fingerprint": "9a684ac8ec08fc1fec119467ae0df543",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 3,
+          "pageNumber": 3
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 3,
+          "pageNumber": 3
+        }
+      ]
+    },
+    {
+      "fingerprint": "9a8e7066a9caeef3cb5fe24c3338cd98",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 20,
+          "pageNumber": 20
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 20,
+          "pageNumber": 20
+        }
+      ]
+    },
+    {
+      "fingerprint": "9b0c30dc45f2deeb1cb1627fc23b433f",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509us02.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 20,
+          "pageNumber": 52
+        },
+        {
+          "file": "2025 09\\202509us04.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 20,
+          "pageNumber": 51
+        }
+      ]
+    },
+    {
+      "fingerprint": "9d0c5bf0cdda75b1b76f023d8314eefc",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 19,
+          "pageNumber": 8
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 19,
+          "pageNumber": 8
+        }
+      ]
+    },
+    {
+      "fingerprint": "a046dc7975e041bcf286cb623a5ffc92",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509us02.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 5,
+          "pageNumber": 43
+        },
+        {
+          "file": "2025 09\\202509us04.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 6,
+          "pageNumber": 43
+        }
+      ]
+    },
+    {
+      "fingerprint": "a24b0ce5279e82573d89ed4dd358a367",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 20,
+          "pageNumber": 8
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 20,
+          "pageNumber": 8
+        }
+      ]
+    },
+    {
+      "fingerprint": "a3e7427b133bd048ec2b2456af0e3f01",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 05\\202505asiav2.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 15,
+          "pageNumber": 34
+        },
+        {
+          "file": "2025 05\\202505usv1.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 15,
+          "pageNumber": 25
+        }
+      ]
+    },
+    {
+      "fingerprint": "a54ab6f043efde91f4a8c126c7a84349",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 15,
+          "pageNumber": 6
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 15,
+          "pageNumber": 6
+        }
+      ]
+    },
+    {
+      "fingerprint": "aa7444f4c3cd888305d1ff842d50373b",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 23,
+          "pageNumber": 9
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 23,
+          "pageNumber": 9
+        }
+      ]
+    },
+    {
+      "fingerprint": "aa7e1c73fd64b3d1992fd25306cc05bb",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 11,
+          "pageNumber": 5
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 11,
+          "pageNumber": 5
+        }
+      ]
+    },
+    {
+      "fingerprint": "b3004132878918171d39c8e8a10dc458",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 05\\202505asiav2.ocr.txt",
+          "moduleName": "Math Module 2",
+          "questionNumber": 17,
+          "pageNumber": 58
+        },
+        {
+          "file": "2025 05\\202505usv1.ocr.txt",
+          "moduleName": "Math Module 2",
+          "questionNumber": 17,
+          "pageNumber": 33
+        }
+      ]
+    },
+    {
+      "fingerprint": "b54a1b5dd3ce87a0d29beed44547db7c",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 18,
+          "pageNumber": 18
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 18,
+          "pageNumber": 18
+        }
+      ]
+    },
+    {
+      "fingerprint": "b61f00756275fcb7647286e3b0c1ace1",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 12,
+          "pageNumber": 12
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 12,
+          "pageNumber": 12
+        }
+      ]
+    },
+    {
+      "fingerprint": "bbce1174eb48d3ebed97da5e38d28364",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 05\\202505asiav2.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 12,
+          "pageNumber": 31
+        },
+        {
+          "file": "2025 05\\202505usv1.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 12,
+          "pageNumber": 25
+        }
+      ]
+    },
+    {
+      "fingerprint": "bf78650b44bce43e7b1acc25172dcf0e",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509us01.ocr.txt",
+          "moduleName": "Reading and Writing Module 2",
+          "questionNumber": 21,
+          "pageNumber": 32
+        },
+        {
+          "file": "2025 09\\202509us02.ocr.txt",
+          "moduleName": "Reading and Writing Module 2",
+          "questionNumber": 23,
+          "pageNumber": 35
+        }
+      ]
+    },
+    {
+      "fingerprint": "c7ec07f1f7456b7b91d5352ae0b63f6c",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 2,
+          "pageNumber": 1
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 2,
+          "pageNumber": 1
+        }
+      ]
+    },
+    {
+      "fingerprint": "cc20c0aed102b70e17f3876f663e2495",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 2,
+          "pageNumber": 2
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 2,
+          "pageNumber": 2
+        }
+      ]
+    },
+    {
+      "fingerprint": "cece5626bdc96f26ce90a07c3a811195",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav1.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 19,
+          "pageNumber": 26
+        },
+        {
+          "file": "2025 12\\202512asiav1.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 4,
+          "pageNumber": 21
+        }
+      ]
+    },
+    {
+      "fingerprint": "d3858796edc9ccbfb985a86944e6327e",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 16,
+          "pageNumber": 16
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 16,
+          "pageNumber": 16
+        }
+      ]
+    },
+    {
+      "fingerprint": "d6397fd8650705864e5296135c959ae8",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 9,
+          "pageNumber": 4
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 9,
+          "pageNumber": 4
+        }
+      ]
+    },
+    {
+      "fingerprint": "e228a9ae5fec597a05c5ab40a7c30484",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 03\\202503asiav3.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 13,
+          "pageNumber": 23
+        },
+        {
+          "file": "2025 03\\202503asiav4.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 3,
+          "pageNumber": 37
+        }
+      ]
+    },
+    {
+      "fingerprint": "e719ddfc2c0ac65b29523ac116c7ed5e",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 21,
+          "pageNumber": 21
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 21,
+          "pageNumber": 21
+        }
+      ]
+    },
+    {
+      "fingerprint": "f2e20f8082bbdafeed89dd6f738dfb8a",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 26,
+          "pageNumber": 10
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 26,
+          "pageNumber": 10
+        }
+      ]
+    },
+    {
+      "fingerprint": "f3e801502dc6bfdd6f211cff4f10b5a0",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 5,
+          "pageNumber": 5
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 5,
+          "pageNumber": 5
+        }
+      ]
+    },
+    {
+      "fingerprint": "f55788dd9060ccb2448cf6e7ec0ebe5d",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 08\\202508asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 17,
+          "pageNumber": 7
+        },
+        {
+          "file": "2025 08\\202508asiav3-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 17,
+          "pageNumber": 7
+        }
+      ]
+    },
+    {
+      "fingerprint": "f828cb07c93d9d1c483b3eb21b1784b7",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 09\\202509asiav2-rw.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 19,
+          "pageNumber": 19
+        },
+        {
+          "file": "2025 09\\202509asiav3.ocr.txt",
+          "moduleName": "Reading and Writing Module 1",
+          "questionNumber": 19,
+          "pageNumber": 19
+        }
+      ]
+    },
+    {
+      "fingerprint": "fa0fc7099b134b3731674d9e96b940a5",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 05\\202505asiav2.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 20,
+          "pageNumber": 40
+        },
+        {
+          "file": "2025 05\\202505usv1.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 20,
+          "pageNumber": 27
+        }
+      ]
+    },
+    {
+      "fingerprint": "fb493b6d3e46ec8796f6866caa132695",
+      "size": 2,
+      "occurrences": [
+        {
+          "file": "2025 05\\202505asiav2.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 10,
+          "pageNumber": 29
+        },
+        {
+          "file": "2025 05\\202505usv1.ocr.txt",
+          "moduleName": "Math Module 1",
+          "questionNumber": 10,
+          "pageNumber": 24
+        }
+      ]
+    }
+  ],
+  "stemBuckets": 4924
+}

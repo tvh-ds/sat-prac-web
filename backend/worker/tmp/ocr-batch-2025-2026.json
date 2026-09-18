@@ -1,0 +1,389 @@
+{
+  "srcRoot": "D:\\SAT website\\Tests Unparsed\\Digital SAT Tests",
+  "outRoot": "D:\\SAT website\\Tests Unparsed\\post_ocr",
+  "prefixes": [
+    "2025",
+    "2026"
+  ],
+  "finished_at": "2026-09-17T21:58:28.280Z",
+  "halted_keys_exhausted": true,
+  "totals": {
+    "files": 82,
+    "done": 51,
+    "failed": 0,
+    "skipped": 0,
+    "billed_parse_pages": 2712,
+    "elapsed_ms": 12754408
+  },
+  "keys_billed": [
+    750,
+    1000,
+    1000
+  ],
+  "files": [
+    {
+      "file": "2025 03\\202503asiav1.pdf",
+      "status": "done",
+      "pages": 35,
+      "billed": 35,
+      "ms": 215056
+    },
+    {
+      "file": "2025 03\\202503asiav2.pdf",
+      "status": "done",
+      "pages": 32,
+      "billed": 32,
+      "ms": 213172
+    },
+    {
+      "file": "2025 03\\202503asiav3.pdf",
+      "status": "done",
+      "pages": 33,
+      "billed": 33,
+      "ms": 217232
+    },
+    {
+      "file": "2025 03\\202503asiav4.pdf",
+      "status": "done",
+      "pages": 71,
+      "billed": 71,
+      "ms": 244936
+    },
+    {
+      "file": "2025 03\\202503asiav5.pdf",
+      "status": "done",
+      "pages": 46,
+      "billed": 46,
+      "ms": 258056
+    },
+    {
+      "file": "2025 03\\202503asiav6.pdf",
+      "status": "done",
+      "pages": 100,
+      "billed": 100,
+      "ms": 306220
+    },
+    {
+      "file": "2025 03\\202503asiav8.pdf",
+      "status": "done",
+      "pages": 39,
+      "billed": 39,
+      "ms": 250716
+    },
+    {
+      "file": "2025 03\\202503asiav9.pdf",
+      "status": "done",
+      "pages": 38,
+      "billed": 38,
+      "ms": 239977
+    },
+    {
+      "file": "2025 03\\202503usv1.pdf",
+      "status": "done",
+      "pages": 33,
+      "billed": 33,
+      "ms": 207325
+    },
+    {
+      "file": "2025 03\\202503usv2.pdf",
+      "status": "done",
+      "pages": 32,
+      "billed": 32,
+      "ms": 200869
+    },
+    {
+      "file": "2025 03\\202503usv3.pdf",
+      "status": "done",
+      "pages": 37,
+      "billed": 37,
+      "ms": 220119
+    },
+    {
+      "file": "2025 05\\202505asiav1.pdf",
+      "status": "done",
+      "pages": 22,
+      "billed": 22,
+      "ms": 146653
+    },
+    {
+      "file": "2025 05\\202505asiav2.pdf",
+      "status": "done",
+      "pages": 64,
+      "billed": 64,
+      "ms": 406292
+    },
+    {
+      "file": "2025 05\\202505asiav3.pdf",
+      "status": "done",
+      "pages": 101,
+      "billed": 101,
+      "ms": 576513
+    },
+    {
+      "file": "2025 05\\202505usv1.pdf",
+      "status": "done",
+      "pages": 36,
+      "billed": 36,
+      "ms": 221984
+    },
+    {
+      "file": "2025 05\\202505usv2.pdf",
+      "status": "done",
+      "pages": 53,
+      "billed": 53,
+      "ms": 323443
+    },
+    {
+      "file": "2025 06\\202506asiav1-rw.pdf",
+      "status": "done",
+      "pages": 23,
+      "billed": 23,
+      "ms": 147469
+    },
+    {
+      "file": "2025 06\\202506asiav2.pdf",
+      "status": "done",
+      "pages": 34,
+      "billed": 34,
+      "ms": 216900
+    },
+    {
+      "file": "2025 06\\202506asiav3.pdf",
+      "status": "done",
+      "pages": 32,
+      "billed": 32,
+      "ms": 196679
+    },
+    {
+      "file": "2025 06\\202506asiav4.pdf",
+      "status": "done",
+      "pages": 34,
+      "billed": 34,
+      "ms": 220769
+    },
+    {
+      "file": "2025 06\\202506usv1.pdf",
+      "status": "done",
+      "pages": 52,
+      "billed": 52,
+      "ms": 239635
+    },
+    {
+      "file": "2025 06\\202506usv2.pdf",
+      "status": "done",
+      "pages": 99,
+      "billed": 99,
+      "ms": 363258
+    },
+    {
+      "file": "2025 08\\202508asiav1.pdf",
+      "status": "done",
+      "pages": 36,
+      "billed": 36,
+      "ms": 216384
+    },
+    {
+      "file": "2025 08\\202508asiav2-rw.pdf",
+      "status": "done",
+      "pages": 23,
+      "billed": 23,
+      "ms": 148669
+    },
+    {
+      "file": "2025 08\\202508asiav3-rw.pdf",
+      "status": "done",
+      "pages": 23,
+      "billed": 23,
+      "ms": 152699
+    },
+    {
+      "file": "2025 08\\202508usv1.pdf",
+      "status": "done",
+      "pages": 98,
+      "billed": 98,
+      "ms": 328201
+    },
+    {
+      "file": "2025 08\\202508usv2.pdf",
+      "status": "done",
+      "pages": 99,
+      "billed": 99,
+      "ms": 288801
+    },
+    {
+      "file": "2025 08\\202508usv3.pdf",
+      "status": "done",
+      "pages": 99,
+      "billed": 99,
+      "ms": 319908
+    },
+    {
+      "file": "2025 08\\202508usv4.pdf",
+      "status": "done",
+      "pages": 94,
+      "billed": 94,
+      "ms": 328495
+    },
+    {
+      "file": "2025 09\\202509asiav1.pdf",
+      "status": "done",
+      "pages": 36,
+      "billed": 36,
+      "ms": 205852
+    },
+    {
+      "file": "2025 09\\202509asiav2-rw.pdf",
+      "status": "done",
+      "pages": 28,
+      "billed": 28,
+      "ms": 115483
+    },
+    {
+      "file": "2025 09\\202509asiav2.pdf",
+      "status": "done",
+      "pages": 35,
+      "billed": 35,
+      "ms": 202894
+    },
+    {
+      "file": "2025 09\\202509asiav3.pdf",
+      "status": "done",
+      "pages": 45,
+      "billed": 45,
+      "ms": 240042
+    },
+    {
+      "file": "2025 09\\202509asiav4.pdf",
+      "status": "done",
+      "pages": 33,
+      "billed": 33,
+      "ms": 200389
+    },
+    {
+      "file": "2025 09\\202509us01.pdf",
+      "status": "done",
+      "pages": 63,
+      "billed": 63,
+      "ms": 253640
+    },
+    {
+      "file": "2025 09\\202509us02.pdf",
+      "status": "done",
+      "pages": 66,
+      "billed": 66,
+      "ms": 245729
+    },
+    {
+      "file": "2025 09\\202509us03.pdf",
+      "status": "done",
+      "pages": 63,
+      "billed": 63,
+      "ms": 243434
+    },
+    {
+      "file": "2025 09\\202509us04.pdf",
+      "status": "done",
+      "pages": 65,
+      "billed": 65,
+      "ms": 249880
+    },
+    {
+      "file": "2025 09\\202509us05.pdf",
+      "status": "done",
+      "pages": 63,
+      "billed": 63,
+      "ms": 247292
+    },
+    {
+      "file": "2025 09\\202509us06.pdf",
+      "status": "done",
+      "pages": 71,
+      "billed": 71,
+      "ms": 262492
+    },
+    {
+      "file": "2025 09\\202509usv7.pdf",
+      "status": "done",
+      "pages": 35,
+      "billed": 35,
+      "ms": 232821
+    },
+    {
+      "file": "2025 10\\202510asiav1-new.pdf",
+      "status": "done",
+      "pages": 36,
+      "billed": 36,
+      "ms": 220087
+    },
+    {
+      "file": "2025 10\\202510asiav2-new.pdf",
+      "status": "done",
+      "pages": 32,
+      "billed": 32,
+      "ms": 193324
+    },
+    {
+      "file": "2025 10\\202510asiav3.pdf",
+      "status": "done",
+      "pages": 61,
+      "billed": 61,
+      "ms": 234520
+    },
+    {
+      "file": "2025 10\\202510asiav4.pdf",
+      "status": "done",
+      "pages": 68,
+      "billed": 68,
+      "ms": 280986
+    },
+    {
+      "file": "2025 10\\202510usv1.pdf",
+      "status": "done",
+      "pages": 111,
+      "billed": 111,
+      "ms": 287701
+    },
+    {
+      "file": "2025 10\\202510usv2.pdf",
+      "status": "done",
+      "pages": 112,
+      "billed": 112,
+      "ms": 308431
+    },
+    {
+      "file": "2025 10\\202510usv3.pdf",
+      "status": "done",
+      "pages": 34,
+      "billed": 34,
+      "ms": 214724
+    },
+    {
+      "file": "2025 11\\202511asiav1.pdf",
+      "status": "done",
+      "pages": 51,
+      "billed": 51,
+      "ms": 219233
+    },
+    {
+      "file": "2025 11\\202511asiav2.pdf",
+      "status": "done",
+      "pages": 51,
+      "billed": 51,
+      "ms": 228191
+    },
+    {
+      "file": "2025 12\\202512asiav1.pdf",
+      "status": "done",
+      "pages": 35,
+      "billed": 35,
+      "ms": 216797
+    },
+    {
+      "file": "2025 12\\202512asiav2.pdf",
+      "status": "keys_exhausted",
+      "pages": 0,
+      "billed": 0,
+      "ms": 233733
+    }
+  ]
+}

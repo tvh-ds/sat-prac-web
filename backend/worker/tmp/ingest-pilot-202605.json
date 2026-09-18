@@ -1,0 +1,119 @@
+{
+  "folder": "C:\\Users\\Admin\\AppData\\Local\\Temp\\pilot-202605",
+  "ingested_at": "2026-09-17T00:06:14.535Z",
+  "files": [
+    {
+      "file": "202605asIav1-rw.pdf",
+      "import_id": "36cf2864-3d3d-44ac-b12b-755d5936d012",
+      "status": "completed",
+      "pages": 23,
+      "method": "parse_ocr",
+      "drafts": 52,
+      "modules": {
+        "Reading and Writing Module 1": 52
+      },
+      "module_checks": [
+        {
+          "module": "Reading and Writing Module 1",
+          "expected": 27,
+          "actual": 52,
+          "status": "over"
+        }
+      ],
+      "module_keys": {
+        "Reading and Writing Module 1": {
+          "total": 52,
+          "with_key": 0
+        }
+      },
+      "draft_statuses": {
+        "missing_key": 49,
+        "needs_review": 3
+      },
+      "answer_key_status": "missing",
+      "ocr_provider": "cohere_parse",
+      "ocr_model": "parse-v5.0",
+      "ocr_pages_attempted": 23,
+      "ocr_pages_succeeded": 23,
+      "ocr_pages_failed": [],
+      "billed_parse_pages": 23,
+      "visual_review": 3,
+      "visual_pages": [
+        13,
+        14,
+        15,
+        23
+      ],
+      "timings_ms": {
+        "ocrMs": 151308,
+        "parserMs": 17,
+        "finalizeMs": 37052,
+        "totalMs": 202347
+      },
+      "warnings": [
+        "Reading and Writing Module 1: 52/27 questions (over count — module boundaries may be wrong, review needed).",
+        "4 page(s) contain figures/tables/graphs; affected questions are marked needs_review with page images attached."
+      ],
+      "error": null
+    },
+    {
+      "file": "202605usv1-rw.pdf",
+      "import_id": "16dd6981-9a85-4c02-bc1f-48d004d90873",
+      "status": "completed",
+      "pages": 36,
+      "method": "parse_ocr",
+      "drafts": 21,
+      "modules": {
+        "Reading and Writing Module 1": 21
+      },
+      "module_checks": [
+        {
+          "module": "Reading and Writing Module 1",
+          "expected": 27,
+          "actual": 21,
+          "status": "partial"
+        }
+      ],
+      "module_keys": {
+        "Reading and Writing Module 1": {
+          "total": 21,
+          "with_key": 0
+        }
+      },
+      "draft_statuses": {
+        "missing_key": 21
+      },
+      "answer_key_status": "missing",
+      "ocr_provider": "cohere_parse",
+      "ocr_model": "parse-v5.0",
+      "ocr_pages_attempted": 36,
+      "ocr_pages_succeeded": 36,
+      "ocr_pages_failed": [],
+      "billed_parse_pages": 36,
+      "visual_review": 0,
+      "visual_pages": [
+        7,
+        9,
+        23,
+        36
+      ],
+      "timings_ms": {
+        "ocrMs": 169066,
+        "parserMs": 4,
+        "finalizeMs": 9825,
+        "totalMs": 190665
+      },
+      "warnings": [
+        "Reading and Writing Module 1: 21/27 questions (partial — review needed).",
+        "4 page(s) contain figures/tables/graphs; affected questions are marked needs_review with page images attached."
+      ],
+      "error": null
+    }
+  ],
+  "totals": {
+    "files": 2,
+    "completed": 2,
+    "failed": 0,
+    "drafts": 73
+  }
+}

@@ -1,0 +1,766 @@
+{
+  "files": [
+    {
+      "file": "2025 03\\202503asiav1.ocr.txt",
+      "import_id": "796875c4-2294-4460-b6a2-53527b688a1e",
+      "status": "completed",
+      "drafts": 98,
+      "keys": 98
+    },
+    {
+      "file": "2025 03\\202503asiav2.ocr.txt",
+      "import_id": "703de407-6b85-4c28-8f86-e923375f5875",
+      "status": "completed",
+      "drafts": 98,
+      "keys": 98
+    },
+    {
+      "file": "2025 03\\202503asiav3.ocr.txt",
+      "import_id": "61c0f264-3d1e-46f2-9957-877cd0b01fb0",
+      "status": "completed",
+      "drafts": 98,
+      "keys": 98
+    },
+    {
+      "file": "2025 03\\202503asiav5.ocr.txt",
+      "import_id": "7a8b098c-0f31-4ec1-89a1-2d46fc77d663",
+      "status": "completed",
+      "drafts": 88,
+      "keys": 1
+    },
+    {
+      "file": "2025 03\\202503asiav8.ocr.txt",
+      "import_id": "9f1e2e7a-012f-4da5-9bd3-cf7f041b7709",
+      "status": "completed",
+      "drafts": 89,
+      "keys": 0
+    },
+    {
+      "file": "2025 03\\202503asiav9.ocr.txt",
+      "import_id": "e94180ff-eddf-48af-80be-c7a0b81f80c7",
+      "status": "completed",
+      "drafts": 89,
+      "keys": 0
+    },
+    {
+      "file": "2025 03\\202503usv1.ocr.txt",
+      "import_id": "69efd8e3-0aaa-4d9c-8208-8ef4276184d4",
+      "status": "completed",
+      "drafts": 98,
+      "keys": 98
+    },
+    {
+      "file": "2025 03\\202503usv2.ocr.txt",
+      "import_id": "9e8d4d04-0939-49ab-a6ee-623af131c0a3",
+      "status": "completed",
+      "drafts": 98,
+      "keys": 98
+    },
+    {
+      "file": "2025 03\\202503usv3.ocr.txt",
+      "import_id": "09461a86-b5f4-4165-b88c-26da69a42c94",
+      "status": "completed",
+      "drafts": 88,
+      "keys": 0
+    },
+    {
+      "file": "2025 05\\202505asiav1.ocr.txt",
+      "import_id": "ad58d621-826c-4187-a241-504927d786b4",
+      "status": "completed",
+      "drafts": 54,
+      "keys": 54
+    },
+    {
+      "file": "2025 05\\202505asiav2.ocr.txt",
+      "import_id": "98b43b1d-65f2-4212-b9aa-d2f163b0ac8d",
+      "status": "completed",
+      "drafts": 97,
+      "keys": 54
+    },
+    {
+      "file": "2025 05\\202505usv1.ocr.txt",
+      "import_id": "39e10121-00e3-4bb2-a02a-6c9bee30964a",
+      "status": "completed",
+      "drafts": 97,
+      "keys": 97
+    },
+    {
+      "file": "2025 05\\202505usv2.ocr.txt",
+      "import_id": "a1bca89d-c1b6-4a70-9d77-f9cf450c0472",
+      "status": "completed",
+      "drafts": 129,
+      "keys": 0
+    },
+    {
+      "file": "2025 06\\202506asiav1-rw.ocr.txt",
+      "import_id": "061d8acb-6e5d-4b29-97f0-a866686ba410",
+      "status": "completed",
+      "drafts": 54,
+      "keys": 54
+    },
+    {
+      "file": "2025 06\\202506asiav2.ocr.txt",
+      "import_id": "0d510d16-48e8-456c-b538-dcd675bf928f",
+      "status": "completed",
+      "drafts": 96,
+      "keys": 96
+    },
+    {
+      "file": "2025 06\\202506asiav3.ocr.txt",
+      "import_id": "a25cfae3-84a3-4ede-9f16-d628499956e9",
+      "status": "completed",
+      "drafts": 98,
+      "keys": 98
+    },
+    {
+      "file": "2025 06\\202506asiav4.ocr.txt",
+      "import_id": "d639b170-ef49-4b4d-b9f3-a7b3c06c4c8a",
+      "status": "completed",
+      "drafts": 98,
+      "keys": 98
+    },
+    {
+      "file": "2025 06\\202506usv1.ocr.txt",
+      "import_id": "9e79bfac-fb8e-4f23-81d4-ebdc91c7dea9",
+      "status": "completed",
+      "drafts": 98,
+      "keys": 98
+    },
+    {
+      "file": "2025 06\\202506usv2.ocr.txt",
+      "import_id": "ed891f0b-6633-4089-9842-53ba714eee40",
+      "status": "completed",
+      "drafts": 98,
+      "keys": 0
+    },
+    {
+      "file": "2025 08\\202508asiav1.ocr.txt",
+      "import_id": "6bc1e6e9-97e8-4c83-96ae-9507610b84c9",
+      "status": "completed",
+      "drafts": 98,
+      "keys": 98
+    },
+    {
+      "file": "2025 08\\202508asiav2-rw.ocr.txt",
+      "import_id": "8804b47e-5126-420f-a851-b6949abfcbe6",
+      "status": "completed",
+      "drafts": 54,
+      "keys": 54
+    },
+    {
+      "file": "2025 08\\202508asiav3-rw.ocr.txt",
+      "import_id": "109a6422-9447-4b63-8c53-84374d9db8bd",
+      "status": "completed",
+      "drafts": 54,
+      "keys": 54
+    },
+    {
+      "file": "2025 08\\202508usv1.ocr.txt",
+      "import_id": "17e5cd3e-38d3-4fde-bc9c-7f04d666b9ce",
+      "status": "completed",
+      "drafts": 88,
+      "keys": 67
+    },
+    {
+      "file": "2025 08\\202508usv2.ocr.txt",
+      "import_id": "7a7f4769-943c-4b3e-9f21-8194b4f7951d",
+      "status": "completed",
+      "drafts": 87,
+      "keys": 63
+    },
+    {
+      "file": "2025 08\\202508usv3.ocr.txt",
+      "import_id": "b83a8bba-854d-4f03-bc2e-ed022c52b7d5",
+      "status": "completed",
+      "drafts": 92,
+      "keys": 50
+    },
+    {
+      "file": "2025 08\\202508usv4.ocr.txt",
+      "import_id": "151abb8a-b4bc-4206-ad7c-8bced876d771",
+      "status": "completed",
+      "drafts": 88,
+      "keys": 60
+    },
+    {
+      "file": "2025 09\\202509asiav1.ocr.txt",
+      "import_id": "7fc825e2-48d4-42fe-86fe-e51275cf05f4",
+      "status": "completed",
+      "drafts": 98,
+      "keys": 98
+    },
+    {
+      "file": "2025 09\\202509asiav2-rw.ocr.txt",
+      "import_id": "8cb061e0-93fe-4246-9af3-22c009eaeb06",
+      "status": "completed",
+      "drafts": 27,
+      "keys": 27
+    },
+    {
+      "file": "2025 09\\202509asiav2.ocr.txt",
+      "import_id": "07ef061e-75f6-4718-a3d7-46dbd55739e8",
+      "status": "completed",
+      "drafts": 98,
+      "keys": 98
+    },
+    {
+      "file": "2025 09\\202509asiav4.ocr.txt",
+      "import_id": null,
+      "status": "failed",
+      "drafts": 0,
+      "keys": 0,
+      "error": "insert draft: TypeError: fetch failed"
+    },
+    {
+      "file": "2025 09\\202509us01.ocr.txt",
+      "import_id": "5d10e4ef-e019-4790-a17b-abff363d9623",
+      "status": "completed",
+      "drafts": 98,
+      "keys": 98
+    },
+    {
+      "file": "2025 09\\202509us02.ocr.txt",
+      "import_id": "079701da-4475-46a9-824f-ca38d40ca846",
+      "status": "completed",
+      "drafts": 97,
+      "keys": 97
+    },
+    {
+      "file": "2025 09\\202509us03.ocr.txt",
+      "import_id": "d430fec9-b095-456e-81cc-bf922906f13f",
+      "status": "completed",
+      "drafts": 91,
+      "keys": 0
+    },
+    {
+      "file": "2025 09\\202509us04.ocr.txt",
+      "import_id": "ef5dd7d9-c521-4091-a535-70fcf615c7bf",
+      "status": "completed",
+      "drafts": 97,
+      "keys": 97
+    },
+    {
+      "file": "2025 09\\202509us05.ocr.txt",
+      "import_id": "a1018364-3ef0-463f-8fca-5392232e9926",
+      "status": "completed",
+      "drafts": 96,
+      "keys": 96
+    },
+    {
+      "file": "2025 09\\202509us06.ocr.txt",
+      "import_id": "5559dd6f-8bb5-44d3-80c4-776a8d53aa35",
+      "status": "completed",
+      "drafts": 98,
+      "keys": 98
+    },
+    {
+      "file": "2025 09\\202509usv7.ocr.txt",
+      "import_id": "c30f1162-657c-4518-859d-5cff748ee890",
+      "status": "completed",
+      "drafts": 98,
+      "keys": 98
+    },
+    {
+      "file": "2025 10\\202510asiav1-new.ocr.txt",
+      "import_id": "e5fa2be1-40c1-4d1d-8928-3368dbc0630a",
+      "status": "completed",
+      "drafts": 96,
+      "keys": 96
+    },
+    {
+      "file": "2025 10\\202510asiav2-new.ocr.txt",
+      "import_id": "ea59f25b-d8de-4416-a443-d5bf438e78a2",
+      "status": "completed",
+      "drafts": 97,
+      "keys": 97
+    },
+    {
+      "file": "2025 10\\202510asiav3.ocr.txt",
+      "import_id": "28d37700-cd0a-408a-a455-009c40e33f35",
+      "status": "completed",
+      "drafts": 38,
+      "keys": 0
+    },
+    {
+      "file": "2025 10\\202510asiav4.ocr.txt",
+      "import_id": "ea027edb-c4fd-492f-a667-54419a0284f5",
+      "status": "completed",
+      "drafts": 40,
+      "keys": 0
+    },
+    {
+      "file": "2025 10\\202510usv1.ocr.txt",
+      "import_id": "c3607c62-ec1a-4806-a917-a191f8cda6d3",
+      "status": "completed",
+      "drafts": 98,
+      "keys": 98
+    },
+    {
+      "file": "2025 10\\202510usv2.ocr.txt",
+      "import_id": "00f62ca0-1f12-48e7-897a-bf2ec7c2496c",
+      "status": "completed",
+      "drafts": 98,
+      "keys": 98
+    },
+    {
+      "file": "2025 10\\202510usv3.ocr.txt",
+      "import_id": "5f98c2f6-21ad-4046-8921-7409c1d8b694",
+      "status": "completed",
+      "drafts": 98,
+      "keys": 98
+    },
+    {
+      "file": "2025 11\\202511asiav1.ocr.txt",
+      "import_id": "6745fc22-b967-4f9d-92cc-1b77c8bc4bc5",
+      "status": "completed",
+      "drafts": 88,
+      "keys": 0
+    },
+    {
+      "file": "2025 11\\202511asiav2.ocr.txt",
+      "import_id": "6d7be363-6247-440e-b310-ba849100500e",
+      "status": "completed",
+      "drafts": 87,
+      "keys": 0
+    },
+    {
+      "file": "2025 12\\202512asiav1.ocr.txt",
+      "import_id": "311986d1-51ad-4788-9c12-58bffa18aea1",
+      "status": "completed",
+      "drafts": 98,
+      "keys": 98
+    },
+    {
+      "file": "2026 05\\202605asIav1-rw.ocr.txt",
+      "import_id": "e37ce1fd-757a-4226-9e12-7b4cf4106be4",
+      "status": "completed",
+      "drafts": 54,
+      "keys": 54
+    },
+    {
+      "file": "2026 05\\202605usv1-rw.ocr.txt",
+      "import_id": "9c52c3be-1129-4b12-b995-ebc56e7c95ed",
+      "status": "completed",
+      "drafts": 54,
+      "keys": 54
+    },
+    {
+      "file": "2026 06\\202606asiav1.ocr.txt",
+      "import_id": "f6669355-6983-4636-9ab6-ba2587c980a1",
+      "status": "completed",
+      "drafts": 98,
+      "keys": 98
+    },
+    {
+      "file": "2026 06\\202606asiav2.ocr.txt",
+      "import_id": "324373c1-054f-48e4-882c-e1401b7c0977",
+      "status": "completed",
+      "drafts": 98,
+      "keys": 98
+    },
+    {
+      "file": "2026 06\\202606asiav3.ocr.txt",
+      "import_id": "92f9b152-1c6a-4537-91e9-a55d588fa7ec",
+      "status": "completed",
+      "drafts": 98,
+      "keys": 98
+    }
+  ],
+  "duplicateGroups": [
+    {
+      "fingerprint": "6d6107746300559b1a6559378c224042",
+      "size": 2,
+      "files": [
+        "2025 03\\202503asiav1.ocr.txt",
+        "2025 05\\202505asiav1.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "170899db457838c3f8bdfd37b03460f9",
+      "size": 2,
+      "files": [
+        "2025 03\\202503asiav1.ocr.txt",
+        "2025 03\\202503usv2.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "a3ec8ef4cbb9b0603f0c93c32201243e",
+      "size": 2,
+      "files": [
+        "2025 03\\202503asiav1.ocr.txt",
+        "2025 05\\202505asiav1.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "8ff9edd27f38fa99d29c90c31857f4f3",
+      "size": 2,
+      "files": [
+        "2025 03\\202503asiav1.ocr.txt",
+        "2025 03\\202503asiav3.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "d3ee52c6b8792c0b39bf61a8b2268689",
+      "size": 2,
+      "files": [
+        "2025 03\\202503asiav1.ocr.txt",
+        "2025 10\\202510asiav2-new.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "3ad0d136f3a4dd6ee576e0afa8601ec6",
+      "size": 3,
+      "files": [
+        "2025 03\\202503asiav1.ocr.txt",
+        "2025 03\\202503asiav2.ocr.txt",
+        "2025 10\\202510asiav2-new.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "fc330acbb7b1e990b746e841289b6635",
+      "size": 2,
+      "files": [
+        "2025 03\\202503asiav1.ocr.txt",
+        "2025 10\\202510asiav2-new.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "47cc57face14f2d07af92c6abed20d55",
+      "size": 2,
+      "files": [
+        "2025 03\\202503asiav1.ocr.txt",
+        "2025 10\\202510asiav2-new.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "0999e7e2b8a872cfe0d8de51308b7550",
+      "size": 2,
+      "files": [
+        "2025 03\\202503asiav1.ocr.txt",
+        "2025 03\\202503asiav2.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "36709d2195cd10e8dc6a794e1ee9e396",
+      "size": 2,
+      "files": [
+        "2025 03\\202503asiav1.ocr.txt",
+        "2025 05\\202505asiav1.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "45093d4c56bf10d5c3c9da5e1c296cb6",
+      "size": 2,
+      "files": [
+        "2025 03\\202503asiav2.ocr.txt",
+        "2025 03\\202503usv2.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "fa8f29f9fce2360d52afe3fa7d74a5eb",
+      "size": 2,
+      "files": [
+        "2025 03\\202503usv2.ocr.txt",
+        "2025 05\\202505usv1.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "06ea38d0c84ea58c2d55e57fe772c0b7",
+      "size": 2,
+      "files": [
+        "2025 05\\202505asiav1.ocr.txt",
+        "2025 05\\202505usv1.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "7b56153e1e954a492858a23a117f17af",
+      "size": 2,
+      "files": [
+        "2025 05\\202505asiav1.ocr.txt",
+        "2025 05\\202505usv1.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "d039ca7c1b83b503bae6fee038e98ad8",
+      "size": 2,
+      "files": [
+        "2025 05\\202505asiav1.ocr.txt",
+        "2025 05\\202505usv1.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "388ea2ac7ee648d47108627d85bcc88d",
+      "size": 2,
+      "files": [
+        "2025 05\\202505asiav1.ocr.txt",
+        "2025 05\\202505usv1.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "b9193655b79845e640e1b8d07467beb8",
+      "size": 2,
+      "files": [
+        "2025 06\\202506asiav1-rw.ocr.txt",
+        "2025 06\\202506asiav2.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "4b6d966b1eb0ae9c102fd3c3514403e5",
+      "size": 3,
+      "files": [
+        "2025 06\\202506asiav1-rw.ocr.txt",
+        "2025 06\\202506asiav2.ocr.txt",
+        "2025 08\\202508asiav1.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "eb957647424909cb1b23130ec41fdbdc",
+      "size": 2,
+      "files": [
+        "2025 06\\202506asiav1-rw.ocr.txt",
+        "2025 08\\202508asiav1.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "d30d82df67ba9d19afddeed68384fd0f",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "32806936e57af1b8d0d5be5f207fc58b",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "2f5e7a3beddb7cb6d59b1e010862b1a6",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "85eb8892dc6556467a42de199df6a827",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "965546f4ae81942ba801661c51b4ac54",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "30616e54b25fbb54dd92423a4d4432e2",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "77833e680741c01a3b39d391180b43d5",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "d596fa2f81a0e50a6b4570a5120dd991",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "de52f2b04bc8aaa67e90b8d6df14cc1c",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "f97ee8d2f01573c493b17de9a9db4769",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "e19417a3276a40f6f076632c4cddd80f",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "f3e9177f5d35627868609885664cc3af",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "20a663b5553982064830965a9ea30d18",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "a19c9738c893129e3af3326f248f526b",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "a23f2060480f053b0f84814d11af593b",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "0cea0e7c4acfbe583940ab1df5bdce23",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "da0f31c354cb0cf96da7f56c046336f3",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "fe542bac72885738535e6aca7fd717c2",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "3b1df7da481496985ba7d92f7acdfb32",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "2e22b30cc4676dc58466626c6984c4c1",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "0ba8c0d4b2f0d966c7f0674c6ab692f0",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "3672f09a5eb33f2ffef44fc3ed33bd74",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "82e0723f2835579b971419afaf49a3a2",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "e3a2915626cf4d7a9458aa5a39bb66ea",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "618f317a9fbe196846b8fbcb82dbb22a",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "42ed57d2f33a3e200e15643e2042cbb2",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "d2ddbc0ad9986bc8fe146a62478da91f",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "02725108b09c6187781582d913c9dfee",
+      "size": 2,
+      "files": [
+        "2025 08\\202508asiav2-rw.ocr.txt",
+        "2025 08\\202508asiav3-rw.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "2b85e16c6d3317bb7c934939fe4c69ca",
+      "size": 2,
+      "files": [
+        "2025 09\\202509us01.ocr.txt",
+        "2025 09\\202509us02.ocr.txt"
+      ]
+    },
+    {
+      "fingerprint": "4956dcac74e9019c18d6d7a382b20822",
+      "size": 2,
+      "files": [
+        "2025 09\\202509us02.ocr.txt",
+        "2025 09\\202509us04.ocr.txt"
+      ]
+    }
+  ],
+  "flagged": 51
+}

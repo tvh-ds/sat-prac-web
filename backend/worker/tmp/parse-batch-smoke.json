@@ -1,0 +1,242 @@
+{
+  "files": [
+    {
+      "file": "2026 05\\202605asIav1-rw.ocr.txt",
+      "pages": 23,
+      "questions": 54,
+      "keyEntries": 54,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 9
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 9,
+          "endPage": 21
+        }
+      ],
+      "keysMatched": "54/54",
+      "unmatched": [],
+      "visualPages": [
+        13,
+        14,
+        15,
+        23
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2026 05\\202605usv1-rw.ocr.txt",
+      "pages": 36,
+      "questions": 54,
+      "keyEntries": 54,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 18
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 19,
+          "endPage": 36
+        }
+      ],
+      "keysMatched": "54/54",
+      "unmatched": [],
+      "visualPages": [
+        7,
+        9,
+        23,
+        36
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2026 06\\202606asiav1.ocr.txt",
+      "pages": 50,
+      "questions": 98,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 9
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 10,
+          "endPage": 19
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 20,
+          "endPage": 33
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 34,
+          "endPage": 48
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        4,
+        13,
+        21,
+        22,
+        23,
+        28,
+        29,
+        30,
+        31,
+        34,
+        38,
+        39,
+        40,
+        41,
+        42,
+        44,
+        47,
+        48
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2026 06\\202606asiav2.ocr.txt",
+      "pages": 39,
+      "questions": 98,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 9
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 9,
+          "endPage": 20
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 20,
+          "endPage": 28
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 28,
+          "endPage": 37
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        4,
+        13,
+        14,
+        20,
+        23,
+        26,
+        29,
+        31,
+        33,
+        34,
+        35
+      ],
+      "status": "PASS"
+    },
+    {
+      "file": "2026 06\\202606asiav3.ocr.txt",
+      "pages": 8,
+      "questions": 98,
+      "keyEntries": 98,
+      "modules": [
+        {
+          "name": "Reading and Writing Module 1",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 1,
+          "endPage": 1
+        },
+        {
+          "name": "Reading and Writing Module 2",
+          "actual": 27,
+          "expected": 27,
+          "status": "VALID",
+          "startPage": 2,
+          "endPage": 3
+        },
+        {
+          "name": "Math Module 1",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 4,
+          "endPage": 5
+        },
+        {
+          "name": "Math Module 2",
+          "actual": 22,
+          "expected": 22,
+          "status": "VALID",
+          "startPage": 6,
+          "endPage": 8
+        }
+      ],
+      "keysMatched": "98/98",
+      "unmatched": [],
+      "visualPages": [
+        1,
+        2,
+        4,
+        6,
+        7,
+        8
+      ],
+      "status": "PASS"
+    }
+  ],
+  "duplicateGroups": [],
+  "stemBuckets": 402
+}

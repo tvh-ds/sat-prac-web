@@ -1,0 +1,28 @@
+Which choice completes the text with the most logical and precise word or phrase?
+
+A) skeptically
+B) strangely
+C) neutrally
+D) favorably
+
+5
+
+Scientists monitor ecosystem-wide plant health by tracking gross primary productivity (GPP) --- the rate of carbon dioxide absorption by plants --- through carbon flux data obtained on-site from flux towers. But as flux towers aren't evenly distributed globally, alternate proxies for GPP obtained remotely from satellite sensors, including solar-induced chlorophyll fluorescence (SIF) emitted by plants during photosynthesis, are being investigated. The GPP-SIF relationship, which is mediated by water availability and other factors, isn't completely understood, but studies suggest that SIF typically correlates well with flux-tower data.
+
+Which choice best states the main purpose of the text?
+
+A) To explain why water availability and other factors influencing the relationship between GPP and SIF may compromise the reliability of GPP data obtained from flux towers
+B) To evaluate the potential of two types of scientific instruments typically used for tracking GPP to also reliably measure SIF
+C) To identify the systemic errors associated with flux-tower estimates of GPP that prompted scientists to investigate alternate methods for gathering carbon flux data
+D) To discuss a method for indirectly measuring GPP with remote-sensor technology that may compensate for a limitation associated with a standard method
+
+6
+
+A trend away from stable, relatively high humidity in the Middle East over the past 8 million years can be inferred from the composition of cave formations dating to different periods. Cave formations from about 7 million years ago mainly consist of transparent columnar calcite, indicative of an underground water system regularly replenished by rainfall. Cave formations younger than approximately 1 million years, however, mainly consist of branching, opaque (and sometimes colorful) material, often with more frequent growth interruptions, indicating an intermittent water supply.
+
+Which choice best describes the function of the two underlined portions in the text as a whole?
+
+A) They provide evidence from different Middle Eastern cave formations that substantiates the claim that the region experienced a long period of relatively high humidity
+B) They describe divergent features of cave formations that when taken together imply decreasing variation in Middle Eastern rainfall over time.
+C) They draw a contrast between Middle Eastern cave formations that is suggestive of geographic differences in the underground water supply
+D) They identify different characteristics of cave formations that when considered together provide evidence for a long-term shift toward lower and more variable humidity in the Middle East

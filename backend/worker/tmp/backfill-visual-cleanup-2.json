@@ -1,0 +1,1521 @@
+{
+  "dry_run": false,
+  "phaseA": {
+    "groups": 757,
+    "multiRow": 54,
+    "fixed": 4,
+    "rowsCleared": 7,
+    "ambiguous": 50
+  },
+  "phaseB": {
+    "groups": 2,
+    "multiRow": 0,
+    "fixed": 0,
+    "rowsCleared": 0,
+    "ambiguous": 0
+  },
+  "phaseC": {
+    "fieldsStripped": 2,
+    "skippedEmpty": 0
+  },
+  "changes": [
+    {
+      "phase": "A-draft-dedup",
+      "id": "2444f4e8-6aa2-4c34-bf07-467890e8b1f0",
+      "file": "202503asiav2.pdf",
+      "q": 4,
+      "kept_by": 3,
+      "patch": {
+        "has_visual_stimulus": false,
+        "stimulus_image_path": null,
+        "status": "has_suggested_key"
+      }
+    },
+    {
+      "phase": "A-draft-dedup",
+      "id": "8b6570ff-4e75-4e74-8a14-18f5fd4c96a4",
+      "file": "202503asiav2.pdf",
+      "q": 2,
+      "kept_by": 3,
+      "patch": {
+        "has_visual_stimulus": false,
+        "stimulus_image_path": null,
+        "status": "has_suggested_key"
+      }
+    },
+    {
+      "phase": "A-draft-dedup",
+      "id": "56fb85f5-22be-4d3e-a9ed-d05832c68a83",
+      "file": "202503usv2.pdf",
+      "q": 13,
+      "kept_by": 14,
+      "patch": {
+        "has_visual_stimulus": false,
+        "stimulus_image_path": null,
+        "status": "has_suggested_key"
+      }
+    },
+    {
+      "phase": "A-draft-dedup",
+      "id": "a23397d7-691f-4f75-8429-21292d488def",
+      "file": "202503usv2.pdf",
+      "q": 12,
+      "kept_by": 14,
+      "patch": {
+        "has_visual_stimulus": false,
+        "stimulus_image_path": null,
+        "status": "has_suggested_key"
+      }
+    },
+    {
+      "phase": "A-draft-dedup",
+      "id": "c3efcebf-3147-4d2c-bc1b-976a1ebd5019",
+      "file": "202509asiav1.pdf",
+      "q": 9,
+      "kept_by": 8,
+      "patch": {
+        "has_visual_stimulus": false,
+        "stimulus_image_path": null,
+        "status": "has_suggested_key"
+      }
+    },
+    {
+      "phase": "A-draft-dedup",
+      "id": "f49041cb-91c6-410e-8375-307afa80a5a2",
+      "file": "202509asiav1.pdf",
+      "q": 10,
+      "kept_by": 8,
+      "patch": {
+        "has_visual_stimulus": false,
+        "stimulus_image_path": null,
+        "status": "has_suggested_key"
+      }
+    },
+    {
+      "phase": "A-draft-dedup",
+      "id": "cc1fcd67-e0e9-4900-8420-54d16f30362b",
+      "file": "202503asiav1.pdf",
+      "q": 13,
+      "kept_by": 12,
+      "patch": {
+        "has_visual_stimulus": false,
+        "stimulus_image_path": null,
+        "status": "has_suggested_key"
+      }
+    },
+    {
+      "phase": "C-strip",
+      "table": "draft_questions",
+      "id": "a7f6d126-0c1a-4d71-9684-f6e273f24efc",
+      "col": "passage_text",
+      "before": 1876,
+      "after": 1494
+    },
+    {
+      "phase": "C-strip",
+      "table": "draft_questions",
+      "id": "efcaf0d6-653a-4b71-9725-cf63a4f494bd",
+      "col": "passage_text",
+      "before": 3401,
+      "after": 2900
+    }
+  ],
+  "ambiguous": [
+    {
+      "scope": "draft",
+      "file": "202509asiav1.pdf",
+      "page": 30,
+      "rows": [
+        {
+          "id": "01020249-2232-46bc-9039-df70637fe343",
+          "q": 6,
+          "status": "needs_review"
+        },
+        {
+          "id": "3c3f26e0-3503-4780-9c90-ff73ca93cd32",
+          "q": 9,
+          "status": "needs_review"
+        },
+        {
+          "id": "8e488f67-bde5-42f3-ae6c-a9aa9b761d1c",
+          "q": 7,
+          "status": "needs_review"
+        },
+        {
+          "id": "d34f1921-151a-418b-9774-f27a74a7fc46",
+          "q": 8,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202606asiav3.pdf",
+      "page": 1,
+      "rows": [
+        {
+          "id": "025bdc37-9d6f-4778-88f3-fa6365a4e6dd",
+          "q": 23,
+          "status": "needs_review"
+        },
+        {
+          "id": "06bff7c9-d64a-401d-af44-eb2dd0aa2ee0",
+          "q": 10,
+          "status": "needs_review"
+        },
+        {
+          "id": "0b5ac386-6fb9-46d8-bb54-b74d89c2ee9f",
+          "q": 5,
+          "status": "needs_review"
+        },
+        {
+          "id": "0e2776d4-f9e2-462c-8f5f-74b43e515665",
+          "q": 18,
+          "status": "needs_review"
+        },
+        {
+          "id": "12f8fc0e-7c5f-4bfc-9f27-d1d4fd784ce0",
+          "q": 4,
+          "status": "needs_review"
+        },
+        {
+          "id": "18221cc9-47a5-48af-af7a-e34d2054d2f5",
+          "q": 12,
+          "status": "needs_review"
+        },
+        {
+          "id": "1e2dd02d-d3b9-4a61-a1f2-a27fe5ef283b",
+          "q": 7,
+          "status": "needs_review"
+        },
+        {
+          "id": "1ebd0d60-e4bb-4cd1-9b9c-83eb82f8c061",
+          "q": 27,
+          "status": "needs_review"
+        },
+        {
+          "id": "2d14da19-da9d-46de-bffe-33cd87eeb6f9",
+          "q": 14,
+          "status": "needs_review"
+        },
+        {
+          "id": "3d1161cb-9b4e-46cb-9271-7c4b49c168e5",
+          "q": 24,
+          "status": "needs_review"
+        },
+        {
+          "id": "410a1924-3ee4-4be3-92fc-5271b77d66a3",
+          "q": 21,
+          "status": "needs_review"
+        },
+        {
+          "id": "4acfc33c-b3a9-425f-a547-95a76e3872e1",
+          "q": 17,
+          "status": "needs_review"
+        },
+        {
+          "id": "53e9f9a0-5b6c-4f1d-b0f9-05f92ef643d3",
+          "q": 19,
+          "status": "needs_review"
+        },
+        {
+          "id": "5e427ab0-6776-413f-83dc-cc99888b731a",
+          "q": 26,
+          "status": "needs_review"
+        },
+        {
+          "id": "63813290-13e8-4be6-8e30-90a7b16cf2f4",
+          "q": 1,
+          "status": "needs_review"
+        },
+        {
+          "id": "8fa1f479-48c9-43c2-8888-b27b9a3b6282",
+          "q": 11,
+          "status": "needs_review"
+        },
+        {
+          "id": "aab53f0c-15fc-4228-9978-93a00f04e753",
+          "q": 6,
+          "status": "needs_review"
+        },
+        {
+          "id": "b75a9741-e889-43e7-b56d-758207166d29",
+          "q": 3,
+          "status": "needs_review"
+        },
+        {
+          "id": "c12db3ca-871b-4207-a2d5-873e27c2d9cd",
+          "q": 15,
+          "status": "needs_review"
+        },
+        {
+          "id": "d64fc7d4-2489-42be-adf7-68e824dda5d9",
+          "q": 20,
+          "status": "needs_review"
+        },
+        {
+          "id": "d7b12ca1-c517-4716-be1b-30d4cc453110",
+          "q": 22,
+          "status": "needs_review"
+        },
+        {
+          "id": "e2181580-405a-4715-a28c-a2fa6bdbca4c",
+          "q": 2,
+          "status": "needs_review"
+        },
+        {
+          "id": "e730fdba-0c1f-4f2b-9ab8-171c7d06e974",
+          "q": 8,
+          "status": "needs_review"
+        },
+        {
+          "id": "ea792fe5-c221-4461-8bd7-a59696de327d",
+          "q": 25,
+          "status": "needs_review"
+        },
+        {
+          "id": "f708cd60-4839-4dae-866f-2bbd446e5e56",
+          "q": 9,
+          "status": "needs_review"
+        },
+        {
+          "id": "f8146300-bbff-4f05-8815-cac151a3cead",
+          "q": 16,
+          "status": "needs_review"
+        },
+        {
+          "id": "f9cd875e-b1ee-43af-9f30-35d88a1ad371",
+          "q": 13,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202506usv1.pdf",
+      "page": 15,
+      "rows": [
+        {
+          "id": "02742dd5-1923-4b79-a7dd-6188f9970467",
+          "q": 13,
+          "status": "needs_review"
+        },
+        {
+          "id": "b22ecfa2-ac6a-4c36-a8cc-a8228c93646f",
+          "q": 14,
+          "status": "needs_review"
+        },
+        {
+          "id": "d88ece67-92f8-4169-83d2-f4e8edcd0138",
+          "q": 12,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202509asiav4.pdf",
+      "page": 28,
+      "rows": [
+        {
+          "id": "02d3e800-b055-4ac1-8df2-e1e16dccb5fb",
+          "q": 4,
+          "status": "needs_review"
+        },
+        {
+          "id": "215653e5-f42f-47b0-8349-dfd7928dd955",
+          "q": 1,
+          "status": "needs_review"
+        },
+        {
+          "id": "3c2d83e5-5fd1-435d-9313-3d9004096aaa",
+          "q": 2,
+          "status": "needs_review"
+        },
+        {
+          "id": "c3f34c9c-add6-4858-9dc2-e8190d473e9c",
+          "q": 3,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202506asiav2.pdf",
+      "page": 26,
+      "rows": [
+        {
+          "id": "06cde4f1-6c04-43de-8472-77d26254c01c",
+          "q": 20,
+          "status": "needs_review"
+        },
+        {
+          "id": "39c12db5-41d9-4f30-afbd-866ef8fd3a33",
+          "q": 1,
+          "status": "needs_review"
+        },
+        {
+          "id": "9a85b954-759d-43ff-8416-fc9016760465",
+          "q": 19,
+          "status": "needs_review"
+        },
+        {
+          "id": "dac1a010-5d32-4287-987d-516e9e25293f",
+          "q": 2,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202606asiav3.pdf",
+      "page": 6,
+      "rows": [
+        {
+          "id": "0c947a0d-434f-4ea6-8f93-2635f2dc729f",
+          "q": 21,
+          "status": "needs_review"
+        },
+        {
+          "id": "0fe1545b-e961-4b3f-8752-6b06fe570b4b",
+          "q": 9,
+          "status": "needs_review"
+        },
+        {
+          "id": "11c93b4d-e963-4029-a7c8-2eb739ae98d0",
+          "q": 5,
+          "status": "needs_review"
+        },
+        {
+          "id": "12d44937-b48a-435b-90bf-c4681ad0e3f2",
+          "q": 22,
+          "status": "needs_review"
+        },
+        {
+          "id": "57470c42-dedf-4e54-8660-f20a1156662c",
+          "q": 20,
+          "status": "needs_review"
+        },
+        {
+          "id": "591df41a-c8cc-4f09-aff0-37c7f5e25104",
+          "q": 7,
+          "status": "needs_review"
+        },
+        {
+          "id": "5cae1645-b5fe-4767-acce-5229c92b97dd",
+          "q": 14,
+          "status": "needs_review"
+        },
+        {
+          "id": "6360cfa8-edfc-4111-8ae6-2b121deb55ea",
+          "q": 17,
+          "status": "needs_review"
+        },
+        {
+          "id": "6f21f4ab-a221-49ec-a31f-0cda83817cdf",
+          "q": 16,
+          "status": "needs_review"
+        },
+        {
+          "id": "74e46853-f023-4f3b-9454-a87a10747a3d",
+          "q": 2,
+          "status": "needs_review"
+        },
+        {
+          "id": "7d6bc248-c512-42eb-a068-702697d2e640",
+          "q": 15,
+          "status": "needs_review"
+        },
+        {
+          "id": "819c40f9-225f-4a2b-9547-df5ca8b6ae67",
+          "q": 13,
+          "status": "needs_review"
+        },
+        {
+          "id": "90f1c5ba-d66f-4381-a4f9-b2fe7a4d0dd2",
+          "q": 1,
+          "status": "needs_review"
+        },
+        {
+          "id": "91c96d0f-de01-4001-bb26-12139694e123",
+          "q": 12,
+          "status": "needs_review"
+        },
+        {
+          "id": "a609632c-e880-4b76-8bc2-39d5f1e75d7f",
+          "q": 3,
+          "status": "needs_review"
+        },
+        {
+          "id": "a8b8c432-f83f-4df6-8f48-2f2c7a7b0d4a",
+          "q": 19,
+          "status": "needs_review"
+        },
+        {
+          "id": "af3a86cb-130a-4bed-ab85-1cef2a11700c",
+          "q": 18,
+          "status": "needs_review"
+        },
+        {
+          "id": "b21b5f34-1644-4cfe-8cc6-293b0ed7f89c",
+          "q": 11,
+          "status": "needs_review"
+        },
+        {
+          "id": "d2fb00fe-dbc5-4674-80a6-dee72173d008",
+          "q": 4,
+          "status": "needs_review"
+        },
+        {
+          "id": "dcc603c7-8ee9-4e88-aed6-c8b8ca3ff480",
+          "q": 6,
+          "status": "needs_review"
+        },
+        {
+          "id": "e948c071-f830-411e-9066-207abc666158",
+          "q": 8,
+          "status": "needs_review"
+        },
+        {
+          "id": "f9d3d274-3e5a-442d-b607-f413eb55ac2e",
+          "q": 10,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202509asiav2.pdf",
+      "page": 12,
+      "rows": [
+        {
+          "id": "0cc80423-77cc-469f-af84-2ccdd49d33ef",
+          "q": 9,
+          "status": "needs_review"
+        },
+        {
+          "id": "bd7dac3b-e819-430f-9fda-c20575fc8465",
+          "q": 8,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202511asiav2.pdf",
+      "page": 36,
+      "rows": [
+        {
+          "id": "0ddf5d17-c55b-4a07-90b3-3007a1845c91",
+          "q": 62,
+          "status": "needs_review"
+        },
+        {
+          "id": "e3e12381-6d6f-4a6b-bbf1-438c19002c29",
+          "q": 63,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202505usv1.pdf",
+      "page": 29,
+      "rows": [
+        {
+          "id": "0e4a5e61-7964-427d-bd4c-8a828ba54dde",
+          "q": 4,
+          "status": "needs_review"
+        },
+        {
+          "id": "9bbd6f03-e34a-427d-b68f-21f4dc15912b",
+          "q": 3,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202509asiav2.pdf",
+      "page": 27,
+      "rows": [
+        {
+          "id": "0edf9980-d413-4757-9334-db1120489cb3",
+          "q": 19,
+          "status": "needs_review"
+        },
+        {
+          "id": "67a2449f-e573-420a-9974-de0725697078",
+          "q": 20,
+          "status": "needs_review"
+        },
+        {
+          "id": "75fe8833-3cd9-4a20-9b9c-c57375bc2bb6",
+          "q": 22,
+          "status": "needs_review"
+        },
+        {
+          "id": "bc2c1bdb-3e0c-4ad1-8476-fbaf95a4a9d0",
+          "q": 18,
+          "status": "needs_review"
+        },
+        {
+          "id": "c3bac3d8-7774-4187-9976-c4879d3920e9",
+          "q": 21,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202503usv3.pdf",
+      "page": 28,
+      "rows": [
+        {
+          "id": "0f5d9e55-9d0f-4ae8-9437-56b423a40eeb",
+          "q": 63,
+          "status": "needs_review"
+        },
+        {
+          "id": "9c1e20a3-5e27-4bef-bfaf-fd6817499d44",
+          "q": 64,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202606asiav3.pdf",
+      "page": 4,
+      "rows": [
+        {
+          "id": "0f74eeb6-a493-4161-8750-d5e91c690a54",
+          "q": 2,
+          "status": "needs_review"
+        },
+        {
+          "id": "16c4b8b7-7366-4176-9b36-f011a1114762",
+          "q": 16,
+          "status": "needs_review"
+        },
+        {
+          "id": "3fc0a4c6-73d9-4011-8f4c-43d614aba5f6",
+          "q": 13,
+          "status": "needs_review"
+        },
+        {
+          "id": "5904f1ba-6b6d-4a76-a29d-29b362353a7c",
+          "q": 4,
+          "status": "needs_review"
+        },
+        {
+          "id": "5961bb4e-f782-453b-9110-0fd69be3080c",
+          "q": 1,
+          "status": "needs_review"
+        },
+        {
+          "id": "60cc3ef0-4c0a-44b0-a7fd-0b675c0ed987",
+          "q": 17,
+          "status": "needs_review"
+        },
+        {
+          "id": "652a8b07-e324-498c-b3f0-e94aab995052",
+          "q": 3,
+          "status": "needs_review"
+        },
+        {
+          "id": "659536a4-9ea2-47e1-a47d-2b43c0f3f78e",
+          "q": 5,
+          "status": "needs_review"
+        },
+        {
+          "id": "6bb0f4f8-b430-4fa6-9e53-397f8a5c80cf",
+          "q": 15,
+          "status": "needs_review"
+        },
+        {
+          "id": "766ec752-543f-464f-a67b-b987c88ecb41",
+          "q": 7,
+          "status": "needs_review"
+        },
+        {
+          "id": "7bf6cb42-1332-434b-87ec-9ec086cec981",
+          "q": 20,
+          "status": "needs_review"
+        },
+        {
+          "id": "87f13ab2-50b1-458d-9b47-4400a7ada8c4",
+          "q": 21,
+          "status": "needs_review"
+        },
+        {
+          "id": "88c3e2ff-d1df-4457-8689-e4a98952aa8f",
+          "q": 10,
+          "status": "needs_review"
+        },
+        {
+          "id": "9e86afd5-293d-4d67-b5cd-0fcd6593d8c7",
+          "q": 8,
+          "status": "needs_review"
+        },
+        {
+          "id": "b312733e-a36e-4a28-897d-aa9a6b8342e9",
+          "q": 9,
+          "status": "needs_review"
+        },
+        {
+          "id": "c93c25c7-fd4b-4789-a267-2db7306c8051",
+          "q": 14,
+          "status": "needs_review"
+        },
+        {
+          "id": "deb89d50-4585-428a-a912-cc4c0db1031e",
+          "q": 6,
+          "status": "needs_review"
+        },
+        {
+          "id": "e63e7896-f013-4c3e-b248-732174ffe141",
+          "q": 18,
+          "status": "needs_review"
+        },
+        {
+          "id": "e7fa7c8e-651f-469a-9380-9abe0a9af85e",
+          "q": 22,
+          "status": "needs_review"
+        },
+        {
+          "id": "f35172af-4e05-4d60-bf8f-44b04d5c0918",
+          "q": 12,
+          "status": "needs_review"
+        },
+        {
+          "id": "fce5a16e-c362-4c75-85f8-9a9a80ae2dc3",
+          "q": 19,
+          "status": "needs_review"
+        },
+        {
+          "id": "fd0c9483-a8d8-4441-be5d-c84d8a97fcfc",
+          "q": 11,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202510asiav1-new.pdf",
+      "page": 22,
+      "rows": [
+        {
+          "id": "0f87dbcc-b4ba-42ed-a569-9a680fdd2a61",
+          "q": 4,
+          "status": "needs_review"
+        },
+        {
+          "id": "13af5220-4e91-49c3-8642-3a96bafa2462",
+          "q": 2,
+          "status": "needs_review"
+        },
+        {
+          "id": "721949b6-794a-4be4-aa16-2df922bb5edd",
+          "q": 3,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202506asiav3.pdf",
+      "page": 23,
+      "rows": [
+        {
+          "id": "142d6d70-0cde-4814-8f5a-246132b5438a",
+          "q": 21,
+          "status": "needs_review"
+        },
+        {
+          "id": "1c63805a-ce86-4d7e-939b-d5cca4a28bc1",
+          "q": 18,
+          "status": "needs_review"
+        },
+        {
+          "id": "8ed8214b-99ca-4d9b-8fb9-8e22201023d7",
+          "q": 20,
+          "status": "needs_review"
+        },
+        {
+          "id": "a7e5efd2-9e38-4af0-827c-27ffe17ad2ab",
+          "q": 17,
+          "status": "needs_review"
+        },
+        {
+          "id": "e3d7d464-1c6b-4828-9bdb-57747991d47e",
+          "q": 19,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202509usv7.pdf",
+      "page": 24,
+      "rows": [
+        {
+          "id": "1627abbf-50bd-43c5-a7db-c719a8379ad3",
+          "q": 10,
+          "status": "needs_review"
+        },
+        {
+          "id": "5df7de9e-94c7-46c1-b3a6-285f756bcbbc",
+          "q": 12,
+          "status": "needs_review"
+        },
+        {
+          "id": "625f68f9-88f8-4380-9e2f-7d95b0f03ed9",
+          "q": 14,
+          "status": "needs_review"
+        },
+        {
+          "id": "6dc8a85a-f709-4237-a985-7aa3b9a074b1",
+          "q": 11,
+          "status": "needs_review"
+        },
+        {
+          "id": "82b37937-4dd8-46f8-8a57-7be4baeef52b",
+          "q": 13,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202510asiav1-new.pdf",
+      "page": 25,
+      "rows": [
+        {
+          "id": "1aea5b85-9385-40d9-ac6f-c58db0ce4bc8",
+          "q": 14,
+          "status": "needs_review"
+        },
+        {
+          "id": "3db74c33-9b72-4056-b13d-88e517bf1ba5",
+          "q": 16,
+          "status": "needs_review"
+        },
+        {
+          "id": "c5dc9e17-b2a9-4776-b7fd-3e297ca79a85",
+          "q": 15,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202506asiav3.pdf",
+      "page": 5,
+      "rows": [
+        {
+          "id": "1c7ac644-f455-4718-84e7-04b7de9c684b",
+          "q": 13,
+          "status": "needs_review"
+        },
+        {
+          "id": "213a3e37-a748-4dc7-9d8f-b9c148eface3",
+          "q": 12,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202509asiav1.pdf",
+      "page": 33,
+      "rows": [
+        {
+          "id": "1cd66433-dafa-4c54-b2df-dac98d1f54ad",
+          "q": 19,
+          "status": "needs_review"
+        },
+        {
+          "id": "2d54e1b0-61bc-4132-8d1a-71c7d9e8fd9a",
+          "q": 21,
+          "status": "needs_review"
+        },
+        {
+          "id": "33474497-79b3-4eaf-96e8-547263a41dad",
+          "q": 20,
+          "status": "needs_review"
+        },
+        {
+          "id": "4c1662e2-31f7-46d3-9d66-4763ec154df3",
+          "q": 18,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202509asiav2.pdf",
+      "page": 21,
+      "rows": [
+        {
+          "id": "1fdc335a-0e8f-4551-994e-40b4d5d114ef",
+          "q": 7,
+          "status": "needs_review"
+        },
+        {
+          "id": "d4248fa2-5d08-409d-900e-78b9e0798b48",
+          "q": 8,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202511asiav1.pdf",
+      "page": 21,
+      "rows": [
+        {
+          "id": "24d0b1ef-ac52-45f6-b814-f89f326766d6",
+          "q": 37,
+          "status": "needs_review"
+        },
+        {
+          "id": "961b6202-54e1-4684-b300-30eab5f510bd",
+          "q": 38,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202510usv3.pdf",
+      "page": 31,
+      "rows": [
+        {
+          "id": "278114f2-c68a-4450-ba0a-495e4236d37f",
+          "q": 18,
+          "status": "needs_review"
+        },
+        {
+          "id": "3e2cb907-ad0f-4760-8241-8990fe03f33d",
+          "q": 19,
+          "status": "needs_review"
+        },
+        {
+          "id": "a26c67f4-00fb-483b-979f-105a26f60517",
+          "q": 17,
+          "status": "needs_review"
+        },
+        {
+          "id": "b56270a9-c0e6-417d-88a9-7e18550cc4d9",
+          "q": 20,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202606asiav3.pdf",
+      "page": 2,
+      "rows": [
+        {
+          "id": "2a68e879-905c-4109-8505-1f72fc810586",
+          "q": 11,
+          "status": "needs_review"
+        },
+        {
+          "id": "38d8531a-1c43-4ae8-ae75-f707b3292f4d",
+          "q": 5,
+          "status": "needs_review"
+        },
+        {
+          "id": "3b2bc5a1-f717-4e24-b0ab-4c659d82ce6f",
+          "q": 10,
+          "status": "needs_review"
+        },
+        {
+          "id": "3fd84441-1fab-4e9b-a57e-8d45f7127415",
+          "q": 3,
+          "status": "needs_review"
+        },
+        {
+          "id": "4737b2ee-11f6-4d59-8f1c-ac6a4826dafe",
+          "q": 1,
+          "status": "needs_review"
+        },
+        {
+          "id": "5075ea69-5438-43e1-bed8-4f3ef98d81e0",
+          "q": 2,
+          "status": "needs_review"
+        },
+        {
+          "id": "5a2dab5f-d36e-444a-b3b9-b2d3bcac5b26",
+          "q": 9,
+          "status": "needs_review"
+        },
+        {
+          "id": "7181a86d-d3c3-4021-b0fd-5c416f40b888",
+          "q": 8,
+          "status": "needs_review"
+        },
+        {
+          "id": "920e6eb8-1354-474f-baf9-f2571923c080",
+          "q": 7,
+          "status": "needs_review"
+        },
+        {
+          "id": "96354a60-95b4-4db8-aae3-ac1e086d08ca",
+          "q": 12,
+          "status": "needs_review"
+        },
+        {
+          "id": "992a3710-1237-49ab-a043-096ceefece62",
+          "q": 6,
+          "status": "needs_review"
+        },
+        {
+          "id": "9b61cf47-e94a-4046-ac11-d8b6b945de21",
+          "q": 4,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202510asiav1-new.pdf",
+      "page": 33,
+      "rows": [
+        {
+          "id": "2c488be9-5a04-43cc-a1b4-323187fcf103",
+          "q": 18,
+          "status": "needs_review"
+        },
+        {
+          "id": "3b4b63fe-44f8-4f7f-b0ba-16e07f4d0048",
+          "q": 20,
+          "status": "needs_review"
+        },
+        {
+          "id": "9f365372-bf16-45ed-aa8a-f56b81325234",
+          "q": 19,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202506asiav4.pdf",
+      "page": 25,
+      "rows": [
+        {
+          "id": "2e147ab3-daf1-46d7-b42d-afc6c9d707b4",
+          "q": 18,
+          "status": "needs_review"
+        },
+        {
+          "id": "4d2171a1-c2d8-4996-b008-93c7dd06d765",
+          "q": 17,
+          "status": "needs_review"
+        },
+        {
+          "id": "bde8235f-06a0-40e0-b254-881bf82adc45",
+          "q": 16,
+          "status": "needs_review"
+        },
+        {
+          "id": "ed3178c3-1028-444e-bb57-aca9aca50cc4",
+          "q": 15,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202511asiav2.pdf",
+      "page": 35,
+      "rows": [
+        {
+          "id": "30730d2c-1e4d-4f24-a04d-48be93b13fbb",
+          "q": 61,
+          "status": "needs_review"
+        },
+        {
+          "id": "b86cf047-08f8-44f0-af46-77e2371b20b9",
+          "q": 60,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202503asiav8.pdf",
+      "page": 34,
+      "rows": [
+        {
+          "id": "3310794e-1d23-495b-9e17-c2ebc9f9fb37",
+          "q": 77,
+          "status": "needs_review"
+        },
+        {
+          "id": "5f0b64a5-c71e-41b0-9ee2-5618a2e08b44",
+          "q": 78,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202510usv3.pdf",
+      "page": 11,
+      "rows": [
+        {
+          "id": "34f6abf7-daeb-42be-90c7-00d5693d8347",
+          "q": 5,
+          "status": "needs_review"
+        },
+        {
+          "id": "429dcdd4-e75b-4f3a-ac9c-23f03450505b",
+          "q": 6,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202503asiav8.pdf",
+      "page": 5,
+      "rows": [
+        {
+          "id": "35441e11-1150-48f9-b9cf-444c3db6f7fb",
+          "q": 12,
+          "status": "needs_review"
+        },
+        {
+          "id": "6fff0f16-8ba7-4f33-a268-1098fc3a45ad",
+          "q": 13,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202510usv3.pdf",
+      "page": 21,
+      "rows": [
+        {
+          "id": "3b8d4f0e-1651-46c5-8574-6fa2022b00b4",
+          "q": 2,
+          "status": "needs_review"
+        },
+        {
+          "id": "79d25731-e5c1-4645-9a8f-20f4ae831343",
+          "q": 4,
+          "status": "needs_review"
+        },
+        {
+          "id": "beaa1e80-c045-49b6-a089-a45e104a592a",
+          "q": 5,
+          "status": "needs_review"
+        },
+        {
+          "id": "cd1cb12b-b896-4d8c-8966-a60f0b46dceb",
+          "q": 3,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202606asiav2.pdf",
+      "page": 13,
+      "rows": [
+        {
+          "id": "3c4f76a8-71d6-4101-a357-b97eba8766a1",
+          "q": 10,
+          "status": "needs_review"
+        },
+        {
+          "id": "99082f33-8385-4dde-93d5-9984b2082718",
+          "q": 9,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202506asiav3.pdf",
+      "page": 13,
+      "rows": [
+        {
+          "id": "415b0d84-a280-4842-b787-531a405f5e94",
+          "q": 11,
+          "status": "needs_review"
+        },
+        {
+          "id": "9fa288ca-7c50-4f1c-83a1-5d8ccd417b57",
+          "q": 9,
+          "status": "needs_review"
+        },
+        {
+          "id": "d81323b7-75d1-4772-9f8a-31fa990b35fa",
+          "q": 10,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202510asiav2-new.pdf",
+      "page": 13,
+      "rows": [
+        {
+          "id": "4401ff48-dd33-454a-bdcd-11326a4f5c85",
+          "q": 10,
+          "status": "needs_review"
+        },
+        {
+          "id": "f3a961b7-5f32-4338-be3c-7b73c524ae9d",
+          "q": 9,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202503usv1.pdf",
+      "page": 25,
+      "rows": [
+        {
+          "id": "45516c99-7cf0-4b0e-8baa-71dc0aa31a99",
+          "q": 21,
+          "status": "needs_review"
+        },
+        {
+          "id": "792cbce7-f3c7-4fa9-a7ad-56c289a2d41f",
+          "q": 1,
+          "status": "needs_review"
+        },
+        {
+          "id": "cb5fd46a-adde-4dd7-ac32-c67ab70727b7",
+          "q": 22,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202505usv2.pdf",
+      "page": 4,
+      "rows": [
+        {
+          "id": "468b1888-184a-40a0-806a-8816d7c3dfb4",
+          "q": 11,
+          "status": "needs_review"
+        },
+        {
+          "id": "d0b9c60c-9019-4fd8-9bc5-42cbd9e37709",
+          "q": 10,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202508usv4.pdf",
+      "page": 87,
+      "rows": [
+        {
+          "id": "47efbab5-382d-478f-a4bd-595d0ab8bfd3",
+          "q": 594,
+          "status": "needs_review"
+        },
+        {
+          "id": "ed6fc802-8da4-48cf-a1d6-10f749fa5ba1",
+          "q": -1,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202503usv1.pdf",
+      "page": 26,
+      "rows": [
+        {
+          "id": "4b527802-7a9c-4311-91c7-8e6b27d70ce7",
+          "q": 2,
+          "status": "needs_review"
+        },
+        {
+          "id": "829e0bf4-b8fe-4fa2-a8c0-7b63e45237fc",
+          "q": 4,
+          "status": "needs_review"
+        },
+        {
+          "id": "cfa01995-7d03-4a11-b875-39cb410f17a0",
+          "q": 3,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202505usv1.pdf",
+      "page": 30,
+      "rows": [
+        {
+          "id": "4d79359f-3db5-4f10-a293-5dfee7d1d510",
+          "q": 5,
+          "status": "needs_review"
+        },
+        {
+          "id": "af7e3e4f-a6d2-4260-aa1e-ac47caa718d9",
+          "q": 7,
+          "status": "needs_review"
+        },
+        {
+          "id": "b3a3cf62-007b-4850-a690-2f57563c1351",
+          "q": 6,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202509asiav2.pdf",
+      "page": 32,
+      "rows": [
+        {
+          "id": "52139ba4-1a90-4ab6-9267-c564446ae803",
+          "q": 19,
+          "status": "needs_review"
+        },
+        {
+          "id": "6161e19e-fbae-456e-8619-764829cfd25e",
+          "q": 20,
+          "status": "needs_review"
+        },
+        {
+          "id": "c7022e3a-2202-423e-8a60-c3201d3d8ea2",
+          "q": 18,
+          "status": "needs_review"
+        },
+        {
+          "id": "de8d21a6-7ac7-44c0-a6cc-6a8087323cfc",
+          "q": 17,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202512asiav1.pdf",
+      "page": 15,
+      "rows": [
+        {
+          "id": "5f87a64e-8d89-4f4f-9c20-278989dbfe14",
+          "q": 12,
+          "status": "needs_review"
+        },
+        {
+          "id": "92a451e6-39fd-4203-96a2-2aefbc04903f",
+          "q": 13,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202503asiav9.pdf",
+      "page": 4,
+      "rows": [
+        {
+          "id": "5f9be06d-0b9a-419d-bddf-a9d786dd15da",
+          "q": 11,
+          "status": "needs_review"
+        },
+        {
+          "id": "eb651fb8-3a43-46bb-9520-2e6ed2ec8fd7",
+          "q": 10,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202506usv1.pdf",
+      "page": 4,
+      "rows": [
+        {
+          "id": "755128a6-1866-4093-a180-df948ad0827a",
+          "q": 10,
+          "status": "needs_review"
+        },
+        {
+          "id": "e5dbc7f1-57c8-40d1-8410-7e67cb4cfc9b",
+          "q": 9,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202509us05.pdf",
+      "page": 52,
+      "rows": [
+        {
+          "id": "7f502728-f089-48ac-acd6-744da5b7e608",
+          "q": 4,
+          "status": "needs_review"
+        },
+        {
+          "id": "be0355fc-f694-4ebf-9494-508b52286b69",
+          "q": 3,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202503asiav1.pdf",
+      "page": 25,
+      "rows": [
+        {
+          "id": "87ac64f1-9fb2-43a1-9281-d2e01458436f",
+          "q": 15,
+          "status": "needs_review"
+        },
+        {
+          "id": "dfccd199-64a6-473b-b0fc-96c355d42b66",
+          "q": 16,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202606asiav1.pdf",
+      "page": 44,
+      "rows": [
+        {
+          "id": "943b1f72-f723-4c65-8f22-addd306e4a48",
+          "q": 16,
+          "status": "needs_review"
+        },
+        {
+          "id": "d38847ee-8606-4bb0-9a54-1418ef75a536",
+          "q": 15,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202511asiav2.pdf",
+      "page": 50,
+      "rows": [
+        {
+          "id": "9eee30ea-bae5-465a-a2bf-014916238c00",
+          "q": 87,
+          "status": "needs_review"
+        },
+        {
+          "id": "ec104da4-824d-47c5-9b14-bc7c174f4198",
+          "q": 86,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202503asiav2.pdf",
+      "page": 4,
+      "rows": [
+        {
+          "id": "a1898184-8269-4353-a48c-7b59e7dcc8eb",
+          "q": 10,
+          "status": "needs_review"
+        },
+        {
+          "id": "e98b41cd-ffa4-43f2-89d1-b56ddc841372",
+          "q": 11,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202503asiav3.pdf",
+      "page": 6,
+      "rows": [
+        {
+          "id": "a6801e4b-2202-4e0b-b886-edfc19b7bc08",
+          "q": 13,
+          "status": "needs_review"
+        },
+        {
+          "id": "ab6dfa0e-50dd-4234-a8b6-2fd977fb7fd8",
+          "q": 12,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202505usv2.pdf",
+      "page": 48,
+      "rows": [
+        {
+          "id": "ae92d48f-ae65-4d85-bd52-c77becc9eb30",
+          "q": 116,
+          "status": "needs_review"
+        },
+        {
+          "id": "ebb7eefc-2b4f-4471-abcb-5ababbb06a1f",
+          "q": 117,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202512asiav1.pdf",
+      "page": 21,
+      "rows": [
+        {
+          "id": "bd92e70c-76ec-4e02-9995-eebfb91b2ae1",
+          "q": 4,
+          "status": "needs_review"
+        },
+        {
+          "id": "daad2ce9-cf49-4842-9ea7-5bb7f6c343e7",
+          "q": 3,
+          "status": "needs_review"
+        },
+        {
+          "id": "f20bf6bf-aa75-4372-a34f-bf279eafcc4f",
+          "q": 5,
+          "status": "needs_review"
+        }
+      ]
+    },
+    {
+      "scope": "draft",
+      "file": "202505usv2.pdf",
+      "page": 46,
+      "rows": [
+        {
+          "id": "c7aa582b-59cf-4249-9188-e0632a0c4ab4",
+          "q": 115,
+          "status": "needs_review"
+        },
+        {
+          "id": "d0f4c78b-cd63-4b27-9a83-1107d55d81cb",
+          "q": 114,
+          "status": "needs_review"
+        }
+      ]
+    }
+  ],
+  "skippedEmpty": []
+}

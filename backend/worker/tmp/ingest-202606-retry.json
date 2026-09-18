@@ -1,0 +1,77 @@
+{
+  "folder": "C:\\Users\\Admin\\AppData\\Local\\Temp\\reingest-202606",
+  "ingested_at": "2026-09-16T18:45:23.710Z",
+  "files": [
+    {
+      "file": "202606asiav3.pdf",
+      "import_id": "a511457b-c1b6-4227-8817-f4964ecdd830",
+      "status": "extracting",
+      "pages": null,
+      "method": "mixed",
+      "drafts": 92,
+      "modules": {
+        "Math Module 1": 18,
+        "Math Module 2": 21,
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 26
+      },
+      "module_keys": {
+        "Math Module 1": {
+          "total": 18,
+          "with_key": 0
+        },
+        "Math Module 2": {
+          "total": 21,
+          "with_key": 0
+        },
+        "Reading and Writing Module 1": {
+          "total": 27,
+          "with_key": 0
+        },
+        "Reading and Writing Module 2": {
+          "total": 26,
+          "with_key": 0
+        }
+      },
+      "draft_statuses": {
+        "missing_key": 92
+      },
+      "answer_key_status": null,
+      "ocr_pages": 0,
+      "warnings": [],
+      "error": null
+    },
+    {
+      "file": "202606asiav4.pdf",
+      "import_id": "5be74619-83d9-4847-8f86-1a3c7d3d6aa2",
+      "status": "completed",
+      "pages": 7,
+      "method": "text",
+      "drafts": 62,
+      "modules": {
+        "Reading and Writing Module 1": 62
+      },
+      "module_keys": {
+        "Reading and Writing Module 1": {
+          "total": 62,
+          "with_key": 0
+        }
+      },
+      "draft_statuses": {
+        "missing_key": 62
+      },
+      "answer_key_status": "missing",
+      "ocr_pages": 0,
+      "warnings": [
+        "Reading and Writing Module 1: 62/27 questions (over count — module boundaries may be missing, review needed)."
+      ],
+      "error": null
+    }
+  ],
+  "totals": {
+    "files": 2,
+    "completed": 1,
+    "failed": 0,
+    "drafts": 154
+  }
+}

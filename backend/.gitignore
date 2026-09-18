@@ -1,0 +1,8 @@
+node_modules/
+.env
+.env.local
+worker/.env
+worker/sample-pdf.pdf
+*.log
+supabase/.temp/
+supabase/.branches/

@@ -1,0 +1,24 @@
+.env
+.env.*
+!.env.example
+
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+backend/.env
+backend/.env.*
+backend/worker/.env
+
+node_modules/
+dist/
+build/
+coverage/
+*.log
+
+backend/supabase/.temp/
+backend/supabase/.branches/
+
+# Local PDF corpus + OCR output (GBs, includes >100MB files GitHub rejects).
+# Kept on disk; worker scripts read it directly. Never track in git.
+Tests Unparsed/
