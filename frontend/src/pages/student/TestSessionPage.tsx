@@ -251,6 +251,7 @@ export default function TestSessionPage() {
   const isMath = section?.section_type === "math";
 
   const timerClass = secondsLeft === null ? "" : secondsLeft < 60 ? "danger" : secondsLeft < 300 ? "warn" : "";
+  const progressPercent = questions.length > 0 ? Math.round(((qIndex + 1) / questions.length) * 100) : 0;
 
   return (
     <div className="session-root">
@@ -261,9 +262,10 @@ export default function TestSessionPage() {
           <div className="t-sub">
             {section?.name ?? "Full-Length Test"} · {module.name} · Question {qIndex + 1} of {questions.length}
           </div>
+          <div className="session-progress" aria-hidden="true"><span style={{ width: `${progressPercent}%` }} /></div>
         </div>
         <div className="session-tools">
-          <span className={`timer-pill ${timerClass}`}>⏱ {secondsLeft === null ? "--:--" : fmtSeconds(secondsLeft)}</span>
+          <span className={`timer-pill ${timerClass}`}>{secondsLeft === null ? "--:--" : fmtSeconds(secondsLeft)}</span>
           <button className="session-tool" onClick={() => setModal("directions")}>Directions</button>
           {isMath && <button className="session-tool" onClick={() => setModal("reference")}>Reference</button>}
           <button className="session-tool" onClick={() => setModal("grid")}>Review</button>
@@ -288,7 +290,7 @@ export default function TestSessionPage() {
                 className={`mark-toggle ${resp?.marked_for_review ? "on" : ""}`}
                 onClick={() => void saveResponse(current.question_id, { marked_for_review: !resp?.marked_for_review })}
               >
-                {resp?.marked_for_review ? "✦ Marked for Review" : "✧ Mark for Review"}
+                {resp?.marked_for_review ? "Marked for review" : "Mark for review"}
               </button>
             </div>
             <p className="q-prompt"><MathText text={current.question.prompt} /></p>
@@ -357,18 +359,18 @@ export default function TestSessionPage() {
         {/* ---------- bottom bar ---------- */}
         <div className="session-bottombar">
           <Button variant="outline" onClick={() => goTo(qIndex - 1)} disabled={qIndex === 0}>
-            ← Back
+            Back
           </Button>
           <div className="bottombar-center">
             <span className="q-position">
               Question {qIndex + 1} of {questions.length}
             </span>
             <button className="session-tool" style={{ color: "var(--primary-dark)", background: "var(--primary-soft)" }} onClick={() => setModal("grid")}>
-              Question Grid
+              Question grid
             </button>
           </div>
           {qIndex < questions.length - 1 ? (
-            <Button onClick={() => goTo(qIndex + 1)}>Next →</Button>
+            <Button onClick={() => goTo(qIndex + 1)}>Next</Button>
           ) : (
             <Button onClick={() => setModal("end")}>{isLastModule ? "Submit Full-Length Test" : "Submit Module"}</Button>
           )}
@@ -390,7 +392,7 @@ export default function TestSessionPage() {
           <div style={{ display: "flex", gap: 18, marginTop: 20, fontSize: 13, color: "var(--muted)", flexWrap: "wrap" }}>
             <span><span className="pill pill-red">A</span> answered</span>
             <span><span className="pill pill-gray">Q</span> unanswered</span>
-            <span><span className="pill pill-amber">✦</span> marked for review</span>
+            <span><span className="pill pill-amber">M</span> marked for review</span>
           </div>
         </Modal>
       )}
@@ -447,7 +449,7 @@ export default function TestSessionPage() {
       )}
 
       {modal === "reference" && (
-        <Modal title="Reference — Math" onClose={() => setModal(null)}>
+        <Modal title="Math reference" onClose={() => setModal(null)}>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
             {MATH_REFERENCE.map((f) => (
               <div key={f} style={{ border: "1px solid var(--border)", borderRadius: 8, padding: "10px 14px", fontFamily: "var(--font-mono)", fontSize: 13.5 }}>

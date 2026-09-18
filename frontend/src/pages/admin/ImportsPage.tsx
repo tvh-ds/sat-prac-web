@@ -54,7 +54,7 @@ export default function ImportsPage() {
 
   return (
     <div>
-      <div className="section-label">[ Ingest ]</div>
+      <div className="section-label">Imports</div>
       <h1 className="page-title"><span className="hl-muted">PDF</span> <span className="hl-bright">imports</span></h1>
       <p className="page-sub">Upload a full SAT PDF — the system detects Reading &amp; Writing and Math modules automatically and parses the whole file. OCR is applied automatically only to modules that need it.</p>
 
@@ -94,7 +94,7 @@ export default function ImportsPage() {
                       <div style={{ fontWeight: 600 }}>{polishTestTitle(im.original_filename)}</div>
                       <div className="muted" style={{ fontSize: 12 }}>{im.original_filename}</div>
                       {im.generated_test_id && (
-                        <Link to={`/admin/tests/${im.generated_test_id}/build`} style={{ fontSize: 12 }}>Open full-length test →</Link>
+                        <Link to={`/admin/tests/${im.generated_test_id}/build`} style={{ fontSize: 12 }}>Open full-length test</Link>
                       )}
                     </td>
                     <td><ImportStatus status={im.status} /></td>

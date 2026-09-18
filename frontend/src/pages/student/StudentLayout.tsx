@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { Navigate, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
 import { Spinner } from "../../components/ui";
-import AccentSwitcher from "../../components/AccentSwitcher";
 
 function initials(name?: string | null, email?: string | null): string {
   const base = (name ?? email ?? "S").trim();
@@ -37,7 +36,7 @@ export default function StudentLayout() {
       <header className="app-header">
         <div className="brand">
           <span className="logo">S</span>
-          SAT Practice
+          <span>SAT Practice</span>
         </div>
         <nav className="student-nav">
           <NavLink to="/student/tests">Full-Length Tests</NavLink>
@@ -46,7 +45,6 @@ export default function StudentLayout() {
           <NavLink to="/student/vocabulary">Vocabulary</NavLink>
         </nav>
         <div className="user-chip">
-          <AccentSwitcher size={18} />
           <span className="avatar">{initials(profile?.full_name, user.email)}</span>
           <span style={{ maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{profile?.full_name ?? user.email}</span>
           <button
@@ -67,7 +65,7 @@ export default function StudentLayout() {
           <div className="footer-top">
             <div className="footer-brand">
               <div className="brand"><span className="logo">S</span> SAT Practice</div>
-              <p>Practice without pressure. Bluebook-style timing, instant scoring, and spaced-repetition vocabulary.</p>
+              <p>Focused test practice, score review, and vocabulary work in a calm exam-grade workspace.</p>
             </div>
             <div className="footer-links">
               <div className="footer-col">
@@ -85,7 +83,7 @@ export default function StudentLayout() {
           </div>
           <div className="footer-bottom">
             <span>© {new Date().getFullYear()} SAT Practice</span>
-            <span className="status-badge"><span className="status-dot" /> [ALL SYSTEMS OPERATIONAL]</span>
+            <span className="status-badge"><span className="status-dot" /> Ready for practice</span>
           </div>
         </div>
       </div>

@@ -29,7 +29,7 @@ export default function ResultsPage() {
 
   return (
     <div>
-      <div className="section-label">[ Results ]</div>
+      <div className="section-label">Results</div>
       <h1 className="page-title"><span className="hl-muted">Your</span> <span className="hl-bright">results</span></h1>
       <p className="page-sub">Completed attempts with full answer reviews.</p>
 
@@ -44,13 +44,13 @@ export default function ResultsPage() {
               <div className="ico"><Trophy size={18} strokeWidth={1.6} /></div>
               <div className="num" data-countup={history.length}>{history.length}</div>
               <div className="lbl">Completed</div>
-              <div className="arch-meta">ATTEMPTS // GRADED: {withScore.length}</div>
+              <div className="arch-meta">{withScore.length} graded attempt{withScore.length === 1 ? "" : "s"}</div>
             </div>
             <div className="stat-card reveal">
               <div className="ico"><Target size={18} strokeWidth={1.6} /></div>
               <div className="num">{avg}%</div>
               <div className="lbl">Average accuracy</div>
-              <div className="arch-meta">MEAN // n={withScore.length}</div>
+              <div className="arch-meta">Average across graded attempts</div>
             </div>
             <div className="stat-card reveal">
               <div className="ico"><CheckCircle2 size={18} strokeWidth={1.6} /></div>
@@ -58,7 +58,7 @@ export default function ResultsPage() {
                 {totalCorrect}<span className="muted"> / {totalAnswered}</span>
               </div>
               <div className="lbl">Questions correct</div>
-              <div className="arch-meta">CORRECT // TOTAL: {totalAnswered}</div>
+              <div className="arch-meta">Out of {totalAnswered} answered questions</div>
             </div>
           </div>
 

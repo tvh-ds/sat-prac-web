@@ -5,6 +5,7 @@ import type { PdfImport } from "../../lib/types";
 import { Spinner, fmtDate } from "../../components/ui";
 import { initReveal, initCountup } from "../../lib/reveal";
 import KeyStatusBadge from "../../components/KeyStatusBadge";
+import { Activity, FileClock, GraduationCap, Percent } from "lucide-react";
 
 interface ProgressStudent {
   id: string;
@@ -54,41 +55,54 @@ export default function AdminDashboard() {
   const totalCorrect = stats.progress.reduce((a, s) => a + s.total_questions_correct, 0);
   const totalAttempted = stats.progress.reduce((a, s) => a + s.total_questions_attempted, 0);
   const overallAccuracy = totalAttempted > 0 ? Math.round((totalCorrect / totalAttempted) * 1000) / 10 : null;
+  const completedAttempts = stats.progress.reduce((a, s) => a + s.completed_attempts, 0);
+  const latestImport = stats.imports[0];
 
   return (
     <div>
-      <div className="section-label">[ Overview ]</div>
-      <h1 className="page-title"><span className="hl-muted">Command</span> <span className="hl-bright">center</span></h1>
-      <p className="page-sub">Platform health and recent activity.</p>
+      <section className="admin-hero reveal">
+        <div className="admin-hero-grid">
+          <div>
+            <div className="section-label">Overview</div>
+            <h1>Assessment operations, cleaned up.</h1>
+            <p>Track student activity, import health, test readiness, and recent PDF pipeline work from one executive-grade dashboard.</p>
+          </div>
+          <div className="admin-pipeline-card">
+            <span className="arch-meta">Import queue</span>
+            <strong>{pendingImports}</strong>
+            <span className="muted">{latestImport ? `Latest: ${latestImport.original_filename}` : "No imports yet"}</span>
+          </div>
+        </div>
+      </section>
 
       <div className="stat-grid">
         <div className="stat-card reveal">
-          <div className="ico">◈</div>
+          <div className="ico"><GraduationCap size={20} strokeWidth={1.7} /></div>
           <div className="num" data-countup={activeStudents}>{activeStudents}</div>
           <div className="lbl">Active students</div>
-          <div className="arch-meta">ROSTER // ACTIVE: {activeStudents} // TOTAL: {stats.students.length}</div>
+          <div className="arch-meta">{activeStudents} active of {stats.students.length} total</div>
         </div>
         <div className="stat-card reveal">
-          <div className="ico">⬢</div>
-          <div className="num" data-countup={stats.progress.reduce((a, s) => a + s.completed_attempts, 0)}>{stats.progress.reduce((a, s) => a + s.completed_attempts, 0)}</div>
+          <div className="ico"><Activity size={20} strokeWidth={1.7} /></div>
+          <div className="num" data-countup={completedAttempts}>{completedAttempts}</div>
           <div className="lbl">Completed attempts</div>
-          <div className="arch-meta">ATTEMPTS // COMPLETED</div>
+          <div className="arch-meta">Submitted and graded work</div>
         </div>
         <div className="stat-card reveal">
-          <div className="ico">⬣</div>
+          <div className="ico"><Percent size={20} strokeWidth={1.7} /></div>
           <div className="num">{overallAccuracy === null ? "—" : `${overallAccuracy}%`}</div>
           <div className="lbl">Overall accuracy</div>
-          <div className="arch-meta">CORRECT: {totalCorrect} // ATTEMPTED: {totalAttempted}</div>
+          <div className="arch-meta">{totalCorrect} correct of {totalAttempted} attempted</div>
         </div>
         <div className="stat-card reveal">
-          <div className="ico">⬔</div>
+          <div className="ico"><FileClock size={20} strokeWidth={1.7} /></div>
           <div className="num" data-countup={pendingImports}>{pendingImports}</div>
           <div className="lbl">Pending PDF imports</div>
-          <div className="arch-meta">QUEUE // PENDING: {pendingImports}</div>
+          <div className="arch-meta">Still processing or queued</div>
         </div>
       </div>
 
-      <div className="section-label" style={{ marginTop: 28 }}>[ PDF Pipeline ]</div>
+      <div className="section-label" style={{ marginTop: 28 }}>PDF pipeline</div>
       <div className="section-head">
         <h2>Recent Imports</h2>
         <Link className="btn btn-secondary btn-sm" to="/admin/imports">All imports</Link>

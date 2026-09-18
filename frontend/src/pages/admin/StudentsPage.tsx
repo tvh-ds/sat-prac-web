@@ -47,7 +47,7 @@ export default function StudentsPage() {
 
   return (
     <div>
-      <div className="section-label">[ Roster ]</div>
+      <div className="section-label">Roster</div>
       <h1 className="page-title"><span className="hl-muted">Student</span> <span className="hl-bright">roster</span></h1>
       <p className="page-sub">Admin-created accounts · no self-registration.</p>
 

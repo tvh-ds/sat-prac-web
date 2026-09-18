@@ -9,10 +9,14 @@
     <script>
       (function () {
         try {
-          var valid = ["gold","silver","emerald","crimson"];
-          var accent = localStorage.getItem("sat-accent");
-          if (valid.indexOf(accent) === -1) accent = "gold";
-          document.documentElement.dataset.accent = accent;
+          // Gold-only lock: accent is always champagne gold.
+          document.documentElement.dataset.accent = "gold";
+          try { localStorage.setItem("sat-accent", "gold"); } catch (e) {}
+          // Silver try-both preview: append ?theme=silver to any URL.
+          var q = new URLSearchParams(window.location.search);
+          if (q.get("theme") === "silver") {
+            document.documentElement.dataset.themeVariant = "silver";
+          }
         } catch (e) {
           document.documentElement.dataset.accent = "gold";
         }

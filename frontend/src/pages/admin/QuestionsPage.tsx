@@ -110,7 +110,7 @@ export default function QuestionsPage() {
 
   return (
     <div>
-      <div className="section-label">[ Bank ]</div>
+      <div className="section-label">Question bank</div>
       <h1 className="page-title"><span className="hl-muted">Question</span> <span className="hl-bright">bank</span></h1>
       <p className="page-sub">Published questions for tests and practice sets.</p>
 

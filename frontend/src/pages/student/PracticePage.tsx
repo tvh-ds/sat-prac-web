@@ -26,7 +26,7 @@ export default function PracticePage() {
 
   return (
     <div>
-      <div className="section-label">[ Practice ]</div>
+      <div className="section-label">Practice</div>
       <h1 className="page-title"><span className="hl-muted">Focused </span><span className="hl-bright">practice</span></h1>
       <p className="page-sub">Short, single-timer sets — graded instantly when you finish.</p>
 
@@ -38,7 +38,7 @@ export default function PracticePage() {
 
       {sets && available.length > 0 && (
         <section style={{ marginBottom: 34 }}>
-          <div className="section-label">[ Ready ]</div>
+          <div className="section-label">Ready</div>
           <div className="section-head">
             <h2>Available</h2>
             <span className="muted" style={{ fontSize: 12, fontFamily: "var(--font-mono)" }}>{available.length} READY</span>
@@ -48,13 +48,13 @@ export default function PracticePage() {
               <div style={{ minWidth: 0 }}>
                 <h3 className="t-title">{t.title}</h3>
                 <p className="t-desc">{t.description ?? "Practice set"}</p>
-                <p className="arch-meta">{t.id.slice(0, 6).toUpperCase()} // QS: {t.questions} // {t.time_limit_minutes ?? "—"} MIN</p>
+                <p className="arch-meta">{t.questions} questions · {t.time_limit_minutes ?? "—"} minutes</p>
                 <div className="card-row" style={{ marginTop: 8 }}>
                   <Pill tone="amber">{t.questions} qs</Pill>
                   {t.time_limit_minutes != null && <Pill tone="gray">{t.time_limit_minutes}-min timer</Pill>}
                 </div>
               </div>
-              <Button onClick={() => navigate(`/student/practice/${t.id}/start`)}>Start →</Button>
+              <Button onClick={() => navigate(`/student/practice/${t.id}/start`)}>Start practice</Button>
             </div>
           ))}
         </section>
@@ -62,7 +62,7 @@ export default function PracticePage() {
 
       {sets && inProgress.length > 0 && (
         <section style={{ marginBottom: 34 }}>
-          <div className="section-label">[ Active ]</div>
+          <div className="section-label">Active</div>
           <div className="section-head">
             <h2>In Progress</h2>
             <span className="muted" style={{ fontSize: 12, fontFamily: "var(--font-mono)" }}>{inProgress.length} ONGOING</span>
@@ -75,7 +75,7 @@ export default function PracticePage() {
               </div>
               <div className="card-row">
                 <Pill tone="amber">In progress</Pill>
-                <Button onClick={() => navigate(`/student/attempts/${t.attempt!.id}/session`)}>Resume →</Button>
+                <Button onClick={() => navigate(`/student/attempts/${t.attempt!.id}/session`)}>Resume</Button>
               </div>
             </div>
           ))}
@@ -84,7 +84,7 @@ export default function PracticePage() {
 
       {sets && completed.length > 0 && (
         <section>
-          <div className="section-label">[ Done ]</div>
+          <div className="section-label">Done</div>
           <div className="section-head">
             <h2>Completed</h2>
             <span className="muted" style={{ fontSize: 12, fontFamily: "var(--font-mono)" }}>{completed.length} FINISHED</span>

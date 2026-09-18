@@ -1,7 +1,6 @@
 import { NavLink, Navigate, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
 import { Spinner } from "../../components/ui";
-import AccentSwitcher from "../../components/AccentSwitcher";
 import { LayoutDashboard, Users, FileUp, Database, ClipboardList, Layers, BookOpen, LogOut } from "lucide-react";
 
 export default function AdminLayout() {
@@ -23,7 +22,7 @@ export default function AdminLayout() {
     <div className="admin-layout">
       <div className="admin-sidebar">
         <div className="brand">
-          <small>[ ADMIN CONSOLE ]</small>
+          <small>Admin console</small>
           SAT Practice
         </div>
         {link("/admin", "Dashboard", LayoutDashboard, true)}
@@ -35,10 +34,6 @@ export default function AdminLayout() {
         {link("/admin/vocabulary", "Vocabulary", BookOpen)}
         <div className="spacer" />
         <div className="sidebar-footer">
-          <div>
-            <div className="accent-label">Accent</div>
-            <AccentSwitcher size={20} />
-          </div>
           <a
             href="#"
             onClick={(e) => {
@@ -58,7 +53,7 @@ export default function AdminLayout() {
             <div className="footer-top">
               <div className="footer-brand">
                 <div className="brand"><span className="logo">S</span> SAT Practice</div>
-                <p>Bluebook-inspired practice platform. Original questions, self-hosted, privacy-first.</p>
+                <p>Operational workspace for tests, question review, imports, students, and vocabulary.</p>
               </div>
               <div className="footer-links">
                 <div className="footer-col">
@@ -77,7 +72,7 @@ export default function AdminLayout() {
             </div>
             <div className="footer-bottom">
               <span>© {new Date().getFullYear()} SAT Practice · Self-hosted</span>
-              <span className="status-badge"><span className="status-dot" /> [ALL SYSTEMS OPERATIONAL]</span>
+              <span className="status-badge"><span className="status-dot" /> Platform ready</span>
             </div>
           </div>
         </div>

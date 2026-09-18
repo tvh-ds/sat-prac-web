@@ -168,7 +168,7 @@ export default function AdminVocabDeckPage() {
 
   return (
     <div>
-      <div className="section-label">[ Vocabulary · Deck ]</div>
+      <div className="section-label">Vocabulary deck</div>
       <div className="page-head-row">
         <div>
           <h1 className="page-title">

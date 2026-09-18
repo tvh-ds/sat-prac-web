@@ -51,7 +51,7 @@ export default function TestsPage() {
 
   return (
     <div>
-      <div className="section-label">[ Tests ]</div>
+      <div className="section-label">Tests</div>
       <h1 className="page-title"><span className="hl-muted">Full-length</span> <span className="hl-bright">tests</span></h1>
       <p className="page-sub">Approving a PDF import's full draft lands it here. Edit it in the builder, then assign students.</p>
 

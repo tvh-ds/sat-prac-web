@@ -223,7 +223,7 @@ export default function PracticeComposePage() {
             onChange={(e) => setMinutes(Math.max(1, Math.min(600, Number(e.target.value) || 1)))}
           />
           <div style={{ marginTop: 18, display: "flex", gap: 12 }}>
-            <Button size="lg" disabled={!title.trim()} onClick={() => setStep("pick")}>Choose Questions →</Button>
+            <Button size="lg" disabled={!title.trim()} onClick={() => setStep("pick")}>Choose questions</Button>
           </div>
         </div>
       )}
@@ -363,7 +363,7 @@ export default function PracticeComposePage() {
 
           <div style={{ marginTop: 16, display: "flex", gap: 12, alignItems: "center" }}>
             <Button variant="outline" onClick={() => setStep("details")}>← Back</Button>
-            <Button size="lg" disabled={picks.length === 0} onClick={() => setStep("review")}>Review Selection ({picks.length}) →</Button>
+            <Button size="lg" disabled={picks.length === 0} onClick={() => setStep("review")}>Review selection ({picks.length})</Button>
           </div>
         </div>
       )}
@@ -401,7 +401,7 @@ export default function PracticeComposePage() {
           <div style={{ marginTop: 16, display: "flex", gap: 12, alignItems: "center" }}>
             <Button variant="outline" onClick={() => setStep("pick")}>← Back</Button>
             <Button size="lg" disabled={creating} onClick={() => void create()}>
-              {creating ? "Creating…" : "Create Practice Set →"}
+              {creating ? "Creating…" : "Create practice set"}
             </Button>
           </div>
         </div>

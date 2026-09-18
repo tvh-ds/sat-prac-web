@@ -1,26 +1,23 @@
-export type Accent = "gold" | "silver" | "emerald" | "crimson";
+export type Accent = "gold";
 
 const STORAGE_KEY = "sat-accent";
-const VALID: Accent[] = ["gold", "silver", "emerald", "crimson"];
 
+// Gold-only lock: the accent switcher is hidden and the theme is fixed to
+// champagne gold. The silver try-both preview uses data-theme-variant instead.
 export function getAccent(): Accent {
-  try {
-    const v = localStorage.getItem(STORAGE_KEY);
-    if (v && (VALID as string[]).includes(v)) return v as Accent;
-  } catch { /* ignore */ }
   return "gold";
 }
 
-export function applyAccent(a: Accent) {
-  document.documentElement.dataset.accent = a;
-  try { localStorage.setItem(STORAGE_KEY, a); } catch { /* ignore */ }
+export function applyAccent(_a: Accent) {
+  document.documentElement.dataset.accent = "gold";
+  try { localStorage.setItem(STORAGE_KEY, "gold"); } catch { /* ignore */ }
 }
 
 import { useCallback, useEffect, useState } from "react";
 
 export function useAccent() {
-  const [accent, setAccent] = useState<Accent>(getAccent);
-  useEffect(() => { applyAccent(accent); }, [accent]);
-  const set = useCallback((a: Accent) => setAccent(a), []);
+  const [accent] = useState<Accent>("gold");
+  useEffect(() => { applyAccent("gold"); }, []);
+  const set = useCallback((_a: Accent) => undefined, []);
   return { accent, setAccent: set };
 }

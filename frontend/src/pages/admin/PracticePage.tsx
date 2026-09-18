@@ -35,7 +35,7 @@ export default function PracticePage() {
 
   return (
     <div>
-      <div className="section-label">[ Practice ]</div>
+      <div className="section-label">Practice</div>
       <h1 className="page-title"><span className="hl-muted">Practice</span> <span className="hl-bright">sets</span></h1>
       <p className="page-sub">
         Single-timer sets from the bank or PDF drafts · published to students.

@@ -1,10 +1,9 @@
-import { useAccent, type Accent } from "../lib/accent";
+import { useAccent } from "../lib/accent";
 
-const OPTIONS: Array<{ id: Accent; label: string; title: string }> = [
-  { id: "gold", label: "Gold", title: "Amber / Gold" },
-  { id: "silver", label: "Silver", title: "Silver / Platinum" },
-  { id: "emerald", label: "Emerald", title: "Emerald / Jade" },
-  { id: "crimson", label: "Crimson", title: "Crimson / Rose" },
+// Hidden from all shells (gold-only lock). Kept so the file stays valid;
+// the silver try-both preview uses ?theme=silver instead.
+const OPTIONS: Array<{ id: string; label: string; title: string }> = [
+  { id: "gold", label: "Gold", title: "Champagne Gold" },
 ];
 
 export default function AccentSwitcher({ size = 22 }: { size?: number }) {
@@ -20,7 +19,7 @@ export default function AccentSwitcher({ size = 22 }: { size?: number }) {
           title={o.title}
           className={`accent-dot ${o.id}${accent === o.id ? " active" : ""}`}
           style={{ width: size, height: size }}
-          onClick={() => setAccent(o.id)}
+          onClick={() => setAccent("gold")}
         />
       ))}
     </div>

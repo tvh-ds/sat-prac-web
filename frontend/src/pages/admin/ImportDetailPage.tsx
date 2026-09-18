@@ -343,7 +343,7 @@ export default function ImportDetailPage() {
           </p>
           <div style={{ display: "flex", gap: 8 }}>
             <Button variant="outline" disabled={pageIdx === 0 || busy} onClick={() => void loadPage((pageIdx - 1) * draftLimit)}>← Prev</Button>
-            <Button variant="outline" disabled={pageIdx >= maxPageIdx || busy} onClick={() => void loadPage((pageIdx + 1) * draftLimit)}>Next →</Button>
+            <Button variant="outline" disabled={pageIdx >= maxPageIdx || busy} onClick={() => void loadPage((pageIdx + 1) * draftLimit)}>Next</Button>
           </div>
         </div>
       </div>

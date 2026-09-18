@@ -88,7 +88,7 @@ export default function ScoreReportPage() {
 
   return (
     <div style={{ maxWidth: 880 }}>
-      <div className="section-label">[ Score Report ]</div>
+      <div className="section-label">Score report</div>
       <div className="page-head-row">
         <div>
           <h1 className="page-title"><span className="hl-muted">Score</span> <span className="hl-bright">report</span></h1>
@@ -139,7 +139,7 @@ export default function ScoreReportPage() {
 
       {byDomain.length > 0 && (
         <section style={{ marginBottom: 30 }}>
-          <div className="section-label">[ Domains ]</div>
+          <div className="section-label">Domains</div>
           <div className="section-head">
             <h2>Performance by Domain</h2>
           </div>
@@ -175,7 +175,7 @@ export default function ScoreReportPage() {
       )}
 
       <section>
-        <div className="section-label">[ Review ]</div>
+        <div className="section-label">Review</div>
         <div className="section-head" style={{ flexWrap: "wrap" }}>
           <h2>Answer Review</h2>
         </div>

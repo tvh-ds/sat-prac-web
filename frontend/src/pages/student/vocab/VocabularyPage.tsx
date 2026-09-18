@@ -71,7 +71,7 @@ export default function VocabularyPage() {
 
   return (
     <div>
-      <div className="section-label">[ Vocabulary ]</div>
+      <div className="section-label">Vocabulary</div>
       <div className="page-head-row">
         <div>
           <h1 className="page-title"><span className="hl-muted">Your</span> <span className="hl-bright">vocabulary</span></h1>

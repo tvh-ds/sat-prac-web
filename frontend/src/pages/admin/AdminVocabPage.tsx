@@ -71,7 +71,7 @@ export default function AdminVocabPage() {
 
   return (
     <div>
-      <div className="section-label">[ Vocabulary ]</div>
+      <div className="section-label">Vocabulary</div>
       <div className="page-head-row">
         <div>
           <h1 className="page-title"><span className="hl-muted">Admin</span> <span className="hl-bright">vocabulary</span></h1>

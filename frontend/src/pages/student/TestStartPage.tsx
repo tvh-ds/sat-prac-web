@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import type { Test } from "../../lib/types";
 import { Button } from "../../components/ui";
-import AccentSwitcher from "../../components/AccentSwitcher";
 
 interface StartResult {
   attempt_id: string;
@@ -61,7 +60,6 @@ export default function TestStartPage() {
           <span className="logo">S</span>
           SAT Practice
         </div>
-        <AccentSwitcher size={18} />
       </header>
       <div className="app-content" style={{ maxWidth: 760 }}>
         <div className="page-fade">
@@ -91,7 +89,7 @@ export default function TestStartPage() {
             <div style={{ display: "flex", gap: 12 }}>
               <Button variant="outline" onClick={() => navigate("/student")}>← Back</Button>
               <Button size="lg" onClick={() => void start()} disabled={starting}>
-                {starting ? "Starting…" : "Start Full-Length Test →"}
+                {starting ? "Starting…" : "Start full-length test"}
               </Button>
             </div>
           </div>
