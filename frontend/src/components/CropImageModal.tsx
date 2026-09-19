@@ -60,13 +60,16 @@ function clampRect(r: CropRect, W: number, H: number, MIN = 16): CropRect {
 export function CropImageModal({
   src,
   title,
+  initialRect,
   onCancel,
   onSave,
 }: {
   src: string;
   title: string;
+  /** Initial rectangle in full-image pixels (e.g. the OCR auto-crop). Defaults to a centered box. */
+  initialRect?: CropRect | null;
   onCancel: () => void;
-  onSave: (blob: Blob) => Promise<void>;
+  onSave: (blob: Blob, rect: CropRect) => Promise<void>;
 }) {
   const [img, setImg] = useState<HTMLImageElement | null>(null);
   const viewRef = useRef<HTMLDivElement | null>(null);
@@ -112,11 +115,15 @@ export function CropImageModal({
 
   useEffect(() => {
     if (img && !crop) {
-      const w = img.naturalWidth * 0.55;
-      const h = img.naturalHeight * 0.4;
-      setCrop({ x: (img.naturalWidth - w) / 2, y: (img.naturalHeight - h) / 2, w, h });
+      if (initialRect && initialRect.w > 0 && initialRect.h > 0) {
+        setCrop(clampRect(initialRect, img.naturalWidth, img.naturalHeight));
+      } else {
+        const w = img.naturalWidth * 0.55;
+        const h = img.naturalHeight * 0.4;
+        setCrop({ x: (img.naturalWidth - w) / 2, y: (img.naturalHeight - h) / 2, w, h });
+      }
     }
-  }, [img]);
+  }, [img, initialRect]);
 
   useEffect(() => {
     const cv = previewRef.current;
@@ -231,7 +238,7 @@ export function CropImageModal({
         }
       });
       if (!blob) throw new Error("Failed to encode the cropped image. If it is cross-origin, try again after reloading the page.");
-      await onSave(blob);
+      await onSave(blob, crop);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Crop failed");
       setSaving(false);

@@ -10,12 +10,12 @@ Deno.serve(async (req) => {
 
     const { data: assignments } = await svc
       .from("test_assignments")
-      .select("test_id, due_at, status, content_scope, module_ids")
+      .select("id, test_id, due_at, status, content_scope, module_ids")
       .eq("student_id", ctx.user.id);
 
     const { data: attempts } = await svc
       .from("attempts")
-      .select("test_id, id, status, started_at")
+      .select("test_id, assignment_id, id, status, started_at")
       .eq("student_id", ctx.user.id);
 
     const { data: tests, error: err } = await svc
@@ -25,10 +25,25 @@ Deno.serve(async (req) => {
       .order("created_at", { ascending: false });
     if (err) return error(err.message, 500);
 
-    const assignedMap = new Map((assignments ?? []).map((a) => [a.test_id, a]));
-    const attemptMap = new Map((attempts ?? []).map((a) => [a.test_id, a]));
+    // Repeat assignments: each assignment is its own row (own due date,
+    // scope, attempt, score). Attempts attach by assignment when present,
+    // otherwise by test (public tests). Public tests list once, unscoped.
+    // Active attempts win over older graded ones for the same key.
+    const sortedAttempts = [...(attempts ?? [])].sort((a, b) => {
+      const rank = (s: string) => (s === "in_progress" || s === "submitted" ? 0 : 1);
+      const d = rank(a.status as string) - rank(b.status as string);
+      if (d !== 0) return d;
+      return (a.started_at as string) < (b.started_at as string) ? 1 : -1;
+    });
+    const attemptMap = new Map(sortedAttempts.map((a) => [(a.assignment_id as string | null) ?? a.test_id, a]));
+    const byTest = new Map<string, Array<{ id: string; due_at: string | null; status: string; content_scope: string | null; module_ids: string[] }>>();
+    for (const a of assignments ?? []) {
+      const tid = a.test_id as string;
+      if (!byTest.has(tid)) byTest.set(tid, []);
+      byTest.get(tid)!.push(a as { id: string; due_at: string | null; status: string; content_scope: string | null; module_ids: string[] });
+    }
 
-    const visible = (tests ?? []).filter((t) => t.is_public || assignedMap.has(t.id));
+    const visible = (tests ?? []).filter((t) => t.is_public || byTest.has(t.id));
     const visibleIds = visible.map((t) => t.id);
 
     // test -> section_type by section id (needed to resolve section scopes)
@@ -56,9 +71,11 @@ Deno.serve(async (req) => {
     for (const ql of qlinks ?? []) qCountByModule.set(ql.module_id, (qCountByModule.get(ql.module_id) ?? 0) + 1);
 
     // Resolve which module ids count for a given test + assignment scope.
-    function scopedModules(testId: string): Array<{ id: string; section_id: string; time_limit_minutes: number; position: number }> {
+    function scopedModules(
+      testId: string,
+      assn: { content_scope?: string | null; module_ids?: string[] | null } | null,
+    ): Array<{ id: string; section_id: string; time_limit_minutes: number; position: number }> {
       const all = modsByTest.get(testId) ?? [];
-      const assn = assignedMap.get(testId);
       const scope = assn?.content_scope ?? "full_test";
       if (scope === "full_test" || !assn) return all;
       if (scope === "custom_modules") {
@@ -71,23 +88,31 @@ Deno.serve(async (req) => {
       return all.filter((m) => sectionIds.has(m.section_id));
     }
 
-    const list = visible.map((t) => {
-      const assigned = scopedModules(t.id).sort((a, b) => a.position - b.position);
-      const sectionIdsPresent = new Set(assigned.map((m) => m.section_id));
-      const questions = assigned.reduce((sum, m) => sum + (qCountByModule.get(m.id) ?? 0), 0);
-      return {
-        id: t.id,
-        title: t.title,
-        description: t.description,
-        kind: t.kind,
-        due_at: assignedMap.get(t.id)?.due_at ?? null,
-        sections: sectionIdsPresent.size,
-        modules: assigned.length,
-        questions,
-        time_limit_minutes: assigned[0]?.time_limit_minutes ?? null,
-        attempt: attemptMap.get(t.id) ?? null,
-      };
-    });
+    const list: Array<Record<string, unknown>> = [];
+    for (const t of visible) {
+      // One row per assignment for assigned tests; a single row for public ones.
+      const rows = t.is_public ? [null] : (byTest.get(t.id) ?? []);
+      for (const assn of rows) {
+        const key = (assn?.id as string | undefined) ?? t.id;
+        const assigned = scopedModules(t.id, assn).sort((a, b) => a.position - b.position);
+        const sectionIdsPresent = new Set(assigned.map((m) => m.section_id));
+        const questions = assigned.reduce((sum, m) => sum + (qCountByModule.get(m.id) ?? 0), 0);
+        list.push({
+          id: t.id,
+          title: t.title,
+          description: t.description,
+          kind: t.kind,
+          assignment_id: assn?.id ?? null,
+          assignment_status: assn?.status ?? null,
+          due_at: assn?.due_at ?? null,
+          sections: sectionIdsPresent.size,
+          modules: assigned.length,
+          questions,
+          time_limit_minutes: assigned[0]?.time_limit_minutes ?? null,
+          attempt: attemptMap.get(key) ?? null,
+        });
+      }
+    }
 
     return json({ tests: list });
   } catch (e) {

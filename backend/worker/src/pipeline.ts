@@ -17,6 +17,15 @@ import {
   type ParseProvider,
   type ParseVisualBlock,
 } from "./ocr";
+import {
+  visualsToNormBoxes,
+  decideCrop,
+  cropPng,
+  inkRatio,
+  isNoiseVisual,
+  CROP_MIN_INK,
+  type NormBox,
+} from "./cropStimulus";
 
 export interface PipelineConfig {
   supabaseUrl: string;
@@ -75,6 +84,17 @@ export interface PageVisualInfo {
   imageCount: number;
   tableCount: number;
   notes: string[];
+  /** Full OCR visual blocks incl. bounding boxes (drives auto-crop). */
+  boxes: StoredVisualBox[];
+}
+
+/** Persisted OCR visual block: kind + description + bounding boxes. */
+export interface StoredVisualBox {
+  kind: "image" | "table";
+  description: string | null;
+  category: string | null;
+  bbox: { topLeftX: number; topLeftY: number; bottomRightX: number; bottomRightY: number } | null;
+  bboxNormalized: { topLeftX: number; topLeftY: number; bottomRightX: number; bottomRightY: number } | null;
 }
 
 /** One module's completeness check. */
@@ -128,6 +148,8 @@ interface AssembledQuestion {
   skill: string | null;
   difficulty: number | null;
   hasVisualStimulus: boolean;
+  /** Visual marker spans in this question (drives OCR box attribution). */
+  visualMarkerCount: number;
 }
 
 interface ParsedBundle {
@@ -280,6 +302,13 @@ export class Pipeline {
               imageCount: out.imageCount,
               tableCount: out.tableCount,
               notes: out.visuals.map((v) => `${v.kind}: ${v.description ?? v.category ?? "visual"}`),
+              boxes: out.visuals.map((v) => ({
+                kind: v.kind,
+                description: v.description,
+                category: v.category,
+                bbox: v.bbox,
+                bboxNormalized: v.bboxNormalized,
+              })),
             });
           }
           ocrSucceeded.push(pn);
@@ -522,6 +551,7 @@ export class Pipeline {
           skill: q.skill,
           difficulty: q.difficulty,
           hasVisualStimulus: q.hasVisualStimulus,
+          visualMarkerCount: q.visualMarkerCount,
         }))
       : fullTest && fullTest.questions.length > 0
         ? fullTest.questions
@@ -544,6 +574,7 @@ export class Pipeline {
               skill: null as string | null,
               difficulty: null as number | null,
               hasVisualStimulus: q.hasVisualStimulus,
+              visualMarkerCount: q.visualMarkerCount,
             }))
           : parseQuestions(normalizedTexts).map((q) => ({
               sourceQuestionNumber: q.sourceQuestionNumber,
@@ -563,6 +594,7 @@ export class Pipeline {
               skill: null as string | null,
               difficulty: null as number | null,
               hasVisualStimulus: false,
+              visualMarkerCount: 0,
             }));
 
     const completeness = fullTest
@@ -699,9 +731,45 @@ export class Pipeline {
           ? scraper.keyConfidence
           : parseAnswerKey(original, questions.length).confidence;
 
-    const renderedPages = new Map<number, string>();
     const visualPages = Object.keys(opts.visualByPage).map(Number);
     const draftStatuses: string[] = [];
+
+    // --- OCR box attribution (per-question, document order) ---
+    // Page boxes queue in Parse block order; marker-bearing questions consume
+    // their marker count first; a lone cue-only question gets the last box.
+    const boxQueues = new Map<number, NormBox[]>();
+    for (const [pnStr, info] of Object.entries(opts.visualByPage)) {
+      boxQueues.set(
+        Number(pnStr),
+        visualsToNormBoxes((info.boxes ?? []).filter((b) => !isNoiseVisual(b.description)) as ParseVisualBlock[]),
+      );
+    }
+    const boxesForQuestion = new Map<number, NormBox[]>();
+    questions.forEach((q, qi) => {
+      if (!q.hasVisualStimulus || q.visualMarkerCount <= 0) return;
+      const queue = boxQueues.get(q.pageNumber) ?? [];
+      if (queue.length === 0) return;
+      boxesForQuestion.set(qi, queue.splice(0, Math.min(q.visualMarkerCount, queue.length)));
+      boxQueues.set(q.pageNumber, queue);
+    });
+    const cueOnlyByPage = new Map<number, number[]>();
+    questions.forEach((q, qi) => {
+      if (boxesForQuestion.has(qi) || q.visualMarkerCount > 0) return;
+      const pageVisual = opts.visualByPage[q.pageNumber] ?? null;
+      const pageHasVisual = pageVisual !== null && pageVisual.imageCount + pageVisual.tableCount > 0;
+      if (!q.hasVisualStimulus && !(pageHasVisual && VISUAL_CUE_RE.test(`${q.prompt} ${q.passageText ?? ""}`))) return;
+      if (!cueOnlyByPage.has(q.pageNumber)) cueOnlyByPage.set(q.pageNumber, []);
+      cueOnlyByPage.get(q.pageNumber)!.push(qi);
+    });
+    for (const [pn, qis] of cueOnlyByPage) {
+      const queue = boxQueues.get(pn) ?? [];
+      if (qis.length === 1 && queue.length === 1) {
+        boxesForQuestion.set(qis[0]!, queue.splice(0, 1));
+        boxQueues.set(pn, queue);
+      }
+    }
+    // One scale-3 render per page, shared by all its questions.
+    const stimulusCache = new Map<number, { sourcePath: string; png: Buffer; W: number; H: number }>();
 
     for (let qi = 0; qi < questions.length; qi++) {
       const q = questions[qi]!;
@@ -719,15 +787,26 @@ export class Pipeline {
       const status = hasVisual ? "needs_review" : matched ? "has_suggested_key" : "missing_key";
       draftStatuses.push(status);
       let stimulusImagePath: string | null = null;
+      let stimulusSourcePath: string | null = null;
+      let stimulusCropRect: { x: number; y: number; w: number; h: number } | null = null;
+      let stimulusCropSource: "auto" | "full_page" = "full_page";
+      const stimulusCropStatus = hasVisual ? "pending" : null;
       if (hasVisual) {
-        stimulusImagePath = renderedPages.get(q.pageNumber) ?? null;
-        if (!stimulusImagePath) {
-          try {
-            stimulusImagePath = await this.uploadRenderedPage(importId, q.sourceQuestionId ?? String(q.sourceQuestionNumber), q.pageNumber, pdfBytes);
-            renderedPages.set(q.pageNumber, stimulusImagePath);
-          } catch (e) {
-            console.warn(`[pipeline] stimulus upload skipped (page ${q.pageNumber}): ${e instanceof Error ? e.message : String(e)}`);
-          }
+        try {
+          const stim = await this.uploadStimulus(
+            importId,
+            q.sourceQuestionId ?? String(q.sourceQuestionNumber),
+            q.pageNumber,
+            pdfBytes,
+            boxesForQuestion.get(qi) ?? [],
+            stimulusCache,
+          );
+          stimulusSourcePath = stim.sourcePath;
+          stimulusImagePath = stim.activePath;
+          stimulusCropRect = stim.rect;
+          stimulusCropSource = stim.source;
+        } catch (e) {
+          console.warn(`[pipeline] stimulus upload skipped (page ${q.pageNumber}): ${e instanceof Error ? e.message : String(e)}`);
         }
       }
       const { data: draft, error: dErr } = await this.svc
@@ -752,6 +831,10 @@ export class Pipeline {
           explanation: q.explanation,
           has_visual_stimulus: hasVisual,
           stimulus_image_path: stimulusImagePath,
+          stimulus_source_image_path: stimulusSourcePath,
+          stimulus_crop_rect: stimulusCropRect,
+          stimulus_crop_source: stimulusCropSource,
+          stimulus_crop_status: stimulusCropStatus,
           parser_metadata: {
             parser: bank ? "rw-question-bank" : "parse5-full-test",
             scope: "full_test",
@@ -954,15 +1037,68 @@ export class Pipeline {
     }
   }
 
-  private async uploadRenderedPage(importId: string, sourceQuestionId: string, pageNumber: number, pdfBuffer: Uint8Array): Promise<string> {
-    const png = await renderPagePng(pdfBuffer, pageNumber, 2);
-    const path = `imports/${importId}/stimuli/${sourceQuestionId}-page-${pageNumber}.png`;
-    const { error } = await this.svc.storage.from("question-assets").upload(path, png, {
+  /**
+   * Upload the immutable full-page source (scale 3, shared per page) plus,
+   * when OCR boxes were attributed, the auto-crop cut from that same render.
+   * Every guard failure degrades to the full-page image — never a bad crop.
+   */
+  private async uploadStimulus(
+    importId: string,
+    sourceQuestionId: string,
+    pageNumber: number,
+    pdfBuffer: Uint8Array,
+    boxes: NormBox[],
+    cache: Map<number, { sourcePath: string; png: Buffer; W: number; H: number }>,
+  ): Promise<{
+    activePath: string;
+    sourcePath: string;
+    rect: { x: number; y: number; w: number; h: number } | null;
+    source: "auto" | "full_page";
+  }> {
+    let entry = cache.get(pageNumber);
+    if (!entry) {
+      const png = await renderPagePng(pdfBuffer, pageNumber, 3);
+      // Dimensions are best-effort: an undecodable render still uploads as
+      // the full-page source (auto-crop is skipped without them).
+      let W = 0;
+      let H = 0;
+      try {
+        const { loadImage } = await import("@napi-rs/canvas");
+        const img = await loadImage(png);
+        W = img.width;
+        H = img.height;
+      } catch {
+        console.warn(`[pipeline] stimulus render undecodable (page ${pageNumber}); auto-crop skipped`);
+      }
+      const path = `imports/${importId}/stimuli/${sourceQuestionId}-page-${pageNumber}.png`;
+      const { error } = await this.svc.storage.from("question-assets").upload(path, png, {
+        contentType: "image/png",
+        upsert: true,
+      });
+      if (error) throw new Error(`upload stimulus ${path}: ${error.message}`);
+      entry = { sourcePath: path, png, W, H };
+      cache.set(pageNumber, entry);
+    }
+    if (boxes.length === 0 || entry.W <= 0 || entry.H <= 0) {
+      return { activePath: entry.sourcePath, sourcePath: entry.sourcePath, rect: null, source: "full_page" };
+    }
+    const decision = decideCrop(boxes, entry.W, entry.H);
+    if (decision.kind !== "crop") {
+      console.log(`[pipeline] auto-crop fallback (page ${pageNumber}): ${decision.reason}`);
+      return { activePath: entry.sourcePath, sourcePath: entry.sourcePath, rect: null, source: "full_page" };
+    }
+    const cropBuf = await cropPng(entry.png, decision.rect);
+    if ((await inkRatio(cropBuf)) < CROP_MIN_INK) {
+      console.log(`[pipeline] auto-crop rejected as blank (page ${pageNumber})`);
+      return { activePath: entry.sourcePath, sourcePath: entry.sourcePath, rect: null, source: "full_page" };
+    }
+    const cropPath = `imports/${importId}/stimuli/${sourceQuestionId}-auto-crop.png`;
+    const { error: cErr } = await this.svc.storage.from("question-assets").upload(cropPath, cropBuf, {
       contentType: "image/png",
       upsert: true,
     });
-    if (error) throw new Error(`upload stimulus ${path}: ${error.message}`);
-    return path;
+    if (cErr) throw new Error(`upload auto-crop ${cropPath}: ${cErr.message}`);
+    return { activePath: cropPath, sourcePath: entry.sourcePath, rect: decision.rect, source: "auto" };
   }
 
   private async download(storagePath: string): Promise<ArrayBuffer> {

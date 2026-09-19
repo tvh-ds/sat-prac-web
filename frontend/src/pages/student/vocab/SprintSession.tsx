@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { fnJson, getToken } from "../../../lib/supabase";
 import type { VocabCard, VocabDashboard, VocabDeck } from "../../../lib/types";
@@ -16,7 +16,6 @@ export default function SprintSession() {
   const [got, setGot] = useState(0);
   const [missed, setMissed] = useState(0);
   const [startedAt] = useState(Date.now());
-  const cardStart = useRef<number | null>(null);
 
   useEffect(() => {
     void (async () => {
@@ -25,7 +24,6 @@ export default function SprintSession() {
       if (deckId) {
         const res = await fnJson<{ cards: VocabCard[] }>(`student-vocab/sprint?deck_id=${deckId}`, { token }).catch(() => null);
         setCards(res?.cards ?? []);
-        cardStart.current = Date.now();
       } else {
         const d = await fnJson<VocabDashboard>(`student-vocab`, { token }).catch(() => null);
         setDecks(d?.decks ?? []);
@@ -38,11 +36,10 @@ export default function SprintSession() {
     const q = targetDeck ? `?deck_id=${targetDeck}` : "";
     const res = await fnJson<{ cards: VocabCard[] }>(`student-vocab/sprint${q}`, { token }).catch(() => null);
     setCards(res?.cards ?? []);
-    cardStart.current = Date.now();
   };
 
   const record = async (rating: number) => {
-    if (busy || cards === null || cardStart.current === null) return;
+    if (busy || cards === null) return;
     setBusy(true);
     const card = cards[idx];
     try {
@@ -53,7 +50,6 @@ export default function SprintSession() {
           card_id: card.id,
           rating,
           mode: "sprint",
-          response_ms: Date.now() - cardStart.current,
           reviewed_on: new Date().toLocaleDateString("en-CA"),
         },
         token,
@@ -68,10 +64,8 @@ export default function SprintSession() {
     if (idx + 1 < cards.length) {
       setIdx((i) => i + 1);
       setFlipped(false);
-      cardStart.current = Date.now();
     } else {
       setIdx(cards.length);
-      cardStart.current = null;
     }
   };
 
@@ -137,7 +131,6 @@ export default function SprintSession() {
           {cards.length} cards · {got} got it ({acc}%) · {missed} missed · {Math.round(elapsed / 60)}m {elapsed % 60}s
         </p>
         <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 20 }}>
-          <Button onClick={() => void startSprint(deckId)}>Sprint Again</Button>
           <Button variant="outline" onClick={() => navigate("/student/vocabulary")}>Done</Button>
         </div>
       </div>

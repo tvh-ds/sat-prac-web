@@ -19,6 +19,8 @@ export interface ScraperQuestion {
   confidence: number;
   /** True when a "[figure: …]"/"[table: …]" marker landed in this block. */
   hasVisualStimulus: boolean;
+  /** Number of visual marker spans in this block (drives OCR box attribution). */
+  visualMarkerCount: number;
 }
 
 export interface ScraperKeyEntry {
@@ -755,6 +757,8 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
   let blockChoices: ScraperChoice[] = [];
   /** Raw choice lines carried a visual marker (choice text is pre-stripped). */
   let blockChoiceVisual = false;
+  /** Count of visual marker spans on raw choice lines (choice text is pre-stripped). */
+  let blockChoiceVisualCount = 0;
   let blockPage = 0;
   let pendingNewQuestion = false;
   let passageBuffer: string[] = [];
@@ -781,6 +785,7 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
     blockPrompt = [];
     blockChoices = [];
     blockChoiceVisual = false;
+    blockChoiceVisualCount = 0;
     blockPage = 0;
   };
 
@@ -835,6 +840,11 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
     // Math equations ($…$, \frac, \sqrt, …) pass through untouched.
     const blockHasVisual =
       blockChoiceVisual || [...blockPrompt, ...blockPassage, ...passageBuffer, ...blockChoices.map((c) => c.text)].some(hasFigureMarker);
+    // Marker spans per question, counted before stripping (choice-line spans
+    // were counted when seen — choice text is already stripped by now).
+    const visualMarkerCount =
+      [...blockPrompt, ...blockPassage, ...passageBuffer].reduce((n, l) => n + (l.match(FIGURE_SPAN_RE)?.length ?? 0), 0) +
+      blockChoiceVisualCount;
     const prompt = blockPrompt
       .filter((l) => !isFigureMarkerLine(l))
       .map((l) => stripFigureMarkers(l))
@@ -882,6 +892,7 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
       choices: blockChoices.map((c) => ({ ...c })),
       confidence,
       hasVisualStimulus: blockHasVisual,
+      visualMarkerCount,
     });
     passageBuffer = [];
     clearBlock();
@@ -1269,7 +1280,10 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
         }
 
         case "choice": {
-          if (hasFigureMarker(line)) blockChoiceVisual = true;
+          if (hasFigureMarker(line)) {
+            blockChoiceVisual = true;
+            blockChoiceVisualCount += line.match(FIGURE_SPAN_RE)?.length ?? 0;
+          }
           const choice: ScraperChoice = { label: cls.label!, text: stripFigureMarkers(stripBoldChoice(line).replace(/^\s*\(?[A-H](?:[.)]|\))\s*|^\s*\(?[A-H]\s+/, "").trim()), position: blockChoices.length + 1 };
           if (carryoverPrompt && blockChoices.length === 0 && blockPrompt.length === 0 && blockPassage.length === 0) {
             // Choices arriving right after a bar belong to the held-back prompt.
@@ -1370,7 +1384,10 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
               // continuation of the last choice's text across a line/page break
               // (visual markers stripped here too — continuations bypass the
               // choice-creation strip above)
-              if (hasFigureMarker(line)) blockChoiceVisual = true;
+              if (hasFigureMarker(line)) {
+                blockChoiceVisual = true;
+                blockChoiceVisualCount += line.match(FIGURE_SPAN_RE)?.length ?? 0;
+              }
               const clean = stripFigureMarkers(line);
               last.text = clean ? (last.text ? `${last.text} ${clean}` : clean) : last.text;
             } else {

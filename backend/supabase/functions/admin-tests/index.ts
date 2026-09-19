@@ -48,6 +48,7 @@ Deno.serve(async (req) => {
       const { data, error: err } = await svc
         .from("tests")
         .select("*, sections:test_sections(*, modules:test_modules(*))")
+        .eq("kind", "full")
         .order("created_at", { ascending: false });
       if (err) return error(err.message, 500);
       return json({ tests: data });
@@ -200,9 +201,11 @@ Deno.serve(async (req) => {
     if (req.method === "POST" && seg.length === 3 && seg[2] === "assign") {
       const body = assignTestSchema.parse(await req.json());
       await ensureModulesValid(svc, body.test_id, body.content_scope, body.module_ids);
+      // Repeat assignments: every POST creates its own row (own due date,
+      // status, attempts, scores) — never merged with an earlier assignment.
       const { data, error: err } = await svc
         .from("test_assignments")
-        .upsert(
+        .insert(
           {
             test_id: body.test_id,
             student_id: body.student_id,
@@ -211,7 +214,6 @@ Deno.serve(async (req) => {
             content_scope: body.content_scope,
             module_ids: body.content_scope === "custom_modules" ? (body.module_ids ?? []) : [],
           },
-          { onConflict: "test_id,student_id" },
         )
         .select("id, test_id, student_id, due_at, content_scope, module_ids")
         .single();
@@ -234,7 +236,7 @@ Deno.serve(async (req) => {
 
       const { data, error: err } = await svc
         .from("test_assignments")
-        .upsert(rows, { onConflict: "test_id,student_id", ignoreDuplicates: false })
+        .insert(rows)
         .select("id, test_id, student_id, content_scope");
       if (err) return error(err.message, 500);
       await svc.from("audit_logs").insert({

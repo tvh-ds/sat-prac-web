@@ -35,6 +35,10 @@ export async function approveDraft(
   if (dErr) throw new HttpError(500, dErr.message);
   if (!draft) throw new HttpError(404, "Draft not found");
 
+  if (draft.has_visual_stimulus && draft.stimulus_crop_status === "pending") {
+    throw new HttpError(422, "Crop review required: confirm or adjust this visual draft's crop before approving");
+  }
+
   const section = opts.section ?? draft.section;
   const questionType = opts.question_type ?? draft.question_type ?? "multiple_choice";
   if (!section) throw new HttpError(422, "Draft has no detected section; provide section");

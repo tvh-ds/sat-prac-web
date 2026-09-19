@@ -104,6 +104,8 @@ export interface TestListItem {
   title: string;
   description: string | null;
   kind?: string;
+  assignment_id: string | null;
+  assignment_status?: string | null;
   due_at: string | null;
   sections: number;
   modules: number;
@@ -250,6 +252,11 @@ export interface DraftQuestion {
   has_visual_stimulus?: boolean;
   stimulus_image_path?: string | null;
   stimulus_image_url?: string | null;
+  stimulus_source_image_path?: string | null;
+  stimulus_source_image_url?: string | null;
+  stimulus_crop_rect?: { x: number; y: number; w: number; h: number } | null;
+  stimulus_crop_source?: "auto" | "manual" | "full_page" | null;
+  stimulus_crop_status?: "pending" | "confirmed" | null;
   status: string;
   source_question_number: number;
   source_module_name?: string | null;

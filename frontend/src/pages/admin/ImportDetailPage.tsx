@@ -422,25 +422,46 @@ function DraftEditor({
   const [skill, setSkill] = useState(draft.skill ?? "");
   const [explanation, setExplanation] = useState(draft.explanation ?? "");
   const [cropOpen, setCropOpen] = useState(false);
+  const [showFull, setShowFull] = useState(false);
   const [savedNote, setSavedNote] = useState<string | null>(null);
 
-  async function saveCrop(blob: Blob) {
+  useEffect(() => { setShowFull(false); setCropOpen(false); }, [draft.id]);
+
+  async function saveCrop(blob: Blob, rect: { x: number; y: number; w: number; h: number }) {
     setBusy(true);
     try {
       const token = await getToken();
       const key = draft.source_question_id ?? String(draft.source_question_number);
-      const path = `imports/${draft.pdf_import_id}/stimuli/${key}-crop.png`;
+      const path = `imports/${draft.pdf_import_id}/stimuli/${key}-manual-crop.png`;
       const { error: upErr } = await supabase.storage.from("question-assets").upload(path, blob, { contentType: "image/png", upsert: true });
       if (upErr) throw new Error(`Upload failed: ${upErr.message}`);
       await fnJson(`admin-pdf-imports/${draft.pdf_import_id}/drafts/${draft.id}`, {
         method: "PATCH",
         token,
-        body: { stimulus_image_path: path },
+        body: {
+          stimulus_image_path: path,
+          stimulus_crop_rect: { x: Math.round(rect.x), y: Math.round(rect.y), w: Math.round(rect.w), h: Math.round(rect.h) },
+          stimulus_crop_source: "manual",
+          stimulus_crop_status: "confirmed",
+        },
       });
       setCropOpen(false);
       onSaved();
     } catch (e) {
       onError(e instanceof Error ? e.message : "Crop save failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function confirmCrop() {
+    setBusy(true);
+    try {
+      const token = await getToken();
+      await fnJson(`admin-pdf-imports/${draft.pdf_import_id}/drafts/${draft.id}/confirm-crop`, { method: "POST", token });
+      onSaved();
+    } catch (e) {
+      onError(e instanceof Error ? e.message : "Confirm failed");
     } finally {
       setBusy(false);
     }
@@ -455,8 +476,14 @@ function DraftEditor({
       await fnJson(`admin-pdf-imports/${draft.pdf_import_id}/drafts/${draft.id}`, {
         method: "PATCH",
         token,
-        body: { stimulus_image_path: fullPage },
+        body: {
+          stimulus_image_path: fullPage,
+          stimulus_crop_rect: null,
+          stimulus_crop_source: "full_page",
+          stimulus_crop_status: "confirmed",
+        },
       });
+      setShowFull(false);
       onSaved();
     } catch (e) {
       onError(e instanceof Error ? e.message : "Reset failed");
@@ -556,15 +583,29 @@ function DraftEditor({
       {draft.stimulus_image_url && (
         <>
           <label className="field-label" style={{ marginTop: 12 }}>
-            Stimulus Image <span className="muted" style={{ fontWeight: 400 }}>{draft.has_visual_stimulus ? "(full page render — crop to the graph/table before publishing)" : ""}</span>
+            Stimulus Image{" "}
+            <span className="muted" style={{ fontWeight: 400 }}>
+              {draft.has_visual_stimulus && draft.stimulus_crop_status === "pending" && draft.stimulus_crop_source === "auto" && "(auto-cropped — review required)"}
+              {draft.has_visual_stimulus && draft.stimulus_crop_status === "pending" && draft.stimulus_crop_source !== "auto" && "(full page — review required)"}
+              {draft.has_visual_stimulus && draft.stimulus_crop_status !== "pending" && draft.stimulus_crop_source === "manual" && "(manually adjusted)"}
+              {draft.has_visual_stimulus && draft.stimulus_crop_status !== "pending" && draft.stimulus_crop_source === "auto" && "(auto-cropped)"}
+            </span>
           </label>
           <img
-            src={draft.stimulus_image_url}
+            src={showFull ? (draft.stimulus_source_image_url ?? draft.stimulus_image_url) : draft.stimulus_image_url}
             alt={`Stimulus for Q${draft.source_question_number}`}
             style={{ maxWidth: "100%", border: "1px solid var(--border)", borderRadius: 8, marginTop: 4 }}
           />
           <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
-            <Button size="sm" variant="outline" disabled={busy} onClick={() => setCropOpen(true)}>✂ Crop Graph</Button>
+            {draft.has_visual_stimulus && draft.stimulus_crop_status === "pending" && (
+              <Button size="sm" disabled={busy} onClick={() => void confirmCrop()}>✓ Confirm crop</Button>
+            )}
+            {draft.stimulus_source_image_url && (
+              <Button size="sm" variant="outline" disabled={busy} onClick={() => setShowFull((v) => !v)}>
+                {showFull ? "View crop" : "View full page"}
+              </Button>
+            )}
+            <Button size="sm" variant="outline" disabled={busy || !draft.stimulus_source_image_url} title={draft.stimulus_source_image_url ? "Adjust on the full-page source" : "Full-page source not available"} onClick={() => setCropOpen(true)}>✂ Adjust crop</Button>
             <Button size="sm" variant="ghost" disabled={busy} onClick={() => void resetCrop()}>Reset to full page</Button>
           </div>
         </>
@@ -636,10 +677,11 @@ function DraftEditor({
         <Button disabled={busy} onClick={() => void approve()}>{busy ? "Saving…" : "Approve & Publish"}</Button>
       </div>
 
-      {cropOpen && draft.stimulus_image_url && (
+      {cropOpen && (draft.stimulus_source_image_url ?? draft.stimulus_image_url) && (
         <CropImageModal
           title={`Crop Graph — Q${draft.source_question_number}`}
-          src={draft.stimulus_image_url}
+          src={(draft.stimulus_source_image_url ?? draft.stimulus_image_url)!}
+          initialRect={draft.stimulus_crop_source === "auto" ? (draft.stimulus_crop_rect ?? null) : null}
           onCancel={() => {
             if (!busy) setCropOpen(false);
           }}

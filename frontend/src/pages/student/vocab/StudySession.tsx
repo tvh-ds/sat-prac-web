@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { fnJson, getToken } from "../../../lib/supabase";
 import type { VocabStudyCard } from "../../../lib/types";
@@ -27,7 +27,6 @@ export default function StudySession() {
   const [done, setDone] = useState(0);
   const [again, setAgain] = useState(0);
   const [startedAt] = useState(Date.now());
-  const startedRef = useRef<number | null>(null);
 
   const load = useCallback(() => {
     void (async () => {
@@ -38,7 +37,6 @@ export default function StudySession() {
         { token },
       ).catch(() => null);
       setCards(res?.cards ?? []);
-      startedRef.current = Date.now();
     })();
   }, [deckId]);
 
@@ -60,10 +58,9 @@ export default function StudySession() {
   });
 
   const rate = async (rating: number) => {
-    if (busy || cards === null || startedRef.current === null) return;
+    if (busy || cards === null) return;
     setBusy(true);
     const card = cards[idx];
-    const responseMs = Date.now() - startedRef.current;
     try {
       const token = await getToken();
       const res = await fnJson<ReviewResult>("student-vocab/review", {
@@ -72,7 +69,6 @@ export default function StudySession() {
           card_id: card.card.id,
           rating,
           mode: "study",
-          response_ms: responseMs,
           reviewed_on: new Date().toLocaleDateString("en-CA"),
         },
         token,
@@ -87,7 +83,6 @@ export default function StudySession() {
     if (idx + 1 < cards.length) {
       setIdx((i) => i + 1);
       setFlipped(false);
-      startedRef.current = Date.now();
     } else {
       setDone(cards.length);
     }
@@ -118,7 +113,6 @@ export default function StudySession() {
           {cards.length} card{cards.length === 1 ? "" : "s"} reviewed · {again} again · {Math.round(elapsed / 60)}m {elapsed % 60}s
         </p>
         <div style={{ display: "flex", gap: 10, justifyContent: "center", marginTop: 20 }}>
-          <Button onClick={() => navigate(`/student/vocabulary/study${deckId ? `?deck_id=${deckId}` : ""}`)}>Study Again</Button>
           <Button variant="outline" onClick={() => navigate("/student/vocabulary")}>Done</Button>
         </div>
       </div>

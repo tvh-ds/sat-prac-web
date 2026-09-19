@@ -133,6 +133,7 @@ export const pdfImportCreateSchema = z.object({
 
 export const startAttemptSchema = z.object({
   test_id: z.string().uuid(),
+  assignment_id: z.string().uuid().optional(),
 });
 
 export const advanceModuleSchema = z.object({
@@ -184,6 +185,9 @@ export const updateDraftSchema = z.object({
   explanation: z.string().max(5000).optional().nullable(),
   has_visual_stimulus: z.boolean().optional(),
   stimulus_image_path: z.string().max(1000).optional().nullable(),
+  stimulus_crop_rect: z.object({ x: z.number().int(), y: z.number().int(), w: z.number().int().min(1), h: z.number().int().min(1) }).optional().nullable(),
+  stimulus_crop_source: z.enum(["auto", "manual", "full_page"]).optional().nullable(),
+  stimulus_crop_status: z.enum(["pending", "confirmed"]).optional(),
   choices: z.array(choiceSchema.partial().extend({ id: z.string().uuid().optional() })).optional(),
 });
 

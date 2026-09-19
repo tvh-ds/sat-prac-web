@@ -19,6 +19,8 @@ export interface BankQuestion {
   skill: string | null;
   difficulty: number | null;
   hasVisualStimulus: boolean;
+  /** Number of "[figure: …]"/"[table: …]" spans (drives OCR box attribution). */
+  visualMarkerCount: number;
   confidence: number;
 }
 
@@ -123,6 +125,10 @@ function parseBlock(block: NumberedLine[], sourceQuestionNumber: number): BankQu
   const explanation = parseExplanation(block.slice(keyIdx + 1).map((line) => line.text));
   const hasVisualStimulus =
     detectVisualStimulus(questionLines, prompt) || choiceLines.some((l) => /\[(figure|table)\b/i.test(l));
+  const visualMarkerCount = [...questionLines, ...choiceLines].reduce(
+    (n, l) => n + (l.match(/\[(figure|table)(:[^\]]*)?\]/gi)?.length ?? 0),
+    0,
+  );
 
   if (!prompt || prompt.length < 8) return fail("missing prompt");
   if (choices.length !== 4) return fail(`expected 4 choices, found ${choices.length}`);
@@ -143,6 +149,7 @@ function parseBlock(block: NumberedLine[], sourceQuestionNumber: number): BankQu
     skill: metadata.skill,
     difficulty: metadata.difficulty,
     hasVisualStimulus,
+    visualMarkerCount,
     confidence,
   };
 }

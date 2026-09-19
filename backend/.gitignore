@@ -2,6 +2,7 @@ node_modules/
 .env
 .env.local
 worker/.env
+worker/tmp/
 worker/sample-pdf.pdf
 *.log
 supabase/.temp/

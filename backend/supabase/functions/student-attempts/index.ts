@@ -85,17 +85,38 @@ Deno.serve(async (req) => {
 
     if (req.method === "POST" && seg.length === 1) {
       const body = startAttemptSchema.parse(await req.json());
-      const test = await loadTestStructure(svc, body.test_id);
+
+      // Repeat assignments: the client starts a specific assignment. The
+      // test is resolved from it, and the active-attempt check is scoped to
+      // that assignment — other assignments of the same test are unaffected.
+      let testId = body.test_id;
+      let assignmentId: string | null = null;
+      let assignmentScope: { content_scope?: string | null; module_ids?: string[] | null } | null = null;
+      if (body.assignment_id) {
+        const { data: asg, error: asgErr } = await svc
+          .from("test_assignments")
+          .select("id, test_id, content_scope, module_ids")
+          .eq("id", body.assignment_id)
+          .eq("student_id", ctx.user.id)
+          .maybeSingle();
+        if (asgErr) return error(asgErr.message, 500);
+        if (!asg) return error("Assignment not found", 404);
+        testId = asg.test_id;
+        assignmentId = asg.id;
+        assignmentScope = asg;
+      }
+
+      const test = await loadTestStructure(svc, testId);
       if (!test) return error("Test not found", 404);
       if (test.status !== "published") return error("Test is not available", 403);
 
-      let assignmentId: string | null = null;
-      let assignmentScope: { content_scope?: string | null; module_ids?: string[] | null } | null = null;
-      if (test.is_public !== true) {
+      if (test.is_public !== true && !assignmentId) {
+        // Legacy path for clients that do not send assignment_id: use the
+        // student's (first) assignment for this test.
         const { data: assignment, error: assignmentErr } = await svc
           .from("test_assignments")
           .select("id, content_scope, module_ids")
-          .eq("test_id", body.test_id)
+          .eq("test_id", testId)
           .eq("student_id", ctx.user.id)
           .maybeSingle();
         if (assignmentErr) return error(assignmentErr.message, 500);
@@ -109,18 +130,21 @@ Deno.serve(async (req) => {
       await attachStimulusUrls(svc, test as Record<string, unknown>);
       if (allowed.size === 0) return error("This assignment has no modules", 409);
 
-      const { data: existing } = await svc
+      // One active attempt per assignment (public attempts: per test).
+      let existingQuery = svc
         .from("attempts")
         .select("id")
         .eq("student_id", ctx.user.id)
-        .eq("test_id", body.test_id)
-        .in("status", ["in_progress", "submitted"])
-        .maybeSingle();
+        .in("status", ["in_progress", "submitted"]);
+      existingQuery = assignmentId
+        ? existingQuery.eq("assignment_id", assignmentId)
+        : existingQuery.eq("test_id", testId).is("assignment_id", null);
+      const { data: existing } = await existingQuery.maybeSingle();
       if (existing) return error("An attempt for this test already exists", 409);
 
       const { data: attempt, error: aErr } = await svc
         .from("attempts")
-        .insert({ student_id: ctx.user.id, test_id: body.test_id, assignment_id: assignmentId, status: "in_progress" })
+        .insert({ student_id: ctx.user.id, test_id: testId, assignment_id: assignmentId, status: "in_progress" })
         .select("*")
         .single();
       if (aErr) return error(aErr.message, 500);

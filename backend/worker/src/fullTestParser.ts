@@ -36,6 +36,8 @@ export interface FullTestQuestion {
   skill: string | null;
   difficulty: number | null;
   hasVisualStimulus: boolean;
+  /** Number of visual marker spans (passed through from the scraper). */
+  visualMarkerCount: number;
 }
 
 export interface FullTestParseResult {
@@ -171,6 +173,7 @@ export function parseFullTest(
       skill: null,
       difficulty: null,
       hasVisualStimulus: q.hasVisualStimulus,
+      visualMarkerCount: q.visualMarkerCount,
     }));
 
   // 5. Bank mode: heterogeneous compilations (bank-global numbering, no

@@ -28,9 +28,11 @@ export default function StudentTestsPage() {
 
   const inProgress = history.filter((h) => h.status === "in_progress");
   const graded = history.filter((h) => h.status === "graded");
-  const attemptedIds = new Set(history.map((h) => h.test_id));
   const fullTests = (tests ?? []).filter((t) => t.kind !== "practice");
-  const available = fullTests.filter((t) => !attemptedIds.has(t.id));
+  // Repeat assignments: each assignment row stands alone. A row is available
+  // when its own assignment has no attempt yet — other assignments of the
+  // same test do not hide it.
+  const available = fullTests.filter((t) => !t.attempt);
 
   return (
     <div>
@@ -79,7 +81,7 @@ export default function StudentTestsPage() {
           </div>
           <div className="suite-list">
             {available.map((t) => (
-              <div className="card test-card premium-test-card reveal" key={t.id}>
+              <div className="card test-card premium-test-card reveal" key={t.assignment_id ?? t.id}>
                 <div style={{ minWidth: 0 }}>
                   <h3 className="t-title">{t.title}</h3>
                   <p className="t-desc">{t.description ?? "Full-length test"}</p>
@@ -91,7 +93,7 @@ export default function StudentTestsPage() {
                     {t.due_at && <Pill tone="amber">Due {fmtDate(t.due_at)}</Pill>}
                   </div>
                 </div>
-                <Button onClick={() => navigate(`/student/tests/${t.id}/start`)}>Start test</Button>
+                <Button onClick={() => navigate(`/student/tests/${t.id}/start${t.assignment_id ? `?assignment=${t.assignment_id}` : ""}`)}>Start test</Button>
               </div>
             ))}
           </div>

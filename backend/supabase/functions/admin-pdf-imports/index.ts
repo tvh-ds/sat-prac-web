@@ -3,6 +3,7 @@ import { serviceClient } from "../_shared/supabase.ts";
 import { corsHeaders, json, error } from "../_shared/cors.ts";
 import { pdfImportCreateSchema, approveDraftSchema, updateDraftSchema } from "../_shared/validation.ts";
 import { approveDraft } from "../_shared/drafts.ts";
+import { moduleGroup, groupByModuleKey } from "../_shared/modules.ts";
 
 const WORKER_URL = Deno.env.get("WORKER_URL");
 const WORKER_AUTH_TOKEN = Deno.env.get("WORKER_AUTH_TOKEN");
@@ -20,34 +21,19 @@ async function triggerWorker(importId: string): Promise<void> {
 async function attachDraftStimulusUrls(svc: ReturnType<typeof serviceClient>, drafts: Array<Record<string, unknown>>): Promise<void> {
   for (const draft of drafts) {
     const path = draft.stimulus_image_path;
-    if (typeof path !== "string" || !path) continue;
-    const { data } = await svc.storage.from("question-assets").createSignedUrl(path, 60 * 60);
-    if (data?.signedUrl) draft.stimulus_image_url = data.signedUrl;
+    if (typeof path === "string" && path) {
+      const { data } = await svc.storage.from("question-assets").createSignedUrl(path, 60 * 60);
+      if (data?.signedUrl) draft.stimulus_image_url = data.signedUrl;
+    }
+    // Immutable full-page source for the crop review UI ("View full page" /
+    // "Adjust crop"). Missing for legacy rows backfilled before the worker
+    // wrote source paths — the UI falls back to the crop image.
+    const sourcePath = draft.stimulus_source_image_path;
+    if (typeof sourcePath === "string" && sourcePath) {
+      const { data } = await svc.storage.from("question-assets").createSignedUrl(sourcePath, 60 * 60);
+      if (data?.signedUrl) draft.stimulus_source_image_url = data.signedUrl;
+    }
   }
-}
-
-const MODULE_GROUP_RE = /^(reading\s*(?:and|&)?\s*writing|math)\s+module\s+(\d+)$/i;
-
-interface ModuleGroup {
-  key: string;
-  sectionType: "reading_writing" | "math";
-  modulePos: number;
-  label: string;
-}
-
-function moduleGroup(sourceModuleName: string | null | undefined, section: string | null | undefined): ModuleGroup {
-  const m = String(sourceModuleName ?? "").match(MODULE_GROUP_RE);
-  if (m) {
-    const sectionType: "reading_writing" | "math" = /^math/i.test(m[1]) ? "math" : "reading_writing";
-    return {
-      key: `${sectionType}:${m[2]}`,
-      sectionType,
-      modulePos: Number(m[2]),
-      label: `${sectionType === "math" ? "Math" : "Reading and Writing"} Module ${m[2]}`,
-    };
-  }
-  if (section === "math") return { key: "math:1", sectionType: "math", modulePos: 1, label: "Math Module 1" };
-  return { key: "reading_writing:1", sectionType: "reading_writing", modulePos: 1, label: "Reading and Writing Module 1" };
 }
 
 const MODULE_TIME_LIMITS: Record<"reading_writing" | "math", number> = { reading_writing: 32, math: 35 };
@@ -296,6 +282,11 @@ Deno.serve(async (req) => {
       const usable = drafts.filter((d) => d.status !== "rejected");
       if (usable.length === 0) return error("No reviewable drafts on this import; generate a test needs at least one draft", 422);
 
+      const pendingCrops = usable.filter((d) => d.has_visual_stimulus && d.stimulus_crop_status === "pending");
+      if (pendingCrops.length > 0) {
+        return error(`${pendingCrops.length} visual draft(s) still require crop review. Confirm or adjust each crop, then approve the full draft.`, 422);
+      }
+
       let testId: string | null = null;
       try {
         const title = polishTestTitle(imp.original_filename);
@@ -313,12 +304,8 @@ Deno.serve(async (req) => {
         if (tErr) throw new HttpError(500, tErr.message);
         testId = test.id;
 
-        const groupedBySection = new Map<"reading_writing" | "math", Set<ModuleGroup>>();
-        for (const d of usable) {
-          const group = moduleGroup(d.source_module_name as string | null | undefined, d.section as string | null | undefined);
-          if (!groupedBySection.has(group.sectionType)) groupedBySection.set(group.sectionType, new Set());
-          groupedBySection.get(group.sectionType)!.add(group);
-        }
+        // Group by module key (Map, not Set — see _shared/modules.ts).
+        const groupedBySection = groupByModuleKey(usable);
 
         const sectionOrder: Array<"reading_writing" | "math"> = groupedBySection.has("reading_writing") ? ["reading_writing"] : [];
         if (groupedBySection.has("math")) sectionOrder.push("math");
@@ -341,7 +328,7 @@ Deno.serve(async (req) => {
 
         const moduleIds = new Map<string, string>();
         for (const sectionType of sectionOrder) {
-          const groups = [...(groupedBySection.get(sectionType) ?? [])].sort((a, b) => a.modulePos - b.modulePos);
+          const groups = [...(groupedBySection.get(sectionType)?.values() ?? [])].sort((a, b) => a.modulePos - b.modulePos);
           for (const group of groups) {
             const { data: module, error: mErr } = await svc
               .from("test_modules")
@@ -395,7 +382,7 @@ Deno.serve(async (req) => {
         // Answer-key status for the generated test (best-effort if migration pending)
         const moduleNameById = new Map<string, string>();
         for (const [key, mid] of moduleIds) {
-          const group = [...groupedBySection.values()].flatMap((s) => [...s]).find((g) => g.key === key);
+          const group = [...groupedBySection.values()].flatMap((s) => [...s.values()]).find((g) => g.key === key);
           if (group) moduleNameById.set(mid, group.label);
         }
         const { data: linkedRows } = await svc
@@ -474,6 +461,10 @@ Deno.serve(async (req) => {
           const { data } = await svc.storage.from("question-assets").createSignedUrl(draft.stimulus_image_path, 60 * 60);
           if (data?.signedUrl) draft.stimulus_image_url = data.signedUrl;
         }
+        if (typeof draft.stimulus_source_image_path === "string" && draft.stimulus_source_image_path) {
+          const { data } = await svc.storage.from("question-assets").createSignedUrl(draft.stimulus_source_image_path, 60 * 60);
+          if (data?.signedUrl) draft.stimulus_source_image_url = data.signedUrl;
+        }
         return json({ draft });
       }
 
@@ -481,6 +472,24 @@ Deno.serve(async (req) => {
         const body = approveDraftSchema.parse(await req.json());
         const { question_id } = await approveDraft(svc, ctx.user.id, draftId, body);
         return json({ ok: true, question_id });
+      }
+
+      if (req.method === "POST" && seg[4] === "confirm-crop") {
+        const { data: draft, error: cErr } = await svc
+          .from("draft_questions")
+          .select("id, has_visual_stimulus")
+          .eq("id", draftId)
+          .maybeSingle();
+        if (cErr) return error(cErr.message, 500);
+        if (!draft) return error("Draft not found", 404);
+        if (!draft.has_visual_stimulus) return error("Only visual drafts require crop review", 422);
+        const { error: uErr } = await svc
+          .from("draft_questions")
+          .update({ stimulus_crop_status: "confirmed" })
+          .eq("id", draftId);
+        if (uErr) return error(uErr.message, 500);
+        await svc.from("audit_logs").insert({ actor_id: ctx.user.id, action: "draft_question.crop_confirmed", entity_type: "draft_question", entity_id: draftId });
+        return json({ ok: true });
       }
 
       if (req.method === "POST" && seg[4] === "reject") {

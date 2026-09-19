@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import type { Test } from "../../lib/types";
 import { Button } from "../../components/ui";
@@ -30,6 +30,8 @@ const STEPS = [
 
 export default function TestStartPage() {
   const { testId } = useParams<{ testId: string }>();
+  const [params] = useSearchParams();
+  const assignmentId = params.get("assignment");
   const navigate = useNavigate();
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -40,7 +42,7 @@ export default function TestStartPage() {
     setError(null);
     try {
       const token = await getToken();
-      const res = await fnJson<StartResult>("student-attempts", { method: "POST", token, body: { test_id: testId } });
+      const res = await fnJson<StartResult>("student-attempts", { method: "POST", token, body: { test_id: testId, ...(assignmentId ? { assignment_id: assignmentId } : {}) } });
       navigate(`/student/attempts/${res.attempt_id}/session`, { replace: true });
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to start test";
