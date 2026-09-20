@@ -1389,7 +1389,6 @@ body::before { opacity: 0.03; mix-blend-mode: soft-light; }
 .mark-toggle.on { background: rgba(255, 115, 115, 0.12); border-color: rgba(255, 115, 115, 0.5); color: var(--error); }
 .mark-toggle.on:hover { border-color: var(--error); color: var(--error); }
 .mark-toggle svg { flex-shrink: 0; }
-.qcell.marked::after { background: var(--error); box-shadow: 0 0 0 4px rgba(255, 115, 115, 0.15), 0 0 6px var(--error); }
 
 /* Yellow text highlighter. */
 mark.t-hl {
@@ -1401,14 +1400,31 @@ mark.t-hl:hover { background: #ffe94a; }
 .highlight-mode .session-panel { cursor: text; }
 .highlight-mode .choice { cursor: text; }
 .highlight-mode .choice-text { user-select: text; }
-.clear-hl {
-  background: none; border: none; padding: 6px 4px;
-  color: var(--text-tertiary); font-size: 12px; font-weight: 600;
-  cursor: pointer; text-decoration: underline; text-underline-offset: 2px;
-}
-.clear-hl:hover { color: var(--error); }
 
 @media (max-width: 900px) {
   .session-title-block { width: 100%; }
   .session-timer-center { width: 100%; justify-content: center; }
+}
+
+/* ---------- review question grid: answered / unanswered / flagged / current ---------- */
+.qreview-title { text-align: center; font-weight: 800; font-size: 17px; color: var(--text-primary); }
+.qreview-div { border: none; border-top: 1px solid var(--border-medium); margin: 14px 0; }
+.qlegend { display: flex; align-items: center; justify-content: center; gap: 26px; flex-wrap: wrap; font-size: 13px; color: var(--text-body); }
+.qlegend-item { display: inline-flex; align-items: center; gap: 7px; }
+.qlegend-box { width: 17px; height: 17px; border-radius: 3px; display: inline-block; }
+.qlegend-box.answered { background: var(--accent); border: 2px solid var(--accent); }
+.qlegend-box.unanswered { background: transparent; border: 2px dashed var(--accent); }
+.qlegend .qflag { position: static; width: 12px; height: 16px; }
+.qgrid { grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 12px; max-width: 620px; margin: 0 auto; }
+.qcell-wrap { display: flex; flex-direction: column; align-items: center; min-width: 0; }
+.qcell-loc { height: 20px; display: flex; align-items: flex-end; color: var(--text-primary); }
+.qcell { border-radius: 6px; width: 100%; font-size: 20px; }
+.qcell.answered { background: var(--accent); border: 2px solid var(--accent); color: #fff; }
+.qcell.unanswered { background: transparent; border: 2px dashed var(--accent); color: var(--accent); }
+.qcell:hover { transform: scale(1.05); }
+.qcell:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.qcell .qnum { line-height: 1; font-weight: 800; }
+.qflag { position: absolute; top: -8px; right: -5px; width: 14px; height: 18px; }
+@media (max-width: 640px) {
+  .qgrid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 }
