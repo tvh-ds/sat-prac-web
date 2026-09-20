@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { fnJson, getToken } from "../../../lib/supabase";
+import { extractVocabFile } from "../../../lib/vocabFileImport";
 import type { VocabCard, VocabDeck } from "../../../lib/types";
 import { Button, EmptyState, Modal, Spinner, Pill } from "../../../components/ui";
 
@@ -15,6 +16,8 @@ export default function DeckCards() {
   const [form, setForm] = useState({ word: "", definition: "", example_sentence: "", part_of_speech: "", tags: "" });
   const [importText, setImportText] = useState("");
   const [importResult, setImportResult] = useState<string | null>(null);
+  const [importNote, setImportNote] = useState<string | null>(null);
+  const [importLoading, setImportLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(() => {
@@ -65,6 +68,23 @@ export default function DeckCards() {
       load();
     } catch (e) {
       alert(e instanceof Error ? e.message : "Delete failed");
+    }
+  };
+
+  const onImportFile = async (f: File | undefined) => {
+    if (!f) return;
+    setError(null);
+    setImportResult(null);
+    setImportNote(null);
+    setImportLoading(true);
+    try {
+      const r = await extractVocabFile(f);
+      setImportText(r.text);
+      setImportNote(`${r.rows} row(s)${r.pages > 0 ? ` from ${r.pages} page(s)` : ""} loaded — review below, then Import.${r.note ? ` ${r.note}` : ""}`);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not read file");
+    } finally {
+      setImportLoading(false);
     }
   };
 
@@ -173,17 +193,26 @@ export default function DeckCards() {
       {importing && (
         <Modal
           title="Import Cards"
-          onClose={() => { setImporting(false); setImportResult(null); }}
+          onClose={() => { setImporting(false); setImportResult(null); setImportNote(null); }}
           footer={
             <>
-              <Button variant="ghost" onClick={() => { setImporting(false); setImportResult(null); }}>Close</Button>
-              <Button onClick={doImport} disabled={!importText.trim()}>Import</Button>
+              <Button variant="ghost" onClick={() => { setImporting(false); setImportResult(null); setImportNote(null); }}>Close</Button>
+              <Button onClick={doImport} disabled={!importText.trim() || importLoading}>Import</Button>
             </>
           }
         >
           <p className="muted" style={{ marginBottom: 8 }}>
-            One card per line: <code>word, definition</code> or <code>word [TAB] definition</code>. Optional 3rd/4th/5th fields: example, part of speech, tags (semicolon-separated).
+            Upload a file or paste rows below. PDF: two-column text tables (word, then definition). CSV/TXT: one card per line, <code>word, definition</code> (comma- or tab-separated). Review the extracted rows before importing.
           </p>
+          <input
+            type="file"
+            accept=".pdf,.csv,.tsv,.txt"
+            disabled={importLoading}
+            onChange={(e) => { void onImportFile(e.target.files?.[0]); e.target.value = ""; }}
+            style={{ marginBottom: 8 }}
+          />
+          {importLoading && <p className="muted">Reading file…</p>}
+          {importNote && <p className="ok-text">{importNote}</p>}
           <textarea className="f-input" rows={8} value={importText} onChange={(e) => setImportText(e.target.value)} placeholder={"meticulous\tshowing great attention to detail\npragmatic\tdealing with things sensibly"} />
           {importResult && <p className="ok-text">{importResult}</p>}
           {error && <p className="form-error">{error}</p>}
