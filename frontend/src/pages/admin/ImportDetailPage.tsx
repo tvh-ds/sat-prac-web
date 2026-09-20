@@ -492,6 +492,25 @@ function DraftEditor({
     }
   }
 
+  async function removeImage() {
+    if (!window.confirm("Remove the stimulus image from this draft? The question will become text-only and any crop review requirement will be cleared.")) return;
+    setBusy(true);
+    try {
+      const token = await getToken();
+      await fnJson(`admin-pdf-imports/${draft.pdf_import_id}/drafts/${draft.id}`, {
+        method: "PATCH",
+        token,
+        body: { has_visual_stimulus: false },
+      });
+      setShowFull(false);
+      onSaved();
+    } catch (e) {
+      onError(e instanceof Error ? e.message : "Remove failed");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   /** Persist every editable field so approval publishes what the admin sees. */
   async function saveDraft() {
     const token = await getToken();
@@ -577,6 +596,9 @@ function DraftEditor({
           <div className="draft-visual-missing">
             Visual stimulus detected, but the full-page image has not been rendered yet. Run the stimulus backfill, then this question will show a Crop Graph tool.
           </div>
+          <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+            <Button size="sm" variant="ghost" disabled={busy} onClick={() => void removeImage()}>Remove image</Button>
+          </div>
         </div>
       )}
 
@@ -607,6 +629,7 @@ function DraftEditor({
             )}
             <Button size="sm" variant="outline" disabled={busy || !draft.stimulus_source_image_url} title={draft.stimulus_source_image_url ? "Adjust on the full-page source" : "Full-page source not available"} onClick={() => setCropOpen(true)}>✂ Adjust crop</Button>
             <Button size="sm" variant="ghost" disabled={busy} onClick={() => void resetCrop()}>Reset to full page</Button>
+            <Button size="sm" variant="ghost" disabled={busy} onClick={() => void removeImage()}>Remove image</Button>
           </div>
         </>
       )}

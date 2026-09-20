@@ -503,12 +503,22 @@ Deno.serve(async (req) => {
         const { prompt, choices, ...rest } = body;
         const updates: Record<string, unknown> = { ...rest };
         if (prompt !== undefined) updates.prompt = prompt;
+        // Removing the visual flag detaches the image: clear every image/crop
+        // field so no stale crop review requirement or orphan path remains.
+        // Storage objects are kept — full-page sources may be shared.
+        if (updates.has_visual_stimulus === false) {
+          updates.stimulus_image_path = null;
+          updates.stimulus_source_image_path = null;
+          updates.stimulus_crop_rect = null;
+          updates.stimulus_crop_source = null;
+          updates.stimulus_crop_status = null;
+        }
         const { error: uErr } = await svc.from("draft_questions").update(updates).eq("id", draftId);
         if (uErr) return error(uErr.message, 500);
-        if (updates.stimulus_image_path !== undefined) {
+        if (updates.stimulus_image_path !== undefined || updates.has_visual_stimulus === false) {
           const { data: linked } = await svc.from("draft_questions").select("question_id").eq("id", draftId).maybeSingle();
           if (linked?.question_id) {
-            const { error: pErr } = await svc.from("questions").update({ stimulus_image_path: updates.stimulus_image_path }).eq("id", linked.question_id);
+            const { error: pErr } = await svc.from("questions").update({ stimulus_image_path: updates.stimulus_image_path ?? null }).eq("id", linked.question_id);
             if (pErr) return error(pErr.message, 500);
           }
         }
