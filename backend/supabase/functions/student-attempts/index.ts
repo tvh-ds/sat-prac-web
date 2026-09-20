@@ -231,7 +231,7 @@ Deno.serve(async (req) => {
       await attachStimulusUrls(svc, test as Record<string, unknown>);
       const { data: responses } = await svc
         .from("attempt_responses")
-        .select("attempt_id, question_id, module_id, selected_choice_id, typed_answer, marked_for_review, eliminated_choice_ids")
+        .select("attempt_id, question_id, module_id, selected_choice_id, typed_answer, marked_for_review, eliminated_choice_ids, highlights")
         .eq("attempt_id", attempt.id);
 
       const now = Date.now();

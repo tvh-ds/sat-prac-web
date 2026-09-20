@@ -63,6 +63,7 @@ export interface Test {
   description: string | null;
   status?: string;
   is_public?: boolean;
+  kind?: string;
   sections: TestSection[];
 }
 
@@ -96,6 +97,7 @@ export interface SavedResponse {
   typed_answer: string | null;
   marked_for_review: boolean;
   eliminated_choice_ids: string[];
+  highlights: string[];
   is_correct: boolean | null;
 }
 

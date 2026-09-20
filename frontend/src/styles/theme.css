@@ -1373,3 +1373,42 @@ body::before { opacity: 0.03; mix-blend-mode: soft-light; }
   .admin-sidebar a { white-space: nowrap; }
   .admin-main, .app-content { padding: 22px 16px 44px; }
 }
+
+/* ---------- test session: centered timer, red flags, highlighter ---------- */
+.session-title-block { min-width: 0; flex: 1; }
+.session-timer-center { display: flex; align-items: center; justify-content: center; gap: 10px; flex: 1; }
+.session-tools { flex: 1; justify-content: flex-end; }
+.timer-label {
+  font-size: 11px; font-weight: 600; font-family: var(--font-mono);
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+/* Red review flag (replaces the amber mark pill). */
+.mark-toggle:hover { border-color: var(--error); color: var(--error); }
+.mark-toggle.on { background: rgba(255, 115, 115, 0.12); border-color: rgba(255, 115, 115, 0.5); color: var(--error); }
+.mark-toggle.on:hover { border-color: var(--error); color: var(--error); }
+.mark-toggle svg { flex-shrink: 0; }
+.qcell.marked::after { background: var(--error); box-shadow: 0 0 0 4px rgba(255, 115, 115, 0.15), 0 0 6px var(--error); }
+
+/* Yellow text highlighter. */
+mark.t-hl {
+  background: rgba(255, 235, 59, 0.88); color: #141414;
+  border-radius: 2px; padding: 0 1px; cursor: pointer;
+}
+mark.t-hl:hover { background: #ffe94a; }
+.session-tool.active { border-color: rgba(255, 235, 59, 0.55); color: #ffe94a; }
+.highlight-mode .session-panel { cursor: text; }
+.highlight-mode .choice { cursor: text; }
+.highlight-mode .choice-text { user-select: text; }
+.clear-hl {
+  background: none; border: none; padding: 6px 4px;
+  color: var(--text-tertiary); font-size: 12px; font-weight: 600;
+  cursor: pointer; text-decoration: underline; text-underline-offset: 2px;
+}
+.clear-hl:hover { color: var(--error); }
+
+@media (max-width: 900px) {
+  .session-title-block { width: 100%; }
+  .session-timer-center { width: 100%; justify-content: center; }
+}

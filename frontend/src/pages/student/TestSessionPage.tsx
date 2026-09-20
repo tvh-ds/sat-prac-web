@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Flag } from "lucide-react";
 import { fnJson, getToken } from "../../lib/supabase";
 import type { Attempt, AttemptModule, SavedResponse, Test, TestModule, TestSection } from "../../lib/types";
 import { Button, Modal, Spinner, fmtSeconds } from "../../components/ui";
-import MathText from "../../components/MathText";
+import HighlightableText from "../../components/HighlightableText";
 
 interface CurrentData {
   attempt: Attempt;
@@ -12,7 +13,7 @@ interface CurrentData {
   modules: AttemptModule[];
 }
 
-type ModalKind = "grid" | "directions" | "reference" | "end";
+type ModalKind = "grid" | "directions" | "reference" | "end" | "submitAll";
 
 const MATH_REFERENCE = [
   "Area of a circle: A = πr²",
@@ -48,11 +49,13 @@ export default function TestSessionPage() {
   const [autoFlag, setAutoFlag] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [typedDraft, setTypedDraft] = useState("");
+  const [highlighterOn, setHighlighterOn] = useState(false);
 
   const saveTimer = useRef<number | null>(null);
   const pendingTypedSave = useRef<{ qid: string; value: string } | null>(null);
   const enteredAt = useRef(Date.now());
   const moduleStart = useRef(Date.now());
+  const paneRef = useRef<HTMLDivElement | null>(null);
 
   const allModules = useMemo(() => {
     if (!data) return [];
@@ -126,6 +129,7 @@ export default function TestSessionPage() {
         typed_answer: prev?.typed_answer ?? null,
         marked_for_review: prev?.marked_for_review ?? false,
         eliminated_choice_ids: prev?.eliminated_choice_ids ?? [],
+        highlights: prev?.highlights ?? [],
         is_correct: prev?.is_correct ?? null,
         ...patch,
       };
@@ -144,6 +148,7 @@ export default function TestSessionPage() {
           typed_answer: next.typed_answer,
           marked_for_review: next.marked_for_review,
           eliminated_choice_ids: next.eliminated_choice_ids,
+          highlights: next.highlights,
           time_spent_seconds: spent,
         },
       });
@@ -183,6 +188,43 @@ export default function TestSessionPage() {
     saveTimer.current = null;
     pendingTypedSave.current = null;
     await saveResponse(pending.qid, { typed_answer: pending.value.trim() || null }, true);
+  }
+
+  // ---- yellow highlighter ----
+  function addHighlight(text: string) {
+    if (!current) return;
+    const entry = text.trim();
+    if (entry.length < 2 || entry.length > 2000) return;
+    const existing = responses[current.question_id]?.highlights ?? [];
+    if (existing.includes(entry) || existing.some((h) => h.includes(entry))) return;
+    if (existing.length >= 50) return;
+    void saveResponse(current.question_id, { highlights: [...existing, entry] });
+  }
+
+  function removeHighlight(entry: string) {
+    if (!current) return;
+    const existing = responses[current.question_id]?.highlights ?? [];
+    void saveResponse(current.question_id, { highlights: existing.filter((h) => h !== entry) });
+  }
+
+  function clearHighlights() {
+    if (!current) return;
+    void saveResponse(current.question_id, { highlights: [] });
+  }
+
+  /** Capture a text selection as a highlight when the tool is armed. */
+  function handlePaneSelect() {
+    if (!highlighterOn || !current) return;
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed || sel.rangeCount === 0) return;
+    const anchor = sel.anchorNode;
+    if (!anchor) return;
+    if (!paneRef.current?.contains(anchor)) return;
+    const el = anchor instanceof Element ? anchor : anchor.parentElement;
+    if (el?.closest("input, textarea")) return;
+    const text = sel.toString();
+    sel.removeAllRanges();
+    if (text.trim().length >= 2) addHighlight(text);
   }
 
   // ---- navigation ----
@@ -230,6 +272,28 @@ export default function TestSessionPage() {
     }
   }
 
+  /**
+   * Submit the whole test from any module (Review modal). Unvisited and
+   * unanswered questions score as incorrect server-side; pending saves are
+   * flushed first so nothing typed, flagged, or highlighted is lost.
+   */
+  async function submitAll() {
+    if (!data || !current || submitting) return;
+    setSubmitting(true);
+    try {
+      const token = await getToken();
+      await flushPendingSave();
+      const hl = responses[current.question_id]?.highlights ?? [];
+      await saveResponse(current.question_id, { highlights: hl }, true);
+      await fnJson("student-submit", { method: "POST", token, body: { attempt_id: data.attempt.id } });
+      navigate(`/student/scores/${data.attempt.id}`, { replace: true });
+    } catch (err) {
+      setLoadError(err instanceof Error ? err.message : "Submit failed");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   if (loadError) {
     return (
       <div className="center-fill">
@@ -246,26 +310,46 @@ export default function TestSessionPage() {
   const answeredCount = questions.filter((q) => responses[q.question_id]?.selected_choice_id || responses[q.question_id]?.typed_answer).length;
   const markedCount = questions.filter((q) => responses[q.question_id]?.marked_for_review).length;
   const unanswered = questions.length - answeredCount;
+  const kindLabel = data.test.kind === "practice" ? "Practice Test" : "Full-Length Test";
+  // Whole-test totals for the submit-from-review confirmation.
+  const allTestQuestions = allModules.flatMap((m) => m.questions ?? []);
   const hasPassage = !!current.question.passage?.content;
   const isLastModule = moduleIdx === allModules.length - 1;
   const isMath = section?.section_type === "math";
+
+  const totalAnswered = allTestQuestions.filter((q) => {
+    const r = responses[q.question_id];
+    return r?.selected_choice_id || r?.typed_answer;
+  }).length;
+  const totalMarked = allTestQuestions.filter((q) => responses[q.question_id]?.marked_for_review).length;
+  const totalUnanswered = allTestQuestions.length - totalAnswered;
 
   const timerClass = secondsLeft === null ? "" : secondsLeft < 60 ? "danger" : secondsLeft < 300 ? "warn" : "";
   const progressPercent = questions.length > 0 ? Math.round(((qIndex + 1) / questions.length) * 100) : 0;
 
   return (
-    <div className="session-root">
+    <div className={`session-root${highlighterOn ? " highlight-mode" : ""}`}>
       {/* ---------- top bar ---------- */}
       <div className="session-topbar">
-        <div style={{ minWidth: 0 }}>
+        <div className="session-title-block" style={{ minWidth: 0 }}>
           <div className="t-title">{data.test.title}</div>
           <div className="t-sub">
-            {section?.name ?? "Full-Length Test"} · {module.name} · Question {qIndex + 1} of {questions.length}
+            {section?.name ?? kindLabel} · {module.name} · Question {qIndex + 1} of {questions.length}
           </div>
           <div className="session-progress" aria-hidden="true"><span style={{ width: `${progressPercent}%` }} /></div>
         </div>
-        <div className="session-tools">
+        <div className="session-timer-center" role="timer" aria-label="Module time left">
+          <span className="timer-label">Time left</span>
           <span className={`timer-pill ${timerClass}`}>{secondsLeft === null ? "--:--" : fmtSeconds(secondsLeft)}</span>
+        </div>
+        <div className="session-tools">
+          <button
+            className={`session-tool${highlighterOn ? " active" : ""}`}
+            onClick={() => setHighlighterOn((v) => !v)}
+            title="Select text to highlight it yellow"
+          >
+            Highlighter
+          </button>
           <button className="session-tool" onClick={() => setModal("directions")}>Directions</button>
           {isMath && <button className="session-tool" onClick={() => setModal("reference")}>Reference</button>}
           <button className="session-tool" onClick={() => setModal("grid")}>Review</button>
@@ -274,11 +358,22 @@ export default function TestSessionPage() {
 
       {/* ---------- question area ---------- */}
       <div className="session-body">
-        <div className="session-question-pane">
+        <div
+          className="session-question-pane"
+          ref={paneRef}
+          onMouseUp={() => handlePaneSelect()}
+          onTouchEnd={() => handlePaneSelect()}
+        >
           {hasPassage && (
             <div className="session-panel left">
               <div key={current.question_id} className="q-anim">
-                <div className="passage-text"><MathText text={current.question.passage!.content} /></div>
+                <div className="passage-text">
+                  <HighlightableText
+                    text={current.question.passage!.content}
+                    highlights={resp?.highlights}
+                    onRemoveHighlight={(h) => removeHighlight(h)}
+                  />
+                </div>
               </div>
             </div>
           )}
@@ -287,13 +382,26 @@ export default function TestSessionPage() {
             <div className="q-number">
               <span>Question {qIndex + 1}</span>
               <button
-                className={`mark-toggle ${resp?.marked_for_review ? "on" : ""}`}
+                className={`mark-toggle${resp?.marked_for_review ? " on" : ""}`}
                 onClick={() => void saveResponse(current.question_id, { marked_for_review: !resp?.marked_for_review })}
+                title={resp?.marked_for_review ? "Remove review flag" : "Flag for review later"}
               >
-                {resp?.marked_for_review ? "Marked for review" : "Mark for review"}
+                <Flag size={13} fill={resp?.marked_for_review ? "currentColor" : "none"} />
+                {resp?.marked_for_review ? "Flagged for review" : "Flag for review"}
               </button>
+              {(resp?.highlights?.length ?? 0) > 0 && (
+                <button className="clear-hl" onClick={() => clearHighlights()} title="Remove all highlights on this question">
+                  Clear highlights
+                </button>
+              )}
             </div>
-            <p className="q-prompt"><MathText text={current.question.prompt} /></p>
+            <p className="q-prompt">
+              <HighlightableText
+                text={current.question.prompt}
+                highlights={resp?.highlights}
+                onRemoveHighlight={(h) => removeHighlight(h)}
+              />
+            </p>
 
             {current.question.stimulus_image_url && (
               <div style={{ margin: "12px 0" }}>
@@ -313,16 +421,27 @@ export default function TestSessionPage() {
                     <button
                       key={c.id}
                       className={`choice ${resp?.selected_choice_id === c.id ? "selected" : ""} ${eliminated ? "eliminated" : ""}`}
-                      onClick={() => void saveResponse(current.question_id, { selected_choice_id: c.id, eliminated_choice_ids: resp?.eliminated_choice_ids?.filter((id) => id !== c.id) ?? [] })}
+                      onClick={() => {
+                        // While highlighting, clicks select text — never answers.
+                        if (highlighterOn) return;
+                        void saveResponse(current.question_id, { selected_choice_id: c.id, eliminated_choice_ids: resp?.eliminated_choice_ids?.filter((id) => id !== c.id) ?? [] });
+                      }}
                     >
                       <span className="letter">{c.label}</span>
-                      <span className="choice-text" style={{ flex: 1 }}><MathText text={c.text} /></span>
+                      <span className="choice-text" style={{ flex: 1 }}>
+                        <HighlightableText
+                          text={c.text}
+                          highlights={resp?.highlights}
+                          onRemoveHighlight={(h) => removeHighlight(h)}
+                        />
+                      </span>
                       <span
                         className="eliminate-btn"
                         role="button"
                         tabIndex={0}
                         onClick={(e) => {
                           e.stopPropagation();
+                          if (highlighterOn) return;
                           void saveResponse(current.question_id, {
                             eliminated_choice_ids: eliminated
                               ? (resp?.eliminated_choice_ids ?? []).filter((id) => id !== c.id)
@@ -372,14 +491,22 @@ export default function TestSessionPage() {
           {qIndex < questions.length - 1 ? (
             <Button onClick={() => goTo(qIndex + 1)}>Next</Button>
           ) : (
-            <Button onClick={() => setModal("end")}>{isLastModule ? "Submit Full-Length Test" : "Submit Module"}</Button>
+            <Button onClick={() => setModal("end")}>{isLastModule ? `Submit ${kindLabel}` : "Submit Module"}</Button>
           )}
         </div>
       </div>
 
       {/* ---------- modals ---------- */}
       {modal === "grid" && (
-        <Modal title="Review Questions" onClose={() => setModal(null)}>
+        <Modal
+          title="Review Questions"
+          onClose={() => setModal(null)}
+          footer={
+            <Button disabled={submitting} onClick={() => setModal("submitAll")}>
+              Submit {kindLabel}
+            </Button>
+          }
+        >
           <QuestionGrid
             questions={questions}
             qIndex={qIndex}
@@ -392,23 +519,52 @@ export default function TestSessionPage() {
           <div style={{ display: "flex", gap: 18, marginTop: 20, fontSize: 13, color: "var(--muted)", flexWrap: "wrap" }}>
             <span><span className="pill pill-red">A</span> answered</span>
             <span><span className="pill pill-gray">Q</span> unanswered</span>
-            <span><span className="pill pill-amber">M</span> marked for review</span>
+            <span><Flag size={12} color="var(--error)" style={{ verticalAlign: -1 }} /> flagged for review</span>
           </div>
+        </Modal>
+      )}
+
+      {modal === "submitAll" && (
+        <Modal
+          title={`Submit ${kindLabel}`}
+          onClose={() => setModal(null)}
+          footer={
+            <>
+              <Button variant="outline" onClick={() => setModal("grid")}>Back to review</Button>
+              <Button disabled={submitting} onClick={() => void submitAll()}>
+                {submitting ? "Submitting…" : `Submit ${kindLabel}`}
+              </Button>
+            </>
+          }
+        >
+          <p>
+            You are about to submit the entire {kindLabel.toLowerCase()}. You will not be able to return to any module.
+          </p>
+          <div style={{ display: "flex", gap: 18, marginTop: 16, fontSize: 13, color: "var(--muted)", flexWrap: "wrap" }}>
+            <span><span className="pill pill-green">{totalAnswered}</span> answered</span>
+            <span><span className="pill pill-gray">{totalUnanswered}</span> unanswered</span>
+            <span><Flag size={12} color="var(--error)" style={{ verticalAlign: -1 }} /> {totalMarked} flagged</span>
+          </div>
+          {totalUnanswered > 0 && (
+            <div className="login-error" style={{ marginTop: 16 }}>
+              You have {totalUnanswered} unanswered question{totalUnanswered === 1 ? "" : "s"} across the test. Unanswered questions will be counted as incorrect.
+            </div>
+          )}
         </Modal>
       )}
 
       {modal === "end" && (
         <Modal
-          title={isLastModule ? "Submit Full-Length Test" : "Submit Module"}
+          title={isLastModule ? `Submit ${kindLabel}` : "Submit Module"}
           onClose={() => {
             setModal(null);
             setAutoFlag(false);
           }}
           footer={
             <>
-              <Button variant="outline" onClick={() => setModal(null)}>Back to Full-Length Test</Button>
+              <Button variant="outline" onClick={() => setModal(null)}>Back to {kindLabel}</Button>
               <Button disabled={submitting} onClick={() => void submitModule()}>
-                {submitting ? "Submitting…" : isLastModule ? "Submit Full-Length Test" : "Submit Module"}
+                {submitting ? "Submitting…" : isLastModule ? `Submit ${kindLabel}` : "Submit Module"}
               </Button>
             </>
           }
@@ -479,10 +635,12 @@ function QuestionGrid({
       {questions.map((mq, i) => {
         const r = responses[mq.question_id];
         const answered = !!r?.selected_choice_id || !!r?.typed_answer;
+        const marked = !!r?.marked_for_review;
         return (
           <button
             key={mq.question_id}
-            className={`qcell${answered ? " answered" : " unanswered"}${r?.marked_for_review ? " marked" : ""}${i === qIndex ? " current" : ""}`}
+            title={`Question ${i + 1}${marked ? " (flagged for review)" : ""}`}
+            className={`qcell${answered ? " answered" : " unanswered"}${marked ? " marked" : ""}${i === qIndex ? " current" : ""}`}
             onClick={() => onJump(i)}
           >
             {i + 1}
