@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import type { Question } from "../../lib/types";
@@ -12,6 +12,7 @@ import {
   domainsForSection,
   skillsForDomain,
   difficultyLabel,
+  difficultyValue,
   sectionLabel,
 } from "../../lib/satTaxonomy";
 
@@ -26,6 +27,13 @@ interface PickItem {
   qnum?: number | null;
 }
 
+interface BankResponse {
+  questions: Question[];
+  question_total: number;
+}
+
+const PAGE_SIZE = 10;
+
 export default function PracticeComposePage() {
   const navigate = useNavigate();
   const [step, setStep] = useState<"details" | "pick" | "review">("details");
@@ -38,26 +46,67 @@ export default function PracticeComposePage() {
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [bank, setBank] = useState<Question[] | null>(null);
-  const [q, setQ] = useState("");
-  const [section, setSection] = useState<SectionKey>("reading_writing");
+  const [rows, setRows] = useState<Question[] | null>(null);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [listError, setListError] = useState<string | null>(null);
+  const [searchText, setSearchText] = useState("");
+  const [search, setSearch] = useState("");
+  const [section, setSection] = useState("");
   const [domain, setDomain] = useState("");
   const [skill, setSkill] = useState("");
   const [difficulty, setDifficulty] = useState<DifficultyLabel | "">("");
+  const requestId = useRef(0);
 
   useEffect(() => {
-    void (async () => {
-      const token = await getToken().catch(() => undefined);
-      if (!token) return;
-      const d = await fnJson<{ questions: Question[] }>("admin-questions?limit=500", { token }).catch(() => null);
-      setBank(d?.questions ?? []);
-    })();
-  }, []);
+    const t = setTimeout(() => setSearch(searchText.trim()), 300);
+    return () => clearTimeout(t);
+  }, [searchText]);
 
-  const pickedIds = new Set(picks.map((p) => `${p.source}:${p.id}`));
+  useEffect(() => {
+    setPage(0);
+  }, [search, section, domain, skill, difficulty]);
+
+  useEffect(() => {
+    if (step !== "pick") return;
+    const id = ++requestId.current;
+    setLoading(true);
+    setListError(null);
+    void (async () => {
+      try {
+        const token = await getToken();
+        const params = new URLSearchParams();
+        params.set("limit", String(PAGE_SIZE));
+        params.set("offset", String(page * PAGE_SIZE));
+        if (section) params.set("section", section);
+        if (domain) params.set("domain", domain);
+        if (skill) params.set("skill", skill);
+        if (difficulty) params.set("difficulty", String(difficultyValue(difficulty)));
+        if (search) params.set("search", search);
+        const d = await fnJson<BankResponse>(`admin-questions?${params.toString()}`, { token });
+        if (requestId.current !== id) return;
+        setRows(d.questions);
+        setTotal(d.question_total);
+      } catch (e) {
+        if (requestId.current !== id) return;
+        setRows([]);
+        setTotal(0);
+        setListError(e instanceof Error ? e.message : "Failed to load questions");
+      } finally {
+        if (requestId.current === id) setLoading(false);
+      }
+    })();
+  }, [step, page, search, section, domain, skill, difficulty]);
+
+  const pickedIds = useMemo(() => new Set(picks.map((p) => `${p.source}:${p.id}`)), [picks]);
   const togglePick = (item: PickItem) => {
     const key = `${item.source}:${item.id}`;
-    setPicks((prev) => (pickedIds.has(key) ? prev.filter((p) => `${p.source}:${p.id}` !== key) : [...prev, item]));
+    setPicks((prev) => {
+      const current = new Set(prev.map((p) => `${p.source}:${p.id}`));
+      if (current.has(key)) return prev.filter((p) => `${p.source}:${p.id}` !== key);
+      return [...prev, item];
+    });
   };
 
   const movePick = (i: number, dir: -1 | 1) => {
@@ -95,23 +144,16 @@ export default function PracticeComposePage() {
     hasKey: true,
   });
 
-  const filteredBank = useMemo(() => {
-    if (!bank) return [];
-    const needle = q.trim().toLowerCase();
-      return bank.filter((x) => {
-        if (needle && !`${x.prompt} ${x.domain ?? ""} ${x.skill ?? ""}`.toLowerCase().includes(needle)) return false;
-        if (x.section !== section) return false;
-        if (domain && x.domain !== domain) return false;
-        if (skill && x.skill !== skill) return false;
-        if (difficulty && difficultyLabel(x.difficulty) !== difficulty) return false;
-        return true;
-      });
-  }, [bank, q, section, domain, skill, difficulty]);
+  const sectionKey = (section || null) as SectionKey | null;
+  const bankDomains = useMemo(() => (sectionKey ? domainsForSection(sectionKey) : []), [sectionKey]);
+  const bankSkills = useMemo(
+    () => (sectionKey && domain ? skillsForDomain(sectionKey, domain as Domain) : []),
+    [sectionKey, domain],
+  );
 
-  const visibleBank = useMemo(() => filteredBank.slice(0, 80), [filteredBank]);
-
-  const bankDomains = useMemo(() => domainsForSection(section), [section]);
-  const bankSkills = useMemo(() => domain ? skillsForDomain(section, domain as Domain) : [], [section, domain]);
+  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const rangeStart = total === 0 ? 0 : page * PAGE_SIZE + 1;
+  const rangeEnd = Math.min(page * PAGE_SIZE + (rows?.length ?? 0), total);
 
   async function create() {
     if (picks.length === 0 || creating) return;
@@ -181,11 +223,12 @@ export default function PracticeComposePage() {
 
           <>
               <div className="toolbar" style={{ marginBottom: 12 }}>
-                <input className="input" placeholder="Search prompt, domain, skill…" value={q} onChange={(e) => setQ(e.target.value)} />
-                <select className="input" value={section} onChange={(e) => { setSection(e.target.value as SectionKey); setDomain(""); setSkill(""); }}>
+                <input className="input" placeholder="Search prompts…" value={searchText} onChange={(e) => setSearchText(e.target.value)} />
+                <select className="input" value={section} onChange={(e) => { setSection(e.target.value); setDomain(""); setSkill(""); }}>
+                  <option value="">All sections</option>
                   {SECTIONS.map((s) => <option key={s} value={s}>{sectionLabel(s)}</option>)}
                 </select>
-                <select className="input" value={domain} onChange={(e) => { setDomain(e.target.value); setSkill(""); }}>
+                <select className="input" value={domain} onChange={(e) => { setDomain(e.target.value); setSkill(""); }} disabled={!sectionKey}>
                   <option value="">All domains</option>
                   {bankDomains.map((d) => <option key={d} value={d}>{d}</option>)}
                 </select>
@@ -197,44 +240,52 @@ export default function PracticeComposePage() {
                   <option value="">Any difficulty</option>
                   {DIFFICULTIES.map((d) => <option key={d} value={d}>{d.charAt(0).toUpperCase() + d.slice(1)}</option>)}
                 </select>
-                {filteredBank.length > 0 && (
+                {(rows?.length ?? 0) > 0 && (
                   <>
-                    <Button variant="outline" size="sm" onClick={() => toggleMany(visibleBank.map(bankToItem))}>
-                      Select all shown ({visibleBank.length})
+                    <Button variant="outline" size="sm" onClick={() => toggleMany((rows ?? []).map(bankToItem))}>
+                      Select all shown ({rows?.length ?? 0})
                     </Button>
                     <Button variant="ghost" size="sm" onClick={() => clearSource()}>Clear</Button>
                   </>
                 )}
               </div>
 
-              {!bank ? (
+              {listError && <div className="login-error">{listError}</div>}
+              <div className="draft-filter" style={{ justifyContent: "flex-start", marginBottom: 10 }}>
+                <span className="muted">Showing {rangeStart}–{rangeEnd} of {total} questions</span>
+              </div>
+              {loading && !rows ? (
                 <Spinner />
-              ) : filteredBank.length === 0 ? (
+              ) : (rows?.length ?? 0) === 0 ? (
                 <EmptyState title="No matching questions" body="Adjust the filters or create questions in the Practice Question Bank first." />
               ) : (
-                <div style={{ maxHeight: 430, overflowY: "auto", display: "flex", flexDirection: "column", gap: 8 }}>
-                  {visibleBank.map((x) => {
-                    const key = `bank:${x.id}`;
-                    const on = pickedIds.has(key);
-                    return (
-                      <label key={x.id} className="question-row" style={{ cursor: "pointer" }}>
-                        <input type="checkbox" checked={on} onChange={() => togglePick({ source: "bank", id: x.id, prompt: x.prompt, section: x.section, qtype: x.question_type, hasKey: true })} />
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: 13, fontWeight: 600, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-                            <span>{x.prompt.length > 90 ? `${x.prompt.slice(0, 90)}…` : x.prompt}</span>
-                            <Pill tone={x.question_type === "student_produced" ? "amber" : "gray"}>{typePill(x.question_type)}</Pill>
+                <>
+                  <div style={{ maxHeight: 430, overflowY: "auto", display: "flex", flexDirection: "column", gap: 8 }}>
+                    {(rows ?? []).map((x) => {
+                      const key = `bank:${x.id}`;
+                      const on = pickedIds.has(key);
+                      return (
+                        <label key={x.id} className="question-row" style={{ cursor: "pointer" }}>
+                          <input type="checkbox" checked={on} onChange={() => togglePick({ source: "bank", id: x.id, prompt: x.prompt, section: x.section, qtype: x.question_type, hasKey: true })} />
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: 13, fontWeight: 600, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+                              <span>{x.prompt.length > 90 ? `${x.prompt.slice(0, 90)}…` : x.prompt}</span>
+                              <Pill tone={x.question_type === "student_produced" ? "amber" : "gray"}>{typePill(x.question_type)}</Pill>
+                            </div>
+                            <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>
+                              {[x.domain, x.skill].filter(Boolean).join(" · ") || "—"} · {formatDifficulty(x.difficulty)}
+                            </div>
                           </div>
-                          <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>
-                            {[x.domain, x.skill].filter(Boolean).join(" · ") || "—"} · {formatDifficulty(x.difficulty)}
-                          </div>
-                        </div>
-                      </label>
-                    );
-                  })}
-                  {filteredBank.length > 80 && (
-                    <p className="muted" style={{ fontSize: 12, textAlign: "center" }}>Showing first 80 - narrow the search to find more.</p>
-                  )}
-                </div>
+                        </label>
+                      );
+                    })}
+                  </div>
+                  <div className="draft-filter" style={{ justifyContent: "space-between", marginTop: 12 }}>
+                    <Button variant="outline" size="sm" disabled={page === 0 || loading} onClick={() => setPage((p) => Math.max(0, p - 1))}>‹ Prev</Button>
+                    <span className="muted">Page {page + 1} of {pageCount}</span>
+                    <Button variant="outline" size="sm" disabled={loading || page + 1 >= pageCount} onClick={() => setPage((p) => p + 1)}>Next ›</Button>
+                  </div>
+                </>
               )}
           </>
 
