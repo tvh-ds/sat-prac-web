@@ -44,7 +44,7 @@ export default function PracticePage() {
             <span className="muted" style={{ fontSize: 12, fontFamily: "var(--font-mono)" }}>{available.length} READY</span>
           </div>
           {available.map((t) => (
-            <div className="card test-card reveal" key={t.id}>
+            <div className="card test-card reveal" key={t.assignment_id ?? t.id}>
               <div style={{ minWidth: 0 }}>
                 <h3 className="t-title">{t.title}</h3>
                 <p className="t-desc">{t.description ?? "Practice set"}</p>
@@ -54,7 +54,7 @@ export default function PracticePage() {
                   {t.time_limit_minutes != null && <Pill tone="gray">{t.time_limit_minutes}-min timer</Pill>}
                 </div>
               </div>
-              <Button onClick={() => navigate(`/student/practice/${t.id}/start`)}>Start practice</Button>
+              <Button onClick={() => navigate(`/student/practice/${t.id}/start${t.assignment_id ? `?assignment=${t.assignment_id}` : ""}`)}>Start practice</Button>
             </div>
           ))}
         </section>

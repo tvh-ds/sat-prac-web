@@ -110,9 +110,9 @@ export default function QuestionsPage() {
 
   return (
     <div>
-      <div className="section-label">Question bank</div>
-      <h1 className="page-title"><span className="hl-muted">Question</span> <span className="hl-bright">bank</span></h1>
-      <p className="page-sub">Published questions for tests and practice sets.</p>
+      <div className="section-label">Practice Question Bank</div>
+      <h1 className="page-title"><span className="hl-muted">Practice Question</span> <span className="hl-bright">Bank</span></h1>
+      <p className="page-sub">Reusable practice questions only. PDF full-length test questions stay with their generated tests.</p>
 
       <div className="toolbar">
         <input className="input" placeholder="Search prompts…" value={searchText} onChange={(e) => setSearchText(e.target.value)} />
@@ -315,6 +315,7 @@ function QuestionModal({ question, onClose, onSaved }: { question: QListRow | nu
   const [skill, setSkill] = useState(question?.skill ?? "");
   const [diffLabel, setDiffLabel] = useState<DifficultyLabel>(difficultyLabel(question?.difficulty ?? null));
   const [correctAnswer, setCorrectAnswer] = useState(question?.correct_answer ?? "");
+  const [explanation, setExplanation] = useState(question?.explanation ?? "");
   const [choices, setChoices] = useState(
     question?.choices?.map((c) => ({ label: c.label, text: c.text, is_correct: c.is_correct })) ??
       ["A", "B", "C", "D"].map((l) => ({ label: l, text: "", is_correct: false })),
@@ -339,7 +340,7 @@ function QuestionModal({ question, onClose, onSaved }: { question: QListRow | nu
         skill: skill || null,
         difficulty: difficultyValue(diffLabel),
         correct_answer: correctAnswer || null,
-        explanation: null,
+        explanation: explanation || null,
         choices: qtype === "multiple_choice" ? choices.map((c, i) => ({ label: c.label, text: c.text, is_correct: c.label.toUpperCase() === (correctAnswer || "").toUpperCase(), position: i + 1 })) : [],
       };
       if (question) {
@@ -448,6 +449,11 @@ function QuestionModal({ question, onClose, onSaved }: { question: QListRow | nu
             <input className="input" value={correctAnswer} onChange={(e) => setCorrectAnswer(e.target.value)} placeholder="e.g. 24 or 3/5" />
           </div>
         )}
+
+        <div>
+          <label className="field-label">Explanation</label>
+          <textarea className="textarea" rows={2} value={explanation} onChange={(e) => setExplanation(e.target.value)} placeholder="Optional explanation" />
+        </div>
 
         {error && <div className="login-error">{error}</div>}
       </form>

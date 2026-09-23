@@ -180,6 +180,13 @@ export default function ScoreReportPage() {
           <h2>Answer Review</h2>
         </div>
 
+        {data.explanations_released === false && (
+          <div className="card card-pad" style={{ marginBottom: 16, fontSize: 13.5 }}>
+            Your teacher has not released explanations for this set yet — you can see your score
+            and the correct answers below. Explanations will appear here once released.
+          </div>
+        )}
+
         <div className="score-tabs">
           <button className={`score-tab${tab === "all" ? " active" : ""}`} onClick={() => setTab("all")}>All ({review.length})</button>
           <button className={`score-tab${tab === "wrong" ? " active" : ""}`} onClick={() => setTab("wrong")}>Incorrect ({wrong})</button>

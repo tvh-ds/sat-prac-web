@@ -41,7 +41,7 @@ jobs:
           deno-version: v2.x
 
       - name: Type-check Edge Functions
-        run: deno check supabase/functions/admin-pdf-imports/index.ts supabase/functions/admin-practice/index.ts supabase/functions/admin-progress/index.ts supabase/functions/admin-questions/index.ts supabase/functions/admin-students/index.ts supabase/functions/admin-tests/index.ts supabase/functions/admin-vocab/index.ts supabase/functions/student-attempts/index.ts supabase/functions/student-responses/index.ts supabase/functions/student-scores/index.ts supabase/functions/student-submit/index.ts supabase/functions/student-tests/index.ts supabase/functions/student-vocab/index.ts supabase/functions/_shared/modules.ts supabase/functions/_shared/drafts.ts supabase/functions/_shared/validation.ts supabase/functions/_shared/scoring_test.ts
+        run: deno check supabase/functions/admin-pdf-imports/index.ts supabase/functions/admin-practice/index.ts supabase/functions/admin-practice-assignments/index.ts supabase/functions/admin-progress/index.ts supabase/functions/admin-questions/index.ts supabase/functions/admin-students/index.ts supabase/functions/admin-tests/index.ts supabase/functions/admin-vocab/index.ts supabase/functions/student-attempts/index.ts supabase/functions/student-responses/index.ts supabase/functions/student-scores/index.ts supabase/functions/student-submit/index.ts supabase/functions/student-tests/index.ts supabase/functions/student-vocab/index.ts supabase/functions/_shared/modules.ts supabase/functions/_shared/drafts.ts supabase/functions/_shared/validation.ts supabase/functions/_shared/scoring_test.ts
 
       - uses: supabase/setup-cli@v1
         with:

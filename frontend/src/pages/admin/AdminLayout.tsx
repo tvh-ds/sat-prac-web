@@ -28,7 +28,7 @@ export default function AdminLayout() {
         {link("/admin", "Dashboard", LayoutDashboard, true)}
         {link("/admin/students", "Students", Users)}
         {link("/admin/imports", "PDF Imports", FileUp)}
-        {link("/admin/questions", "Question Bank", Database)}
+        {link("/admin/questions", "Practice Question Bank", Database)}
         {link("/admin/tests", "Full-Length Tests", ClipboardList)}
         {link("/admin/practice", "Practice Sets", Layers)}
         {link("/admin/vocabulary", "Vocabulary", BookOpen)}

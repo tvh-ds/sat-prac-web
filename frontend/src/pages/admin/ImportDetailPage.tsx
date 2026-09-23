@@ -697,7 +697,7 @@ function DraftEditor({
       <div style={{ display: "flex", gap: 10, marginTop: 18, justifyContent: "flex-end" }}>
         <Button variant="danger" disabled={busy} onClick={onReject}>Reject</Button>
         <Button variant="outline" disabled={busy} onClick={() => void handleSave()}>{busy ? "Saving…" : "Save draft"}</Button>
-        <Button disabled={busy} onClick={() => void approve()}>{busy ? "Saving…" : "Approve & Publish"}</Button>
+        <Button disabled={busy} onClick={() => void approve()}>{busy ? "Saving…" : "Approve Draft"}</Button>
       </div>
 
       {cropOpen && (draft.stimulus_source_image_url ?? draft.stimulus_image_url) && (

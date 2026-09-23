@@ -45,13 +45,33 @@ Deno.serve(async (req) => {
     if (req.method === "GET" && seg.length === 2) {
       const { data: attempt, error: aErr } = await svc
         .from("attempts")
-        .select("id, test_id, status, started_at, submitted_at, test:tests(title, kind), score:scores(*)")
+        .select("id, test_id, assignment_id, status, started_at, submitted_at, test:tests(title, kind), score:scores(*)")
         .eq("id", seg[1])
         .eq("student_id", ctx.user.id)
         .maybeSingle();
       if (aErr) return error(aErr.message, 500);
       if (!attempt) return error("Attempt not found", 404);
       if (attempt.status !== "graded") return error("Attempt has not been graded yet", 409);
+
+      // Assigned practice sets hide explanations until the teacher releases
+      // them for that specific assignment. Scores and correct answers stay
+      // visible; only explanation text is withheld.
+      let explanationsReleased = true;
+      if (attempt.assignment_id) {
+        const { data: asg } = await svc
+          .from("test_assignments")
+          .select("test_id")
+          .eq("id", attempt.assignment_id)
+          .maybeSingle();
+        if (asg) {
+          const { data: batch } = await svc
+            .from("practice_assignment_batches")
+            .select("explanations_released_at")
+            .eq("snapshot_test_id", asg.test_id)
+            .maybeSingle();
+          if (batch) explanationsReleased = batch.explanations_released_at != null;
+        }
+      }
 
       // Full test structure so the report covers every question (incl. unanswered)
       const { data: sections, error: sErr } = await svc
@@ -124,7 +144,7 @@ Deno.serve(async (req) => {
               domain: q.domain,
               skill: q.skill,
               difficulty: q.difficulty,
-              explanation: q.explanation,
+              explanation: explanationsReleased ? q.explanation : null,
               correct_answer: q.correct_answer,
               stimulus_image_path: q.stimulus_image_path,
               stimulus_image_url: q.stimulus_image_url ?? null,
@@ -144,7 +164,7 @@ Deno.serve(async (req) => {
         }
       }
 
-      return json({ attempt, review });
+      return json({ attempt, review, explanations_released: explanationsReleased });
     }
 
     return error("Not found", 404);

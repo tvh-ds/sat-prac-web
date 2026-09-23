@@ -55,12 +55,13 @@ Deno.serve(async (req) => {
       const limit = Math.min(Math.max(Number(url.searchParams.get("limit")) || 20, 1), 500);
       const offset = Math.max(Number(url.searchParams.get("offset")) || 0, 0);
 
-      const applyFilters = (q: { eq: (c: string, v: unknown) => unknown; ilike: (c: string, v: string) => unknown }) => {
+      const applyFilters = (q: { eq: (c: string, v: unknown) => unknown; is: (c: string, v: unknown) => unknown; ilike: (c: string, v: string) => unknown }) => {
         if (section) q.eq("section", section);
         if (domain) q.eq("domain", domain);
         if (skill) q.eq("skill", skill);
         if (difficulty) q.eq("difficulty", Number(difficulty));
         q.eq("status", status);
+        q.is("source_pdf_id", null);
         if (search) q.ilike("prompt", `%${search}%`);
       };
 

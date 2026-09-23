@@ -190,6 +190,66 @@ export interface ReviewItem {
 export interface ScoreDetail {
   attempt: ScoreEntry;
   review: ReviewItem[];
+  explanations_released?: boolean;
+}
+
+export interface PracticeAssignmentBatch {
+  id: string;
+  source_test_id: string | null;
+  snapshot_test_id: string;
+  title: string;
+  timer_minutes: number;
+  assigned_by: string | null;
+  assigned_at: string;
+  explanations_released_at: string | null;
+  source_title?: string | null;
+  question_count: number;
+  student_count: number;
+  completed_count: number;
+  avg_accuracy: number | null;
+}
+
+export interface BatchStudent {
+  assignment_id: string;
+  student_id: string;
+  full_name: string;
+  email: string | null;
+  status: string;
+  started_at: string | null;
+  submitted_at: string | null;
+  raw_score: number | null;
+  total_questions: number | null;
+  accuracy: number | null;
+}
+
+export interface BatchChoiceStat {
+  id: string;
+  label: string;
+  text: string;
+  is_correct: boolean;
+  position: number;
+  selected_count: number;
+}
+
+export interface BatchQuestionStat {
+  question_id: string;
+  position: number;
+  prompt: string;
+  question_type: string;
+  correct_answer: string | null;
+  choices: BatchChoiceStat[];
+  correct_count: number;
+  incorrect_count: number;
+  unanswered_count: number;
+  completed_count: number;
+  accuracy: number | null;
+  typed_answers: Array<{ answer: string; count: number }>;
+}
+
+export interface PracticeBatchDetail {
+  batch: PracticeAssignmentBatch;
+  students: BatchStudent[];
+  questions: BatchQuestionStat[];
 }
 
 export interface StudentProfile {

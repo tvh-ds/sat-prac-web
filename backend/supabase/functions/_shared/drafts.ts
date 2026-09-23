@@ -16,10 +16,10 @@ export interface ApproveDraftOptions {
 
 /**
  * Approve a scraped draft: creates a passage (if it carries passage text),
- * inserts the question + choices (+ correct flag), records provenance, marks
- * the draft approved and its suggested answer keys approved. Shared by
- * `admin-pdf-imports` (single-draft review) and `admin-practice` (bulk
- * practice-set generation from a PDF import).
+ * inserts the internal full-test question + choices (+ correct flag), records
+ * provenance, marks the draft approved and its suggested answer keys approved.
+ * Imported full-test questions are archived so they do not appear in the
+ * Practice Question Bank.
  */
 export async function approveDraft(
   svc: SupabaseClient,
@@ -77,6 +77,7 @@ export async function approveDraft(
       source_page: draft.page_number,
       source_question_id: draft.source_question_id ?? null,
       stimulus_image_path: draft.stimulus_image_path ?? null,
+      status: "archived",
       created_by: adminId,
     })
     .select("id")

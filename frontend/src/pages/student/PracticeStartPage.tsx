@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import type { Test } from "../../lib/types";
 import { Button, Spinner } from "../../components/ui";
@@ -11,6 +11,8 @@ interface StartResult {
 
 export default function PracticeStartPage() {
   const { testId } = useParams<{ testId: string }>();
+  const [params] = useSearchParams();
+  const assignmentId = params.get("assignment");
   const navigate = useNavigate();
   const [starting, setStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,11 +22,12 @@ export default function PracticeStartPage() {
     void (async () => {
       const token = await getToken().catch(() => undefined);
       if (!token) return;
-      const res = await fnJson<{ tests: Array<{ id: string; questions: number; time_limit_minutes: number | null }> }>("student-tests", { token }).catch(() => ({ tests: [] }));
-      const t = res.tests.find((x) => x.id === testId);
+      const res = await fnJson<{ tests: Array<{ id: string; assignment_id: string | null; questions: number; time_limit_minutes: number | null }> }>("student-tests", { token }).catch(() => ({ tests: [] }));
+      const list = res.tests.filter((x) => x.id === testId);
+      const t = (assignmentId ? list.find((x) => x.assignment_id === assignmentId) : list[0]) ?? list[0];
       if (t) setMeta({ questions: t.questions, minutes: t.time_limit_minutes ?? null });
     })();
-  }, [testId]);
+  }, [testId, assignmentId]);
 
   async function start() {
     if (!testId || starting) return;
@@ -32,7 +35,7 @@ export default function PracticeStartPage() {
     setError(null);
     try {
       const token = await getToken();
-      const res = await fnJson<StartResult>("student-attempts", { method: "POST", token, body: { test_id: testId } });
+      const res = await fnJson<StartResult>("student-attempts", { method: "POST", token, body: { test_id: testId, ...(assignmentId ? { assignment_id: assignmentId } : {}) } });
       navigate(`/student/attempts/${res.attempt_id}/session`, { replace: true });
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to start practice";

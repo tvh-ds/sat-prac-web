@@ -282,6 +282,11 @@ Deno.serve(async (req) => {
       const usable = drafts.filter((d) => d.status !== "rejected");
       if (usable.length === 0) return error("No reviewable drafts on this import; generate a test needs at least one draft", 422);
 
+      const notApproved = usable.filter((d) => d.status !== "approved");
+      if (notApproved.length > 0) {
+        return error(`${notApproved.length} draft(s) still need approval before generating the full-length test.`, 422);
+      }
+
       const pendingCrops = usable.filter((d) => d.has_visual_stimulus && d.stimulus_crop_status === "pending");
       if (pendingCrops.length > 0) {
         return error(`${pendingCrops.length} visual draft(s) still require crop review. Confirm or adjust each crop, then approve the full draft.`, 422);
@@ -294,7 +299,7 @@ Deno.serve(async (req) => {
           .from("tests")
           .insert({
             title,
-            description: `Auto-assembled from PDF import "${imp.original_filename}" — approve individual drafts to link new questions.`,
+            description: `Auto-assembled from PDF import "${imp.original_filename}".`,
             is_public: false,
             created_by: ctx.user.id,
             kind: "full",
@@ -470,8 +475,35 @@ Deno.serve(async (req) => {
 
       if (req.method === "POST" && seg[4] === "approve") {
         const body = approveDraftSchema.parse(await req.json());
-        const { question_id } = await approveDraft(svc, ctx.user.id, draftId, body);
-        return json({ ok: true, question_id });
+        const { data: draft, error: dErr } = await svc
+          .from("draft_questions")
+          .select("id, has_visual_stimulus, stimulus_crop_status")
+          .eq("id", draftId)
+          .maybeSingle();
+        if (dErr) return error(dErr.message, 500);
+        if (!draft) return error("Draft not found", 404);
+        if (draft.has_visual_stimulus && draft.stimulus_crop_status === "pending") {
+          return error("Crop review required: confirm or adjust this visual draft's crop before approving", 422);
+        }
+        const updates: Record<string, unknown> = { status: "approved" };
+        if (body.section !== undefined) updates.section = body.section;
+        if (body.question_type !== undefined) updates.question_type = body.question_type;
+        if (body.passage_text !== undefined) updates.passage_text = body.passage_text;
+        if (body.domain !== undefined) updates.domain = body.domain;
+        if (body.skill !== undefined) updates.skill = body.skill;
+        if (body.difficulty !== undefined) updates.difficulty = body.difficulty;
+        if (body.correct_answer !== undefined) updates.suggested_answer = body.correct_answer;
+        if (body.explanation !== undefined) updates.explanation = body.explanation;
+        const { error: uErr } = await svc.from("draft_questions").update(updates).eq("id", draftId);
+        if (uErr) return error(uErr.message, 500);
+        await svc.from("draft_answer_keys").update({ status: "approved" }).eq("draft_question_id", draftId).eq("status", "suggested");
+        await svc.from("audit_logs").insert({
+          actor_id: ctx.user.id,
+          action: "draft_question.marked_ready",
+          entity_type: "draft_question",
+          entity_id: draftId,
+        });
+        return json({ ok: true });
       }
 
       if (req.method === "POST" && seg[4] === "confirm-crop") {

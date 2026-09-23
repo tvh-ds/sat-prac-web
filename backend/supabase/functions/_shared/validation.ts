@@ -201,14 +201,6 @@ export const practiceCreateSchema = z.object({
   question_ids: z.array(z.string().uuid()).min(1).max(100),
 });
 
-export const practiceFromImportSchema = z.object({
-  title: z.string().min(1).max(300),
-  description: z.string().max(2000).optional().nullable(),
-  time_limit_minutes: z.number().int().min(1).max(600),
-  draft_ids: z.array(z.string().uuid()).min(1).max(100),
-  include_missing_key: z.boolean().default(false),
-});
-
 export const practiceUpdateSchema = z.object({
   title: z.string().min(1).max(300).optional(),
   description: z.string().max(2000).optional().nullable(),
@@ -218,6 +210,26 @@ export const practiceUpdateSchema = z.object({
 
 export const practiceAddQuestionsSchema = z.object({
   question_ids: z.array(z.string().uuid()).min(1).max(100),
+});
+
+export const practiceAssignSchema = z.object({
+  student_ids: z.array(z.string().uuid()).min(1).max(1000),
+  timer_minutes: z.number().int().min(1).max(600),
+  due_at: z.string().datetime().optional().nullable(),
+});
+
+export const practiceQuestionEditSchema = z.object({
+  position: z.number().int().min(1).optional(),
+  prompt: z.string().min(1).optional(),
+  section: z.enum(["reading_writing", "math"]).optional(),
+  question_type: z.enum(["multiple_choice", "student_produced"]).optional(),
+  passage_id: z.string().uuid().optional().nullable(),
+  domain: z.string().max(100).optional().nullable(),
+  skill: z.string().max(100).optional().nullable(),
+  difficulty: z.number().int().min(1).max(5).optional().nullable(),
+  correct_answer: z.string().max(500).optional().nullable(),
+  explanation: z.string().max(5000).optional().nullable(),
+  choices: z.array(choiceSchema).max(6).optional(),
 });
 
 // ---------------------------------------------------------------------------
