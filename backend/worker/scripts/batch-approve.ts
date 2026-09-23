@@ -60,7 +60,8 @@ async function main() {
     const suggested = draft.suggested_answer as string | null;
     const choices = (draft.choices ?? []) as Array<{ label: string | null; text: string }>;
 
-    // Create question
+    // Create question (default unrated active questions to Medium so they
+    // remain eligible for the Practice Question Bank).
     const { data: question, error: qErr } = await supabase
       .from("questions")
       .insert({
@@ -70,7 +71,7 @@ async function main() {
         prompt: draft.prompt,
         domain: draft.domain,
         skill: draft.skill,
-        difficulty: draft.difficulty,
+        difficulty: (draft.difficulty as number | null) ?? 3,
         correct_answer: suggested,
         explanation: draft.explanation,
         source_pdf_id: imp.id,

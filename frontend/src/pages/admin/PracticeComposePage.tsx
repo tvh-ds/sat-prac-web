@@ -137,13 +137,18 @@ export default function PracticeComposePage() {
     setPicks([]);
   };
 
+  const hasAnswerKey = (x: Question): boolean =>
+    x.question_type === "multiple_choice"
+      ? (x.choices ?? []).some((c) => c.is_correct)
+      : !!String(x.correct_answer ?? "").trim();
+
   const bankToItem = (x: Question): PickItem => ({
     source: "bank",
     id: x.id,
     prompt: x.prompt,
     section: x.section,
     qtype: x.question_type,
-    hasKey: true,
+    hasKey: hasAnswerKey(x),
     passage: x.passage ? { title: x.passage.title ?? null, content: x.passage.content } : null,
   });
 
@@ -245,8 +250,8 @@ export default function PracticeComposePage() {
                 </select>
                 {(rows?.length ?? 0) > 0 && (
                   <>
-                    <Button variant="outline" size="sm" onClick={() => toggleMany((rows ?? []).map(bankToItem))}>
-                      Select all shown ({rows?.length ?? 0})
+                    <Button variant="outline" size="sm" onClick={() => toggleMany((rows ?? []).map(bankToItem).filter((p) => p.hasKey))}>
+                      Select all shown ({(rows ?? []).filter(hasAnswerKey).length})
                     </Button>
                     <Button variant="ghost" size="sm" onClick={() => clearSource()}>Clear</Button>
                   </>
@@ -267,14 +272,16 @@ export default function PracticeComposePage() {
                     {(rows ?? []).map((x) => {
                       const key = `bank:${x.id}`;
                       const on = pickedIds.has(key);
+                      const keyOk = hasAnswerKey(x);
                       return (
-                        <label key={x.id} className="question-row" style={{ cursor: "pointer" }}>
-                          <input type="checkbox" checked={on} onChange={() => togglePick(bankToItem(x))} />
+                        <label key={x.id} className="question-row" style={{ cursor: keyOk ? "pointer" : "not-allowed", opacity: keyOk ? 1 : 0.55 }}>
+                          <input type="checkbox" checked={on} disabled={!keyOk} title={keyOk ? undefined : "Missing answer key"} onChange={() => togglePick(bankToItem(x))} />
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ fontSize: 13, fontWeight: 600, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                               <span>{x.prompt.length > 90 ? `${x.prompt.slice(0, 90)}…` : x.prompt}</span>
                               <Pill tone={x.question_type === "student_produced" ? "amber" : "gray"}>{typePill(x.question_type)}</Pill>
                               {x.passage?.content && <Pill tone="blue">Passage</Pill>}
+                              {!keyOk && <Pill tone="red">no key</Pill>}
                             </div>
                             <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>
                               {[x.domain, x.skill].filter(Boolean).join(" · ") || "—"} · {formatDifficulty(x.difficulty)}

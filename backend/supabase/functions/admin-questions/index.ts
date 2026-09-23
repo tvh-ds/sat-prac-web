@@ -105,6 +105,7 @@ Deno.serve(async (req) => {
       if (body.question_type === "student_produced" && body.choices.length > 0) {
         return error("Student-produced questions cannot have choices", 422);
       }
+      const status = body.status ?? "active";
       const { data, error: err } = await svc
         .from("questions")
         .insert({
@@ -114,12 +115,12 @@ Deno.serve(async (req) => {
           prompt: body.prompt,
           domain: body.domain ?? null,
           skill: body.skill ?? null,
-          difficulty: body.difficulty ?? null,
+          difficulty: body.difficulty ?? (status === "active" ? 3 : null),
           correct_answer: body.correct_answer ?? null,
           explanation: body.explanation ?? null,
           source_question_id: body.source_question_id ?? null,
           stimulus_image_path: body.stimulus_image_path ?? null,
-          status: body.status ?? "active",
+          status,
           created_by: ctx.user.id,
         })
         .select("id")

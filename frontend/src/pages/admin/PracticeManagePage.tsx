@@ -303,7 +303,14 @@ function AddQuestionsModal({
 
   const visible = filtered.slice(0, 60);
 
+  const hasAnswerKey = (x: Question): boolean =>
+    x.question_type === "multiple_choice"
+      ? (x.choices ?? []).some((c) => c.is_correct)
+      : !!String(x.correct_answer ?? "").trim();
+
   function toggle(id: string) {
+    const row = visible.find((x) => x.id === id);
+    if (row && !hasAnswerKey(row)) return;
     setSelected((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -315,7 +322,7 @@ function AddQuestionsModal({
   function selectAllVisible() {
     setSelected((prev) => {
       const next = new Set(prev);
-      visible.forEach((x) => next.add(x.id));
+      visible.filter(hasAnswerKey).forEach((x) => next.add(x.id));
       return next;
     });
   }
@@ -380,21 +387,25 @@ function AddQuestionsModal({
             <Button variant="ghost" size="sm" onClick={() => setSelected(new Set())}>Clear ({selected.size})</Button>
           </div>
           <div style={{ maxHeight: 380, overflowY: "auto", display: "flex", flexDirection: "column", gap: 8 }}>
-            {visible.map((x) => (
-            <label key={x.id} className="question-row" style={{ cursor: "pointer" }}>
-              <input type="checkbox" checked={selected.has(x.id)} onChange={() => toggle(x.id)} />
+            {visible.map((x) => {
+              const keyOk = hasAnswerKey(x);
+              return (
+            <label key={x.id} className="question-row" style={{ cursor: keyOk ? "pointer" : "not-allowed", opacity: keyOk ? 1 : 0.55 }}>
+              <input type="checkbox" checked={selected.has(x.id)} disabled={!keyOk} title={keyOk ? undefined : "Missing answer key"} onChange={() => toggle(x.id)} />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                   <span>{x.prompt.length > 90 ? `${x.prompt.slice(0, 90)}…` : x.prompt}</span>
                   <Pill tone={x.question_type === "student_produced" ? "amber" : "gray"}>{x.question_type === "student_produced" ? "Grid-in" : "MC"}</Pill>
                   {x.passage?.content && <Pill tone="blue">Passage</Pill>}
+                  {!keyOk && <Pill tone="red">no key</Pill>}
                 </div>
                 <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>
                   {[x.domain, x.skill].filter(Boolean).join(" · ") || "—"}
                 </div>
               </div>
             </label>
-          ))}
+              );
+            })}
           </div>
         </>
       )}

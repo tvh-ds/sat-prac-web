@@ -3,6 +3,7 @@ import { serviceClient } from "../_shared/supabase.ts";
 import { corsHeaders, json, error } from "../_shared/cors.ts";
 import { practiceAssignSchema } from "../_shared/validation.ts";
 import { buildAttemptReview } from "../_shared/attempt_review.ts";
+import { assertAnswerKeys } from "../_shared/answer_keys.ts";
 
 type Svc = ReturnType<typeof serviceClient>;
 
@@ -152,6 +153,12 @@ Deno.serve(async (req) => {
       if (eErr) return error(eErr.message, 500);
       if ((eligible ?? []).length !== uniqueQuestionIds.length) {
         return error("This practice set contains questions that are not eligible for the Practice Question Bank. Remove them before assigning.", 422);
+      }
+      try {
+        await assertAnswerKeys(svc, uniqueQuestionIds);
+      } catch (e) {
+        if (e instanceof HttpError) return error(e.message, e.status);
+        throw e;
       }
 
       const { data: students, error: stErr } = await svc

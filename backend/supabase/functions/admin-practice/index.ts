@@ -7,6 +7,7 @@ import {
   practiceAddQuestionsSchema,
   practiceQuestionEditSchema,
 } from "../_shared/validation.ts";
+import { assertAnswerKeys } from "../_shared/answer_keys.ts";
 
 async function moduleForSet(svc: ReturnType<typeof serviceClient>, set: { id: string }): Promise<{ id: string } | null> {
   const { data: sections } = await svc.from("test_sections").select("id").eq("test_id", set.id).order("position");
@@ -151,6 +152,12 @@ Deno.serve(async (req) => {
       if ((found ?? []).length !== body.question_ids.length) {
         return error("One or more questions are not eligible for the Practice Question Bank", 422);
       }
+      try {
+        await assertAnswerKeys(svc, body.question_ids);
+      } catch (e) {
+        if (e instanceof HttpError) return error(e.message, e.status);
+        throw e;
+      }
       const set = await createSet(svc, ctx.user.id, { ...body, description: body.description ?? null });
       return json({ set }, 201);
     }
@@ -201,6 +208,12 @@ Deno.serve(async (req) => {
       if (fErr) return error(fErr.message, 500);
       if ((found ?? []).length !== body.question_ids.length) {
         return error("One or more questions are not eligible for the Practice Question Bank", 422);
+      }
+      try {
+        await assertAnswerKeys(svc, body.question_ids);
+      } catch (e) {
+        if (e instanceof HttpError) return error(e.message, e.status);
+        throw e;
       }
       const module = await moduleForSet(svc, set);
       if (!module) return error("Practice set has no module", 500);
