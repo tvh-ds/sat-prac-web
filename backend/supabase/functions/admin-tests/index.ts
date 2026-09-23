@@ -214,7 +214,7 @@ Deno.serve(async (req) => {
     if (req.method === "GET" && seg.length === 2) {
       const { data, error: err } = await svc
         .from("tests")
-        .select("*, sections:test_sections(*, modules:test_modules(*, questions:test_module_questions(*, question:questions(*, choices:question_choices(*)))))")
+        .select("*, sections:test_sections(*, modules:test_modules(*, questions:test_module_questions(*, question:questions(*, choices:question_choices(*), passage:passages(id, title, content)))))")
         .eq("id", id)
         .maybeSingle();
       if (err) return error(err.message, 500);

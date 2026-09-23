@@ -165,7 +165,8 @@ Deno.serve(async (req) => {
     if (upErr) return error(upErr.message, 500);
 
     if (attempt.assignment_id) {
-      await svc.from("test_assignments").update({ status: "completed" }).eq("id", attempt.assignment_id);
+      const { error: asgErr } = await svc.from("test_assignments").update({ status: "completed" }).eq("id", attempt.assignment_id);
+      if (asgErr) return error(asgErr.message, 500);
     }
 
     for (const t of topicPerformance) {

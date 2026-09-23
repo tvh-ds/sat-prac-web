@@ -72,7 +72,8 @@ src/
 │   ├── admin/
 │   │   ├── AdminLayout.tsx         Admin shell/navigation
 │   │   ├── AdminDashboard.tsx      Overview landing page
-│   │   ├── StudentsPage.tsx        Student account management
+│   │   ├── StudentsPage.tsx        Roster, Manage, password-confirmed delete
+│   │   ├── StudentDetailPage.tsx   Per-student attempts and answer review
 │   │   ├── ImportsPage.tsx         PDF import list/upload/status
 │   │   ├── ImportDetailPage.tsx    Pages, drafts, answer-key status, crop/review/generate-test
 │   │   ├── QuestionsPage.tsx       Question bank CRUD
@@ -135,7 +136,8 @@ Admin routes:
 | Path | Component | Notes |
 | --- | --- | --- |
 | `/admin` | `AdminDashboard` | Admin overview. |
-| `/admin/students` | `StudentsPage` | Create, update, reset password, toggle active. |
+| `/admin/students` | `StudentsPage` | Create, Manage, reset password, toggle active, password-confirmed delete. |
+| `/admin/students/:studentId` | `StudentDetailPage` | All attempts with scores and answer review. |
 | `/admin/imports` | `ImportsPage` | Register/upload PDF imports and view status. |
 | `/admin/imports/:importId` | `ImportDetailPage` | Draft review, answer-key status, stimulus cropping, generated tests. |
 | `/admin/questions` | `QuestionsPage` | Question bank filters and CRUD. |

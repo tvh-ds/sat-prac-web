@@ -26,9 +26,9 @@ export default function StudentTestsPage() {
 
   useEffect(() => { if (tests) requestAnimationFrame(() => initReveal()); }, [tests, history]);
 
-  const inProgress = history.filter((h) => h.status === "in_progress");
-  const graded = history.filter((h) => h.status === "graded");
   const fullTests = (tests ?? []).filter((t) => t.kind !== "practice");
+  const inProgressTests = fullTests.filter((t) => t.attempt?.status === "in_progress");
+  const graded = history.filter((h) => h.status === "graded" && (h.test?.kind ?? "full") !== "practice");
   // Repeat assignments: each assignment row stands alone. A row is available
   // when its own assignment has no attempt yet — other assignments of the
   // same test do not hide it.
@@ -59,7 +59,7 @@ export default function StudentTestsPage() {
           </div>
           <div className="hero-metrics" aria-label="Test activity summary">
             <div className="hero-metric"><strong>{available.length}</strong><span>Available tests</span></div>
-            <div className="hero-metric"><strong>{inProgress.length}</strong><span>In progress</span></div>
+            <div className="hero-metric"><strong>{inProgressTests.length}</strong><span>In progress</span></div>
             <div className="hero-metric"><strong>{graded.length}</strong><span>Completed</span></div>
             <div className="hero-metric"><strong>{fullTests.length}</strong><span>Total assigned</span></div>
           </div>
@@ -68,7 +68,7 @@ export default function StudentTestsPage() {
 
       {!tests && <Spinner />}
 
-      {tests && available.length === 0 && inProgress.length === 0 && (
+      {tests && available.length === 0 && inProgressTests.length === 0 && (
         <div className="reveal"><EmptyState title="No full-length tests available" body="Your teacher has not assigned any full-length tests yet." /></div>
       )}
 
@@ -100,23 +100,23 @@ export default function StudentTestsPage() {
         </section>
       )}
 
-      {tests && inProgress.length > 0 && (
+      {tests && inProgressTests.length > 0 && (
         <section className="premium-section">
           <div className="section-label">In progress</div>
           <div className="section-head">
             <h2>In Progress</h2>
-            <span className="muted" style={{ fontSize: 12 }}>{inProgress.length} ongoing</span>
+            <span className="muted" style={{ fontSize: 12 }}>{inProgressTests.length} ongoing</span>
           </div>
           <div className="suite-list">
-            {inProgress.map((h) => (
-              <div className="card test-card premium-test-card reveal" key={h.id}>
+            {inProgressTests.map((t) => (
+              <div className="card test-card premium-test-card reveal" key={t.assignment_id ?? t.id}>
                 <div style={{ minWidth: 0 }}>
-                  <h3 className="t-title">{h.test?.title ?? "Attempt"}</h3>
-                  <p className="t-desc">Started {fmtDate(h.started_at)}</p>
+                  <h3 className="t-title">{t.title}</h3>
+                  <p className="t-desc">Started {fmtDate(t.attempt!.started_at)}</p>
                 </div>
                 <div className="card-row">
                   <Pill tone="amber">In progress</Pill>
-                  <Button onClick={() => navigate(`/student/attempts/${h.id}/session`)}>Resume</Button>
+                  <Button onClick={() => navigate(`/student/attempts/${t.attempt!.id}/session`)}>Resume</Button>
                 </div>
               </div>
             ))}
@@ -138,7 +138,7 @@ export default function StudentTestsPage() {
                   <h3 className="t-title">{h.test?.title ?? "Attempt"}</h3>
                   <p className="t-desc">
                     Submitted {fmtDate(h.submitted_at)}
-                    {h.score ? ` · ${h.score.accuracy}% accuracy` : ""}
+                    {h.score ? ` · ${h.score.accuracy ?? (h.score.total_questions > 0 ? Math.round((h.score.raw_score / h.score.total_questions) * 1000) / 10 : 0)}% accuracy` : ""}
                   </p>
                 </div>
                 <div className="card-row">

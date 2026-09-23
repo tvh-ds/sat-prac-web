@@ -23,6 +23,7 @@ export async function fn(
     method,
     headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,
+    cache: method === "GET" ? "no-store" : "default",
   });
 }
 
@@ -46,6 +47,7 @@ export async function rest<T>(
 ): Promise<T> {
   const res = await fetch(`${url}/rest/v1/${table}?${query}`, {
     headers: { apikey: anonKey, Authorization: `Bearer ${token}` },
+    cache: "no-store",
   });
   if (!res.ok) throw new Error(`REST ${table}: ${res.status}`);
   return (await res.json()) as T;

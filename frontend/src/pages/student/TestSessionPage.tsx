@@ -395,6 +395,11 @@ export default function TestSessionPage() {
           {hasPassage && (
             <div className="session-panel left">
               <div key={current.question_id} className="q-anim">
+                {current.question.passage?.title && (
+                  <div className="muted" style={{ fontWeight: 700, marginBottom: 8 }}>
+                    {current.question.passage.title}
+                  </div>
+                )}
                 <div className="passage-text">
                   <HighlightableText
                     text={current.question.passage!.content}

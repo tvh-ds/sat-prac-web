@@ -4,6 +4,7 @@ import { fnJson, getToken } from "../../lib/supabase";
 import type { BatchStudent, PracticeBatchDetail } from "../../lib/types";
 import { Button, Pill, Spinner, fmtDate } from "../../components/ui";
 import MathText from "../../components/MathText";
+import PassageBlock from "../../components/PassageBlock";
 import AssignmentReviewModal from "./AssignmentReviewModal";
 
 function statusTone(s: string): "green" | "amber" | "gray" {
@@ -153,6 +154,7 @@ export default function PracticeBatchPage() {
                   {q.accuracy != null ? `${q.accuracy}% right` : "no completed attempts"} · of {q.completed_count} completed
                 </span>
               </div>
+              <PassageBlock passage={q.passage} compact />
               <p style={{ fontWeight: 600, fontSize: 14, lineHeight: 1.6, margin: "0 0 10px" }}>
                 <MathText text={q.prompt} />
               </p>

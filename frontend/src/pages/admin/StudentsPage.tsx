@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import { Button, Modal, Pill, Spinner, fmtDate } from "../../components/ui";
 
@@ -9,13 +9,15 @@ interface AdminStudent {
   full_name: string | null;
   is_active: boolean;
   created_at: string;
-  attempts?: { status: string }[];
+  attempts?: { id: string; status: string }[];
 }
 
 export default function StudentsPage() {
+  const navigate = useNavigate();
   const [students, setStudents] = useState<AdminStudent[] | null>(null);
   const [search, setSearch] = useState("");
   const [showCreate, setShowCreate] = useState(false);
+  const [deleting, setDeleting] = useState<AdminStudent | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   async function load() {
@@ -25,20 +27,28 @@ export default function StudentsPage() {
   }
 
   useEffect(() => {
-    void load().catch((e) => setError(e.message));
+    void load().catch((e) => setError(e instanceof Error ? e.message : "Failed to load students"));
   }, []);
 
   async function toggleActive(s: AdminStudent) {
-    const token = await getToken();
-    await fnJson(`admin-students/${s.id}/deactivate`, { method: "POST", token });
-    void load();
+    try {
+      const token = await getToken();
+      await fnJson(`admin-students/${s.id}/toggle-active`, { method: "POST", token });
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to update student");
+    }
   }
 
   async function resetPassword(s: AdminStudent) {
-    const pass = prompt(`New temporary password for ${s.email}:`);
+    const pass = prompt(`New temporary password for ${s.email ?? s.full_name ?? "student"} (min 8 characters):`);
     if (!pass) return;
-    const token = await getToken();
-    await fnJson(`admin-students/${s.id}/reset-password`, { method: "POST", token, body: { new_password: pass } });
+    try {
+      const token = await getToken();
+      await fnJson(`admin-students/${s.id}/reset-password`, { method: "POST", token, body: { new_password: pass } });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Password reset failed");
+    }
   }
 
   const filtered = (students ?? []).filter(
@@ -83,11 +93,13 @@ export default function StudentsPage() {
                   <td>{(s.attempts ?? []).length}</td>
                   <td>{fmtDate(s.created_at)}</td>
                   <td>
-                    <div style={{ display: "flex", gap: 8 }}>
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      <Button variant="outline" size="sm" onClick={() => navigate(`/admin/students/${s.id}`)}>Manage</Button>
                       <Button variant="secondary" size="sm" onClick={() => void resetPassword(s)}>Reset Password</Button>
                       <Button variant="ghost" size="sm" onClick={() => void toggleActive(s)}>
                         {s.is_active ? "Deactivate" : "Activate"}
                       </Button>
+                      <Button variant="danger" size="sm" onClick={() => setDeleting(s)}>Delete</Button>
                     </div>
                   </td>
                 </tr>
@@ -105,6 +117,16 @@ export default function StudentsPage() {
       )}
 
       {showCreate && <CreateStudentModal onClose={() => setShowCreate(false)} onCreated={() => void load()} />}
+      {deleting && (
+        <DeleteStudentModal
+          student={deleting}
+          onClose={() => setDeleting(null)}
+          onDeleted={() => {
+            setDeleting(null);
+            void load();
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -145,7 +167,7 @@ function CreateStudentModal({ onClose, onCreated }: { onClose: () => void; onCre
         </div>
         <div>
           <label className="field-label">Temporary password</label>
-          <input className="input" required value={password} onChange={(e) => setPassword(e.target.value)} />
+          <input className="input" type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} />
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 12 }}>
           <div>
@@ -161,6 +183,74 @@ function CreateStudentModal({ onClose, onCreated }: { onClose: () => void; onCre
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
           <Button variant="outline" onClick={onClose}>Cancel</Button>
           <Button type="submit" disabled={busy}>{busy ? "Creating…" : "Create Student"}</Button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
+function DeleteStudentModal({
+  student,
+  onClose,
+  onDeleted,
+}: {
+  student: AdminStudent;
+  onClose: () => void;
+  onDeleted: () => void;
+}) {
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const canDelete = confirm.trim().toUpperCase() === "DELETE" && password.length > 0 && !busy;
+
+  async function submit(e: FormEvent) {
+    e.preventDefault();
+    if (!canDelete) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const token = await getToken();
+      await fnJson(`admin-students/${student.id}`, {
+        method: "DELETE",
+        token,
+        body: { admin_password: password },
+      });
+      onDeleted();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Delete failed");
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Modal title={`Delete ${student.full_name ?? student.email ?? "student"}?`} onClose={onClose}>
+      <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div className="login-error" style={{ borderColor: "var(--red, #b83c38)" }}>
+          This permanently deletes the login and all related records: assignments, attempts, answers,
+          scores, topic performance, and vocabulary data. This cannot be undone.
+        </div>
+        <div>
+          <label className="field-label">Type DELETE to confirm</label>
+          <input className="input" value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="DELETE" autoComplete="off" />
+        </div>
+        <div>
+          <label className="field-label">Your admin password</label>
+          <input
+            className="input"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Required to confirm deletion"
+            autoComplete="current-password"
+          />
+        </div>
+        {error && <div className="login-error">{error}</div>}
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+          <Button variant="outline" onClick={onClose}>Cancel</Button>
+          <Button variant="danger" type="submit" disabled={!canDelete}>
+            {busy ? "Deleting…" : "Delete permanently"}
+          </Button>
         </div>
       </form>
     </Modal>

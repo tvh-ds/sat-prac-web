@@ -162,6 +162,12 @@ export interface ReviewChoice {
   is_correct: boolean;
 }
 
+export interface ReviewPassage {
+  id: string;
+  title: string | null;
+  content: string;
+}
+
 export interface ReviewItem {
   question_id: string;
   question_number: number;
@@ -177,6 +183,7 @@ export interface ReviewItem {
   explanation: string | null;
   correct_answer: string | null;
   stimulus_image_url?: string | null;
+  passage?: ReviewPassage | null;
   choices: ReviewChoice[];
   selected_choice_id: string | null;
   typed_answer: string | null;
@@ -238,6 +245,7 @@ export interface BatchQuestionStat {
   prompt: string;
   question_type: string;
   correct_answer: string | null;
+  passage?: ReviewPassage | null;
   choices: BatchChoiceStat[];
   correct_count: number;
   incorrect_count: number;

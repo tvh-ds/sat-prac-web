@@ -14,6 +14,7 @@ interface ReviewQuestion {
   correct_answer: string | null;
   stimulus_image_path: string | null;
   stimulus_image_url?: string | null;
+  passage: { id: string; title: string | null; content: string } | null;
   choices: ReviewChoice[];
 }
 interface LinkRow {
@@ -57,7 +58,7 @@ export async function buildAttemptReview(
   const modIds = modRows.map((m) => m.id);
   const { data: links, error: lErr } = await svc
     .from("test_module_questions")
-    .select("module_id, question_id, position, question:questions(*, choices:question_choices(*))")
+    .select("module_id, question_id, position, question:questions(*, choices:question_choices(*), passage:passages(id, title, content))")
     .in("module_id", modIds.length > 0 ? modIds : [""])
     .order("position", { ascending: true });
   if (lErr) throw new HttpError(500, lErr.message);
@@ -103,6 +104,7 @@ export async function buildAttemptReview(
           correct_answer: q.correct_answer,
           stimulus_image_path: q.stimulus_image_path,
           stimulus_image_url: q.stimulus_image_url ?? null,
+          passage: q.passage ?? null,
           choices: (q.choices ?? [])
             .slice()
             .sort((a, b) => a.position - b.position)

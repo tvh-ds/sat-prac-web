@@ -1,4 +1,4 @@
-import { NavLink, Navigate, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Navigate, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
 import { Spinner } from "../../components/ui";
 import { LayoutDashboard, Users, FileUp, Database, ClipboardList, Layers, BookOpen, ClipboardCheck, LogOut } from "lucide-react";
@@ -9,7 +9,8 @@ export default function AdminLayout() {
 
   if (loading) return <Spinner />;
   if (!user) return <Navigate to="/login" replace />;
-  if (profile?.role !== "admin") return <Navigate to="/student" replace />;
+  if (!profile) return <Spinner />;
+  if (profile.role !== "admin") return <Navigate to="/student" replace />;
 
   const link = (to: string, label: string, Icon: React.ElementType, end?: boolean) => (
     <NavLink to={to} end={end} className={({ isActive }) => (isActive ? "active" : "")}>
@@ -59,16 +60,16 @@ export default function AdminLayout() {
               <div className="footer-links">
                 <div className="footer-col">
                   <h4>Admin</h4>
-                  <a href="/admin/students">Students</a>
-                  <a href="/admin/imports">Imports</a>
-                  <a href="/admin/questions">Questions</a>
+                  <Link to="/admin/students">Students</Link>
+                  <Link to="/admin/imports">Imports</Link>
+                  <Link to="/admin/questions">Questions</Link>
                 </div>
                 <div className="footer-col">
                   <h4>Platform</h4>
-                  <a href="/student/tests">Student View</a>
-                  <a href="/admin/tests">Tests</a>
-                  <a href="/admin/practice">Practice</a>
-                  <a href="/admin/assignments">Assignments</a>
+                  <Link to="/student/tests">Student View</Link>
+                  <Link to="/admin/tests">Tests</Link>
+                  <Link to="/admin/practice">Practice</Link>
+                  <Link to="/admin/assignments">Assignments</Link>
                 </div>
               </div>
             </div>

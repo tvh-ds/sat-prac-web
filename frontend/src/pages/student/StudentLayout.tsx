@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Navigate, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Link, Navigate, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
 import { Spinner } from "../../components/ui";
 
@@ -29,7 +29,8 @@ export default function StudentLayout() {
 
   if (loading) return <Spinner />;
   if (!user) return <Navigate to="/login" replace />;
-  if (profile?.role !== "student") return <Navigate to="/admin" replace />;
+  if (!profile) return <Spinner />;
+  if (profile.role !== "student") return <Navigate to="/admin" replace />;
 
   return (
     <div className="app-layout">
@@ -70,14 +71,14 @@ export default function StudentLayout() {
             <div className="footer-links">
               <div className="footer-col">
                 <h4>Study</h4>
-                <a href="/student/tests">Full-Length Tests</a>
-                <a href="/student/practice">Practice</a>
-                <a href="/student/vocabulary">Vocabulary</a>
+                <Link to="/student/tests">Full-Length Tests</Link>
+                <Link to="/student/practice">Practice</Link>
+                <Link to="/student/vocabulary">Vocabulary</Link>
               </div>
               <div className="footer-col">
                 <h4>Progress</h4>
-                <a href="/student/results">Results</a>
-                <a href="/student/vocabulary">Streak</a>
+                <Link to="/student/results">Results</Link>
+                <Link to="/student/vocabulary">Streak</Link>
               </div>
             </div>
           </div>

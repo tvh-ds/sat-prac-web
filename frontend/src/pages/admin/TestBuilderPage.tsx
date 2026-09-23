@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react
 import { Link, useParams } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import { Button, Modal, Pill, Spinner, EmptyState } from "../../components/ui";
+import PassageBlock from "../../components/PassageBlock";
 import {
   type SectionKey,
   type Domain,
@@ -24,6 +25,7 @@ interface Question {
   correct_answer: string | null;
   status: string;
   choices: Choice[];
+  passage?: { id: string; title: string | null; content: string } | null;
 }
 interface LinkRow { id: string; module_id: string; question_id: string; position: number; points: number; question: Question }
 interface ModuleRow { id: string; section_id: string; name: string; time_limit_minutes: number; position: number; is_adaptive: boolean; questions: LinkRow[] }
@@ -224,11 +226,17 @@ export default function TestBuilderPage() {
                             <div style={{ fontSize: 13, fontWeight: 600, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                               <span>{l.question.prompt.length > 90 ? `${l.question.prompt.slice(0, 90)}…` : l.question.prompt}</span>
                               <Pill tone={l.question.question_type === "student_produced" ? "amber" : "gray"}>{l.question.question_type === "student_produced" ? "Grid-in" : "MC"}</Pill>
+                              {l.question.passage?.content && <Pill tone="blue">Passage</Pill>}
                             </div>
                             <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>
                               {[l.question.domain, l.question.skill].filter(Boolean).join(" · ") || "—"}
                               {" · "}correct: <strong>{l.question.correct_answer ?? "—"}</strong>
                             </div>
+                            {l.question.passage?.content && (
+                              <div style={{ marginTop: 8 }}>
+                                <PassageBlock passage={l.question.passage} compact />
+                              </div>
+                            )}
                           </div>
                           <div style={{ display: "flex", gap: 6 }}>
                             <Button size="sm" variant="ghost" onClick={() => void moveQuestion(l, -1)} disabled={busy || qi === 0}>↑</Button>

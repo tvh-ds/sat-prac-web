@@ -3,6 +3,7 @@ import { fnJson, getToken } from "../../lib/supabase";
 import type { ReviewItem, ScoreDetail } from "../../lib/types";
 import { Button, EmptyState, Modal, Pill, Spinner, fmtDate } from "../../components/ui";
 import MathText from "../../components/MathText";
+import PassageBlock from "../../components/PassageBlock";
 
 type Tab = "all" | "wrong" | "unanswered";
 
@@ -98,6 +99,7 @@ function ReviewCard({ item }: { item: ReviewItem }) {
       <div className="muted" style={{ fontSize: 12.5, marginTop: 4 }}>
         {item.module_name} · {[item.domain, item.skill].filter(Boolean).join(" · ") || "No topic"}
       </div>
+      <PassageBlock passage={item.passage} compact />
       {item.stimulus_image_url && (
         <img src={item.stimulus_image_url} alt="Question stimulus" style={{ maxWidth: "100%", maxHeight: 260, objectFit: "contain", borderRadius: 10, marginTop: 10 }} />
       )}

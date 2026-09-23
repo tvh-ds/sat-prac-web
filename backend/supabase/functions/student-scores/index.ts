@@ -15,6 +15,7 @@ interface ReviewQuestion {
   correct_answer: string | null;
   stimulus_image_path: string | null;
   stimulus_image_url?: string | null;
+  passage: { id: string; title: string | null; content: string } | null;
   choices: ReviewChoice[];
 }
 interface LinkRow {
@@ -39,7 +40,16 @@ Deno.serve(async (req) => {
         .eq("status", "graded")
         .order("submitted_at", { ascending: false });
       if (err) return error(err.message, 500);
-      return json({ history: data ?? [] });
+      const history = (data ?? []).map((h: Record<string, unknown>) => {
+        const score = h.score as { raw_score?: number; total_questions?: number; accuracy?: number } | null;
+        if (score && score.accuracy == null) {
+          const raw = Number(score.raw_score ?? 0);
+          const total = Number(score.total_questions ?? 0);
+          return { ...h, score: { ...score, accuracy: total > 0 ? Math.round((raw / total) * 1000) / 10 : 0 } };
+        }
+        return h;
+      });
+      return json({ history });
     }
 
     if (req.method === "GET" && seg.length === 2) {
@@ -101,7 +111,7 @@ Deno.serve(async (req) => {
       const modIds = modRows.map((m) => m.id);
       const { data: links, error: lErr } = await svc
         .from("test_module_questions")
-        .select("module_id, question_id, position, question:questions(*, choices:question_choices(*))")
+        .select("module_id, question_id, position, question:questions(*, choices:question_choices(*), passage:passages(id, title, content))")
         .in("module_id", modIds.length > 0 ? modIds : [""])
         .order("position", { ascending: true });
       if (lErr) return error(lErr.message, 500);
@@ -148,6 +158,7 @@ Deno.serve(async (req) => {
               correct_answer: q.correct_answer,
               stimulus_image_path: q.stimulus_image_path,
               stimulus_image_url: q.stimulus_image_url ?? null,
+              passage: q.passage ?? null,
               choices: (q.choices ?? [])
                 .slice()
                 .sort((a, b) => a.position - b.position)

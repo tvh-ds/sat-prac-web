@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { fnJson, getToken } from "../../lib/supabase";
 import { Button, Modal, Spinner } from "../../components/ui";
 import MathText from "../../components/MathText";
+import PassageBlock from "../../components/PassageBlock";
 import {
   type SectionKey,
   type Domain,
@@ -253,12 +254,7 @@ function QuestionPreview({ q, onClose, onEdit }: { q: QListRow; onClose: () => v
           <img src={q.stimulus_image_url} alt="Stimulus" style={{ maxWidth: "100%", maxHeight: 320, objectFit: "contain", border: "1px solid var(--border, #333)", borderRadius: 8, alignSelf: "center" }} />
         )}
 
-        {q.passage && q.passage.content && (
-          <div className="card card-pad" style={{ background: "var(--bg-raise, #16181d)" }}>
-            {q.passage.title && <p className="muted" style={{ fontWeight: 600, marginBottom: 8 }}>{q.passage.title}</p>}
-            <p style={{ whiteSpace: "pre-wrap", lineHeight: 1.55 }}><MathText text={q.passage.content} /></p>
-          </div>
-        )}
+        <PassageBlock passage={q.passage} />
 
         <div>
           <p style={{ fontWeight: 600, marginBottom: 8 }}><MathText text={q.prompt} /></p>
@@ -392,6 +388,7 @@ function QuestionModal({ question, onClose, onSaved }: { question: QListRow | nu
             </select>
           </div>
         </div>
+        {question?.passage?.content && <PassageBlock passage={question.passage} compact />}
         <div>
           <label className="field-label">Prompt</label>
           <textarea className="textarea" rows={3} required value={prompt} onChange={(e) => setPrompt(e.target.value)} />

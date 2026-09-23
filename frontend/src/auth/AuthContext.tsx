@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { supabase, rest } from "../lib/supabase";
 import type { StudentProfile } from "../lib/types";
 
@@ -17,18 +17,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<AuthState["user"]>(null);
   const [profile, setProfile] = useState<StudentProfile | null>(null);
+  const requestGen = useRef(0);
+  const userRef = useRef<AuthState["user"]>(null);
+  userRef.current = user;
+
+  async function loadProfileWithToken(uid: string, token: string): Promise<StudentProfile | null> {
+    const gen = ++requestGen.current;
+    try {
+      const rows = await rest<StudentProfile[]>("profiles", `id=eq.${uid}&select=id,role,full_name`, token);
+      const p = rows[0] ?? null;
+      if (requestGen.current !== gen) return userRef.current?.id === uid ? (p as StudentProfile | null) : null;
+      // Preserve the last known profile if a background refresh fails; only
+      // clear when this uid is no longer the active user.
+      setProfile((prev) => {
+        if (userRef.current?.id !== uid) return prev;
+        return p;
+      });
+      return p;
+    } catch {
+      if (requestGen.current !== gen) return null;
+      // Do not wipe a known profile on transient failures.
+      return null;
+    }
+  }
 
   async function loadProfile(uid: string): Promise<StudentProfile | null> {
     try {
       const { data } = await supabase.auth.getSession();
       const token = data.session?.access_token;
       if (!token) return null;
-      const rows = await rest<StudentProfile[]>("profiles", `id=eq.${uid}&select=id,role,full_name`, token);
-      const p = rows[0] ?? null;
-      setProfile(p);
-      return p;
+      return loadProfileWithToken(uid, token);
     } catch {
-      setProfile(null);
       return null;
     }
   }
@@ -37,27 +56,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let mounted = true;
 
     void supabase.auth.getSession().then(async ({ data }) => {
+      if (!mounted) return;
       if (data.session?.user) {
         const currentUser = { id: data.session.user.id, email: data.session.user.email ?? "" };
-        if (mounted) setUser(currentUser);
-        await loadProfile(currentUser.id);
-      } else if (mounted) {
+        setUser(currentUser);
+        await loadProfileWithToken(currentUser.id, data.session.access_token);
+      } else {
         setUser(null);
         setProfile(null);
       }
       if (mounted) setLoading(false);
     });
 
-    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      setLoading(true);
-      if (session?.user) {
-        setUser({ id: session.user.id, email: session.user.email ?? "" });
-        void loadProfile(session.user.id).finally(() => setLoading(false));
-      } else {
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!mounted) return;
+      if (event === "SIGNED_OUT" || !session?.user) {
+        requestGen.current++;
         setUser(null);
         setProfile(null);
         setLoading(false);
+        return;
       }
+      const nextUser = { id: session.user.id, email: session.user.email ?? "" };
+      const prevUser = userRef.current;
+      if (prevUser?.id === nextUser.id) {
+        // Same user (tab refocus / token refresh): keep the route mounted.
+        // Refresh the profile quietly in the background without global loading.
+        setUser(nextUser);
+        void loadProfileWithToken(nextUser.id, session.access_token);
+        setLoading(false);
+        return;
+      }
+      // Identity change: resolve the new profile before rendering protected content.
+      requestGen.current++;
+      setLoading(true);
+      setUser(nextUser);
+      setProfile(null);
+      void loadProfileWithToken(nextUser.id, session.access_token).finally(() => {
+        if (mounted) setLoading(false);
+      });
     });
     return () => {
       mounted = false;
@@ -75,11 +112,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function signOut() {
+    requestGen.current++;
     await supabase.auth.signOut();
+    setUser(null);
+    setProfile(null);
+    setLoading(false);
   }
 
   async function refreshProfile() {
-    if (user) await loadProfile(user.id);
+    if (user) {
+      const { data } = await supabase.auth.getSession();
+      const token = data.session?.access_token;
+      if (token) await loadProfileWithToken(user.id, token);
+    }
   }
 
   return (

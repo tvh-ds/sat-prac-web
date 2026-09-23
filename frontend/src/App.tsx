@@ -17,6 +17,7 @@ const SprintSession = lazy(() => import("./pages/student/vocab/SprintSession"));
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const StudentsPage = lazy(() => import("./pages/admin/StudentsPage"));
+const StudentDetailPage = lazy(() => import("./pages/admin/StudentDetailPage"));
 const ImportsPage = lazy(() => import("./pages/admin/ImportsPage"));
 const ImportDetailPage = lazy(() => import("./pages/admin/ImportDetailPage"));
 const QuestionsPage = lazy(() => import("./pages/admin/QuestionsPage"));
@@ -34,10 +35,18 @@ const AdminVocabPage = lazy(() => import("./pages/admin/AdminVocabPage"));
 const AdminVocabDeckPage = lazy(() => import("./pages/admin/AdminVocabDeckPage"));
 
 function RequireRole({ role, children }: { role: "admin" | "student"; children: React.ReactNode }) {
-  const { loading, user, profile } = useAuth();
+  const { loading, user, profile, refreshProfile } = useAuth();
   if (loading) return <Spinner />;
   if (!user) return <Navigate to="/login" replace />;
-  if (profile?.role !== role) return <Navigate to={profile?.role === "admin" ? "/admin" : "/student"} replace />;
+  if (!profile) {
+    return (
+      <div className="center-fill">
+        <p>Could not load your account profile. Check your connection and try again.</p>
+        <button className="btn btn-secondary" onClick={() => void refreshProfile()}>Retry</button>
+      </div>
+    );
+  }
+  if (profile.role !== role) return <Navigate to={profile.role === "admin" ? "/admin" : "/student"} replace />;
   return <>{children}</>;
 }
 
@@ -104,6 +113,7 @@ export default function App() {
             >
               <Route index element={<AdminDashboard />} />
               <Route path="students" element={<StudentsPage />} />
+              <Route path="students/:studentId" element={<StudentDetailPage />} />
               <Route path="imports" element={<ImportsPage />} />
               <Route path="imports/:importId" element={<ImportDetailPage />} />
               <Route path="questions" element={<QuestionsPage />} />

@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
       if (!attempt) return error("Attempt not found", 404);
       const { data: responses } = await svc
         .from("attempt_responses")
-        .select("*, question:questions(prompt, section, question_type, domain, skill, correct_answer, explanation), selected_choice:question_choices(label, text)")
+        .select("*, question:questions(prompt, section, question_type, domain, skill, correct_answer, explanation, passage:passages(id, title, content)), selected_choice:question_choices(label, text)")
         .eq("attempt_id", id);
       return json({ attempt, responses: responses ?? [] });
     }

@@ -186,7 +186,7 @@ All application routes expect `Authorization: Bearer <user JWT>`. Admin routes r
 
 | Function | Main routes | Notes |
 | --- | --- | --- |
-| `admin-students` | `GET /`, `POST /`, `PATCH /{id}`, `POST /{id}/reset-password`, `POST /{id}/toggle-active` | Student account management through Auth admin APIs and profiles. |
+| `admin-students` | `GET /`, `POST /`, `GET /{id}`, `PATCH /{id}`, `DELETE /{id}`, `GET /{id}/attempts/{attemptId}`, `POST /{id}/reset-password`, `POST /{id}/toggle-active` | Student roster, per-student attempts/review, password-confirmed permanent deletion, and Auth admin management. |
 | `admin-questions` | `GET /`, `GET /{id}`, `POST /`, `PATCH /{id}`, `DELETE /{id}` | Question bank CRUD with choices, passages, metadata, answers, explanations, and stimulus asset paths. |
 | `admin-tests` | `GET /`, `GET/PATCH /{id}`, `POST /`, `POST /{id}/sections`, `PATCH/DELETE /{id}/sections/{sectionId}`, `POST /{id}/modules`, `PATCH/DELETE /{id}/modules/{moduleId}`, `POST/PATCH/DELETE /{id}/questions/{linkId?}`, `POST /{id}/publish`, `POST /{id}/assign`, `POST /{id}/assignees` | Full test builder and assignments. Assignment scopes include full test, Reading/Writing, Math, and custom modules. |
 | `admin-pdf-imports` | `GET /`, `GET /{id}`, `POST /`, `PATCH /{id}`, `POST /{id}/process`, `POST /{id}/generate-test`, `GET/PATCH /{id}/drafts/{draftId}`, `POST /{id}/drafts/{draftId}/approve`, `POST /{id}/drafts/{draftId}/reject` | Import registration, worker triggering, draft review, stimulus URL signing, and generated full tests. |

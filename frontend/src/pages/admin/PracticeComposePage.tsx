@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import type { Question } from "../../lib/types";
 import { Button, EmptyState, Pill, Spinner } from "../../components/ui";
+import PassageBlock from "../../components/PassageBlock";
 import {
   type SectionKey,
   type Domain,
@@ -23,6 +24,7 @@ interface PickItem {
   section: string;
   qtype: string;
   hasKey: boolean;
+  passage?: { title: string | null; content: string } | null;
   page?: number | null;
   qnum?: number | null;
 }
@@ -142,6 +144,7 @@ export default function PracticeComposePage() {
     section: x.section,
     qtype: x.question_type,
     hasKey: true,
+    passage: x.passage ? { title: x.passage.title ?? null, content: x.passage.content } : null,
   });
 
   const sectionKey = (section || null) as SectionKey | null;
@@ -266,11 +269,12 @@ export default function PracticeComposePage() {
                       const on = pickedIds.has(key);
                       return (
                         <label key={x.id} className="question-row" style={{ cursor: "pointer" }}>
-                          <input type="checkbox" checked={on} onChange={() => togglePick({ source: "bank", id: x.id, prompt: x.prompt, section: x.section, qtype: x.question_type, hasKey: true })} />
+                          <input type="checkbox" checked={on} onChange={() => togglePick(bankToItem(x))} />
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ fontSize: 13, fontWeight: 600, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                               <span>{x.prompt.length > 90 ? `${x.prompt.slice(0, 90)}…` : x.prompt}</span>
                               <Pill tone={x.question_type === "student_produced" ? "amber" : "gray"}>{typePill(x.question_type)}</Pill>
+                              {x.passage?.content && <Pill tone="blue">Passage</Pill>}
                             </div>
                             <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>
                               {[x.domain, x.skill].filter(Boolean).join(" · ") || "—"} · {formatDifficulty(x.difficulty)}
@@ -318,6 +322,11 @@ export default function PracticeComposePage() {
                   <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>
                     {p.section.replace(/_/g, " ")}
                   </div>
+                  {p.passage?.content && (
+                    <div style={{ marginTop: 8 }}>
+                      <PassageBlock passage={p.passage} compact />
+                    </div>
+                  )}
                 </div>
                 <Button size="sm" variant="ghost" disabled={i === 0} onClick={() => movePick(i, -1)}>↑</Button>
                 <Button size="sm" variant="ghost" disabled={i === picks.length - 1} onClick={() => movePick(i, 1)}>↓</Button>

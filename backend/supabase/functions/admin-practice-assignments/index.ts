@@ -331,13 +331,14 @@ Deno.serve(async (req) => {
       for (const m of modules) {
         const { data: links, error: lErr } = await svc
           .from("test_module_questions")
-          .select("id, position, question:questions(id, prompt, question_type, correct_answer, choices:question_choices(id, label, text, is_correct, position))")
+          .select("id, position, question:questions(id, prompt, question_type, correct_answer, passage:passages(id, title, content), choices:question_choices(id, label, text, is_correct, position))")
           .eq("module_id", m.id)
           .order("position");
         if (lErr) return error(lErr.message, 500);
         for (const l of links ?? []) {
           const q = l.question as unknown as {
             id: string; prompt: string; question_type: string; correct_answer: string | null;
+            passage: { id: string; title: string | null; content: string } | null;
             choices: Array<{ id: string; label: string; text: string; is_correct: boolean; position: number }>;
           } | null;
           if (!q) continue;
@@ -366,6 +367,7 @@ Deno.serve(async (req) => {
             prompt: q.prompt,
             question_type: q.question_type,
             correct_answer: q.correct_answer,
+            passage: q.passage ?? null,
             choices: choiceCounts,
             correct_count: correct,
             incorrect_count: incorrect,

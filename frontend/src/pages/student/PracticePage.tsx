@@ -68,7 +68,7 @@ export default function PracticePage() {
             <span className="muted" style={{ fontSize: 12, fontFamily: "var(--font-mono)" }}>{inProgress.length} ONGOING</span>
           </div>
           {inProgress.map((t) => (
-            <div className="card test-card reveal" key={t.id}>
+            <div className="card test-card reveal" key={t.assignment_id ?? t.id}>
               <div style={{ minWidth: 0 }}>
                 <h3 className="t-title">{t.title}</h3>
                 <p className="t-desc">Started {fmtDate(t.attempt!.started_at)}</p>
@@ -90,7 +90,7 @@ export default function PracticePage() {
             <span className="muted" style={{ fontSize: 12, fontFamily: "var(--font-mono)" }}>{completed.length} FINISHED</span>
           </div>
           {completed.map((t) => (
-            <div className="card test-card reveal" key={t.id}>
+            <div className="card test-card reveal" key={t.assignment_id ?? t.id}>
               <div style={{ minWidth: 0 }}>
                 <h3 className="t-title">{t.title}</h3>
                 <p className="t-desc">Completed — review your answers anytime</p>

@@ -4,6 +4,7 @@ import { fnJson, getToken } from "../../lib/supabase";
 import type { PracticeLinkQuestion, PracticeSetDetail, Question } from "../../lib/types";
 import { Button, Modal, Pill, Spinner } from "../../components/ui";
 import MathText from "../../components/MathText";
+import PassageBlock from "../../components/PassageBlock";
 import { AssignModal } from "./PracticePage";
 import {
   type SectionKey,
@@ -156,6 +157,7 @@ function EditQuestionModal({
         Edits apply to this set only. If this question is shared with another test or an assigned copy,
         it is duplicated first so nothing else changes.
       </p>
+      <PassageBlock passage={q.passage} compact />
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
         <div>
           <label className="field-label">Section</label>
@@ -385,6 +387,7 @@ function AddQuestionsModal({
                 <div style={{ fontSize: 13, fontWeight: 600, display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                   <span>{x.prompt.length > 90 ? `${x.prompt.slice(0, 90)}…` : x.prompt}</span>
                   <Pill tone={x.question_type === "student_produced" ? "amber" : "gray"}>{x.question_type === "student_produced" ? "Grid-in" : "MC"}</Pill>
+                  {x.passage?.content && <Pill tone="blue">Passage</Pill>}
                 </div>
                 <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>
                   {[x.domain, x.skill].filter(Boolean).join(" · ") || "—"}
@@ -527,9 +530,8 @@ export default function PracticeManagePage() {
                 </div>
               </div>
               {l.question.passage?.content && (
-                <div className="card card-pad" style={{ background: "var(--bg-raise, #16181d)", marginBottom: 10 }}>
-                  {l.question.passage.title && <p className="muted" style={{ fontWeight: 600, marginBottom: 8 }}>{l.question.passage.title}</p>}
-                  <p style={{ whiteSpace: "pre-wrap", lineHeight: 1.55, fontSize: 13.5 }}><MathText text={l.question.passage.content} /></p>
+                <div style={{ marginBottom: 10 }}>
+                  <PassageBlock passage={l.question.passage} compact />
                 </div>
               )}
               <p style={{ fontWeight: 600, fontSize: 14, lineHeight: 1.6, margin: "0 0 10px" }}>
