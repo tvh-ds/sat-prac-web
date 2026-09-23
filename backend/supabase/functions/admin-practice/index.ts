@@ -143,9 +143,9 @@ Deno.serve(async (req) => {
       const body = practiceCreateSchema.parse(await req.json());
       const { data: found, error: fErr } = await svc
         .from("questions")
-        .select("id, source_pdf_id, status")
+        .select("id, status, difficulty")
         .in("id", body.question_ids)
-        .is("source_pdf_id", null)
+        .not("difficulty", "is", null)
         .eq("status", "active");
       if (fErr) return error(fErr.message, 500);
       if ((found ?? []).length !== body.question_ids.length) {
@@ -194,9 +194,9 @@ Deno.serve(async (req) => {
       if (!set) return error("Practice set not found", 404);
       const { data: found, error: fErr } = await svc
         .from("questions")
-        .select("id, source_pdf_id, status")
+        .select("id, status, difficulty")
         .in("id", body.question_ids)
-        .is("source_pdf_id", null)
+        .not("difficulty", "is", null)
         .eq("status", "active");
       if (fErr) return error(fErr.message, 500);
       if ((found ?? []).length !== body.question_ids.length) {

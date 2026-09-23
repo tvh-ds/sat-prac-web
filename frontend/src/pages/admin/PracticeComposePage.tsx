@@ -135,6 +135,11 @@ export default function PracticeComposePage() {
   }
 
   const typePill = (t: string) => (t === "student_produced" ? "Grid-in" : "MC");
+  const formatDifficulty = (d: number | null) => {
+    if (d == null) return "—";
+    const label = difficultyLabel(d);
+    return label.charAt(0).toUpperCase() + label.slice(1);
+  };
 
   return (
     <div>
@@ -220,7 +225,7 @@ export default function PracticeComposePage() {
                             <Pill tone={x.question_type === "student_produced" ? "amber" : "gray"}>{typePill(x.question_type)}</Pill>
                           </div>
                           <div className="muted" style={{ fontSize: 12, marginTop: 2 }}>
-                            {[x.domain, x.skill].filter(Boolean).join(" · ") || "—"} · difficulty {x.difficulty ?? "—"}
+                            {[x.domain, x.skill].filter(Boolean).join(" · ") || "—"} · {formatDifficulty(x.difficulty)}
                           </div>
                         </div>
                       </label>

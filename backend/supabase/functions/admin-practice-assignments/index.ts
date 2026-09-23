@@ -146,11 +146,11 @@ Deno.serve(async (req) => {
         .from("questions")
         .select("id")
         .in("id", uniqueQuestionIds)
-        .is("source_pdf_id", null)
+        .not("difficulty", "is", null)
         .eq("status", "active");
       if (eErr) return error(eErr.message, 500);
       if ((eligible ?? []).length !== uniqueQuestionIds.length) {
-        return error("This practice set contains imported full-test questions. Remove them before assigning.", 422);
+        return error("This practice set contains questions that are not eligible for the Practice Question Bank. Remove them before assigning.", 422);
       }
 
       const { data: students, error: stErr } = await svc
