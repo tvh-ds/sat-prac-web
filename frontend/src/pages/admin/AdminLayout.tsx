@@ -1,7 +1,7 @@
 import { NavLink, Navigate, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
 import { Spinner } from "../../components/ui";
-import { LayoutDashboard, Users, FileUp, Database, ClipboardList, Layers, BookOpen, LogOut } from "lucide-react";
+import { LayoutDashboard, Users, FileUp, Database, ClipboardList, Layers, BookOpen, ClipboardCheck, LogOut } from "lucide-react";
 
 export default function AdminLayout() {
   const { user, profile, loading, signOut } = useAuth();
@@ -31,6 +31,7 @@ export default function AdminLayout() {
         {link("/admin/questions", "Practice Question Bank", Database)}
         {link("/admin/tests", "Full-Length Tests", ClipboardList)}
         {link("/admin/practice", "Practice Sets", Layers)}
+        {link("/admin/assignments", "Assignments", ClipboardCheck)}
         {link("/admin/vocabulary", "Vocabulary", BookOpen)}
         <div className="spacer" />
         <div className="sidebar-footer">
@@ -67,6 +68,7 @@ export default function AdminLayout() {
                   <a href="/student/tests">Student View</a>
                   <a href="/admin/tests">Tests</a>
                   <a href="/admin/practice">Practice</a>
+                  <a href="/admin/assignments">Assignments</a>
                 </div>
               </div>
             </div>

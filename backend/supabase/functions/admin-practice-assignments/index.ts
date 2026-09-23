@@ -2,6 +2,7 @@ import { requireRole, HttpError, pathSegments } from "../_shared/auth.ts";
 import { serviceClient } from "../_shared/supabase.ts";
 import { corsHeaders, json, error } from "../_shared/cors.ts";
 import { practiceAssignSchema } from "../_shared/validation.ts";
+import { buildAttemptReview } from "../_shared/attempt_review.ts";
 
 type Svc = ReturnType<typeof serviceClient>;
 
@@ -288,6 +289,10 @@ Deno.serve(async (req) => {
       for (const a of (attempts ?? []).sort((x, y) => (x.started_at < y.started_at ? -1 : 1))) {
         latestByAssignment.set(a.assignment_id, a);
       }
+      const latestGradedByAssignment = new Map<string, { id: string; assignment_id: string; status: string; started_at: string; submitted_at: string | null }>();
+      for (const a of (attempts ?? []).filter((x) => x.status === "graded").sort((x, y) => (x.started_at < y.started_at ? -1 : 1))) {
+        latestGradedByAssignment.set(a.assignment_id, a);
+      }
       const latestIds = [...latestByAssignment.values()].map((a) => a.id);
       const { data: scores } = latestIds.length > 0
         ? await svc.from("scores").select("attempt_id, raw_score, total_questions").in("attempt_id", latestIds)
@@ -310,6 +315,7 @@ Deno.serve(async (req) => {
           raw_score: sc ? raw : null,
           total_questions: sc ? total : null,
           accuracy: sc && total > 0 ? Math.round((raw / total) * 1000) / 10 : null,
+          review_attempt_id: latestGradedByAssignment.get(a.id)?.id ?? null,
         };
       });
 
@@ -372,6 +378,40 @@ Deno.serve(async (req) => {
       }
 
       return json({ batch, students, questions });
+    }
+
+    // --------------------------------------------------------------- student review
+    if (req.method === "GET" && seg.length === 4 && seg[2] === "attempts") {
+      const attemptId = seg[3];
+      const { data: batch, error: bErr } = await svc
+        .from("practice_assignment_batches")
+        .select("id, snapshot_test_id")
+        .eq("id", batchId)
+        .maybeSingle();
+      if (bErr) return error(bErr.message, 500);
+      if (!batch) return error("Assignment not found", 404);
+
+      const { data: attempt, error: aErr } = await svc
+        .from("attempts")
+        .select("id, test_id, assignment_id, status, started_at, submitted_at, test:tests(title, kind), score:scores(*)")
+        .eq("id", attemptId)
+        .eq("test_id", batch.snapshot_test_id)
+        .maybeSingle();
+      if (aErr) return error(aErr.message, 500);
+      if (!attempt) return error("Attempt not found", 404);
+      if (!attempt.assignment_id) return error("Attempt is not tied to this assignment", 404);
+
+      const { data: assignment, error: asErr } = await svc
+        .from("test_assignments")
+        .select("id, test_id")
+        .eq("id", attempt.assignment_id)
+        .eq("test_id", batch.snapshot_test_id)
+        .maybeSingle();
+      if (asErr) return error(asErr.message, 500);
+      if (!assignment) return error("Attempt is not tied to this assignment", 404);
+
+      const review = await buildAttemptReview(svc, attempt, { includeExplanations: true });
+      return json({ attempt, review, explanations_released: true });
     }
 
     // --------------------------------------------------------------- release

@@ -78,9 +78,13 @@ src/
 │   │   ├── QuestionsPage.tsx       Question bank CRUD
 │   │   ├── TestsPage.tsx           Tests list/create/publish/archive/assign
 │   │   ├── TestBuilderPage.tsx     Sections, modules, question links, reorder
-│   │   ├── PracticePage.tsx        Practice set list/archive
-│   │   ├── PracticeComposePage.tsx Create from bank or import drafts
+│   │   ├── PracticePage.tsx        Practice set templates
+│   │   ├── PracticeComposePage.tsx Create from bank
 │   │   ├── PracticeManagePage.tsx  Edit practice questions/details
+│   │   ├── PracticeBatchPage.tsx   Assigned practice results/review
+│   │   ├── AssignmentsPage.tsx     Practice + full-length assignment batches
+│   │   ├── FullLengthBatchPage.tsx Assigned full-length results/review
+│   │   ├── AssignmentReviewModal.tsx Completed-attempt answer review
 │   │   ├── AdminVocabPage.tsx      Admin vocabulary decks
 │   │   └── AdminVocabDeckPage.tsx  Cards, import, assignments
 │   └── student/
@@ -137,9 +141,13 @@ Admin routes:
 | `/admin/questions` | `QuestionsPage` | Question bank filters and CRUD. |
 | `/admin/tests` | `TestsPage` | Test list/create/publish/archive/assign. |
 | `/admin/tests/:testId/build` | `TestBuilderPage` | Test structure and question ordering. |
-| `/admin/practice` | `PracticePage` | Practice set management. |
-| `/admin/practice/new` | `PracticeComposePage` | Compose from question bank or import drafts. |
+| `/admin/practice` | `PracticePage` | Practice set templates. |
+| `/admin/practice/new` | `PracticeComposePage` | Compose from question bank. |
 | `/admin/practice/:setId` | `PracticeManagePage` | Edit one practice set. |
+| `/admin/practice/assigned/:batchId` | `PracticeBatchPage` | Legacy assigned-practice route. |
+| `/admin/assignments` | `AssignmentsPage` | Practice Set + Full-Length Test batches. |
+| `/admin/assignments/practice/:batchId` | `PracticeBatchPage` | Assigned practice results/review. |
+| `/admin/assignments/full/:batchId` | `FullLengthBatchPage` | Assigned full-length results/review. |
 | `/admin/vocabulary` | `AdminVocabPage` | Admin-owned decks. |
 | `/admin/vocabulary/decks/:deckId` | `AdminVocabDeckPage` | Cards, CSV/TSV import, assignments. |
 

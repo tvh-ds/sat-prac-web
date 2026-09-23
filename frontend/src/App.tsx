@@ -26,6 +26,8 @@ const PracticePage = lazy(() => import("./pages/admin/PracticePage"));
 const PracticeComposePage = lazy(() => import("./pages/admin/PracticeComposePage"));
 const PracticeManagePage = lazy(() => import("./pages/admin/PracticeManagePage"));
 const PracticeBatchPage = lazy(() => import("./pages/admin/PracticeBatchPage"));
+const AssignmentsPage = lazy(() => import("./pages/admin/AssignmentsPage"));
+const FullLengthBatchPage = lazy(() => import("./pages/admin/FullLengthBatchPage"));
 const PracticeStudentPage = lazy(() => import("./pages/student/PracticePage"));
 const PracticeStartPage = lazy(() => import("./pages/student/PracticeStartPage"));
 const AdminVocabPage = lazy(() => import("./pages/admin/AdminVocabPage"));
@@ -111,6 +113,9 @@ export default function App() {
               <Route path="practice/new" element={<PracticeComposePage />} />
               <Route path="practice/:setId" element={<PracticeManagePage />} />
               <Route path="practice/assigned/:batchId" element={<PracticeBatchPage />} />
+              <Route path="assignments" element={<AssignmentsPage />} />
+              <Route path="assignments/practice/:batchId" element={<PracticeBatchPage />} />
+              <Route path="assignments/full/:batchId" element={<FullLengthBatchPage />} />
               <Route path="vocabulary" element={<AdminVocabPage />} />
               <Route path="vocabulary/decks/:deckId" element={<AdminVocabDeckPage />} />
             </Route>

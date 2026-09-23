@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
-import type { PracticeBatchDetail } from "../../lib/types";
+import type { BatchStudent, PracticeBatchDetail } from "../../lib/types";
 import { Button, Pill, Spinner, fmtDate } from "../../components/ui";
 import MathText from "../../components/MathText";
+import AssignmentReviewModal from "./AssignmentReviewModal";
 
 function statusTone(s: string): "green" | "amber" | "gray" {
   if (s === "graded" || s === "completed") return "green";
@@ -23,6 +24,7 @@ export default function PracticeBatchPage() {
   const [tab, setTab] = useState<"students" | "questions">("students");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [reviewing, setReviewing] = useState<BatchStudent | null>(null);
 
   async function load() {
     try {
@@ -69,7 +71,7 @@ export default function PracticeBatchPage() {
   return (
     <div>
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
-        <Link to="/admin/practice" className="muted" style={{ textDecoration: "none" }}>← Practice Sets</Link>
+        <Link to="/admin/assignments" className="muted" style={{ textDecoration: "none" }}>← Assignments</Link>
         <h1 className="page-title" style={{ margin: 0 }}>Assigned Practice Set</h1>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
@@ -112,6 +114,7 @@ export default function PracticeBatchPage() {
                 <th>Submitted</th>
                 <th>Score</th>
                 <th>Accuracy</th>
+                <th />
               </tr>
             </thead>
             <tbody>
@@ -126,10 +129,11 @@ export default function PracticeBatchPage() {
                   <td>{s.submitted_at ? fmtDate(s.submitted_at) : "—"}</td>
                   <td>{s.raw_score != null && s.total_questions != null ? `${s.raw_score}/${s.total_questions}` : "—"}</td>
                   <td>{s.accuracy != null ? `${s.accuracy}%` : "—"}</td>
+                  <td><Button variant="outline" size="sm" disabled={!s.review_attempt_id} onClick={() => setReviewing(s)}>Review</Button></td>
                 </tr>
               ))}
               {data.students.length === 0 && (
-                <tr><td colSpan={6} className="muted" style={{ textAlign: "center", padding: 24 }}>No students in this assignment.</td></tr>
+                <tr><td colSpan={7} className="muted" style={{ textAlign: "center", padding: 24 }}>No students in this assignment.</td></tr>
               )}
             </tbody>
           </table>
@@ -199,6 +203,14 @@ export default function PracticeBatchPage() {
             <div className="card card-pad muted" style={{ fontSize: 14 }}>No questions in this assignment.</div>
           )}
         </div>
+      )}
+
+      {reviewing?.review_attempt_id && (
+        <AssignmentReviewModal
+          title={`Review — ${reviewing.full_name || reviewing.email || "Student"}`}
+          endpoint={`admin-practice-assignments/${batchId}/attempts/${reviewing.review_attempt_id}`}
+          onClose={() => setReviewing(null)}
+        />
       )}
     </div>
   );

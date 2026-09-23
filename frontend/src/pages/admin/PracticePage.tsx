@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
-import type { PracticeAssignmentBatch, PracticeSet } from "../../lib/types";
-import { Button, Modal, Pill, Spinner, fmtDate } from "../../components/ui";
+import type { PracticeSet } from "../../lib/types";
+import { Button, Modal, Spinner, fmtDate } from "../../components/ui";
 
 interface StudentOption {
   id: string;
@@ -134,22 +134,15 @@ export function AssignModal({ set, onClose, onDone }: { set: PracticeSet; onClos
 }
 
 export default function PracticePage() {
-  const navigate = useNavigate();
-  const [tab, setTab] = useState<"current" | "assigned">("current");
   const [sets, setSets] = useState<PracticeSet[] | null>(null);
-  const [batches, setBatches] = useState<PracticeAssignmentBatch[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [assigning, setAssigning] = useState<PracticeSet | null>(null);
 
   async function load() {
     try {
       const token = await getToken();
-      const [s, b] = await Promise.all([
-        fnJson<{ sets: PracticeSet[] }>("admin-practice", { token }),
-        fnJson<{ batches: PracticeAssignmentBatch[] }>("admin-practice-assignments", { token }),
-      ]);
+      const s = await fnJson<{ sets: PracticeSet[] }>("admin-practice", { token });
       setSets(s.sets);
-      setBatches(b.batches);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load practice sets");
     }
@@ -175,36 +168,28 @@ export default function PracticePage() {
       <div className="section-label">Practice</div>
       <h1 className="page-title"><span className="hl-muted">Practice</span> <span className="hl-bright">sets</span></h1>
       <p className="page-sub">
-        Current sets are admin-only templates — assigning publishes a copy to the students you choose.
+        Current sets are admin-only templates — assigning publishes a copy to the students you choose. Assigned copies live under Assignments.
       </p>
 
-      <div className="score-tabs" style={{ marginBottom: 16 }}>
-        <button className={`score-tab${tab === "current" ? " active" : ""}`} onClick={() => setTab("current")}>
-          Current Practice Sets ({sets?.length ?? "…"})
-        </button>
-        <button className={`score-tab${tab === "assigned" ? " active" : ""}`} onClick={() => setTab("assigned")}>
-          Assigned Practice Sets ({batches?.length ?? "…"})
-        </button>
+      <div className="toolbar">
+        <Link to="/admin/practice/new">
+          <Button>+ Generate Practice Set</Button>
+        </Link>
+        <Link to="/admin/assignments" style={{ marginLeft: "auto" }} className="muted">
+          View assignments →
+        </Link>
       </div>
-
-      {tab === "current" && (
-        <div className="toolbar">
-          <Link to="/admin/practice/new">
-            <Button>+ Generate Practice Set</Button>
-          </Link>
-        </div>
-      )}
 
       {error && <div className="login-error">{error}</div>}
 
-      {tab === "current" && !sets && <Spinner />}
-      {tab === "current" && sets && sets.length === 0 && (
+      {!sets && <Spinner />}
+      {sets && sets.length === 0 && (
         <div className="card card-pad muted" style={{ fontSize: 14 }}>
           No practice sets yet. Generate one from the Practice Question Bank.
         </div>
       )}
 
-      {tab === "current" && sets && sets.length > 0 && (
+      {sets && sets.length > 0 && (
         <div className="card card-pad">
           <table className="table">
             <thead>
@@ -231,50 +216,6 @@ export default function PracticePage() {
                       <Button variant="outline" size="sm" onClick={() => setAssigning(s)}>Assign</Button>
                       <Button variant="ghost" size="sm" onClick={() => void remove(s)}>Delete</Button>
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {tab === "assigned" && !batches && <Spinner />}
-      {tab === "assigned" && batches && batches.length === 0 && (
-        <div className="card card-pad muted" style={{ fontSize: 14 }}>
-          Nothing assigned yet. Open a current set and press Assign.
-        </div>
-      )}
-
-      {tab === "assigned" && batches && batches.length > 0 && (
-        <div className="card card-pad">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Set</th>
-                <th>Assigned</th>
-                <th>Timer</th>
-                <th>Students</th>
-                <th>Avg score</th>
-                <th>Explanations</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {batches.map((b) => (
-                <tr key={b.id}>
-                  <td style={{ fontWeight: 600 }}>{b.title}</td>
-                  <td>{fmtDate(b.assigned_at)}</td>
-                  <td>{b.timer_minutes} min · {b.question_count} qs</td>
-                  <td>{b.completed_count}/{b.student_count} done</td>
-                  <td>{b.avg_accuracy != null ? `${b.avg_accuracy}%` : "—"}</td>
-                  <td>
-                    <Pill tone={b.explanations_released_at ? "green" : "gray"}>
-                      {b.explanations_released_at ? "Released" : "Hidden"}
-                    </Pill>
-                  </td>
-                  <td>
-                    <Button variant="outline" size="sm" onClick={() => navigate(`/admin/practice/assigned/${b.id}`)}>Open</Button>
                   </td>
                 </tr>
               ))}

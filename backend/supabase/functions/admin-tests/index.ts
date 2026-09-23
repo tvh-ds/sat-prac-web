@@ -13,9 +13,12 @@ import {
   assignTestSchema,
   assignManySchema,
 } from "../_shared/validation.ts";
+import { buildAttemptReview } from "../_shared/attempt_review.ts";
+
+type Svc = ReturnType<typeof serviceClient>;
 
 async function ensureModulesValid(
-  svc: ReturnType<typeof serviceClient>,
+  svc: Svc,
   testId: string,
   contentScope: string | undefined,
   moduleIds: string[] | undefined,
@@ -36,6 +39,95 @@ async function ensureModulesValid(
   }
 }
 
+async function scopedModuleIds(svc: Svc, testId: string, contentScope: string, moduleIds: string[] | null | undefined): Promise<string[]> {
+  const { data: sections, error: sErr } = await svc.from("test_sections").select("id, section_type").eq("test_id", testId);
+  if (sErr) throw new HttpError(500, sErr.message);
+  const sectionIds = (sections ?? []).map((s) => s.id);
+  const { data: modules, error: mErr } = await svc
+    .from("test_modules")
+    .select("id, section_id")
+    .in("section_id", sectionIds.length > 0 ? sectionIds : [""]);
+  if (mErr) throw new HttpError(500, mErr.message);
+  const all = modules ?? [];
+  if (contentScope === "custom_modules") {
+    const allowed = new Set(moduleIds ?? []);
+    return all.filter((m) => allowed.has(m.id)).map((m) => m.id);
+  }
+  if (contentScope === "reading_writing" || contentScope === "math") {
+    const allowedSections = new Set((sections ?? []).filter((s) => s.section_type === contentScope).map((s) => s.id));
+    return all.filter((m) => allowedSections.has(m.section_id)).map((m) => m.id);
+  }
+  return all.map((m) => m.id);
+}
+
+async function questionCountForScope(svc: Svc, testId: string, contentScope: string, moduleIds: string[] | null | undefined): Promise<number> {
+  const ids = await scopedModuleIds(svc, testId, contentScope, moduleIds);
+  if (ids.length === 0) return 0;
+  const { count, error: err } = await svc
+    .from("test_module_questions")
+    .select("id", { count: "exact", head: true })
+    .in("module_id", ids);
+  if (err) throw new HttpError(500, err.message);
+  return count ?? 0;
+}
+
+async function fullBatchStudents(svc: Svc, batch: { id: string }) {
+  const { data: assignments, error: aErr } = await svc
+    .from("test_assignments")
+    .select("id, student_id, status, assigned_at, due_at")
+    .eq("assignment_batch_id", batch.id)
+    .order("assigned_at");
+  if (aErr) throw new HttpError(500, aErr.message);
+
+  const studentIds = (assignments ?? []).map((a) => a.student_id);
+  const [{ data: profiles }, authList] = await Promise.all([
+    studentIds.length > 0
+      ? svc.from("student_profiles").select("id, profiles(full_name)").in("id", studentIds)
+      : Promise.resolve({ data: [] as Array<{ id: string; profiles: { full_name?: string } | null }> }),
+    svc.auth.admin.listUsers({ perPage: 1000 }).catch(() => null),
+  ]);
+  const nameById = new Map((profiles ?? []).map((p) => {
+    const profile = Array.isArray(p.profiles) ? p.profiles[0] : p.profiles;
+    return [p.id, profile?.full_name ?? ""];
+  }));
+  const emails = new Map(((authList as { users?: Array<{ id: string; email?: string }> } | null)?.users ?? []).map((u) => [u.id, u.email]));
+
+  const assignmentIds = (assignments ?? []).map((a) => a.id);
+  const { data: attempts } = assignmentIds.length > 0
+    ? await svc.from("attempts").select("id, assignment_id, status, started_at, submitted_at").in("assignment_id", assignmentIds)
+    : { data: [] as Array<{ id: string; assignment_id: string; status: string; started_at: string; submitted_at: string | null }> };
+  const latestByAssignment = new Map<string, { id: string; assignment_id: string; status: string; started_at: string; submitted_at: string | null }>();
+  for (const a of (attempts ?? []).sort((x, y) => (x.started_at < y.started_at ? -1 : 1))) latestByAssignment.set(a.assignment_id, a);
+  const latestGradedByAssignment = new Map<string, { id: string; assignment_id: string; status: string; started_at: string; submitted_at: string | null }>();
+  for (const a of (attempts ?? []).filter((x) => x.status === "graded").sort((x, y) => (x.started_at < y.started_at ? -1 : 1))) latestGradedByAssignment.set(a.assignment_id, a);
+
+  const latestIds = [...latestByAssignment.values()].map((a) => a.id);
+  const { data: scores } = latestIds.length > 0
+    ? await svc.from("scores").select("attempt_id, raw_score, total_questions").in("attempt_id", latestIds)
+    : { data: [] as Array<{ attempt_id: string; raw_score: number; total_questions: number }> };
+  const scoreByAttempt = new Map((scores ?? []).map((s) => [s.attempt_id, s]));
+
+  return (assignments ?? []).map((a) => {
+    const att = latestByAssignment.get(a.id);
+    const sc = att ? scoreByAttempt.get(att.id) : undefined;
+    const total = sc ? Number(sc.total_questions) : 0;
+    const raw = sc ? Number(sc.raw_score) : 0;
+    return {
+      assignment_id: a.id,
+      student_id: a.student_id,
+      full_name: nameById.get(a.student_id) ?? "",
+      email: emails.get(a.student_id) ?? null,
+      status: att ? att.status : (a.status === "completed" ? "completed" : "not_started"),
+      started_at: att?.started_at ?? null,
+      submitted_at: att?.submitted_at ?? null,
+      raw_score: sc ? raw : null,
+      total_questions: sc ? total : null,
+      accuracy: sc && total > 0 ? Math.round((raw / total) * 1000) / 10 : null,
+      review_attempt_id: latestGradedByAssignment.get(a.id)?.id ?? null,
+    };
+  });
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   try {
@@ -52,6 +144,71 @@ Deno.serve(async (req) => {
         .order("created_at", { ascending: false });
       if (err) return error(err.message, 500);
       return json({ tests: data });
+    }
+
+    if (req.method === "GET" && seg.length === 2 && seg[1] === "assignment-batches") {
+      const { data: batches, error: bErr } = await svc
+        .from("full_test_assignment_batches")
+        .select("*")
+        .order("assigned_at", { ascending: false });
+      if (bErr) return error(bErr.message, 500);
+
+      const rows = [];
+      for (const b of batches ?? []) {
+        const students = await fullBatchStudents(svc, b);
+        const graded = students.filter((s) => s.review_attempt_id);
+        const acc = students.filter((s) => s.accuracy != null).map((s) => Number(s.accuracy));
+        rows.push({
+          ...b,
+          question_count: await questionCountForScope(svc, b.source_test_id, b.content_scope, b.module_ids),
+          student_count: students.length,
+          completed_count: graded.length,
+          avg_accuracy: acc.length > 0 ? Math.round((acc.reduce((x, y) => x + y, 0) / acc.length) * 10) / 10 : null,
+        });
+      }
+      return json({ batches: rows });
+    }
+
+    if (req.method === "GET" && seg.length === 3 && seg[1] === "assignment-batches") {
+      const { data: batch, error: bErr } = await svc
+        .from("full_test_assignment_batches")
+        .select("*")
+        .eq("id", seg[2])
+        .maybeSingle();
+      if (bErr) return error(bErr.message, 500);
+      if (!batch) return error("Assignment batch not found", 404);
+      const students = await fullBatchStudents(svc, batch);
+      return json({ batch: { ...batch, question_count: await questionCountForScope(svc, batch.source_test_id, batch.content_scope, batch.module_ids), student_count: students.length }, students });
+    }
+
+    if (req.method === "GET" && seg.length === 5 && seg[1] === "assignment-batches" && seg[3] === "attempts") {
+      const { data: batch, error: bErr } = await svc
+        .from("full_test_assignment_batches")
+        .select("id")
+        .eq("id", seg[2])
+        .maybeSingle();
+      if (bErr) return error(bErr.message, 500);
+      if (!batch) return error("Assignment batch not found", 404);
+
+      const { data: attempt, error: aErr } = await svc
+        .from("attempts")
+        .select("id, test_id, assignment_id, status, started_at, submitted_at, test:tests(title, kind), score:scores(*)")
+        .eq("id", seg[4])
+        .maybeSingle();
+      if (aErr) return error(aErr.message, 500);
+      if (!attempt || !attempt.assignment_id) return error("Attempt not found", 404);
+
+      const { data: assignment, error: asErr } = await svc
+        .from("test_assignments")
+        .select("id")
+        .eq("id", attempt.assignment_id)
+        .eq("assignment_batch_id", batch.id)
+        .maybeSingle();
+      if (asErr) return error(asErr.message, 500);
+      if (!assignment) return error("Attempt is not tied to this assignment batch", 404);
+
+      const review = await buildAttemptReview(svc, attempt, { includeExplanations: true });
+      return json({ attempt, review, explanations_released: true });
     }
 
     if (req.method === "GET" && seg.length === 2) {
@@ -201,6 +358,22 @@ Deno.serve(async (req) => {
     if (req.method === "POST" && seg.length === 3 && seg[2] === "assign") {
       const body = assignTestSchema.parse(await req.json());
       await ensureModulesValid(svc, body.test_id, body.content_scope, body.module_ids);
+      const { data: test, error: testErr } = await svc.from("tests").select("id, title").eq("id", body.test_id).eq("kind", "full").maybeSingle();
+      if (testErr) return error(testErr.message, 500);
+      if (!test) return error("Test not found", 404);
+      const { data: batch, error: batchErr } = await svc
+        .from("full_test_assignment_batches")
+        .insert({
+          source_test_id: body.test_id,
+          title: test.title,
+          content_scope: body.content_scope,
+          module_ids: body.content_scope === "custom_modules" ? (body.module_ids ?? []) : [],
+          due_at: body.due_at ?? null,
+          assigned_by: ctx.user.id,
+        })
+        .select("id")
+        .single();
+      if (batchErr) return error(batchErr.message, 500);
       // Repeat assignments: every POST creates its own row (own due date,
       // status, attempts, scores) — never merged with an earlier assignment.
       const { data, error: err } = await svc
@@ -213,6 +386,7 @@ Deno.serve(async (req) => {
             assigned_by: ctx.user.id,
             content_scope: body.content_scope,
             module_ids: body.content_scope === "custom_modules" ? (body.module_ids ?? []) : [],
+            assignment_batch_id: batch.id,
           },
         )
         .select("id, test_id, student_id, due_at, content_scope, module_ids")
@@ -224,6 +398,22 @@ Deno.serve(async (req) => {
     if (req.method === "POST" && seg.length === 3 && seg[2] === "assignees") {
       const body = assignManySchema.parse(await req.json());
       await ensureModulesValid(svc, id, body.content_scope, body.module_ids);
+      const { data: test, error: testErr } = await svc.from("tests").select("id, title").eq("id", id).eq("kind", "full").maybeSingle();
+      if (testErr) return error(testErr.message, 500);
+      if (!test) return error("Test not found", 404);
+      const { data: batch, error: batchErr } = await svc
+        .from("full_test_assignment_batches")
+        .insert({
+          source_test_id: id,
+          title: test.title,
+          content_scope: body.content_scope,
+          module_ids: body.content_scope === "custom_modules" ? (body.module_ids ?? []) : [],
+          due_at: body.due_at ?? null,
+          assigned_by: ctx.user.id,
+        })
+        .select("id")
+        .single();
+      if (batchErr) return error(batchErr.message, 500);
 
       const rows = body.student_ids.map((student_id) => ({
         test_id: id,
@@ -232,6 +422,7 @@ Deno.serve(async (req) => {
         assigned_by: ctx.user.id,
         content_scope: body.content_scope,
         module_ids: body.content_scope === "custom_modules" ? (body.module_ids ?? []) : [],
+        assignment_batch_id: batch.id,
       }));
 
       const { data, error: err } = await svc
@@ -246,7 +437,7 @@ Deno.serve(async (req) => {
         entity_id: id,
         details: { count: body.student_ids.length, content_scope: body.content_scope, module_ids: body.module_ids ?? [] },
       });
-      return json({ assigned: (data ?? []).length }, 201);
+      return json({ assigned: (data ?? []).length, batch }, 201);
     }
 
     return error("Not found", 404);

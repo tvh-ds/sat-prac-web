@@ -220,6 +220,7 @@ export interface BatchStudent {
   raw_score: number | null;
   total_questions: number | null;
   accuracy: number | null;
+  review_attempt_id?: string | null;
 }
 
 export interface BatchChoiceStat {
@@ -250,6 +251,27 @@ export interface PracticeBatchDetail {
   batch: PracticeAssignmentBatch;
   students: BatchStudent[];
   questions: BatchQuestionStat[];
+}
+
+export interface FullTestAssignmentBatch {
+  id: string;
+  source_test_id: string;
+  title: string;
+  content_scope: "full_test" | "reading_writing" | "math" | "custom_modules";
+  module_ids: string[];
+  due_at: string | null;
+  assigned_by: string | null;
+  assigned_at: string;
+  created_at: string;
+  question_count: number;
+  student_count: number;
+  completed_count: number;
+  avg_accuracy: number | null;
+}
+
+export interface FullTestBatchDetail {
+  batch: FullTestAssignmentBatch;
+  students: BatchStudent[];
 }
 
 export interface StudentProfile {
