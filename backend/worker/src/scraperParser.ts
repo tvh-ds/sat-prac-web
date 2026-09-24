@@ -8,6 +8,10 @@ export interface ScraperChoice {
 
 export interface ScraperQuestion {
   sourceQuestionNumber: number;
+  /** Whether the number came from the document or from parser order. */
+  sourceQuestionNumberOrigin: "observed" | "inferred";
+  /** Structural problems that require review before this draft is trusted. */
+  parseFlags: string[];
   sourceModuleName: string;
   sourceModulePosition: number;
   pageNumber: number;
@@ -63,7 +67,7 @@ export interface ModuleCompleteness {
   section: "reading_writing" | "math";
   expected: number;
   actual: number;
-  /** expected - actual; <= 0 means complete. */
+  /** expected - actual; negative values mean the module has extra questions. */
   missing: number;
   startPage: number;
   endPage: number;
@@ -83,7 +87,7 @@ export function evaluateModuleCompleteness(modules: ScraperModule[]): ModuleComp
       missing,
       startPage: m.startPage,
       endPage: m.endPage,
-      complete: missing <= 0,
+      complete: missing === 0,
     };
   });
 }
@@ -250,6 +254,45 @@ function isUiScreenshotFigure(line: string): boolean {
 function isCompletePrompt(promptLines: string[]): boolean {
   const text = promptLines.join(" ").replace(/\s+/g, " ").trim();
   return text.length >= 20 && /\?\s*$/.test(text);
+}
+
+function normalizedQuestionText(text: string): string {
+  return text.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim().replace(/\s+/g, " ");
+}
+
+function tokenSimilarity(a: string, b: string): number {
+  const aTokens = new Set(normalizedQuestionText(a).split(" ").filter((t) => t.length > 2));
+  const bTokens = new Set(normalizedQuestionText(b).split(" ").filter((t) => t.length > 2));
+  if (aTokens.size === 0 || bTokens.size === 0) return 0;
+  let intersection = 0;
+  for (const token of aTokens) if (bTokens.has(token)) intersection++;
+  return intersection / Math.min(aTokens.size, bTokens.size);
+}
+
+function mergeRepeatedQuestion(a: ScraperQuestion, b: ScraperQuestion): ScraperQuestion | null {
+  if (a.sourceModuleName !== b.sourceModuleName || a.sourceQuestionNumber !== b.sourceQuestionNumber) return null;
+  if (Math.abs(a.pageNumber - b.pageNumber) > 3 || tokenSimilarity(a.prompt, b.prompt) < 0.82) return null;
+  if (a.choices.length > 0 && b.choices.length > 0) {
+    const sameChoices = a.choices.length === b.choices.length && a.choices.every((choice, i) =>
+      choice.label === b.choices[i]?.label &&
+      normalizedQuestionText(choice.text) === normalizedQuestionText(b.choices[i]?.text),
+    );
+    if (!sameChoices) return null;
+  }
+  const richer = [a, b].sort((x, y) =>
+    (y.prompt.length + y.choices.reduce((n, c) => n + c.text.length, 0)) -
+    (x.prompt.length + x.choices.reduce((n, c) => n + c.text.length, 0)),
+  )[0]!;
+  return {
+    ...richer,
+    pageNumber: Math.min(a.pageNumber, b.pageNumber),
+    passageText: (a.passageText?.length ?? 0) >= (b.passageText?.length ?? 0) ? a.passageText : b.passageText,
+    choices: a.choices.length >= b.choices.length ? a.choices : b.choices,
+    hasVisualStimulus: a.hasVisualStimulus || b.hasVisualStimulus,
+    visualMarkerCount: Math.max(a.visualMarkerCount, b.visualMarkerCount),
+    confidence: Math.max(a.confidence, b.confidence),
+    parseFlags: [...new Set([...a.parseFlags, ...b.parseFlags, "repeated_source_question_coalesced"])],
+  };
 }
 
 /**
@@ -760,6 +803,8 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
   /** Count of visual marker spans on raw choice lines (choice text is pre-stripped). */
   let blockChoiceVisualCount = 0;
   let blockPage = 0;
+  let blockQuestionNumber: number | null = null;
+  let pendingQuestionNumber: number | null = null;
   let pendingNewQuestion = false;
   let passageBuffer: string[] = [];
   /** Last non-blank processed line (for graph-axis detection before a bar). */
@@ -787,9 +832,23 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
     blockChoiceVisual = false;
     blockChoiceVisualCount = 0;
     blockPage = 0;
+    blockQuestionNumber = null;
   };
 
   const flushCore = () => {
+    // Math questions have no shared reading passage. If OCR dropped a number
+    // and the next structural boundary arrives after a complete prompt, treat
+    // that buffered prose/figure as the question instead of silently losing it.
+    if (
+      currentSection === "math" &&
+      blockPrompt.length === 0 &&
+      blockChoices.length === 0 &&
+      blockPassage.length > 0 &&
+      isCompletePrompt(blockPassage)
+    ) {
+      blockPrompt = blockPassage;
+      blockPassage = [];
+    }
     if (blockPassage.length > 0) {
       passageBuffer.push(...blockPassage);
       blockPassage = [];
@@ -797,6 +856,7 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
     if (blockPrompt.length === 0 && blockChoices.length === 0) return;
 
     const seq = (moduleCounters.get(currentModule) ?? 0) + 1;
+    const sourceQuestionNumber = blockQuestionNumber ?? seq;
     const isMc = blockChoices.length >= 2;
     if (blockPrompt.length === 0 && isMc && passageBuffer.length > 0) {
       // A stem misclassified as prose leaves a promptless choice block (the
@@ -881,7 +941,9 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
       m.endPage = Math.max(m.endPage, blockPage || currentPage);
     }
     questions.push({
-      sourceQuestionNumber: seq,
+      sourceQuestionNumber,
+      sourceQuestionNumberOrigin: blockQuestionNumber === null ? "inferred" : "observed",
+      parseFlags: [],
       sourceModuleName: currentModule,
       sourceModulePosition: currentModuleNumber,
       pageNumber: blockPage,
@@ -916,6 +978,20 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
     const page = pages[pi]!;
     currentPage = page.pageNumber;
     const lines = page.text.split("\n");
+    if (pi > 0 && currentSection === "math" && blockPrompt.length > 0 && blockChoices.length === 0 && isCompletePrompt(blockPrompt)) {
+      const firstContent = lines.map((line) => line.trim()).find((line) => {
+        if (!line) return false;
+        if (isStrayInstructionLine(line)) return false;
+        const kind = classifyLine(line).kind;
+        return kind !== "chrome" && kind !== "questions-count" && kind !== "module-heading";
+      });
+      const firstKind = firstContent ? classifyLine(firstContent).kind : null;
+      // Keep a prompt open when its choices, question marker, or associated
+      // figure begin on the next page. A new prose prompt starts a new block.
+      if (firstContent && firstKind !== "choice" && firstKind !== "bar" && firstKind !== "question-marker" && firstKind !== "review-marker" && !isFigureMarkerLine(firstContent)) {
+        flushBlock({ withCarryover: true });
+      }
+    }
     for (let li = 0; li < lines.length; li++) {
       const line = lines[li]!.trim();
       if (!line) continue;
@@ -1082,6 +1158,16 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
 
       const rawKind = classifyLine(line);
       let cls = rawKind;
+      if (
+        pendingQuestionNumber !== null &&
+        blockPrompt.length === 0 && blockChoices.length === 0 && blockPassage.length === 0 &&
+        ["choice", "stem", "prose"].includes(rawKind.kind) &&
+        !isStrayInstructionLine(line)
+      ) {
+        blockQuestionNumber = pendingQuestionNumber;
+        pendingQuestionNumber = null;
+        if (!blockPage) blockPage = page.pageNumber;
+      }
       if (rawKind.kind === "chrome") continue;
       if (!inKeyBlock && isDirectionsBoundary(line)) {
         // A directions anchor mid-block ("Student-produced response
@@ -1135,7 +1221,15 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
           // Exception: resync after dropped number lines — an out-of-window
           // bar followed by real question content (choices/stem before the
           // next bar) re-anchors the sequence instead of cascading.
-          if (
+          const repeatedObservedNumber =
+            barNum <= (moduleCounters.get(currentModule) ?? 0) &&
+            questions.some((q) => q.sourceModuleName === currentModule && q.sourceQuestionNumber === barNum) &&
+            looksLikeQuestionAhead(pages, pi, li);
+          if (repeatedObservedNumber) {
+            // Repeated screenshots sometimes repeat a question marker. Keep
+            // the source number so the duplicate pass can coalesce/flag it.
+            expectedQuestionNumber = barNum;
+          } else if (
             barNum > expectedQuestionNumber &&
             barNum <= 150 &&
             !inKeyBlock &&
@@ -1177,6 +1271,7 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
           currentModuleNumber = modNum;
           currentModule = label;
           expectedQuestionNumber = 1;
+          pendingQuestionNumber = null;
           registerModule();
           passageBuffer = [];
           pendingNewQuestion = false;
@@ -1185,6 +1280,7 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
 
         case "key-heading": {
           flushBlock({ withCarryover: true });
+          pendingQuestionNumber = null;
           inKeyBlock = true;
           const cleanKey = stripMarkdown(line);
           const kh =
@@ -1220,6 +1316,7 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
             blockPrompt = [];
           }
           flushBlock();
+          pendingQuestionNumber = Number(stripMarkdown(line));
           pendingNewQuestion = true;
           break;
 
@@ -1232,6 +1329,7 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
             expectedQuestionNumber = markerNum + 1;
           }
           flushBlock({ withCarryover: true });
+          pendingQuestionNumber = markerNum || null;
           blockPage = page.pageNumber;
           pendingNewQuestion = true;
           break;
@@ -1245,7 +1343,9 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
             expectedQuestionNumber = inlineNum + 1;
           }
           flushBlock({ withCarryover: true });
+          pendingQuestionNumber = null;
           blockPrompt = [line];
+          blockQuestionNumber = inlineNum || null;
           blockPage = page.pageNumber;
           pendingNewQuestion = false;
           break;
@@ -1255,13 +1355,18 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
           // Bluebook "N Mark for Review" between passage and stem — start a
           // new question block, mirroring bar behavior.
           const n = Number(stripMarkdown(line).match(REVIEW_MARKER_RE)?.[1] ?? 0);
-          if (n !== expectedQuestionNumber && (n < expectedQuestionNumber || n > expectedQuestionNumber + 2)) break;
+          const repeatedObservedNumber =
+            n <= (moduleCounters.get(currentModule) ?? 0) &&
+            questions.some((q) => q.sourceModuleName === currentModule && q.sourceQuestionNumber === n) &&
+            looksLikeQuestionAhead(pages, pi, li);
+          if (n !== expectedQuestionNumber && (n < expectedQuestionNumber || n > expectedQuestionNumber + 2) && !repeatedObservedNumber) break;
           expectedQuestionNumber = n + 1;
           if (blockPrompt.length > 0 && blockChoices.length === 0 && !carryoverPrompt) {
             carryoverPrompt = { lines: blockPrompt, page: blockPage };
             blockPrompt = [];
           }
           flushBlock();
+          pendingQuestionNumber = n || null;
           pendingNewQuestion = true;
           break;
         }
@@ -1432,6 +1537,48 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
   }
   flushBlock({ withCarryover: true });
   for (const buf of keyColumnBuffers) keys.push(...buf);
+
+  // Coalesce repeated screenshots with the same observed module/question ID.
+  // If the repeated blocks disagree, preserve both and mark the ambiguity.
+  const coalesced: ScraperQuestion[] = [];
+  const observedById = new Map<string, number>();
+  const coalescedModules = new Map<string, number>();
+  for (const question of questions) {
+    if (question.sourceQuestionNumberOrigin !== "observed") {
+      coalesced.push(question);
+      continue;
+    }
+    const id = `${question.sourceModuleName}|${question.sourceQuestionNumber}`;
+    const previousIndex = observedById.get(id);
+    if (previousIndex === undefined) {
+      observedById.set(id, coalesced.length);
+      coalesced.push(question);
+      continue;
+    }
+    const previous = coalesced[previousIndex]!;
+    const merged = mergeRepeatedQuestion(previous, question);
+    if (merged) {
+      coalesced[previousIndex] = merged;
+      coalescedModules.set(
+        question.sourceModuleName,
+        Math.min(coalescedModules.get(question.sourceModuleName) ?? question.pageNumber, question.pageNumber),
+      );
+    } else {
+      previous.parseFlags = [...new Set([...previous.parseFlags, "duplicate_source_number_conflict"])];
+      question.parseFlags = [...new Set([...question.parseFlags, "duplicate_source_number_conflict"])];
+      coalesced.push(question);
+    }
+  }
+  questions.splice(0, questions.length, ...coalesced);
+  for (const module of modules) {
+    module.questionCount = questions.filter((q) => q.sourceModuleName === module.name).length;
+  }
+  for (const question of questions) {
+    const duplicatePage = coalescedModules.get(question.sourceModuleName);
+    if (duplicatePage !== undefined && question.pageNumber > duplicatePage && question.sourceQuestionNumberOrigin === "inferred") {
+      question.parseFlags = [...new Set([...question.parseFlags, "number_inference_after_duplicate"] )];
+    }
+  }
 
   const totalQuestions = questions.length;
   const keyConfidence = totalQuestions > 0 ? Math.min(1, Math.round((keys.length / totalQuestions) * 100) / 100) : 0;

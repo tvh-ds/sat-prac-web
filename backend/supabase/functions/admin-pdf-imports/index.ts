@@ -291,12 +291,20 @@ Deno.serve(async (req) => {
     if (req.method === "POST" && seg.length === 3 && seg[2] === "generate-test") {
       const { data: imp, error: impErr } = await svc
         .from("pdf_imports")
-        .select("id, status, original_filename, generated_test_id")
+        .select("id, status, original_filename, generated_test_id, text_quality")
         .eq("id", id)
         .maybeSingle();
       if (impErr) return error(impErr.message, 500);
       if (!imp) return error("Import not found", 404);
       if (imp.generated_test_id) return json({ ok: true, test_id: imp.generated_test_id, already_generated: true });
+
+      const body = await req.json().catch(() => ({})) as { acknowledge_incomplete?: boolean };
+      const quality = (imp.text_quality ?? {}) as { incomplete_modules?: Array<{ module: string; expected: number; actual: number }> };
+      const incompleteModules = quality.incomplete_modules ?? [];
+      if (incompleteModules.length > 0 && body.acknowledge_incomplete !== true) {
+        const detail = incompleteModules.map((m) => m.module + " " + m.actual + "/" + m.expected).join(", ");
+        return error("Parser validation found incomplete or overfull modules (" + detail + "). Review the source and drafts, then explicitly confirm generation.", 422);
+      }
 
       const drafts = await loadAllDrafts(svc, id, "*, choices:draft_question_choices(*)");
       const usable = drafts.filter((d) => d.status !== "rejected");

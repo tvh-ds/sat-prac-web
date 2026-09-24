@@ -335,6 +335,10 @@ export interface PdfImport {
     drafts?: number;
     ocr_pages?: number;
     parser_warnings?: string[];
+    document_family?: "full_test" | "section_test" | "question_bank" | "screenshot_compilation";
+    inferred_question_numbers?: number;
+    parser_flag_counts?: Record<string, number>;
+    answer_key_source?: "parsed" | "present_but_unparsed" | "not_detected";
     incomplete_modules?: Array<{ module: string; expected: number; actual: number }>;
     answer_key_status?: "complete" | "partial" | "missing" | "low_confidence";
     answer_key_summary?: Record<string, { questions: number; keys: number; status: string }>;
@@ -380,6 +384,11 @@ export interface DraftQuestion {
   question_id?: string | null;
   choices: DraftChoice[];
   answer_keys: Array<{ id: string; detected_answer: string; confidence: number; status: string }>;
+  parser_metadata?: {
+    source_number_origin?: "observed" | "inferred";
+    parse_flags?: string[];
+    answer_key_state?: "matched" | "unmatched" | "not_detected";
+  } | null;
 }
 
 export interface DraftSummary {

@@ -241,6 +241,37 @@ describe("Pipeline (Parse 5)", () => {
     expect(drafts[0].status).toBe("needs_review");
   });
 
+  it("does not attach an ordinal key to a question whose number OCR omitted", async () => {
+    tables["pdf_imports"] = [{ id: "imp-key-gap", storage_path: "uploads/gap.pdf", original_filename: "gap.pdf", status: "uploaded" }];
+    parseState.text = [
+      "Math Module 1",
+      "22 QUESTIONS",
+      "1. What is 2 + 2?",
+      "A. 3",
+      "B. 4",
+      "C. 5",
+      "D. 6",
+      "If 3x + 7 = 22, what is the value of x?",
+      "A. 4",
+      "B. 5",
+      "C. 6",
+      "D. 7",
+      "Math Module 1 Answers",
+      "1. B",
+      "2. B",
+    ].join("\n");
+
+    const pipeline = new Pipeline(config);
+    await pipeline.processImport("imp-key-gap");
+
+    const drafts = tables["draft_questions"]!;
+    expect(drafts).toHaveLength(2);
+    expect(drafts[0].suggested_answer).toBe("B");
+    expect(drafts[1].suggested_answer).toBeNull();
+    expect(drafts[1].parser_metadata.source_number_origin).toBe("inferred");
+    expect(drafts[1].status).toBe("missing_key");
+  });
+
   it("fails when Parse OCR yields no readable modules", async () => {
     tables["pdf_imports"] = [{ id: "imp-3", storage_path: "uploads/empty.pdf", original_filename: "empty.pdf", status: "uploaded" }];
     parseState.text = "tiny";

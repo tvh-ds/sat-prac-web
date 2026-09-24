@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { parseFullTest } from "../src/fullTestParser";
-import { evaluateModuleCompleteness, normalizeSectionHeading } from "../src/scraperParser";
+import { evaluateModuleCompleteness, normalizeSectionHeading, parseScraperQuestions } from "../src/scraperParser";
 import { normalizeText } from "../src/textNormalize";
 
 // Format observed in 202605usv1-rw.pdf: "Module 1: Reading and Writing Question N"
@@ -177,6 +177,66 @@ describe("parseFullTest", () => {
     expect(rw?.missing).toBe(27 - (rw?.actual ?? 0));
     const math = completeness.find((c) => c.name === "Math Module 1");
     expect(math?.expected).toBe(22);
+  });
+
+  it("treats an overfull module as invalid instead of complete", () => {
+    const result = evaluateModuleCompleteness([
+      { name: "Math Module 1", section: "math", questionCount: 23, startPage: 1, endPage: 20 },
+    ]);
+    expect(result[0]).toMatchObject({ expected: 22, actual: 23, missing: -1, complete: false });
+  });
+});
+
+describe("OCR boundary regressions", () => {
+  it("keeps adjacent math prompts separate when OCR drops their number markers", () => {
+    const firstFourteen = Array.from({ length: 14 }, (_, i) =>
+      `${i + 1}. If x + ${i + 1} = 10, what is the value of x?\nA. 1\nB. 2\nC. 3\nD. 4`,
+    ).join("\n\n");
+    const pages = normalizeText([
+      {
+        pageNumber: 1,
+        text: `Math Module 1\n22 QUESTIONS\n${firstFourteen}\n\n15\nThe given expression is equivalent to $-5x^2 + ax - 3$, where a is a constant. What is the value of a?`,
+      },
+      {
+        pageNumber: 2,
+        text: `The kinetic energy K of an object is given by K = (1/2)mv^2. What is the mass of the object?\nA) 9,604\nB) 196\nC) 98\nD) 49\n[figure: a graph of newsletter subscribers over time]\nThe graph models the number of online newsletter subscribers. Which statement best interprets the point (1, 600)?\nA) The estimated number at the end of the first six-month period was 600.\nB) It increased by 600 every six months.\nC) There were 600 subscribers in January 1995.\nD) There were 600 subscribers in January 1996.\n18`,
+      },
+    ]);
+    const result = parseFullTest(pages, { contentScope: "full_test" });
+    const math = result.questions.filter((q) => q.section === "math");
+    const kinetic = math.find((q) => q.prompt.includes("kinetic energy"));
+    const newsletter = math.find((q) => q.prompt.includes("newsletter subscribers"));
+    expect(kinetic).toBeDefined();
+    expect(newsletter).toBeDefined();
+    expect(kinetic?.prompt).not.toContain("newsletter");
+    expect(newsletter?.prompt).not.toContain("kinetic energy");
+    expect(kinetic?.sourceQuestionNumberOrigin).toBe("inferred");
+    expect(newsletter?.sourceQuestionNumberOrigin).toBe("inferred");
+  });
+
+  it("emits a markerless visual math question instead of dropping its buffered prompt", () => {
+    const pages = normalizeText([
+      {
+        pageNumber: 1,
+        text: `Math Module 1\n22 QUESTIONS\n1\nWhat is the value of x?\nA) 1\nB) 2\nC) 3\nD) 4\n[figure: a circle centered at the origin]\nCircle A is defined by an equation. What is the value of 4a?\n2\nh(t) = -16t^2 + b. How many seconds until the object hits the ground?`,
+      },
+    ]);
+    const result = parseScraperQuestions(pages);
+    expect(result.questions).toHaveLength(3);
+    expect(result.questions[1]?.prompt).toContain("Circle A");
+    expect(result.questions[1]?.hasVisualStimulus).toBe(true);
+  });
+
+  it("coalesces repeated Bluebook screenshots with the same observed question ID", () => {
+    const repeated = `1 Mark for Review\nWhich choice best describes the data in the table?\nA. The first choice is long enough to identify the same question.\nB. The second choice is long enough to identify the same question.\nC. The third choice is long enough to identify the same question.\nD. The fourth choice is long enough to identify the same question.\nQuestion 1 of 27`;
+    const result = parseScraperQuestions([
+      { pageNumber: 1, text: `Reading and Writing Module 1\n${repeated}` },
+      { pageNumber: 2, text: repeated },
+    ]);
+    expect(result.questions).toHaveLength(1);
+    expect(result.questions[0]?.sourceQuestionNumber).toBe(1);
+    expect(result.questions[0]?.parseFlags).toContain("repeated_source_question_coalesced");
+    expect(result.modules.find((m) => m.name === "Reading and Writing Module 1")?.questionCount).toBe(1);
   });
 });
 

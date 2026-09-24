@@ -132,6 +132,8 @@ export interface IngestReport {
 
 interface AssembledQuestion {
   sourceQuestionNumber: number;
+  sourceQuestionNumberOrigin: "observed" | "inferred";
+  parseFlags: string[];
   sourceModuleName: string | null;
   sourceModulePosition: number | null;
   sourceQuestionId: string | null;
@@ -208,9 +210,14 @@ export function assessAnswerKey(args: {
   const { bank, questionCount, matchedCount, fallbackMatches, keyEntries, keySlots, summary } = args;
   const warnings: string[] = [];
   if (bank) {
+    if (keyEntries > questionCount) warnings.push(keyEntries + " key entries exceed " + questionCount + " questions");
     const structural: StructuralKeyStatus =
-      questionCount > 0 && matchedCount >= questionCount ? "complete" : matchedCount === 0 ? "missing" : "partial";
-    return { structural, warnings };
+      questionCount > 0 && matchedCount === questionCount && keyEntries === questionCount
+        ? "complete"
+        : matchedCount === 0
+          ? "missing"
+          : "partial";
+    return { structural: warnings.length > 0 && structural === "complete" ? "low_confidence" : structural, warnings };
   }
   // Duplicate key numbers inside one module (first match wins downstream).
   const seen = new Map<string, number>();
@@ -535,6 +542,8 @@ export class Pipeline {
     const questions: AssembledQuestion[] = bank
       ? bank.questions.map((q) => ({
           sourceQuestionNumber: q.sourceQuestionNumber,
+          sourceQuestionNumberOrigin: "observed" as const,
+          parseFlags: [],
           sourceModuleName: null as string | null,
           sourceModulePosition: null as number | null,
           sourceQuestionId: q.sourceQuestionId,
@@ -558,6 +567,8 @@ export class Pipeline {
         : scraper && scraper.questions.length > 0
           ? scraper.questions.map((q) => ({
               sourceQuestionNumber: q.sourceQuestionNumber,
+              sourceQuestionNumberOrigin: q.sourceQuestionNumberOrigin,
+              parseFlags: [...q.parseFlags],
               sourceModuleName: q.sourceModuleName,
               sourceModulePosition: q.sourceModulePosition,
               sourceQuestionId: null as string | null,
@@ -578,6 +589,8 @@ export class Pipeline {
             }))
           : parseQuestions(normalizedTexts).map((q) => ({
               sourceQuestionNumber: q.sourceQuestionNumber,
+              sourceQuestionNumberOrigin: "inferred" as const,
+              parseFlags: ["legacy_parser_unverified"],
               sourceModuleName: null as string | null,
               sourceModulePosition: null as number | null,
               sourceQuestionId: null as string | null,
@@ -597,7 +610,7 @@ export class Pipeline {
               visualMarkerCount: 0,
             }));
 
-    const completeness = fullTest
+    const completeness = fullTest && !["question_bank", "screenshot_compilation"].includes(fullTest.documentFamily)
       ? evaluateModuleCompleteness(fullTest.modules)
       : scraper
         ? evaluateModuleCompleteness(scraper.modules)
@@ -660,19 +673,33 @@ export class Pipeline {
     const answers: Array<MatchedAnswer | null> = new Array(questions.length).fill(null);
     const unmatched: number[] = [];
     questions.forEach((q, i) => {
-      const key = q.sourceModuleName ? `${q.sourceModuleName}|${q.sourceQuestionNumber}` : null;
+      const eligibleForExactMatch =
+        (q.sourceQuestionNumberOrigin === "observed" || q.parseFlags.includes("question_id_recovered_from_neighbors")) &&
+        q.sourceQuestionNumber > 0 &&
+        !q.parseFlags.some((flag) =>
+          flag === "duplicate_source_number_conflict" ||
+          flag === "source_question_id_unresolved" ||
+          flag === "screenshot_section_unresolved"
+        );
+      const key = q.sourceModuleName && eligibleForExactMatch ? q.sourceModuleName + "|" + q.sourceQuestionNumber : null;
       const hit = key ? scoped.get(key) : undefined;
       if (hit) answers[i] = hit;
       else unmatched.push(i);
     });
     const scopedMatches = answers.filter(Boolean).length;
     let fallbackMatches = 0;
-    if (unmatched.length > 0 && global.length === unmatched.length) {
+    const fallbackStructureTrusted = parsed.completeness.length > 0
+      ? parsed.completeness.every((module) => module.complete)
+      : parsed.fullTest?.documentFamily === "question_bank";
+    const safeForPositionalFallback =
+      questions.every((q) => q.sourceQuestionNumberOrigin === "observed" && q.sourceQuestionNumber > 0 && q.parseFlags.length === 0) &&
+      fallbackStructureTrusted;
+    if (unmatched.length > 0 && global.length === unmatched.length && safeForPositionalFallback) {
       unmatched.forEach((qi, j) => {
         answers[qi] = global[j]!.v;
       });
       fallbackMatches = unmatched.length;
-    } else if (unmatched.length > 0) {
+    } else if (unmatched.length > 0 && safeForPositionalFallback) {
       const unmatchedByModule = new Map<string, number[]>();
       for (const qi of unmatched) {
         const mod = questions[qi]!.sourceModuleName ?? "";
@@ -795,7 +822,7 @@ export class Pipeline {
         try {
           const stim = await this.uploadStimulus(
             importId,
-            q.sourceQuestionId ?? String(q.sourceQuestionNumber),
+            q.sourceQuestionId ?? (q.sourceQuestionNumber > 0 ? String(q.sourceQuestionNumber) : "page-" + q.pageNumber),
             q.pageNumber,
             pdfBytes,
             boxesForQuestion.get(qi) ?? [],
@@ -822,9 +849,9 @@ export class Pipeline {
           skill: q.skill,
           difficulty: q.difficulty,
           suggested_answer: q.correctAnswer ?? matched?.answer ?? null,
-          answer_confidence: q.confidence,
+          answer_confidence: matched ? keyConfidence : null,
           status,
-          source_question_number: q.sourceQuestionNumber,
+          source_question_number: q.sourceQuestionNumber > 0 ? q.sourceQuestionNumber : null,
           source_module_name: q.sourceModuleName,
           source_module_position: q.sourceModulePosition,
           source_question_id: q.sourceQuestionId,
@@ -840,6 +867,9 @@ export class Pipeline {
             scope: "full_test",
             ocr_provider: this.parse.name,
             ocr_model: this.ocrModel,
+            source_number_origin: q.sourceQuestionNumberOrigin,
+            parse_flags: q.parseFlags,
+            answer_key_state: matched ? "matched" : keyEntries > 0 ? "unmatched" : "not_detected",
             visual: opts.visualByPage[q.pageNumber] ?? null,
           },
         })
@@ -904,7 +934,7 @@ export class Pipeline {
       structural === "complete" ? "complete" : structural === "missing" ? "missing" : "partial";
 
     const incompleteModules = parsed.completeness
-      .filter((c) => c.missing > 0)
+      .filter((c) => !c.complete)
       .map((c) => ({ module: c.name, expected: c.expected, actual: c.actual }));
     const visualReviewQuestions = draftStatuses.filter((s) => s === "needs_review").length;
 
@@ -929,6 +959,18 @@ export class Pipeline {
       visual_pages: visualPages,
       timings_ms: timingsMs,
       parser_warnings: opts.warnings,
+      document_family: bank ? "question_bank" : fullTest?.documentFamily ?? "full_test",
+      inferred_question_numbers: questions.filter((q) => q.sourceQuestionNumberOrigin === "inferred").length,
+      parser_flag_counts: questions.reduce((counts, q) => {
+        for (const flag of q.parseFlags) counts[flag] = (counts[flag] ?? 0) + 1;
+        return counts;
+      }, {} as Record<string, number>),
+      answer_key_source:
+        keyEntries > 0
+          ? "parsed"
+          : original.some((page) => /answer\s*keys?|correct\s*answer/i.test(page.text))
+            ? "present_but_unparsed"
+            : "not_detected",
       module_checks: opts.moduleChecks,
       incomplete_modules: incompleteModules,
       answer_key_status: structural,

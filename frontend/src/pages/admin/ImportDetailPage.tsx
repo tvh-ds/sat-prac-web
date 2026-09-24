@@ -94,13 +94,25 @@ export default function ImportDetailPage() {
   }
 
   async function approveFullDraft() {
+    const incomplete = importInfo?.text_quality?.incomplete_modules ?? [];
+    const acknowledgeIncomplete = incomplete.length > 0;
+    if (
+      acknowledgeIncomplete &&
+      !window.confirm(
+        "The parser found incomplete or overfull modules: " +
+          incomplete.map((m) => `${m.module} ${m.actual}/${m.expected}`).join(", ") +
+          ". Review the source and drafts before continuing. Generate this test anyway?",
+      )
+    ) {
+      return;
+    }
     setGenerating(true);
     setError(null);
     try {
       const token = await getToken();
       const res = await fnJson<{ test_id: string; title: string; linked: number; failed: number; already_generated?: boolean }>(
         `admin-pdf-imports/${importId}/generate-test`,
-        { method: "POST", token },
+        { method: "POST", token, body: { acknowledge_incomplete: acknowledgeIncomplete } },
       );
       setGenerateResult(res);
       await loadPage(offsetRef.current);
@@ -126,6 +138,8 @@ export default function ImportDetailPage() {
   const pageEnd = Math.min(draftOffset + draftLimit, draftTotal);
   const pageIdx = Math.floor(draftOffset / draftLimit);
   const maxPageIdx = Math.max(0, Math.ceil(draftTotal / draftLimit) - 1);
+  const incompleteModules = importInfo.text_quality?.incomplete_modules ?? [];
+  const parserFlagCounts = Object.entries(importInfo.text_quality?.parser_flag_counts ?? {});
 
   return (
     <div>
@@ -180,17 +194,46 @@ export default function ImportDetailPage() {
 
       {importInfo.error_message && <div className="login-error" style={{ marginTop: 14 }}>{importInfo.error_message}</div>}
 
-      {(importInfo.text_quality?.parser_warnings?.length ?? 0) > 0 && (
+      {((importInfo.text_quality?.parser_warnings?.length ?? 0) > 0 ||
+        incompleteModules.length > 0 ||
+        (importInfo.text_quality?.inferred_question_numbers ?? 0) > 0 ||
+        parserFlagCounts.length > 0 ||
+        (importInfo.text_quality?.answer_key_source != null && importInfo.text_quality.answer_key_source !== "parsed")) && (
         <div className="panel" style={{ marginTop: 18, borderColor: "var(--border-medium)" }}>
           <h3 style={{ margin: "0 0 8", fontSize: 15 }}>Parser warnings</h3>
+          {importInfo.text_quality?.document_family && (
+            <p className="muted" style={{ margin: "0 0 8", fontSize: 12.5 }}>
+              Document type: {importInfo.text_quality.document_family.replaceAll("_", " ")}
+            </p>
+          )}
           <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13.5 }}>
             {(importInfo.text_quality?.parser_warnings ?? []).map((w, i) => (
               <li key={i} style={{ marginBottom: 4 }}>{w}</li>
             ))}
           </ul>
-          {(importInfo.text_quality?.incomplete_modules?.length ?? 0) > 0 && (
+          {incompleteModules.length > 0 && (
             <p className="muted" style={{ margin: "8px 0 0", fontSize: 12.5 }}>
-              Incomplete: {(importInfo.text_quality?.incomplete_modules ?? []).map((m) => `${m.module} ${m.actual}/${m.expected}`).join(" · ")}
+              Incomplete or overfull: {incompleteModules.map((m) => m.module + " " + m.actual + "/" + m.expected).join(" · ")}
+            </p>
+          )}
+          {(importInfo.text_quality?.inferred_question_numbers ?? 0) > 0 && (
+            <p className="muted" style={{ margin: "8px 0 0", fontSize: 12.5 }}>
+              {importInfo.text_quality?.inferred_question_numbers} question number(s) were inferred; verify them against the source.
+            </p>
+          )}
+          {parserFlagCounts.length > 0 && (
+            <p className="muted" style={{ margin: "8px 0 0", fontSize: 12.5 }}>
+              Parse flags: {parserFlagCounts.map(([flag, count]) => flag.replaceAll("_", " ") + " (" + count + ")").join(" · ")}
+            </p>
+          )}
+          {importInfo.text_quality?.answer_key_source === "present_but_unparsed" && (
+            <p className="muted" style={{ margin: "8px 0 0", fontSize: 12.5 }}>
+              Answer-key content was detected, but no key entries were parsed. Treat suggested answers as unavailable until reviewed.
+            </p>
+          )}
+          {importInfo.text_quality?.answer_key_source === "not_detected" && (
+            <p className="muted" style={{ margin: "8px 0 0", fontSize: 12.5 }}>
+              No answer-key section was detected in the source document.
             </p>
           )}
         </div>
@@ -682,6 +725,28 @@ function DraftEditor({
       {draft.source_question_id && (
         <p className="muted" style={{ fontSize: 12.5, marginTop: 8 }}>
           Source ID: {draft.source_question_id}
+        </p>
+      )}
+
+      {((draft.parser_metadata?.parse_flags?.length ?? 0) > 0 || draft.parser_metadata?.source_number_origin === "inferred") && (
+        <div className="panel" style={{ marginTop: 12, borderColor: "var(--border-medium)" }}>
+          <strong style={{ fontSize: 13 }}>Parser review</strong>
+         {draft.parser_metadata?.source_number_origin === "inferred" && (
+           <p className="muted" style={{ margin: "6px 0 0", fontSize: 12.5 }}>Question number was inferred from document order; verify it against the source.</p>
+         )}
+          {(draft.parser_metadata?.parse_flags?.length ?? 0) > 0 && (
+            <ul style={{ margin: "6px 0 0", paddingLeft: 18, fontSize: 12.5 }}>
+              {draft.parser_metadata?.parse_flags?.map((flag) => <li key={flag}>{flag.replaceAll("_", " ")}</li>)}
+            </ul>
+          )}
+        </div>
+      )}
+
+      {draft.parser_metadata?.answer_key_state && draft.parser_metadata.answer_key_state !== "matched" && (
+        <p className="muted" style={{ fontSize: 12.5, marginTop: 10 }}>
+          {draft.parser_metadata.answer_key_state === "unmatched"
+            ? "The document contains answer-key entries, but none could be safely matched to this question."
+            : "No answer key was detected in the document."}
         </p>
       )}
 

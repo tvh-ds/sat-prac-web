@@ -20,6 +20,8 @@ export interface FullTestParseOptions {
 
 export interface FullTestQuestion {
   sourceQuestionNumber: number;
+  sourceQuestionNumberOrigin: "observed" | "inferred";
+  parseFlags: string[];
   sourceModuleName: string;
   sourceModulePosition: number;
   sourceQuestionId: string | null;
@@ -51,6 +53,39 @@ export interface FullTestParseResult {
   method: string;
   scope: ContentScope;
   targetModule: TargetModule | null;
+  documentFamily: "full_test" | "section_test" | "question_bank" | "screenshot_compilation";
+}
+
+function looksLikeScreenshotCompilation(pages: PageText[], parsed: ScraperParseResult): boolean {
+  return pages.length >= 40 && parsed.questions.length >= 40 && parsed.modules.length <= 1 && looksBluebook(pages);
+}
+
+function isStrongMathQuestion(q: ScraperParseResult["questions"][number]): boolean {
+  const text = q.prompt + " " + q.choices.map((c) => c.text).join(" ");
+  return /\b(equation|expression|solution|slope|function|triangle|circle|radius|diameter|quadratic|perpendicular|coordinate|xy-plane|kilograms?|joules?|inches?|centimeters?|area|perimeter|percent|system of equations)\b/i.test(text) ||
+    /\$[^$]*(?:=|\\frac|\\sqrt|\^|[<>])[^$]*\$/.test(text);
+}
+
+function recoverScreenshotIds(questions: FullTestQuestion[]): void {
+  // A screenshot badge can lose its last digit ("321" → "32"). If both
+  // neighboring IDs agree on the single missing value, restore it and keep
+  // the correction visible for review.
+  for (let i = 1; i < questions.length - 1; i++) {
+    const q = questions[i]!;
+    const prev = questions[i - 1]!;
+    const next = questions[i + 1]!;
+    if (q.sourceQuestionNumber <= 0 || prev.sourceQuestionNumber <= 0 || next.sourceQuestionNumber <= 0) continue;
+    const expected = prev.sourceQuestionNumber + 1;
+    if (
+      next.sourceQuestionNumber === expected + 1 &&
+      q.sourceQuestionNumber !== expected &&
+      String(expected).startsWith(String(q.sourceQuestionNumber))
+    ) {
+      q.sourceQuestionNumber = expected;
+      q.sourceQuestionNumberOrigin = "inferred";
+      q.parseFlags = [...new Set([...q.parseFlags, "question_id_recovered_from_neighbors"])];
+    }
+  }
 }
 
 /** Map ContentScope + TargetModule to a set of module name substrings to keep. */
@@ -85,6 +120,66 @@ export function parseFullTest(
 ): FullTestParseResult {
   // 1. Run the base parser
   const base: ScraperParseResult = parseScraperQuestions(pages);
+  const screenshotCompilation = looksLikeScreenshotCompilation(pages, base);
+
+  if (screenshotCompilation) {
+    // Replay pages with a visible question marker that the streaming parser
+    // did not emit. Screenshot collections usually place one question on a
+    // page; page replay recovers a block that was accidentally absorbed as a
+    // continuation of the preceding page's last choice.
+    const emittedPages = new Set(base.questions.filter((q) => q.choices.length >= 2).map((q) => q.pageNumber));
+    for (const page of pages) {
+      if (emittedPages.has(page.pageNumber)) continue;
+      if (!/^\s*(?:\*{0,2}\d{1,4}\*{0,2}[.)]?\s+\S|\d{1,3}\s+mark\s+for\s+review)/im.test(page.text)) continue;
+      const replay = parseScraperQuestions([{ pageNumber: page.pageNumber, text: page.text }]);
+      const recovered = replay.questions.find((q) => q.prompt.length >= 20 && q.choices.length >= 2);
+      if (recovered) {
+        recovered.parseFlags = [...new Set([...recovered.parseFlags, "recovered_from_page_replay"])];
+        base.questions.push(recovered);
+        emittedPages.add(page.pageNumber);
+      }
+    }
+
+    // These compilations often omit module headings. Detect the contiguous
+    // transition to math from a short run of strong SAT-math signals.
+    let mathStart = -1;
+    for (let i = 20; i <= base.questions.length - 5; i++) {
+      const window = base.questions.slice(i, i + 5);
+      if (window.filter(isStrongMathQuestion).length >= 3) {
+        mathStart = i;
+        break;
+      }
+    }
+    if (mathStart >= 0) {
+      base.questions.forEach((q, i) => {
+        q.section = i >= mathStart ? "math" : "reading_writing";
+        q.sourceModuleName = i >= mathStart ? "Math Module 1" : "Reading and Writing Module 1";
+        q.sourceModulePosition = 1;
+      });
+      const grouped = new Map<string, ScraperParseResult["modules"][number]>();
+      for (const q of base.questions) {
+        const existing = grouped.get(q.sourceModuleName);
+        if (existing) {
+          existing.questionCount++;
+          existing.startPage = Math.min(existing.startPage, q.pageNumber);
+          existing.endPage = Math.max(existing.endPage, q.pageNumber);
+        } else {
+          grouped.set(q.sourceModuleName, {
+            name: q.sourceModuleName,
+            section: q.section,
+            questionCount: 1,
+            startPage: q.pageNumber,
+            endPage: q.pageNumber,
+          });
+        }
+      }
+      base.modules.splice(0, base.modules.length, ...grouped.values());
+    } else {
+      for (const q of base.questions) {
+        q.parseFlags = [...new Set([...q.parseFlags, "screenshot_section_unresolved"])];
+      }
+    }
+  }
 
   // 2. Parse answer keys with module support
   const parsedKey = parseAnswerKey(pages, base.questions.length);
@@ -157,6 +252,8 @@ export function parseFullTest(
     .filter((q) => keepModule(q.sourceModuleName))
     .map((q) => ({
       sourceQuestionNumber: q.sourceQuestionNumber,
+      sourceQuestionNumberOrigin: q.sourceQuestionNumberOrigin,
+      parseFlags: [...q.parseFlags],
       sourceModuleName: q.sourceModuleName,
       sourceModulePosition: q.sourceModulePosition,
       sourceQuestionId: null,
@@ -182,6 +279,7 @@ export function parseFullTest(
   // (stripped from the prompt); unnumbered questions get -1 so they never
   // auto-match a key.
   const bankLike =
+    screenshotCompilation ||
     !looksBluebook(pages) &&
     (parsedKey.entries.some((e) => e.questionNumber > 150) ||
       base.modules.some((m) => m.questionCount > 34) ||
@@ -201,17 +299,21 @@ export function parseFullTest(
     // Renumber by printed prefix only when prefixes actually exist —
     // otherwise (Bluebook-style prompts) positional seq is more reliable.
     const prefixed = filteredQuestions.filter((q) => BANK_PRINTED_RE.test(q.prompt)).length;
-    if (prefixed >= Math.max(4, filteredQuestions.length * 0.4)) {
+    if (screenshotCompilation || prefixed >= Math.max(4, filteredQuestions.length * 0.4)) {
       for (const q of filteredQuestions) {
         const m = q.prompt.match(BANK_PRINTED_RE);
         if (m) {
           q.sourceQuestionNumber = Number(m[1]);
+          q.sourceQuestionNumberOrigin = "observed";
           q.prompt = q.prompt.slice(m[0].length).trim();
         } else {
           q.sourceQuestionNumber = -1;
+          q.sourceQuestionNumberOrigin = "inferred";
+          q.parseFlags = [...new Set([...q.parseFlags, "source_question_id_unresolved"])];
         }
       }
     }
+    if (screenshotCompilation) recoverScreenshotIds(filteredQuestions);
     const merged = new Map<string, (typeof base.modules)[number]>();
     for (const m of base.modules) {
       const name = bankName(m.name);
@@ -225,6 +327,16 @@ export function parseFullTest(
     }
     base.modules.length = 0;
     base.modules.push(...merged.values());
+  }
+
+  // In screenshot banks the printed question IDs are global and answer keys
+  // may be columnar with no section label. Scope a key only when exactly one
+  // parsed question has that ID; ambiguous IDs remain global for diagnostics.
+  if (screenshotCompilation) {
+    for (const entry of parsedKey.entries) {
+      const candidates = filteredQuestions.filter((q) => q.sourceQuestionNumber === entry.questionNumber);
+      if (candidates.length === 1) entry.moduleName = candidates[0]!.sourceModuleName;
+    }
   }
 
   const keyMap = answerMap(parsedKey);
@@ -284,5 +396,6 @@ export function parseFullTest(
     method,
     scope: options.contentScope,
     targetModule: options.targetModule ?? null,
+    documentFamily: screenshotCompilation ? "screenshot_compilation" : bankLike ? "question_bank" : options.contentScope === "full_test" ? "full_test" : "section_test",
   };
 }

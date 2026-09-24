@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-09-14T15:08:35.518Z",
+  "generatedAt": "2026-09-24T03:05:35.665Z",
   "summary": {
-    "scanned": 139,
-    "success": 54,
-    "partial": 11,
-    "needsOcr": 74,
+    "scanned": 132,
+    "success": 58,
+    "partial": 6,
+    "needsOcr": 68,
     "failed": 0
   },
   "files": [
@@ -224,29 +224,6 @@
       ]
     },
     {
-      "file": "SAT Suite Question Bank - Math - Hard - With.pdf",
-      "path": "Digital SAT Tests/2023/SAT Suite Question Bank - Math - Hard - With.pdf",
-      "pages": 532,
-      "pagesNeedingOcr": 9,
-      "textQuality": "good",
-      "method": "text",
-      "parser": "full-test",
-      "status": "success",
-      "questions": 63,
-      "modules": {
-        "Math Module 1": 63
-      },
-      "moduleNames": [
-        "Math Module 1"
-      ],
-      "keyEntries": 0,
-      "keyConfidence": 0,
-      "bank": false,
-      "notes": [
-        "no answer key entries found"
-      ]
-    },
-    {
       "file": "2024 03 1.pdf",
       "path": "Digital SAT Tests/2024 03/2024 03 1.pdf",
       "pages": 102,
@@ -277,9 +254,11 @@
       "status": "needs_ocr",
       "questions": 0,
       "modules": {
+        "Math Module 1": 0,
         "Math Module 2": 0
       },
       "moduleNames": [
+        "Math Module 1",
         "Math Module 2"
       ],
       "keyEntries": 0,
@@ -319,12 +298,12 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 51,
+      "questions": 54,
       "modules": {
-        "Reading and Writing Module 1": 51
+        "Question Bank – Reading and Writing": 54
       },
       "moduleNames": [
-        "Reading and Writing Module 1"
+        "Question Bank – Reading and Writing"
       ],
       "keyEntries": 0,
       "keyConfidence": 0,
@@ -343,8 +322,12 @@
       "parser": "full-test",
       "status": "needs_ocr",
       "questions": 0,
-      "modules": {},
-      "moduleNames": [],
+      "modules": {
+        "Reading and Writing Module 2": 0
+      },
+      "moduleNames": [
+        "Reading and Writing Module 2"
+      ],
       "keyEntries": 0,
       "keyConfidence": 0,
       "bank": false,
@@ -418,26 +401,6 @@
       ]
     },
     {
-      "file": "2024 06 Int 3.2.pdf",
-      "path": "Digital SAT Tests/2024 06/2024 06 Int 3.2.pdf",
-      "pages": 55,
-      "pagesNeedingOcr": 55,
-      "textQuality": "poor",
-      "method": "text",
-      "parser": "full-test",
-      "status": "needs_ocr",
-      "questions": 0,
-      "modules": {},
-      "moduleNames": [],
-      "keyEntries": 0,
-      "keyConfidence": 0,
-      "bank": false,
-      "notes": [
-        "high OCR-need ratio (1%) suggests image-heavy PDF",
-        "no answer key entries found"
-      ]
-    },
-    {
       "file": "2024 06 Int 4.pdf",
       "path": "Digital SAT Tests/2024 06/2024 06 Int 4.pdf",
       "pages": 87,
@@ -486,12 +449,12 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 59,
+      "questions": 93,
       "modules": {
         "Reading and Writing Module 1": 27,
-        "Reading and Writing Module 2": 26,
-        "Math Module 1": 1,
-        "Math Module 2": 5
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 20,
+        "Math Module 2": 19
       },
       "moduleNames": [
         "Reading and Writing Module 1",
@@ -499,8 +462,8 @@
         "Math Module 1",
         "Math Module 2"
       ],
-      "keyEntries": 99,
-      "keyConfidence": 1,
+      "keyEntries": 98,
+      "keyConfidence": 0.95,
       "bank": false,
       "notes": []
     },
@@ -582,13 +545,12 @@
         "Math Module 1",
         "Math Module 2"
       ],
-      "keyEntries": 0,
-      "keyConfidence": 0,
+      "keyEntries": 18,
+      "keyConfidence": 1,
       "bank": false,
       "notes": [
         "only 4 questions parsed; likely needs OCR for full coverage",
-        "high OCR-need ratio (1%) suggests image-heavy PDF",
-        "no answer key entries found"
+        "high OCR-need ratio (1%) suggests image-heavy PDF"
       ]
     },
     {
@@ -600,25 +562,19 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 56,
+      "questions": 83,
       "modules": {
-        "Reading and Writing Module 1": 26,
-        "Reading and Writing Module 2": 27,
-        "Math Module 1": 1,
-        "Math Module 2": 2
+        "Question Bank – Reading and Writing": 54,
+        "Question Bank – Math": 29
       },
       "moduleNames": [
-        "Reading and Writing Module 1",
-        "Reading and Writing Module 2",
-        "Math Module 1",
-        "Math Module 2"
+        "Question Bank – Reading and Writing",
+        "Question Bank – Math"
       ],
-      "keyEntries": 1,
-      "keyConfidence": 0.01,
+      "keyEntries": 69,
+      "keyConfidence": 0.75,
       "bank": false,
-      "notes": [
-        "low key confidence (1%)"
-      ]
+      "notes": []
     },
     {
       "file": "202408usv3.pdf",
@@ -629,21 +585,17 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 51,
+      "questions": 54,
       "modules": {
-        "Reading and Writing Module 1": 24,
-        "Reading and Writing Module 2": 27
+        "Question Bank – Reading and Writing": 54
       },
       "moduleNames": [
-        "Reading and Writing Module 1",
-        "Reading and Writing Module 2"
+        "Question Bank – Reading and Writing"
       ],
-      "keyEntries": 1,
-      "keyConfidence": 0.01,
+      "keyEntries": 54,
+      "keyConfidence": 0.9,
       "bank": false,
-      "notes": [
-        "low key confidence (1%)"
-      ]
+      "notes": []
     },
     {
       "file": "202408usv4.pdf",
@@ -754,21 +706,17 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 53,
+      "questions": 54,
       "modules": {
-        "Reading and Writing Module 1": 25,
-        "Reading and Writing Module 2": 28
+        "Question Bank – Reading and Writing": 54
       },
       "moduleNames": [
-        "Reading and Writing Module 1",
-        "Reading and Writing Module 2"
+        "Question Bank – Reading and Writing"
       ],
-      "keyEntries": 1,
-      "keyConfidence": 0.01,
+      "keyEntries": 54,
+      "keyConfidence": 0.9,
       "bank": false,
-      "notes": [
-        "low key confidence (1%)"
-      ]
+      "notes": []
     },
     {
       "file": "202410usv1.pdf",
@@ -819,20 +767,18 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 50,
+      "questions": 54,
       "modules": {
-        "Reading and Writing Module 1": 23,
-        "Reading and Writing Module 2": 27
+        "Question Bank – Reading and Writing": 54
       },
       "moduleNames": [
-        "Reading and Writing Module 1",
-        "Reading and Writing Module 2"
+        "Question Bank – Reading and Writing"
       ],
-      "keyEntries": 1,
-      "keyConfidence": 0.01,
+      "keyEntries": 0,
+      "keyConfidence": 0,
       "bank": false,
       "notes": [
-        "low key confidence (1%)"
+        "no answer key entries found"
       ]
     },
     {
@@ -890,19 +836,15 @@
       "status": "success",
       "questions": 54,
       "modules": {
-        "Reading and Writing Module 1": 25,
-        "Reading and Writing Module 2": 29
+        "Question Bank – Reading and Writing": 54
       },
       "moduleNames": [
-        "Reading and Writing Module 1",
-        "Reading and Writing Module 2"
+        "Question Bank – Reading and Writing"
       ],
-      "keyEntries": 1,
-      "keyConfidence": 0.01,
+      "keyEntries": 54,
+      "keyConfidence": 0.9,
       "bank": false,
-      "notes": [
-        "low key confidence (1%)"
-      ]
+      "notes": []
     },
     {
       "file": "202411asiav3.pdf",
@@ -993,12 +935,12 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 57,
+      "questions": 83,
       "modules": {
-        "Reading and Writing Module 1": 26,
-        "Reading and Writing Module 2": 24,
-        "Math Module 1": 5,
-        "Math Module 2": 2
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 26,
+        "Math Module 1": 19,
+        "Math Module 2": 11
       },
       "moduleNames": [
         "Reading and Writing Module 1",
@@ -1006,12 +948,10 @@
         "Math Module 1",
         "Math Module 2"
       ],
-      "keyEntries": 30,
-      "keyConfidence": 0.47,
+      "keyEntries": 95,
+      "keyConfidence": 1,
       "bank": false,
-      "notes": [
-        "low key confidence (47%)"
-      ]
+      "notes": []
     },
     {
       "file": "202412aisav2.pdf",
@@ -1082,21 +1022,17 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 54,
+      "questions": 85,
       "modules": {
-        "Reading and Writing Module 1": 23,
-        "Reading and Writing Module 2": 27,
-        "Math Module 1": 3,
-        "Math Module 2": 1
+        "Question Bank – Reading and Writing": 53,
+        "Question Bank – Math": 32
       },
       "moduleNames": [
-        "Reading and Writing Module 1",
-        "Reading and Writing Module 2",
-        "Math Module 1",
-        "Math Module 2"
+        "Question Bank – Reading and Writing",
+        "Question Bank – Math"
       ],
-      "keyEntries": 34,
-      "keyConfidence": 0.57,
+      "keyEntries": 72,
+      "keyConfidence": 0.76,
       "bank": false,
       "notes": []
     },
@@ -1109,12 +1045,12 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 56,
+      "questions": 80,
       "modules": {
-        "Reading and Writing Module 1": 26,
+        "Reading and Writing Module 1": 27,
         "Reading and Writing Module 2": 26,
-        "Math Module 1": 3,
-        "Math Module 2": 1
+        "Math Module 1": 16,
+        "Math Module 2": 11
       },
       "moduleNames": [
         "Reading and Writing Module 1",
@@ -1122,12 +1058,10 @@
         "Math Module 1",
         "Math Module 2"
       ],
-      "keyEntries": 26,
-      "keyConfidence": 0.42,
+      "keyEntries": 93,
+      "keyConfidence": 1,
       "bank": false,
-      "notes": [
-        "low key confidence (42%)"
-      ]
+      "notes": []
     },
     {
       "file": "202503asiav1.pdf",
@@ -1138,12 +1072,12 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 55,
+      "questions": 86,
       "modules": {
         "Reading and Writing Module 1": 27,
-        "Reading and Writing Module 2": 23,
-        "Math Module 1": 3,
-        "Math Module 2": 2
+        "Reading and Writing Module 2": 25,
+        "Math Module 1": 15,
+        "Math Module 2": 19
       },
       "moduleNames": [
         "Reading and Writing Module 1",
@@ -1151,8 +1085,8 @@
         "Math Module 1",
         "Math Module 2"
       ],
-      "keyEntries": 40,
-      "keyConfidence": 0.65,
+      "keyEntries": 98,
+      "keyConfidence": 1,
       "bank": false,
       "notes": []
     },
@@ -1165,12 +1099,12 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 52,
+      "questions": 85,
       "modules": {
         "Reading and Writing Module 1": 27,
-        "Reading and Writing Module 2": 21,
-        "Math Module 1": 2,
-        "Math Module 2": 2
+        "Reading and Writing Module 2": 25,
+        "Math Module 1": 13,
+        "Math Module 2": 20
       },
       "moduleNames": [
         "Reading and Writing Module 1",
@@ -1178,12 +1112,10 @@
         "Math Module 1",
         "Math Module 2"
       ],
-      "keyEntries": 28,
-      "keyConfidence": 0.48,
+      "keyEntries": 84,
+      "keyConfidence": 0.89,
       "bank": false,
-      "notes": [
-        "low key confidence (48%)"
-      ]
+      "notes": []
     },
     {
       "file": "202503asiav3.pdf",
@@ -1194,25 +1126,19 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 53,
+      "questions": 83,
       "modules": {
-        "Reading and Writing Module 1": 26,
-        "Reading and Writing Module 2": 24,
-        "Math Module 1": 2,
-        "Math Module 2": 1
+        "Question Bank – Reading and Writing": 52,
+        "Question Bank – Math": 31
       },
       "moduleNames": [
-        "Reading and Writing Module 1",
-        "Reading and Writing Module 2",
-        "Math Module 1",
-        "Math Module 2"
+        "Question Bank – Reading and Writing",
+        "Question Bank – Math"
       ],
-      "keyEntries": 25,
-      "keyConfidence": 0.42,
+      "keyEntries": 93,
+      "keyConfidence": 1,
       "bank": false,
-      "notes": [
-        "low key confidence (42%)"
-      ]
+      "notes": []
     },
     {
       "file": "202503asiav4.pdf",
@@ -1222,20 +1148,18 @@
       "textQuality": "good",
       "method": "text",
       "parser": "full-test",
-      "status": "partial",
-      "questions": 2,
+      "status": "success",
+      "questions": 55,
       "modules": {
-        "Reading and Writing Module 1": 2
+        "Question Bank – Reading and Writing": 55
       },
       "moduleNames": [
-        "Reading and Writing Module 1"
+        "Question Bank – Reading and Writing"
       ],
       "keyEntries": 0,
       "keyConfidence": 0,
       "bank": false,
       "notes": [
-        "only 2 questions parsed; likely needs OCR for full coverage",
-        "high OCR-need ratio (1%) suggests image-heavy PDF",
         "no answer key entries found"
       ]
     },
@@ -1247,20 +1171,19 @@
       "textQuality": "good",
       "method": "text",
       "parser": "full-test",
-      "status": "partial",
-      "questions": 4,
+      "status": "success",
+      "questions": 63,
       "modules": {
-        "Reading and Writing Module 1": 4
+        "Question Bank – Reading and Writing": 63
       },
       "moduleNames": [
-        "Reading and Writing Module 1"
+        "Question Bank – Reading and Writing"
       ],
-      "keyEntries": 0,
-      "keyConfidence": 0,
+      "keyEntries": 1,
+      "keyConfidence": 0.01,
       "bank": false,
       "notes": [
-        "only 4 questions parsed; likely needs OCR for full coverage",
-        "no answer key entries found"
+        "low key confidence (1%)"
       ]
     },
     {
@@ -1291,19 +1214,18 @@
       "textQuality": "good",
       "method": "text",
       "parser": "full-test",
-      "status": "partial",
-      "questions": 4,
+      "status": "success",
+      "questions": 66,
       "modules": {
-        "Reading and Writing Module 1": 4
+        "Question Bank – Reading and Writing": 66
       },
       "moduleNames": [
-        "Reading and Writing Module 1"
+        "Question Bank – Reading and Writing"
       ],
       "keyEntries": 0,
       "keyConfidence": 0,
       "bank": false,
       "notes": [
-        "only 4 questions parsed; likely needs OCR for full coverage",
         "no answer key entries found"
       ]
     },
@@ -1315,19 +1237,18 @@
       "textQuality": "good",
       "method": "text",
       "parser": "full-test",
-      "status": "partial",
-      "questions": 4,
+      "status": "success",
+      "questions": 67,
       "modules": {
-        "Reading and Writing Module 1": 4
+        "Question Bank – Reading and Writing": 67
       },
       "moduleNames": [
-        "Reading and Writing Module 1"
+        "Question Bank – Reading and Writing"
       ],
       "keyEntries": 0,
       "keyConfidence": 0,
       "bank": false,
       "notes": [
-        "only 4 questions parsed; likely needs OCR for full coverage",
         "no answer key entries found"
       ]
     },
@@ -1340,12 +1261,12 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 54,
+      "questions": 84,
       "modules": {
         "Reading and Writing Module 1": 25,
-        "Reading and Writing Module 2": 25,
-        "Math Module 1": 3,
-        "Math Module 2": 1
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 18,
+        "Math Module 2": 14
       },
       "moduleNames": [
         "Reading and Writing Module 1",
@@ -1353,8 +1274,8 @@
         "Math Module 1",
         "Math Module 2"
       ],
-      "keyEntries": 32,
-      "keyConfidence": 0.53,
+      "keyEntries": 83,
+      "keyConfidence": 0.89,
       "bank": false,
       "notes": []
     },
@@ -1367,25 +1288,19 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 51,
+      "questions": 86,
       "modules": {
-        "Reading and Writing Module 1": 23,
-        "Reading and Writing Module 2": 26,
-        "Math Module 1": 2,
-        "Math Module 2": 0
+        "Question Bank – Reading and Writing": 53,
+        "Question Bank – Math": 33
       },
       "moduleNames": [
-        "Reading and Writing Module 1",
-        "Reading and Writing Module 2",
-        "Math Module 1",
-        "Math Module 2"
+        "Question Bank – Reading and Writing",
+        "Question Bank – Math"
       ],
-      "keyEntries": 17,
-      "keyConfidence": 0.3,
+      "keyEntries": 81,
+      "keyConfidence": 0.85,
       "bank": false,
-      "notes": [
-        "low key confidence (30%)"
-      ]
+      "notes": []
     },
     {
       "file": "202503usv3.pdf",
@@ -1395,20 +1310,19 @@
       "textQuality": "good",
       "method": "text",
       "parser": "full-test",
-      "status": "partial",
-      "questions": 5,
+      "status": "success",
+      "questions": 61,
       "modules": {
-        "Reading and Writing Module 1": 5
+        "Question Bank – Reading and Writing": 61
       },
       "moduleNames": [
-        "Reading and Writing Module 1"
+        "Question Bank – Reading and Writing"
       ],
-      "keyEntries": 0,
-      "keyConfidence": 0,
+      "keyEntries": 1,
+      "keyConfidence": 0.01,
       "bank": false,
       "notes": [
-        "only 5 questions parsed; likely needs OCR for full coverage",
-        "no answer key entries found"
+        "low key confidence (1%)"
       ]
     },
     {
@@ -1420,9 +1334,9 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 52,
+      "questions": 54,
       "modules": {
-        "Reading and Writing Module 1": 23,
+        "Reading and Writing Module 1": 25,
         "Reading and Writing Module 2": 27,
         "Math Module 1": 2
       },
@@ -1431,8 +1345,8 @@
         "Reading and Writing Module 2",
         "Math Module 1"
       ],
-      "keyEntries": 51,
-      "keyConfidence": 0.88,
+      "keyEntries": 54,
+      "keyConfidence": 0.9,
       "bank": false,
       "notes": []
     },
@@ -1445,17 +1359,15 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 50,
+      "questions": 54,
       "modules": {
-        "Reading and Writing Module 1": 23,
-        "Reading and Writing Module 2": 27
+        "Question Bank – Reading and Writing": 54
       },
       "moduleNames": [
-        "Reading and Writing Module 1",
-        "Reading and Writing Module 2"
+        "Question Bank – Reading and Writing"
       ],
-      "keyEntries": 38,
-      "keyConfidence": 0.68,
+      "keyEntries": 54,
+      "keyConfidence": 0.9,
       "bank": false,
       "notes": []
     },
@@ -1488,12 +1400,12 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 51,
+      "questions": 77,
       "modules": {
-        "Reading and Writing Module 1": 25,
-        "Reading and Writing Module 2": 24,
-        "Math Module 1": 2,
-        "Math Module 2": 0
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 25,
+        "Math Module 1": 16,
+        "Math Module 2": 9
       },
       "moduleNames": [
         "Reading and Writing Module 1",
@@ -1501,12 +1413,10 @@
         "Math Module 1",
         "Math Module 2"
       ],
-      "keyEntries": 13,
-      "keyConfidence": 0.23,
+      "keyEntries": 43,
+      "keyConfidence": 0.5,
       "bank": false,
-      "notes": [
-        "low key confidence (23%)"
-      ]
+      "notes": []
     },
     {
       "file": "202505usv2.pdf",
@@ -1516,45 +1426,19 @@
       "textQuality": "good",
       "method": "text",
       "parser": "full-test",
-      "status": "partial",
-      "questions": 9,
+      "status": "success",
+      "questions": 93,
       "modules": {
-        "Reading and Writing Module 1": 9
+        "Question Bank – Reading and Writing": 93
       },
       "moduleNames": [
-        "Reading and Writing Module 1"
+        "Question Bank – Reading and Writing"
       ],
       "keyEntries": 0,
       "keyConfidence": 0,
       "bank": false,
       "notes": [
-        "only 9 questions parsed; likely needs OCR for full coverage",
         "no answer key entries found"
-      ]
-    },
-    {
-      "file": "202506asiav1-rw M2 8A 19D 20 C.pdf",
-      "path": "Digital SAT Tests/2025 06/202506asiav1-rw M2 8A 19D 20 C.pdf",
-      "pages": 23,
-      "pagesNeedingOcr": 1,
-      "textQuality": "good",
-      "method": "text",
-      "parser": "full-test",
-      "status": "success",
-      "questions": 53,
-      "modules": {
-        "Reading and Writing Module 1": 25,
-        "Reading and Writing Module 2": 28
-      },
-      "moduleNames": [
-        "Reading and Writing Module 1",
-        "Reading and Writing Module 2"
-      ],
-      "keyEntries": 17,
-      "keyConfidence": 0.29,
-      "bank": false,
-      "notes": [
-        "low key confidence (29%)"
       ]
     },
     {
@@ -1568,19 +1452,17 @@
       "status": "success",
       "questions": 53,
       "modules": {
-        "Reading and Writing Module 1": 25,
-        "Reading and Writing Module 2": 28
+        "Reading and Writing Module 1": 26,
+        "Reading and Writing Module 2": 27
       },
       "moduleNames": [
         "Reading and Writing Module 1",
         "Reading and Writing Module 2"
       ],
-      "keyEntries": 17,
-      "keyConfidence": 0.29,
+      "keyEntries": 44,
+      "keyConfidence": 0.75,
       "bank": false,
-      "notes": [
-        "low key confidence (29%)"
-      ]
+      "notes": []
     },
     {
       "file": "202506asiav2.pdf",
@@ -1591,12 +1473,12 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 53,
+      "questions": 82,
       "modules": {
-        "Reading and Writing Module 1": 25,
+        "Reading and Writing Module 1": 26,
         "Reading and Writing Module 2": 27,
-        "Math Module 1": 1,
-        "Math Module 2": 0
+        "Math Module 1": 13,
+        "Math Module 2": 16
       },
       "moduleNames": [
         "Reading and Writing Module 1",
@@ -1604,8 +1486,8 @@
         "Math Module 1",
         "Math Module 2"
       ],
-      "keyEntries": 43,
-      "keyConfidence": 0.73,
+      "keyEntries": 74,
+      "keyConfidence": 0.81,
       "bank": false,
       "notes": []
     },
@@ -1618,12 +1500,12 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 55,
+      "questions": 98,
       "modules": {
-        "Reading and Writing Module 1": 25,
+        "Reading and Writing Module 1": 26,
         "Reading and Writing Module 2": 27,
-        "Math Module 1": 1,
-        "Math Module 2": 2
+        "Math Module 1": 22,
+        "Math Module 2": 23
       },
       "moduleNames": [
         "Reading and Writing Module 1",
@@ -1631,8 +1513,8 @@
         "Math Module 1",
         "Math Module 2"
       ],
-      "keyEntries": 33,
-      "keyConfidence": 0.54,
+      "keyEntries": 97,
+      "keyConfidence": 0.89,
       "bank": false,
       "notes": []
     },
@@ -1645,25 +1527,19 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 58,
+      "questions": 91,
       "modules": {
-        "Reading and Writing Module 1": 26,
-        "Reading and Writing Module 2": 28,
-        "Math Module 1": 4,
-        "Math Module 2": 0
+        "Question Bank – Reading and Writing": 54,
+        "Question Bank – Math": 37
       },
       "moduleNames": [
-        "Reading and Writing Module 1",
-        "Reading and Writing Module 2",
-        "Math Module 1",
-        "Math Module 2"
+        "Question Bank – Reading and Writing",
+        "Question Bank – Math"
       ],
-      "keyEntries": 25,
-      "keyConfidence": 0.39,
+      "keyEntries": 79,
+      "keyConfidence": 0.78,
       "bank": false,
-      "notes": [
-        "low key confidence (39%)"
-      ]
+      "notes": []
     },
     {
       "file": "202506usv1.pdf",
@@ -1674,66 +1550,26 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 51,
+      "questions": 54,
       "modules": {
-        "Reading and Writing Module 1": 26,
-        "Reading and Writing Module 2": 25
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27
       },
       "moduleNames": [
         "Reading and Writing Module 1",
         "Reading and Writing Module 2"
       ],
-      "keyEntries": 1,
-      "keyConfidence": 0.01,
+      "keyEntries": 27,
+      "keyConfidence": 0.45,
       "bank": false,
       "notes": [
-        "low key confidence (1%)"
+        "low key confidence (45%)"
       ]
     },
     {
       "file": "202506usv2.pdf",
       "path": "Digital SAT Tests/2025 06/202506usv2.pdf",
       "pages": 99,
-      "pagesNeedingOcr": 98,
-      "textQuality": "poor",
-      "method": "text",
-      "parser": "full-test",
-      "status": "needs_ocr",
-      "questions": 0,
-      "modules": {},
-      "moduleNames": [],
-      "keyEntries": 0,
-      "keyConfidence": 0,
-      "bank": false,
-      "notes": [
-        "high OCR-need ratio (1%) suggests image-heavy PDF",
-        "no answer key entries found"
-      ]
-    },
-    {
-      "file": "SAT June 7th 2025 R&W Module 1 @CookingSAT.pdf",
-      "path": "Digital SAT Tests/2025 06/SAT June 7th 2025 R&W Module 1 @CookingSAT.pdf",
-      "pages": 22,
-      "pagesNeedingOcr": 22,
-      "textQuality": "poor",
-      "method": "text",
-      "parser": "full-test",
-      "status": "needs_ocr",
-      "questions": 0,
-      "modules": {},
-      "moduleNames": [],
-      "keyEntries": 0,
-      "keyConfidence": 0,
-      "bank": false,
-      "notes": [
-        "high OCR-need ratio (1%) suggests image-heavy PDF",
-        "no answer key entries found"
-      ]
-    },
-    {
-      "file": "202508asiav1-screenshot.pdf",
-      "path": "Digital SAT Tests/2025 08/202508asiav1-screenshot.pdf",
-      "pages": 98,
       "pagesNeedingOcr": 98,
       "textQuality": "poor",
       "method": "text",
@@ -1759,12 +1595,12 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 54,
+      "questions": 79,
       "modules": {
         "Reading and Writing Module 1": 25,
         "Reading and Writing Module 2": 27,
-        "Math Module 1": 2,
-        "Math Module 2": 0
+        "Math Module 1": 14,
+        "Math Module 2": 13
       },
       "moduleNames": [
         "Reading and Writing Module 1",
@@ -1772,30 +1608,10 @@
         "Math Module 1",
         "Math Module 2"
       ],
-      "keyEntries": 33,
-      "keyConfidence": 0.55,
+      "keyEntries": 96,
+      "keyConfidence": 1,
       "bank": false,
       "notes": []
-    },
-    {
-      "file": "202508asiav2-rw-screenshot.pdf",
-      "path": "Digital SAT Tests/2025 08/202508asiav2-rw-screenshot.pdf",
-      "pages": 54,
-      "pagesNeedingOcr": 54,
-      "textQuality": "poor",
-      "method": "text",
-      "parser": "full-test",
-      "status": "needs_ocr",
-      "questions": 0,
-      "modules": {},
-      "moduleNames": [],
-      "keyEntries": 0,
-      "keyConfidence": 0,
-      "bank": false,
-      "notes": [
-        "high OCR-need ratio (1%) suggests image-heavy PDF",
-        "no answer key entries found"
-      ]
     },
     {
       "file": "202508asiav2-rw.pdf",
@@ -1806,17 +1622,17 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 53,
+      "questions": 54,
       "modules": {
-        "Reading and Writing Module 1": 26,
+        "Reading and Writing Module 1": 27,
         "Reading and Writing Module 2": 27
       },
       "moduleNames": [
         "Reading and Writing Module 1",
         "Reading and Writing Module 2"
       ],
-      "keyEntries": 55,
-      "keyConfidence": 0.93,
+      "keyEntries": 54,
+      "keyConfidence": 0.9,
       "bank": false,
       "notes": []
     },
@@ -1829,21 +1645,19 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 52,
+      "questions": 54,
       "modules": {
-        "Reading and Writing Module 1": 26,
-        "Reading and Writing Module 2": 26
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27
       },
       "moduleNames": [
         "Reading and Writing Module 1",
         "Reading and Writing Module 2"
       ],
-      "keyEntries": 6,
-      "keyConfidence": 0.1,
+      "keyEntries": 54,
+      "keyConfidence": 0.9,
       "bank": false,
-      "notes": [
-        "low key confidence (10%)"
-      ]
+      "notes": []
     },
     {
       "file": "202508usv1.pdf",
@@ -1926,26 +1740,6 @@
       ]
     },
     {
-      "file": "202509asiav1-rw.pdf",
-      "path": "Digital SAT Tests/2025 09/202509asiav1-rw.pdf",
-      "pages": 55,
-      "pagesNeedingOcr": 55,
-      "textQuality": "poor",
-      "method": "text",
-      "parser": "full-test",
-      "status": "needs_ocr",
-      "questions": 0,
-      "modules": {},
-      "moduleNames": [],
-      "keyEntries": 0,
-      "keyConfidence": 0,
-      "bank": false,
-      "notes": [
-        "high OCR-need ratio (1%) suggests image-heavy PDF",
-        "no answer key entries found"
-      ]
-    },
-    {
       "file": "202509asiav1.pdf",
       "path": "Digital SAT Tests/2025 09/202509asiav1.pdf",
       "pages": 36,
@@ -1954,12 +1748,12 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 50,
+      "questions": 83,
       "modules": {
-        "Reading and Writing Module 1": 25,
-        "Reading and Writing Module 2": 25,
-        "Math Module 1": 0,
-        "Math Module 2": 0
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 11,
+        "Math Module 2": 18
       },
       "moduleNames": [
         "Reading and Writing Module 1",
@@ -1967,8 +1761,8 @@
         "Math Module 1",
         "Math Module 2"
       ],
-      "keyEntries": 33,
-      "keyConfidence": 0.59,
+      "keyEntries": 72,
+      "keyConfidence": 0.78,
       "bank": false,
       "notes": []
     },
@@ -2006,12 +1800,12 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 53,
+      "questions": 78,
       "modules": {
-        "Reading and Writing Module 1": 24,
+        "Reading and Writing Module 1": 26,
         "Reading and Writing Module 2": 27,
-        "Math Module 1": 1,
-        "Math Module 2": 1
+        "Math Module 1": 13,
+        "Math Module 2": 12
       },
       "moduleNames": [
         "Reading and Writing Module 1",
@@ -2019,12 +1813,10 @@
         "Math Module 1",
         "Math Module 2"
       ],
-      "keyEntries": 22,
-      "keyConfidence": 0.37,
+      "keyEntries": 77,
+      "keyConfidence": 0.89,
       "bank": false,
-      "notes": [
-        "low key confidence (37%)"
-      ]
+      "notes": []
     },
     {
       "file": "202509asiav3.pdf",
@@ -2062,18 +1854,20 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 94,
+      "questions": 109,
       "modules": {
-        "Reading and Writing Module 1": 94
+        "Question Bank – Reading and Writing": 54,
+        "Question Bank – Math": 55
       },
       "moduleNames": [
-        "Reading and Writing Module 1"
+        "Question Bank – Reading and Writing",
+        "Question Bank – Math"
       ],
-      "keyEntries": 0,
-      "keyConfidence": 0,
+      "keyEntries": 13,
+      "keyConfidence": 0.11,
       "bank": false,
       "notes": [
-        "no answer key entries found"
+        "low key confidence (11%)"
       ]
     },
     {
@@ -2085,12 +1879,18 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 35,
+      "questions": 85,
       "modules": {
-        "Reading and Writing Module 1": 35
+        "Reading and Writing Module 1": 18,
+        "Reading and Writing Module 2": 22,
+        "Math Module 1": 20,
+        "Math Module 2": 25
       },
       "moduleNames": [
-        "Reading and Writing Module 1"
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
       ],
       "keyEntries": 0,
       "keyConfidence": 0,
@@ -2108,12 +1908,18 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 37,
+      "questions": 86,
       "modules": {
-        "Reading and Writing Module 1": 37
+        "Reading and Writing Module 1": 22,
+        "Reading and Writing Module 2": 21,
+        "Math Module 1": 21,
+        "Math Module 2": 22
       },
       "moduleNames": [
-        "Reading and Writing Module 1"
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
       ],
       "keyEntries": 0,
       "keyConfidence": 0,
@@ -2131,12 +1937,14 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 39,
+      "questions": 78,
       "modules": {
-        "Reading and Writing Module 1": 39
+        "Question Bank – Reading and Writing": 54,
+        "Question Bank – Math": 24
       },
       "moduleNames": [
-        "Reading and Writing Module 1"
+        "Question Bank – Reading and Writing",
+        "Question Bank – Math"
       ],
       "keyEntries": 0,
       "keyConfidence": 0,
@@ -2154,12 +1962,18 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 40,
+      "questions": 88,
       "modules": {
-        "Reading and Writing Module 1": 40
+        "Reading and Writing Module 1": 22,
+        "Reading and Writing Module 2": 22,
+        "Math Module 1": 23,
+        "Math Module 2": 21
       },
       "moduleNames": [
-        "Reading and Writing Module 1"
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
       ],
       "keyEntries": 0,
       "keyConfidence": 0,
@@ -2177,12 +1991,18 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 38,
+      "questions": 85,
       "modules": {
-        "Reading and Writing Module 1": 38
+        "Reading and Writing Module 1": 19,
+        "Reading and Writing Module 2": 22,
+        "Math Module 1": 18,
+        "Math Module 2": 26
       },
       "moduleNames": [
-        "Reading and Writing Module 1"
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
       ],
       "keyEntries": 0,
       "keyConfidence": 0,
@@ -2200,12 +2020,18 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 38,
+      "questions": 88,
       "modules": {
-        "Reading and Writing Module 1": 38
+        "Reading and Writing Module 1": 21,
+        "Reading and Writing Module 2": 22,
+        "Math Module 1": 18,
+        "Math Module 2": 27
       },
       "moduleNames": [
-        "Reading and Writing Module 1"
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
       ],
       "keyEntries": 0,
       "keyConfidence": 0,
@@ -2223,21 +2049,17 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 55,
+      "questions": 83,
       "modules": {
-        "Reading and Writing Module 1": 24,
-        "Reading and Writing Module 2": 29,
-        "Math Module 1": 1,
-        "Math Module 2": 1
+        "Question Bank – Reading and Writing": 54,
+        "Question Bank – Math": 29
       },
       "moduleNames": [
-        "Reading and Writing Module 1",
-        "Reading and Writing Module 2",
-        "Math Module 1",
-        "Math Module 2"
+        "Question Bank – Reading and Writing",
+        "Question Bank – Math"
       ],
-      "keyEntries": 40,
-      "keyConfidence": 0.65,
+      "keyEntries": 98,
+      "keyConfidence": 1,
       "bank": false,
       "notes": []
     },
@@ -2250,12 +2072,12 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 54,
+      "questions": 76,
       "modules": {
-        "Reading and Writing Module 1": 26,
+        "Reading and Writing Module 1": 27,
         "Reading and Writing Module 2": 26,
-        "Math Module 1": 2,
-        "Math Module 2": 0
+        "Math Module 1": 14,
+        "Math Module 2": 9
       },
       "moduleNames": [
         "Reading and Writing Module 1",
@@ -2263,8 +2085,8 @@
         "Math Module 1",
         "Math Module 2"
       ],
-      "keyEntries": 34,
-      "keyConfidence": 0.57,
+      "keyEntries": 96,
+      "keyConfidence": 1,
       "bank": false,
       "notes": []
     },
@@ -2277,12 +2099,12 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 52,
+      "questions": 81,
       "modules": {
-        "Reading and Writing Module 1": 25,
+        "Reading and Writing Module 1": 27,
         "Reading and Writing Module 2": 27,
-        "Math Module 1": 0,
-        "Math Module 2": 0
+        "Math Module 1": 16,
+        "Math Module 2": 11
       },
       "moduleNames": [
         "Reading and Writing Module 1",
@@ -2290,8 +2112,8 @@
         "Math Module 1",
         "Math Module 2"
       ],
-      "keyEntries": 29,
-      "keyConfidence": 0.5,
+      "keyEntries": 86,
+      "keyConfidence": 0.96,
       "bank": false,
       "notes": []
     },
@@ -2344,12 +2166,14 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 52,
+      "questions": 103,
       "modules": {
-        "Reading and Writing Module 1": 52
+        "Question Bank – Reading and Writing": 71,
+        "Question Bank – Math": 32
       },
       "moduleNames": [
-        "Reading and Writing Module 1"
+        "Question Bank – Reading and Writing",
+        "Question Bank – Math"
       ],
       "keyEntries": 0,
       "keyConfidence": 0,
@@ -2367,18 +2191,20 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 54,
+      "questions": 106,
       "modules": {
-        "Reading and Writing Module 1": 54
+        "Question Bank – Reading and Writing": 67,
+        "Question Bank – Math": 39
       },
       "moduleNames": [
-        "Reading and Writing Module 1"
+        "Question Bank – Reading and Writing",
+        "Question Bank – Math"
       ],
-      "keyEntries": 0,
+      "keyEntries": 1,
       "keyConfidence": 0,
       "bank": false,
       "notes": [
-        "no answer key entries found"
+        "low key confidence (0%)"
       ]
     },
     {
@@ -2390,21 +2216,17 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 54,
+      "questions": 85,
       "modules": {
-        "Reading and Writing Module 1": 24,
-        "Reading and Writing Module 2": 27,
-        "Math Module 1": 3,
-        "Math Module 2": 0
+        "Question Bank – Reading and Writing": 53,
+        "Question Bank – Math": 32
       },
       "moduleNames": [
-        "Reading and Writing Module 1",
-        "Reading and Writing Module 2",
-        "Math Module 1",
-        "Math Module 2"
+        "Question Bank – Reading and Writing",
+        "Question Bank – Math"
       ],
-      "keyEntries": 34,
-      "keyConfidence": 0.57,
+      "keyEntries": 72,
+      "keyConfidence": 0.76,
       "bank": false,
       "notes": []
     },
@@ -2417,12 +2239,18 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 57,
+      "questions": 95,
       "modules": {
-        "Reading and Writing Module 1": 57
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 28,
+        "Math Module 1": 21,
+        "Math Module 2": 19
       },
       "moduleNames": [
-        "Reading and Writing Module 1"
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
       ],
       "keyEntries": 0,
       "keyConfidence": 0,
@@ -2440,18 +2268,24 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 59,
+      "questions": 96,
       "modules": {
-        "Reading and Writing Module 1": 59
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 21,
+        "Math Module 2": 21
       },
       "moduleNames": [
-        "Reading and Writing Module 1"
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
       ],
-      "keyEntries": 0,
-      "keyConfidence": 0,
+      "keyEntries": 1,
+      "keyConfidence": 0.01,
       "bank": false,
       "notes": [
-        "no answer key entries found"
+        "low key confidence (1%)"
       ]
     },
     {
@@ -2463,12 +2297,12 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 52,
+      "questions": 82,
       "modules": {
-        "Reading and Writing Module 1": 25,
-        "Reading and Writing Module 2": 26,
-        "Math Module 1": 1,
-        "Math Module 2": 0
+        "Reading and Writing Module 1": 26,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 16,
+        "Math Module 2": 13
       },
       "moduleNames": [
         "Reading and Writing Module 1",
@@ -2476,8 +2310,8 @@
         "Math Module 1",
         "Math Module 2"
       ],
-      "keyEntries": 34,
-      "keyConfidence": 0.59,
+      "keyEntries": 99,
+      "keyConfidence": 1,
       "bank": false,
       "notes": []
     },
@@ -2490,12 +2324,12 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 51,
+      "questions": 79,
       "modules": {
         "Reading and Writing Module 1": 27,
-        "Reading and Writing Module 2": 23,
-        "Math Module 1": 1,
-        "Math Module 2": 0
+        "Reading and Writing Module 2": 26,
+        "Math Module 1": 14,
+        "Math Module 2": 12
       },
       "moduleNames": [
         "Reading and Writing Module 1",
@@ -2503,12 +2337,10 @@
         "Math Module 1",
         "Math Module 2"
       ],
-      "keyEntries": 22,
-      "keyConfidence": 0.39,
+      "keyEntries": 91,
+      "keyConfidence": 1,
       "bank": false,
-      "notes": [
-        "low key confidence (39%)"
-      ]
+      "notes": []
     },
     {
       "file": "202512asiav3.pdf",
@@ -2519,21 +2351,19 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 51,
+      "questions": 53,
       "modules": {
         "Reading and Writing Module 1": 27,
-        "Reading and Writing Module 2": 24
+        "Reading and Writing Module 2": 26
       },
       "moduleNames": [
         "Reading and Writing Module 1",
         "Reading and Writing Module 2"
       ],
-      "keyEntries": 18,
-      "keyConfidence": 0.32,
+      "keyEntries": 54,
+      "keyConfidence": 0.92,
       "bank": false,
-      "notes": [
-        "low key confidence (32%)"
-      ]
+      "notes": []
     },
     {
       "file": "202512asiav4.pdf",
@@ -2703,14 +2533,19 @@
       "textQuality": "poor",
       "method": "text",
       "parser": "full-test",
-      "status": "needs_ocr",
-      "questions": 0,
-      "modules": {},
-      "moduleNames": [],
+      "status": "partial",
+      "questions": 9,
+      "modules": {
+        "Reading and Writing Module 1": 9
+      },
+      "moduleNames": [
+        "Reading and Writing Module 1"
+      ],
       "keyEntries": 0,
       "keyConfidence": 0,
       "bank": false,
       "notes": [
+        "only 9 questions parsed; likely needs OCR for full coverage",
         "high OCR-need ratio (1%) suggests image-heavy PDF",
         "no answer key entries found"
       ]
@@ -2896,10 +2731,10 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 50,
+      "questions": 54,
       "modules": {
-        "Reading and Writing Module 1": 25,
-        "Reading and Writing Module 2": 25
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27
       },
       "moduleNames": [
         "Reading and Writing Module 1",
@@ -2921,12 +2756,12 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 52,
+      "questions": 55,
       "modules": {
-        "Reading and Writing Module 1": 52
+        "Question Bank – Reading and Writing": 55
       },
       "moduleNames": [
-        "Reading and Writing Module 1"
+        "Question Bank – Reading and Writing"
       ],
       "keyEntries": 0,
       "keyConfidence": 0,
@@ -2984,18 +2819,24 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 72,
+      "questions": 91,
       "modules": {
-        "Reading and Writing Module 1": 72
+        "Reading and Writing Module 1": 27,
+        "Reading and Writing Module 2": 27,
+        "Math Module 1": 18,
+        "Math Module 2": 19
       },
       "moduleNames": [
-        "Reading and Writing Module 1"
+        "Reading and Writing Module 1",
+        "Reading and Writing Module 2",
+        "Math Module 1",
+        "Math Module 2"
       ],
-      "keyEntries": 0,
-      "keyConfidence": 0,
+      "keyEntries": 1,
+      "keyConfidence": 0.01,
       "bank": false,
       "notes": [
-        "no answer key entries found"
+        "low key confidence (1%)"
       ]
     },
     {
@@ -3007,12 +2848,12 @@
       "method": "text",
       "parser": "full-test",
       "status": "success",
-      "questions": 65,
+      "questions": 69,
       "modules": {
-        "Reading and Writing Module 1": 65
+        "Question Bank – Reading and Writing": 69
       },
       "moduleNames": [
-        "Reading and Writing Module 1"
+        "Question Bank – Reading and Writing"
       ],
       "keyEntries": 0,
       "keyConfidence": 0,
