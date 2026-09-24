@@ -1,11 +1,48 @@
 import { useEffect, useState, type ChangeEvent } from "react";
 import { Link } from "react-router-dom";
 import { supabase, fnJson, getToken } from "../../lib/supabase";
-import type { PdfImport } from "../../lib/types";
+import type { ImportReadinessMetric, PdfImport } from "../../lib/types";
 import { Spinner, fmtDate } from "../../components/ui";
 import { polishTestTitle } from "../../lib/testTitle";
-import { ImportStatus } from "./AdminDashboard";
-import KeyStatusBadge from "../../components/KeyStatusBadge";
+
+function ReadinessBadge({ metric, noun }: { metric: ImportReadinessMetric | undefined; noun: string }) {
+  if (!metric) return <span className="muted">—</span>;
+
+  const label = metric.status === "complete"
+    ? "Complete"
+    : metric.status === "partial"
+      ? "Partial"
+      : metric.status === "failed"
+        ? "Failed"
+        : "Processing";
+  const tone = metric.status === "complete"
+    ? "green"
+    : metric.status === "partial"
+      ? "amber"
+      : metric.status === "failed"
+        ? "red"
+        : "gray";
+  const moduleDetails = metric.modules.map((module) => {
+    const name = module.name
+      .replace("Reading and Writing", "RW")
+      .replace("Module ", "M");
+    return `${name} ${module.actual}/${module.expected}${module.inferred ? " (inferred)" : ""}`;
+  });
+  const detail = [
+    `${metric.actual}/${metric.expected} ${noun}`,
+    ...moduleDetails,
+    ...metric.details,
+  ].join("\n");
+
+  return (
+    <span title={detail} aria-label={`${label}: ${detail}`} tabIndex={0}>
+      <span className={`pill pill-${tone}`}>{label}</span>
+      <span className="muted" style={{ display: "block", fontSize: 12, marginTop: 4 }}>
+        {metric.actual}/{metric.expected}
+      </span>
+    </span>
+  );
+}
 
 export default function ImportsPage() {
   const [imports, setImports] = useState<PdfImport[] | null>(null);
@@ -76,7 +113,7 @@ export default function ImportsPage() {
             <thead>
               <tr>
                 <th>File</th>
-                <th>Status</th>
+                <th>Questions</th>
                 <th>Drafts</th>
                 <th>Answer key</th>
                 <th>Pages</th>
@@ -97,11 +134,9 @@ export default function ImportsPage() {
                         <Link to={`/admin/tests/${im.generated_test_id}/build`} style={{ fontSize: 12 }}>Open full-length test</Link>
                       )}
                     </td>
-                    <td><ImportStatus status={im.status} /></td>
+                    <td><ReadinessBadge metric={im.import_readiness?.questions} noun="questions" /></td>
                     <td>{draftCount}</td>
-                    <td style={{ fontSize: 12.5 }}>
-                      <KeyStatusBadge imp={im} showDetail />
-                    </td>
+                    <td><ReadinessBadge metric={im.import_readiness?.answer_key} noun="keys" /></td>
                     <td>{im.page_count ?? "—"}</td>
                     <td>{im.extraction_method ?? "—"}</td>
                     <td>{fmtDate(im.created_at)}</td>

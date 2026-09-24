@@ -288,6 +288,29 @@ export interface StudentProfile {
   full_name: string | null;
 }
 
+export type ImportReadinessStatus = "complete" | "partial" | "failed" | "processing";
+
+export interface ImportReadinessModule {
+  name: string;
+  actual: number;
+  expected: number;
+  inferred: boolean;
+}
+
+export interface ImportReadinessMetric {
+  status: ImportReadinessStatus;
+  actual: number;
+  expected: 98;
+  modules: ImportReadinessModule[];
+  matchedQuestions?: number;
+  details: string[];
+}
+
+export interface PdfImportReadiness {
+  questions: ImportReadinessMetric;
+  answer_key: ImportReadinessMetric;
+}
+
 export interface PdfImport {
   id: string;
   original_filename: string;
@@ -304,6 +327,7 @@ export interface PdfImport {
   answer_key_status?: "complete" | "partial" | "missing" | null;
   answer_key_summary?: Record<string, { questions: number; keys: number; status: string }> | null;
   draft_counts?: Record<string, number>;
+  import_readiness?: PdfImportReadiness;
   text_quality?: {
     modules?: Record<string, number>;
     key_entries?: number;

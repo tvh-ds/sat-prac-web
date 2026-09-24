@@ -4,6 +4,7 @@ import { corsHeaders, json, error } from "../_shared/cors.ts";
 import { pdfImportCreateSchema, approveDraftSchema, updateDraftSchema } from "../_shared/validation.ts";
 import { approveDraft } from "../_shared/drafts.ts";
 import { moduleGroup, groupByModuleKey } from "../_shared/modules.ts";
+import { summarizePdfImportReadiness, type ImportReadinessDraft } from "../_shared/importReadiness.ts";
 
 const WORKER_URL = Deno.env.get("WORKER_URL");
 const WORKER_AUTH_TOKEN = Deno.env.get("WORKER_AUTH_TOKEN");
@@ -91,28 +92,47 @@ Deno.serve(async (req) => {
         .order("created_at", { ascending: false });
       if (err) return error(err.message, 500);
 
-      const countRows: Array<{ pdf_import_id: string; status: string }> = [];
+      const countRows: Array<ImportReadinessDraft & { pdf_import_id: string; status: string }> = [];
       {
         let offset = 0;
         const PAGE = 1000;
         for (;;) {
           const { data: batch, error: bErr } = await svc
             .from("draft_questions")
-            .select("pdf_import_id, status")
+            .select("id, pdf_import_id, status, page_number, section, source_question_number, source_module_name, source_module_position, suggested_answer, parser_metadata, created_at, answer_keys:draft_answer_keys(detected_answer,status)")
+            .order("pdf_import_id")
+            .order("page_number")
+            .order("source_question_number")
+            .order("created_at")
+            .order("id")
             .range(offset, offset + PAGE - 1);
           if (bErr) return error(bErr.message, 500);
-          countRows.push(...((batch ?? []) as Array<{ pdf_import_id: string; status: string }>));
+          countRows.push(...((batch ?? []) as unknown as Array<ImportReadinessDraft & { pdf_import_id: string; status: string }>));
           if ((batch?.length ?? 0) < PAGE) break;
           offset += PAGE;
         }
       }
-      const countsByImport = new Map<string, Record<string, number>>();
+      const rowsByImport = new Map<string, Array<ImportReadinessDraft & { pdf_import_id: string; status: string }>>();
       for (const r of countRows) {
-        const m = countsByImport.get(r.pdf_import_id) ?? {};
-        m[r.status] = (m[r.status] ?? 0) + 1;
-        countsByImport.set(r.pdf_import_id, m);
+        const rows = rowsByImport.get(r.pdf_import_id) ?? [];
+        rows.push(r);
+        rowsByImport.set(r.pdf_import_id, rows);
       }
-      const imports = (data ?? []).map((row) => ({ ...row, draft_counts: countsByImport.get(row.id) ?? {} }));
+      const imports = (data ?? []).map((row) => {
+        const rows = rowsByImport.get(row.id) ?? [];
+        const draft_counts: Record<string, number> = {};
+        for (const draft of rows) draft_counts[draft.status] = (draft_counts[draft.status] ?? 0) + 1;
+        const quality = (row.text_quality ?? {}) as { key_entries?: number | null };
+        return {
+          ...row,
+          draft_counts,
+          import_readiness: summarizePdfImportReadiness({
+            importStatus: row.status,
+            drafts: rows,
+            rawKeyEntries: quality.key_entries,
+          }),
+        };
+      });
       return json({ imports });
     }
 
