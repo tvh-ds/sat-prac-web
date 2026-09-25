@@ -22,7 +22,7 @@ interface AdminStudent {
   id: string;
   email: string | null;
   full_name: string | null;
-  is_active: boolean;
+  profile_status: "incomplete" | "pending" | "approved" | null;
   created_at: string;
 }
 
@@ -51,7 +51,7 @@ export default function AdminDashboard() {
   if (!stats) return <Spinner />;
 
   const pendingImports = stats.imports.filter((im) => !["completed", "failed", "cancelled"].includes(im.status)).length;
-  const activeStudents = stats.students.filter((s) => s.is_active).length;
+  const studentCount = stats.students.length;
   const totalCorrect = stats.progress.reduce((a, s) => a + s.total_questions_correct, 0);
   const totalAttempted = stats.progress.reduce((a, s) => a + s.total_questions_attempted, 0);
   const overallAccuracy = totalAttempted > 0 ? Math.round((totalCorrect / totalAttempted) * 1000) / 10 : null;
@@ -78,9 +78,9 @@ export default function AdminDashboard() {
       <div className="stat-grid">
         <div className="stat-card reveal">
           <div className="ico"><GraduationCap size={20} strokeWidth={1.7} /></div>
-          <div className="num" data-countup={activeStudents}>{activeStudents}</div>
-          <div className="lbl">Active students</div>
-          <div className="arch-meta">{activeStudents} active of {stats.students.length} total</div>
+          <div className="num" data-countup={studentCount}>{studentCount}</div>
+          <div className="lbl">Students on roster</div>
+          <div className="arch-meta">All student accounts</div>
         </div>
         <div className="stat-card reveal">
           <div className="ico"><Activity size={20} strokeWidth={1.7} /></div>

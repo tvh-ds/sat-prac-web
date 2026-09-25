@@ -286,6 +286,12 @@ export interface StudentProfile {
   id: string;
   role: "admin" | "student";
   full_name: string | null;
+  phone_number?: string | null;
+  parent_name?: string | null;
+  parent_phone_number?: string | null;
+  profile_status?: "incomplete" | "pending" | "approved";
+  profile_submitted_at?: string | null;
+  profile_approved_at?: string | null;
 }
 
 export type ImportReadinessStatus = "complete" | "partial" | "failed" | "processing";

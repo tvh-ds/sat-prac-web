@@ -537,11 +537,35 @@ function ManualDraftModal({
   const [prompt, setPrompt] = useState("");
   const [passage, setPassage] = useState("");
   const [answer, setAnswer] = useState("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [choices, setChoices] = useState([
     { label: "A", text: "" }, { label: "B", text: "" }, { label: "C", text: "" }, { label: "D", text: "" },
   ]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!imageFile) {
+      setImagePreview(null);
+      return;
+    }
+    const url = URL.createObjectURL(imageFile);
+    setImagePreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [imageFile]);
+
+  function selectStimulus(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0] ?? null;
+    event.target.value = "";
+    if (!file) return;
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type) || file.size > 10 * 1024 * 1024) {
+      setError("Choose a PNG, JPEG, or WebP image under 10 MB.");
+      return;
+    }
+    setError(null);
+    setImageFile(file);
+  }
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -557,8 +581,18 @@ function ManualDraftModal({
     }
     setBusy(true);
     setError(null);
+    let uploadedPath: string | null = null;
     try {
       const token = await getToken();
+      if (imageFile) {
+        const extension = imageFile.type === "image/jpeg" ? "jpg" : imageFile.type === "image/webp" ? "webp" : "png";
+        uploadedPath = `imports/${importId}/manual-stimuli/${crypto.randomUUID()}.${extension}`;
+        const { error: uploadError } = await supabase.storage.from("question-assets").upload(uploadedPath, imageFile, {
+          contentType: imageFile.type,
+          upsert: false,
+        });
+        if (uploadError) throw new Error(`Image upload failed: ${uploadError.message}`);
+      }
       const response = await fnJson<{ draft: DraftQuestion }>(`admin-pdf-imports/${importId}/drafts`, {
         method: "POST",
         token,
@@ -568,6 +602,7 @@ function ManualDraftModal({
           prompt: prompt.trim(),
           passage_text: passage.trim() || null,
           suggested_answer: answer.trim() || null,
+          stimulus_image_path: uploadedPath,
           choices: questionType === "multiple_choice"
             ? choices.map((choice, index) => ({ ...choice, position: index + 1 }))
             : [],
@@ -575,6 +610,7 @@ function ManualDraftModal({
       });
       onCreated(response.draft);
     } catch (err) {
+      if (uploadedPath) await supabase.storage.from("question-assets").remove([uploadedPath]).catch(() => undefined);
       setError(err instanceof Error ? err.message : "Unable to create draft.");
       setBusy(false);
     }
@@ -605,6 +641,18 @@ function ManualDraftModal({
         <div>
           <label className="field-label">Passage (optional)</label>
           <textarea className="textarea" rows={4} value={passage} onChange={(event) => setPassage(event.target.value)} placeholder="Add a shared passage for this question" />
+        </div>
+        <div className="panel" style={{ padding: 12 }}>
+          <label className="field-label">Stimulus image (optional)</label>
+          {imagePreview && <img src={imagePreview} alt="Selected question stimulus preview" style={{ display: "block", maxWidth: "100%", maxHeight: 240, objectFit: "contain", margin: "8px 0", borderRadius: 8 }} />}
+          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+            <label className="btn btn-outline btn-sm" style={{ cursor: busy ? "not-allowed" : "pointer" }}>
+              {imageFile ? "Choose another image" : "Add stimulus image"}
+              <input type="file" accept="image/png,image/jpeg,image/webp" onChange={selectStimulus} disabled={busy} style={{ display: "none" }} />
+            </label>
+            {imageFile && <Button type="button" size="sm" variant="ghost" disabled={busy} onClick={() => setImageFile(null)}>Remove selected image</Button>}
+          </div>
+          <p className="muted" style={{ margin: "7px 0 0", fontSize: 12 }}>PNG, JPEG, or WebP up to 10 MB. A new visual draft requires crop review before approval.</p>
         </div>
         {questionType === "multiple_choice" && (
           <div>

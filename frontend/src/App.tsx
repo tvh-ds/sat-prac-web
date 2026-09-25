@@ -5,6 +5,7 @@ import { Spinner } from "./components/ui";
 
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const StudentLayout = lazy(() => import("./pages/student/StudentLayout"));
+const StudentProfilePage = lazy(() => import("./pages/student/StudentProfilePage"));
 const StudentTestsPage = lazy(() => import("./pages/student/StudentTestsPage"));
 const ResultsPage = lazy(() => import("./pages/student/ResultsPage"));
 const TestStartPage = lazy(() => import("./pages/student/TestStartPage"));
@@ -50,6 +51,14 @@ function RequireRole({ role, children }: { role: "admin" | "student"; children: 
   return <>{children}</>;
 }
 
+function RequireApprovedStudent({ children }: { children: React.ReactNode }) {
+  const { loading, profile } = useAuth();
+  if (loading) return <Spinner />;
+  if (profile?.role !== "student") return <Navigate to="/student/profile" replace />;
+  if (profile.profile_status !== "approved") return <Navigate to="/student/profile" replace />;
+  return <>{children}</>;
+}
+
 export default function App() {
   return (
     <AuthProvider>
@@ -68,6 +77,7 @@ export default function App() {
               }
             >
               <Route index element={<Navigate to="tests" replace />} />
+              <Route path="profile" element={<StudentProfilePage />} />
               <Route path="tests" element={<StudentTestsPage />} />
               <Route path="practice" element={<PracticeStudentPage />} />
               <Route path="results" element={<ResultsPage />} />
@@ -82,7 +92,7 @@ export default function App() {
               path="/student/tests/:testId/start"
               element={
                 <RequireRole role="student">
-                  <TestStartPage />
+                  <RequireApprovedStudent><TestStartPage /></RequireApprovedStudent>
                 </RequireRole>
               }
             />
@@ -90,7 +100,7 @@ export default function App() {
               path="/student/practice/:testId/start"
               element={
                 <RequireRole role="student">
-                  <PracticeStartPage />
+                  <RequireApprovedStudent><PracticeStartPage /></RequireApprovedStudent>
                 </RequireRole>
               }
             />
@@ -98,7 +108,7 @@ export default function App() {
               path="/student/attempts/:attemptId/session"
               element={
                 <RequireRole role="student">
-                  <TestSessionPage />
+                  <RequireApprovedStudent><TestSessionPage /></RequireApprovedStudent>
                 </RequireRole>
               }
             />

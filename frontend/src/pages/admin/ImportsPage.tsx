@@ -120,11 +120,12 @@ export default function ImportsPage() {
 
       <div className="card card-pad" style={{ maxWidth: 560, marginBottom: 18 }}>
         <div className="toolbar">
-          <label className="btn btn-primary" style={{ cursor: uploading ? "not-allowed" : "pointer" }}>
-            {uploading ? "Uploading…" : "+ Upload PDF"}
+          <label className="btn btn-primary" aria-label="Import PDF: Import full-length test for ingestion and review" style={{ cursor: uploading ? "not-allowed" : "pointer" }}>
+            {uploading ? "Importing…" : "+ Import PDF"}
             <input type="file" accept="application/pdf" style={{ display: "none" }} onChange={(e) => void onFile(e)} disabled={uploading} />
           </label>
         </div>
+        <p className="muted" style={{ margin: "10px 0 0", fontSize: 12.5 }}>Import full-length test for ingestion and review</p>
       </div>
 
       {error && <div className="login-error">{error}</div>}

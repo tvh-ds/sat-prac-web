@@ -23,8 +23,8 @@ export function AssignModal({ set, onClose, onDone }: { set: PracticeSet; onClos
     void (async () => {
       try {
         const token = await getToken();
-        const d = await fnJson<{ students: Array<StudentOption & { is_active: boolean }> }>("admin-students", { token });
-        setStudents((d.students ?? []).filter((s) => s.is_active !== false));
+        const d = await fnJson<{ students: StudentOption[] }>("admin-students", { token });
+        setStudents(d.students ?? []);
       } catch (e) {
         setError(e instanceof Error ? e.message : "Failed to load students");
       }

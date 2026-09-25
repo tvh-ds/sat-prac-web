@@ -277,7 +277,7 @@ export default function AdminVocabDeckPage() {
                     {s.assigned && !selected.has(s.id) && <Pill tone="green">assigned</Pill>}
                   </label>
                 ))}
-                {students.length === 0 && <EmptyState title="No active students" body="Create students on the Students page first." />}
+                {students.length === 0 && <EmptyState title="No students yet" body="Create student accounts on the Students page first." />}
               </div>
             </div>
           </>

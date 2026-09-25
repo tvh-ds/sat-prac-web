@@ -25,7 +25,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const gen = ++requestGen.current;
     try {
       const rows = await rest<StudentProfile[]>("profiles", `id=eq.${uid}&select=id,role,full_name`, token);
-      const p = rows[0] ?? null;
+      let p = rows[0] ?? null;
+      if (p?.role === "student") {
+        const details = await rest<Array<Pick<StudentProfile, "phone_number" | "parent_name" | "parent_phone_number" | "profile_status" | "profile_submitted_at" | "profile_approved_at">>>(
+          "student_profiles",
+          `id=eq.${uid}&select=phone_number,parent_name,parent_phone_number,profile_status,profile_submitted_at,profile_approved_at`,
+          token,
+        );
+        p = { ...p, ...(details[0] ?? { profile_status: "incomplete" }) };
+      }
       if (requestGen.current !== gen) return userRef.current?.id === uid ? (p as StudentProfile | null) : null;
       // Preserve the last known profile if a background refresh fails; only
       // clear when this uid is no longer the active user.

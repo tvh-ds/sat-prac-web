@@ -32,6 +32,11 @@ export default function StudentLayout() {
   if (!profile) return <Spinner />;
   if (profile.role !== "student") return <Navigate to="/admin" replace />;
 
+  const profileApproved = profile.profile_status === "approved";
+  if (!profileApproved && location.pathname !== "/student/profile") {
+    return <Navigate to="/student/profile" replace />;
+  }
+
   return (
     <div className="app-layout">
       <header className="app-header">
@@ -40,10 +45,17 @@ export default function StudentLayout() {
           <span>SAT Practice</span>
         </div>
         <nav className="student-nav">
-          <NavLink to="/student/tests">Full-Length Tests</NavLink>
-          <NavLink to="/student/practice">Practice</NavLink>
-          <NavLink to="/student/results">Results</NavLink>
-          <NavLink to="/student/vocabulary">Vocabulary</NavLink>
+          {profileApproved ? (
+            <>
+              <NavLink to="/student/tests">Full-Length Tests</NavLink>
+              <NavLink to="/student/practice">Practice</NavLink>
+              <NavLink to="/student/results">Results</NavLink>
+              <NavLink to="/student/vocabulary">Vocabulary</NavLink>
+              <NavLink to="/student/profile">Profile</NavLink>
+            </>
+          ) : (
+            <NavLink to="/student/profile">Complete profile</NavLink>
+          )}
         </nav>
         <div className="user-chip">
           <span className="avatar">{initials(profile?.full_name, user.email)}</span>
@@ -61,7 +73,7 @@ export default function StudentLayout() {
           <Outlet />
         </div>
       </div>
-      <div className="footer-wrapper">
+      {profileApproved && <div className="footer-wrapper">
         <div className="footer-panel">
           <div className="footer-top">
             <div className="footer-brand">
@@ -87,7 +99,7 @@ export default function StudentLayout() {
             <span className="status-badge"><span className="status-dot" /> Ready for practice</span>
           </div>
         </div>
-      </div>
+      </div>}
     </div>
   );
 }

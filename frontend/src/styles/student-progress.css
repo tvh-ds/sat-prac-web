@@ -1,0 +1,323 @@
+.student-progress-page {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.student-progress-back {
+  display: inline-flex;
+  margin-bottom: 10px;
+  text-decoration: none;
+}
+
+.student-progress-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.student-progress-heading .page-title {
+  margin: 0 0 5px;
+}
+
+.student-progress-heading .page-sub {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.student-progress-heading > .pill {
+  margin-top: 5px;
+  flex: 0 0 auto;
+}
+
+.student-progress-joined {
+  margin: 10px 0 22px;
+  color: var(--text-tertiary);
+  font-size: 12px;
+}
+
+.student-progress-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.student-progress-metric {
+  min-width: 0;
+  padding: 17px 18px 16px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.016)), var(--bg-card);
+  box-shadow: inset 0 1px 0 rgba(225,235,255,0.08), 0 4px 24px rgba(0,0,0,0.32);
+  transition: transform var(--dur-base) var(--ease-out), box-shadow var(--dur-base) ease;
+}
+
+.student-progress-metric:hover {
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 0 rgba(225,235,255,0.1), 0 12px 34px rgba(0,0,0,0.42);
+}
+
+.student-progress-metric-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-body);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.student-progress-metric-label svg {
+  color: var(--accent);
+  flex: 0 0 auto;
+}
+
+.student-progress-metric-value {
+  margin-top: 12px;
+  color: var(--text-primary);
+  font-size: 25px;
+  font-weight: 750;
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.student-progress-metric-value span {
+  color: var(--text-tertiary);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.student-progress-metric-value.student-progress-time {
+  font-size: 23px;
+}
+
+.student-progress-metric p {
+  min-height: 18px;
+  margin: 7px 0 0;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.student-progress-section {
+  margin-top: 30px;
+}
+
+.student-progress-section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 13px;
+}
+
+.student-progress-section-head h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.student-progress-section-head p {
+  margin: 5px 0 0;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.student-progress-count {
+  min-width: 30px;
+  padding: 4px 9px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  color: var(--text-body);
+  background: rgba(225,235,255,0.04);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.student-progress-panel {
+  padding: 7px 12px;
+}
+
+.student-progress-table-wrap {
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.student-progress-table {
+  min-width: 720px;
+}
+
+.student-vocab-progress-table {
+  min-width: 640px;
+}
+
+.student-progress-table td {
+  vertical-align: middle;
+  font-variant-numeric: tabular-nums;
+}
+
+.student-progress-table th:first-child,
+.student-progress-table td:first-child {
+  padding-left: 16px;
+}
+
+.student-progress-name {
+  display: block;
+  max-width: 42ch;
+  color: var(--text-primary);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.student-progress-meta {
+  display: block;
+  margin-top: 3px;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.student-progress-footnote {
+  margin: 10px 2px 0;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  line-height: 1.55;
+}
+
+.student-detail-tabs {
+  display: flex;
+  gap: 4px;
+  width: fit-content;
+  margin: 16px 0 18px;
+  padding: 4px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  background: rgba(6, 10, 20, 0.52);
+}
+
+.student-detail-tabs button {
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--text-body);
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.student-detail-tabs button:hover { color: var(--text-primary); background: rgba(225, 235, 255, 0.06); }
+.student-detail-tabs button.active { color: #121723; background: var(--accent); font-weight: 650; }
+.student-detail-tabs button:focus-visible { outline: 2px solid var(--accent-bright); outline-offset: 2px; }
+
+.student-info-tab { display: grid; gap: 16px; }
+.student-info-tab .panel { margin: 0; }
+
+.student-info-summary,
+.student-info-account {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 20px;
+}
+
+.student-info-summary h2,
+.student-info-form-heading h2,
+.student-info-account h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 16px;
+  letter-spacing: -0.02em;
+}
+
+.student-info-summary p,
+.student-info-form-heading p,
+.student-info-account p {
+  margin: 5px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.student-info-overline {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.student-info-form { padding: 20px; }
+.student-info-form-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+.student-info-email { color: var(--text-tertiary); font-size: 12px; overflow-wrap: anywhere; }
+.student-info-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.student-info-save-row { display: flex; justify-content: flex-end; gap: 9px; margin-top: 18px; }
+.student-info-validation { margin: 10px 0 0; color: var(--error); font-size: 12px; }
+.student-info-account-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.student-info-modal-form { display: flex; flex-direction: column; gap: 13px; }
+.student-info-modal-form > p { margin: 0; font-size: 13px; }
+.student-info-modal-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 5px; }
+
+@media (max-width: 650px) {
+  .student-info-summary,
+  .student-info-account,
+  .student-info-form-heading { align-items: flex-start; flex-direction: column; }
+  .student-info-fields { grid-template-columns: minmax(0, 1fr); }
+  .student-info-save-row { flex-direction: column-reverse; }
+  .student-info-save-row .btn,
+  .student-info-account-actions .btn { width: 100%; }
+  .student-info-account-actions { width: 100%; }
+}
+
+@media (max-width: 1000px) {
+  .student-progress-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .student-progress-heading {
+    gap: 10px;
+  }
+
+  .student-progress-heading .page-title {
+    font-size: 27px;
+  }
+
+  .student-progress-summary {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .student-progress-metric {
+    padding: 15px 16px;
+  }
+
+  .student-progress-metric-value {
+    margin-top: 8px;
+  }
+
+  .student-progress-metric p {
+    min-height: 0;
+  }
+
+  .student-progress-section-head {
+    align-items: flex-start;
+  }
+
+  .student-progress-section-head h2 {
+    font-size: 18px;
+  }
+
+  .student-progress-panel {
+    padding: 5px 6px;
+  }
+}
