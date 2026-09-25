@@ -8,7 +8,6 @@ interface TestRow {
   title: string;
   description: string | null;
   status: string;
-  is_public: boolean;
   created_at: string;
   answer_key_status?: "complete" | "partial" | "missing" | null;
   sections: Array<{ name: string; section_type: string; modules: Array<{ id: string; name: string; time_limit_minutes: number; is_adaptive: boolean }> }>;
@@ -37,18 +36,6 @@ export default function TestsPage() {
     void load().catch((e) => setError(e.message));
   }, []);
 
-  async function publish(t: TestRow) {
-    const token = await getToken();
-    await fnJson(`admin-tests/${t.id}/publish`, { method: "POST", token });
-    void load();
-  }
-
-  async function archive(t: TestRow) {
-    const token = await getToken();
-    await fnJson(`admin-tests/${t.id}`, { method: "PATCH", token, body: { status: "archived" } });
-    void load();
-  }
-
   return (
     <div>
       <div className="section-label">Tests</div>
@@ -66,7 +53,6 @@ export default function TestsPage() {
                 <th>Title</th>
                 <th>Status</th>
                 <th>Answer key</th>
-                <th>Visibility</th>
                 <th>Structure</th>
                 <th>Created</th>
                 <th />
@@ -80,8 +66,8 @@ export default function TestsPage() {
                   <tr key={t.id}>
                     <td style={{ fontWeight: 600 }}>{t.title}</td>
                     <td>
-                      <Pill tone={t.status === "published" ? "green" : t.status === "archived" ? "gray" : "amber"}>
-                        {t.status}
+                      <Pill tone={t.status === "archived" ? "gray" : "green"}>
+                        {t.status === "archived" ? "Archived" : "Ready to assign"}
                       </Pill>
                     </td>
                     <td>
@@ -93,7 +79,6 @@ export default function TestsPage() {
                         <span className="muted">—</span>
                       )}
                     </td>
-                    <td>{t.is_public ? "Public" : "Assigned only"}</td>
                     <td>
                       {t.sections.length === 0
                         ? "No modules yet"
@@ -111,18 +96,12 @@ export default function TestsPage() {
                         <Button
                           variant="outline"
                           size="sm"
-                          disabled={t.status !== "published"}
-                          title={t.status === "published" ? "Assign this test to students" : "Publish the test first"}
+                          disabled={t.status === "archived"}
+                          title={t.status === "archived" ? "Archived tests cannot be assigned" : "Assign this test to students"}
                           onClick={() => setAssigning(t)}
                         >
                           Assign
                         </Button>
-                        {t.status === "draft" && (
-                          <Button variant="outline" size="sm" onClick={() => void publish(t)}>Publish</Button>
-                        )}
-                        {t.status === "published" && (
-                          <Button variant="ghost" size="sm" onClick={() => void archive(t)}>Archive</Button>
-                        )}
                       </div>
                     </td>
                   </tr>
@@ -130,7 +109,7 @@ export default function TestsPage() {
               })}
               {tests.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="muted" style={{ textAlign: "center", padding: 30 }}>
+                  <td colSpan={6} className="muted" style={{ textAlign: "center", padding: 30 }}>
                     No full-length tests yet. Import a PDF and approve its full draft from the PDF Imports page.
                   </td>
                 </tr>

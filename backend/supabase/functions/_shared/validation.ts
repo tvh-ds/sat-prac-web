@@ -105,6 +105,59 @@ export const linkUpdateSchema = z.object({
   points: z.number().min(0.5).max(10).optional(),
 });
 
+export const fullTestQuestionEditSchema = z.object({
+  prompt: z.string().min(1).max(20000),
+  passage_text: z.string().max(20000).nullable(),
+  correct_answer: z.string().max(500).nullable(),
+  explanation: z.string().max(5000).nullable(),
+  stimulus_image_path: z.string().max(1000).nullable(),
+  choices: z.array(z.object({
+    label: z.string().trim().min(1).max(2),
+    text: z.string().min(1).max(10000),
+  })).max(6),
+}).superRefine((value, ctx) => {
+  if (value.choices.length > 0 && value.choices.length < 2) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["choices"], message: "Multiple-choice questions need at least two choices" });
+  }
+  const labels = value.choices.map((choice) => choice.label.trim().toUpperCase());
+  if (new Set(labels).size !== labels.length) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["choices"], message: "Choice labels must be unique" });
+  }
+  if (value.choices.length > 0 && value.correct_answer && !labels.includes(value.correct_answer.trim().toUpperCase())) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["correct_answer"], message: "Correct answer must match one of the choice labels" });
+  }
+});
+
+export const manualImportDraftCreateSchema = z.object({
+  source_module_name: z.enum([
+    "Reading and Writing Module 1", "Reading and Writing Module 2", "Math Module 1", "Math Module 2",
+  ]),
+  question_type: z.enum(["multiple_choice", "student_produced"]),
+  prompt: z.string().min(1).max(20000),
+  passage_text: z.string().max(20000).optional().nullable(),
+  suggested_answer: z.string().max(500).optional().nullable(),
+  choices: z.array(z.object({
+    label: z.string().trim().min(1).max(2),
+    text: z.string().min(1).max(10000),
+    position: z.number().int().min(1),
+  })).max(6).default([]),
+}).superRefine((value, ctx) => {
+  if (value.question_type === "multiple_choice" && value.choices.length < 2) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["choices"], message: "Multiple-choice questions need at least two choices" });
+  }
+  const labels = value.choices.map((choice) => choice.label.trim().toUpperCase());
+  if (new Set(labels).size !== labels.length) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["choices"], message: "Choice labels must be unique" });
+  }
+  if (value.question_type === "student_produced" && value.choices.length > 0) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["choices"], message: "Student-produced questions cannot have choices" });
+  }
+  if (value.question_type === "multiple_choice" && value.suggested_answer &&
+      !value.choices.some((choice) => choice.label.trim().toUpperCase() === value.suggested_answer!.trim().toUpperCase())) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["suggested_answer"], message: "Correct answer must match one of the choice labels" });
+  }
+});
+
 export const assignmentScopeSchema = z.enum(["full_test", "reading_writing", "math", "custom_modules"]);
 
 export const assignTestSchema = z.object({
@@ -185,6 +238,7 @@ export const updateDraftSchema = z.object({
   explanation: z.string().max(5000).optional().nullable(),
   has_visual_stimulus: z.boolean().optional(),
   stimulus_image_path: z.string().max(1000).optional().nullable(),
+  stimulus_source_image_path: z.string().max(1000).optional().nullable(),
   stimulus_crop_rect: z.object({ x: z.number().int(), y: z.number().int(), w: z.number().int().min(1), h: z.number().int().min(1) }).optional().nullable(),
   stimulus_crop_source: z.enum(["auto", "manual", "full_page"]).optional().nullable(),
   stimulus_crop_status: z.enum(["pending", "confirmed"]).optional(),

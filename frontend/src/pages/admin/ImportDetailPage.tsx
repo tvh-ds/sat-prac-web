@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { fnJson, getToken, supabase } from "../../lib/supabase";
 import type { DraftQuestion, DraftSummary, ImportDetailSummary, ModuleSummary, PdfImport } from "../../lib/types";
@@ -29,6 +29,7 @@ export default function ImportDetailPage() {
   const [generating, setGenerating] = useState(false);
   const [generateResult, setGenerateResult] = useState<{ test_id: string; title: string; linked: number; failed: number; already_generated?: boolean } | null>(null);
   const [rejectId, setRejectId] = useState<string | null>(null);
+  const [addingQuestion, setAddingQuestion] = useState(false);
   const editorRef = useRef<HTMLDivElement | null>(null);
   const offsetRef = useRef(0);
   const selectedRef = useRef<string | null>(null);
@@ -91,6 +92,19 @@ export default function ImportDetailPage() {
       const d = await fnJson<{ draft: DraftQuestion }>(`admin-pdf-imports/${importId}/drafts/${sel}`, { token });
       setDetails((prev) => ({ ...prev, [sel]: d.draft }));
     }
+  }
+
+  function onManualDraftCreated(draft: DraftQuestion) {
+    setAddingQuestion(false);
+    setDraftStatus(null);
+    setDraftModule(null);
+    setDraftOffset(0);
+    draftStatusRef.current = null;
+    draftModuleRef.current = null;
+    offsetRef.current = 0;
+    setDetails((prev) => ({ ...prev, [draft.id]: draft }));
+    setSelectedId(draft.id);
+    void loadPage(0);
   }
 
   async function approveFullDraft() {
@@ -342,6 +356,7 @@ export default function ImportDetailPage() {
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
           <h3 style={{ margin: 0, fontSize: 15 }}>Drafts ({draftTotal}{draftStatus ? ` · ${draftStatus.replace(/_/g, " ")}` : ""}{draftModule ? ` · ${draftModule}` : ""})</h3>
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+            <Button size="sm" onClick={() => setAddingQuestion(true)}>+ Add Question</Button>
             <button
               type="button"
               className={`draft-filter${!draftStatus ? " active" : ""}`}
@@ -478,6 +493,13 @@ export default function ImportDetailPage() {
           <p>The draft will be marked as rejected and will not be published. You can still edit it before rejecting.</p>
         </Modal>
       )}
+      {addingQuestion && importId && (
+        <ManualDraftModal
+          importId={importId}
+          onClose={() => setAddingQuestion(false)}
+          onCreated={onManualDraftCreated}
+        />
+      )}
     </div>
   );
 }
@@ -492,6 +514,137 @@ function DraftStatus({ d }: { d: { status: string } }) {
   };
   const [label, tone] = map[d.status] ?? [d.status, "gray"];
   return <Pill tone={tone}>{label}</Pill>;
+}
+
+const IMPORT_MODULES = [
+  "Reading and Writing Module 1",
+  "Reading and Writing Module 2",
+  "Math Module 1",
+  "Math Module 2",
+] as const;
+
+function ManualDraftModal({
+  importId,
+  onClose,
+  onCreated,
+}: {
+  importId: string;
+  onClose: () => void;
+  onCreated: (draft: DraftQuestion) => void;
+}) {
+  const [moduleName, setModuleName] = useState<(typeof IMPORT_MODULES)[number]>(IMPORT_MODULES[0]);
+  const [questionType, setQuestionType] = useState<"multiple_choice" | "student_produced">("multiple_choice");
+  const [prompt, setPrompt] = useState("");
+  const [passage, setPassage] = useState("");
+  const [answer, setAnswer] = useState("");
+  const [choices, setChoices] = useState([
+    { label: "A", text: "" }, { label: "B", text: "" }, { label: "C", text: "" }, { label: "D", text: "" },
+  ]);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function submit(event: FormEvent) {
+    event.preventDefault();
+    if (questionType === "multiple_choice") {
+      if (choices.length < 2 || choices.some((choice) => !choice.text.trim())) {
+        setError("Multiple-choice questions need at least two choices with text.");
+        return;
+      }
+      if (answer && !choices.some((choice) => choice.label === answer)) {
+        setError("Select an answer that matches one of the choice labels.");
+        return;
+      }
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      const token = await getToken();
+      const response = await fnJson<{ draft: DraftQuestion }>(`admin-pdf-imports/${importId}/drafts`, {
+        method: "POST",
+        token,
+        body: {
+          source_module_name: moduleName,
+          question_type: questionType,
+          prompt: prompt.trim(),
+          passage_text: passage.trim() || null,
+          suggested_answer: answer.trim() || null,
+          choices: questionType === "multiple_choice"
+            ? choices.map((choice, index) => ({ ...choice, position: index + 1 }))
+            : [],
+        },
+      });
+      onCreated(response.draft);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unable to create draft.");
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Modal title="Add Question to Import Drafts" onClose={busy ? () => undefined : onClose}>
+      <form onSubmit={(event) => void submit(event)} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+          <div>
+            <label className="field-label">Module</label>
+            <select className="select" value={moduleName} onChange={(event) => setModuleName(event.target.value as (typeof IMPORT_MODULES)[number])}>
+              {IMPORT_MODULES.map((module) => <option key={module} value={module}>{module}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="field-label">Question type</label>
+            <select className="select" value={questionType} onChange={(event) => setQuestionType(event.target.value as typeof questionType)}>
+              <option value="multiple_choice">Multiple choice</option>
+              <option value="student_produced">Student-produced</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label className="field-label">Question prompt</label>
+          <textarea className="textarea" required rows={4} value={prompt} onChange={(event) => setPrompt(event.target.value)} />
+        </div>
+        <div>
+          <label className="field-label">Passage (optional)</label>
+          <textarea className="textarea" rows={4} value={passage} onChange={(event) => setPassage(event.target.value)} placeholder="Add a shared passage for this question" />
+        </div>
+        {questionType === "multiple_choice" && (
+          <div>
+            <label className="field-label">Answer choices</label>
+            {choices.map((choice, index) => (
+              <div className="choice-edit" key={`${index}-${choice.label}`}>
+                <span className="letter" style={{ width: 28 }}>{choice.label}</span>
+                <input className="input" aria-label={`Choice ${choice.label}`} value={choice.text} onChange={(event) => setChoices((items) => items.map((item, i) => i === index ? { ...item, text: event.target.value } : item))} />
+                <Button type="button" size="sm" variant="ghost" disabled={choices.length <= 2} aria-label={`Remove choice ${choice.label}`} onClick={() => {
+                  setChoices((items) => items.filter((_, i) => i !== index));
+                  if (answer === choice.label) setAnswer("");
+                }}>Remove</Button>
+              </div>
+            ))}
+            <Button type="button" size="sm" variant="outline" disabled={choices.length >= 6} onClick={() => {
+              const used = new Set(choices.map((choice) => choice.label));
+              const label = ["A", "B", "C", "D", "E", "F"].find((candidate) => !used.has(candidate));
+              if (label) setChoices((items) => [...items, { label, text: "" }]);
+            }}>+ Add choice</Button>
+          </div>
+        )}
+        <div>
+          <label className="field-label">Correct answer</label>
+          {questionType === "multiple_choice" ? (
+            <select className="select" value={answer} onChange={(event) => setAnswer(event.target.value)}>
+              <option value="">Not provided / needs review</option>
+              {choices.map((choice) => <option key={choice.label} value={choice.label}>{choice.label}</option>)}
+            </select>
+          ) : (
+            <input className="input" value={answer} onChange={(event) => setAnswer(event.target.value)} placeholder="e.g. 24 or 3/5" />
+          )}
+        </div>
+        {error && <div className="login-error">{error}</div>}
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+          <Button type="button" variant="outline" onClick={onClose} disabled={busy}>Cancel</Button>
+          <Button type="submit" disabled={busy || !prompt.trim()}>{busy ? "Creating…" : "Add question"}</Button>
+        </div>
+      </form>
+    </Modal>
+  );
 }
 
 function DraftEditor({
@@ -519,8 +672,32 @@ function DraftEditor({
   const [cropOpen, setCropOpen] = useState(false);
   const [showFull, setShowFull] = useState(false);
   const [savedNote, setSavedNote] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => { setShowFull(false); setCropOpen(false); }, [draft.id]);
+
+  useEffect(() => {
+    if (!imageFile) {
+      setImagePreview(null);
+      return;
+    }
+    const url = URL.createObjectURL(imageFile);
+    setImagePreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [imageFile]);
+
+  function selectImage(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0] ?? null;
+    event.target.value = "";
+    if (!file) return;
+    if (!["image/png", "image/jpeg", "image/webp"].includes(file.type) || file.size > 10 * 1024 * 1024) {
+      onError("Choose a PNG, JPEG, or WebP image under 10 MB.");
+      return;
+    }
+    setImageFile(file);
+    setSavedNote(null);
+  }
 
   async function saveCrop(blob: Blob, rect: { x: number; y: number; w: number; h: number }) {
     setBusy(true);
@@ -567,7 +744,7 @@ function DraftEditor({
     try {
       const token = await getToken();
       const key = draft.source_question_id ?? String(draft.source_question_number);
-      const fullPage = `imports/${draft.pdf_import_id}/stimuli/${key}-page-${draft.page_number}.png`;
+      const fullPage = draft.stimulus_source_image_path ?? `imports/${draft.pdf_import_id}/stimuli/${key}-page-${draft.page_number}.png`;
       await fnJson(`admin-pdf-imports/${draft.pdf_import_id}/drafts/${draft.id}`, {
         method: "PATCH",
         token,
@@ -609,19 +786,45 @@ function DraftEditor({
   /** Persist every editable field so approval publishes what the admin sees. */
   async function saveDraft() {
     const token = await getToken();
-    await fnJson(`admin-pdf-imports/${draft.pdf_import_id}/drafts/${draft.id}`, {
-      method: "PATCH",
-      token,
-      body: {
-        prompt,
-        passage_text: passage.trim() ? passage : null,
-        suggested_answer: correct || null,
-        domain: domain || null,
-        skill: skill || null,
-        explanation: explanation || null,
-        ...(draft.question_type === "multiple_choice" && { choices: choices.map((c) => ({ label: c.label, text: c.text, position: c.position })) }),
-      },
-    });
+    let uploadedPath: string | null = null;
+    try {
+      let imageUpdates: Record<string, unknown> = {};
+      if (imageFile) {
+        const extension = imageFile.type === "image/jpeg" ? "jpg" : imageFile.type === "image/webp" ? "webp" : "png";
+        uploadedPath = `imports/${draft.pdf_import_id}/manual-stimuli/${draft.id}-${crypto.randomUUID()}.${extension}`;
+        const { error: uploadError } = await supabase.storage.from("question-assets").upload(uploadedPath, imageFile, {
+          contentType: imageFile.type,
+          upsert: false,
+        });
+        if (uploadError) throw new Error(`Image upload failed: ${uploadError.message}`);
+        imageUpdates = {
+          has_visual_stimulus: true,
+          stimulus_image_path: uploadedPath,
+          stimulus_source_image_path: uploadedPath,
+          stimulus_crop_rect: null,
+          stimulus_crop_source: "full_page",
+          stimulus_crop_status: "pending",
+        };
+      }
+      await fnJson(`admin-pdf-imports/${draft.pdf_import_id}/drafts/${draft.id}`, {
+        method: "PATCH",
+        token,
+        body: {
+          prompt,
+          passage_text: passage.trim() ? passage : null,
+          suggested_answer: correct || null,
+          domain: domain || null,
+          skill: skill || null,
+          explanation: explanation || null,
+          ...(draft.question_type === "multiple_choice" && { choices: choices.map((c, i) => ({ label: c.label, text: c.text, position: i + 1 })) }),
+          ...imageUpdates,
+        },
+      });
+      setImageFile(null);
+    } catch (err) {
+      if (uploadedPath) await supabase.storage.from("question-assets").remove([uploadedPath]).catch(() => undefined);
+      throw err;
+    }
   }
 
   async function handleSave() {
@@ -629,7 +832,7 @@ function DraftEditor({
     setSavedNote(null);
     try {
       await saveDraft();
-      setSavedNote("Draft saved.");
+      setSavedNote(imageFile ? "Draft and image saved. Review and confirm the crop before approval." : "Draft saved.");
       onSaved();
     } catch (e) {
       onError(e instanceof Error ? e.message : "Save failed");
@@ -644,6 +847,11 @@ function DraftEditor({
       // Save first: approval reads the draft row, so edited prompt, passage,
       // choices, and key must be persisted before publishing.
       await saveDraft();
+      if (imageFile) {
+        setSavedNote("Image saved. Review and confirm its crop before approval.");
+        onSaved();
+        return;
+      }
       const token = await getToken();
       await fnJson(`admin-pdf-imports/${draft.pdf_import_id}/drafts/${draft.id}/approve`, {
         method: "POST",
@@ -665,7 +873,10 @@ function DraftEditor({
           Q{draft.source_question_number} — {draft.section === "math" ? "Math" : "Reading & Writing"} ({draft.question_type === "multiple_choice" ? "Multiple choice" : "Student-produced"})
           {draft.source_module_name ? <span className="muted" style={{ fontSize: 12.5 }}> · {draft.source_module_name}</span> : null}
         </h3>
-        <DraftStatus d={draft} />
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          {draft.parser_metadata?.manual_entry && <Pill tone="blue">Manual entry</Pill>}
+          <DraftStatus d={draft} />
+        </div>
       </div>
 
       <label className="field-label">Prompt</label>
@@ -729,6 +940,24 @@ function DraftEditor({
         </>
       )}
 
+      <div className="panel" style={{ marginTop: 12 }}>
+        <label className="field-label">Add or replace stimulus image</label>
+        {imagePreview && (
+          <div style={{ marginBottom: 10 }}>
+            <img src={imagePreview} alt="Selected stimulus preview" style={{ maxWidth: "100%", maxHeight: 260, objectFit: "contain", border: "1px solid var(--border)", borderRadius: 8 }} />
+            <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>Unsaved image preview · saving it will require crop review.</div>
+          </div>
+        )}
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <label className="btn btn-outline btn-sm" style={{ cursor: busy ? "not-allowed" : "pointer", opacity: busy ? 0.6 : 1 }}>
+            {imageFile ? "Choose another image" : draft.stimulus_image_path ? "Replace image" : "Add image"}
+            <input type="file" accept="image/png,image/jpeg,image/webp" onChange={selectImage} disabled={busy} style={{ display: "none" }} />
+          </label>
+          {imageFile && <Button size="sm" variant="ghost" disabled={busy} onClick={() => setImageFile(null)}>Clear selection</Button>}
+        </div>
+        <p className="muted" style={{ fontSize: 12, margin: "6px 0 0" }}>PNG, JPEG, or WebP up to 10 MB. Newly added images start as full-page crops and must be reviewed before approval.</p>
+      </div>
+
       {draft.question_type === "multiple_choice" && (
         <div style={{ marginTop: 12 }}>
           <label className="field-label">Choices</label>
@@ -779,7 +1008,6 @@ function DraftEditor({
           Source ID: {draft.source_question_id}
         </p>
       )}
-
       {((draft.parser_metadata?.parse_flags?.length ?? 0) > 0 ||
         draft.parser_metadata?.source_number_origin === "inferred" ||
         draft.parser_metadata?.key_match_confidence === "low") && (

@@ -10,12 +10,37 @@ import {
   moduleUpdateSchema,
   linkQuestionSchema,
   linkUpdateSchema,
+  fullTestQuestionEditSchema,
   assignTestSchema,
   assignManySchema,
 } from "../_shared/validation.ts";
 import { buildAttemptReview } from "../_shared/attempt_review.ts";
 
 type Svc = ReturnType<typeof serviceClient>;
+
+async function signTestQuestionAssets(svc: Svc, test: Record<string, unknown>): Promise<void> {
+  const sections = (test.sections ?? []) as Array<Record<string, unknown>>;
+  for (const section of sections) {
+    for (const module of (section.modules ?? []) as Array<Record<string, unknown>>) {
+      for (const link of (module.questions ?? []) as Array<Record<string, unknown>>) {
+        const question = link.question as Record<string, unknown> | null;
+        const imagePath = question?.stimulus_image_path;
+        if (typeof imagePath !== "string" || !imagePath) continue;
+        const { data } = await svc.storage.from("question-assets").createSignedUrl(imagePath, 60 * 60);
+        if (data?.signedUrl) question.stimulus_image_url = data.signedUrl;
+      }
+    }
+  }
+}
+
+async function activateForAssignment(svc: Svc, testId: string): Promise<void> {
+  const { data: test, error: getErr } = await svc.from("tests").select("id, status, kind").eq("id", testId).eq("kind", "full").maybeSingle();
+  if (getErr) throw new HttpError(500, getErr.message);
+  if (!test) throw new HttpError(404, "Full-length test not found");
+  if (test.status === "archived") throw new HttpError(409, "Archived tests cannot be assigned");
+  const { error: updateErr } = await svc.from("tests").update({ status: "published", is_public: false }).eq("id", testId);
+  if (updateErr) throw new HttpError(500, updateErr.message);
+}
 
 async function ensureModulesValid(
   svc: Svc,
@@ -219,6 +244,7 @@ Deno.serve(async (req) => {
         .maybeSingle();
       if (err) return error(err.message, 500);
       if (!data) return error("Test not found", 404);
+      await signTestQuestionAssets(svc, data as unknown as Record<string, unknown>);
       return json({ test: data });
     }
 
@@ -244,6 +270,10 @@ Deno.serve(async (req) => {
 
     if (req.method === "PATCH" && seg.length === 2) {
       const body = testUpdateSchema.parse(await req.json());
+      const { data: existing, error: existingErr } = await svc.from("tests").select("kind").eq("id", id).maybeSingle();
+      if (existingErr) return error(existingErr.message, 500);
+      if (!existing) return error("Test not found", 404);
+      if (existing.kind === "full" && body.is_public === true) return error("Full-length tests are assigned to students and cannot be public", 422);
       const { data, error: err } = await svc.from("tests").update(body).eq("id", id).select("id, title, status, is_public").single();
       if (err) return error(err.message, 500);
       await svc.from("audit_logs").insert({
@@ -342,6 +372,44 @@ Deno.serve(async (req) => {
       return json({ link: data });
     }
 
+    if (req.method === "POST" && seg.length === 5 && seg[2] === "questions" && seg[4] === "content") {
+      const body = fullTestQuestionEditSchema.parse(await req.json());
+      const { data: link, error: linkErr } = await svc.from("test_module_questions")
+        .select("id, module_id, question_id").eq("id", seg[3]).maybeSingle();
+      if (linkErr) return error(linkErr.message, 500);
+      if (!link) return error("Question link not found", 404);
+      const { data: module, error: moduleErr } = await svc.from("test_modules").select("section_id").eq("id", link.module_id).maybeSingle();
+      if (moduleErr) return error(moduleErr.message, 500);
+      if (!module) return error("Test module not found", 404);
+      const { data: section, error: sectionErr } = await svc.from("test_sections").select("test_id").eq("id", module.section_id).maybeSingle();
+      if (sectionErr) return error(sectionErr.message, 500);
+      if (!section || section.test_id !== id) return error("Question does not belong to this test", 404);
+      const { data: original, error: questionErr } = await svc.from("questions").select("question_type").eq("id", link.question_id).maybeSingle();
+      if (questionErr) return error(questionErr.message, 500);
+      if (!original) return error("Question not found", 404);
+      if (original.question_type === "multiple_choice" && body.choices.length < 2) {
+        return error("Multiple-choice questions need at least two choices", 422);
+      }
+      if (original.question_type === "student_produced" && body.choices.length > 0) {
+        return error("Student-produced questions cannot have choices", 422);
+      }
+      const { data: questionId, error: cloneErr } = await svc.rpc("clone_full_test_question_for_edit", {
+        p_test_id: id,
+        p_link_id: link.id,
+        p_payload: body,
+        p_admin_id: ctx.user.id,
+      });
+      if (cloneErr) return error(cloneErr.message, /not found/i.test(cloneErr.message) ? 404 : 500);
+      await svc.from("audit_logs").insert({
+        actor_id: ctx.user.id,
+        action: "full_test.question_edited",
+        entity_type: "question",
+        entity_id: questionId,
+        details: { test_id: id, replaced_question_id: link.question_id, link_id: link.id },
+      });
+      return json({ question_id: questionId });
+    }
+
     if (req.method === "DELETE" && seg.length === 4 && seg[2] === "questions") {
       const { error: err } = await svc.from("test_module_questions").delete().eq("id", seg[3]);
       if (err) return error(err.message, 500);
@@ -361,6 +429,7 @@ Deno.serve(async (req) => {
       const { data: test, error: testErr } = await svc.from("tests").select("id, title").eq("id", body.test_id).eq("kind", "full").maybeSingle();
       if (testErr) return error(testErr.message, 500);
       if (!test) return error("Test not found", 404);
+      await activateForAssignment(svc, body.test_id);
       const { data: batch, error: batchErr } = await svc
         .from("full_test_assignment_batches")
         .insert({
@@ -401,6 +470,7 @@ Deno.serve(async (req) => {
       const { data: test, error: testErr } = await svc.from("tests").select("id, title").eq("id", id).eq("kind", "full").maybeSingle();
       if (testErr) return error(testErr.message, 500);
       if (!test) return error("Test not found", 404);
+      await activateForAssignment(svc, id);
       const { data: batch, error: batchErr } = await svc
         .from("full_test_assignment_batches")
         .insert({

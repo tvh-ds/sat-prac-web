@@ -1,7 +1,7 @@
 import { requireRole, HttpError, pathSegments } from "../_shared/auth.ts";
 import { serviceClient } from "../_shared/supabase.ts";
 import { corsHeaders, json, error } from "../_shared/cors.ts";
-import { pdfImportCreateSchema, approveDraftSchema, updateDraftSchema } from "../_shared/validation.ts";
+import { pdfImportCreateSchema, approveDraftSchema, updateDraftSchema, manualImportDraftCreateSchema } from "../_shared/validation.ts";
 import { approveDraft } from "../_shared/drafts.ts";
 import { moduleGroup, groupByModuleKey } from "../_shared/modules.ts";
 import { summarizePdfImportReadiness, type ImportReadinessDraft } from "../_shared/importReadiness.ts";
@@ -75,6 +75,43 @@ async function loadAllDrafts(svc: ReturnType<typeof serviceClient>, importId: st
     if ((batch?.length ?? 0) < PAGE) break;
   }
   return drafts;
+}
+
+async function recomputeFullTestKeySummary(svc: ReturnType<typeof serviceClient>, testId: string): Promise<void> {
+  const { data: sections, error: sectionErr } = await svc.from("test_sections")
+    .select("section_type, modules:test_modules(id, name, questions:test_module_questions(id, question:questions(correct_answer)))")
+    .eq("test_id", testId);
+  if (sectionErr) throw new HttpError(500, sectionErr.message);
+
+  const summary: Record<string, { questions: number; keys: number; status: string }> = {};
+  let total = 0;
+  let keyed = 0;
+  for (const section of (sections ?? []) as unknown as Array<{
+    modules: Array<{
+      name: string;
+      questions: Array<{ question: { correct_answer: string | null } | Array<{ correct_answer: string | null }> | null }>;
+    }>;
+  }>) {
+    for (const module of section.modules ?? []) {
+      const stats = summary[module.name] ?? { questions: 0, keys: 0, status: "missing" };
+      for (const link of module.questions ?? []) {
+        stats.questions += 1;
+        total += 1;
+        const question = Array.isArray(link.question) ? link.question[0] : link.question;
+        if (question?.correct_answer) {
+          stats.keys += 1;
+          keyed += 1;
+        }
+      }
+      stats.status = stats.keys === 0 ? "missing" : stats.keys === stats.questions ? "complete" : "partial";
+      summary[module.name] = stats;
+    }
+  }
+  const status = total === 0 || keyed === 0 ? "missing" : keyed === total ? "complete" : "partial";
+  const { error: updateErr } = await svc.from("tests")
+    .update({ answer_key_status: status, answer_key_summary: summary })
+    .eq("id", testId);
+  if (updateErr) throw new HttpError(500, updateErr.message);
 }
 
 Deno.serve(async (req) => {
@@ -288,6 +325,72 @@ Deno.serve(async (req) => {
       return json({ ok: true, note: WORKER_URL ? "Worker notified" : "No WORKER_URL configured; worker will poll" });
     }
 
+    if (req.method === "POST" && seg.length === 3 && seg[2] === "drafts") {
+      const body = manualImportDraftCreateSchema.parse(await req.json());
+      const { data: imp, error: impErr } = await svc.from("pdf_imports").select("id, status").eq("id", id).maybeSingle();
+      if (impErr) return error(impErr.message, 500);
+      if (!imp) return error("Import not found", 404);
+      if (["uploaded", "extracting", "extracted", "needs_ocr", "ocr_pending", "ocr_running", "ocr_completed", "parsing", "parsed"].includes(imp.status)) {
+        return error("Wait for PDF ingestion to finish before adding a manual question", 409);
+      }
+
+      const { data: lastDraft, error: lastErr } = await svc.from("draft_questions")
+        .select("source_question_number")
+        .eq("pdf_import_id", id)
+        .eq("source_module_name", body.source_module_name)
+        .order("source_question_number", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (lastErr) return error(lastErr.message, 500);
+
+      const modulePosition = Number(body.source_module_name.match(/(\d+)$/)?.[1] ?? 1);
+      const manualId = crypto.randomUUID();
+      const { data: draft, error: dErr } = await svc.from("draft_questions").insert({
+        pdf_import_id: id,
+        page_number: 0,
+        section: body.source_module_name.startsWith("Math") ? "math" : "reading_writing",
+        question_type: body.question_type,
+        prompt: body.prompt.trim(),
+        passage_text: body.passage_text?.trim() || null,
+        suggested_answer: body.suggested_answer?.trim() || null,
+        status: "needs_review",
+        source_question_number: (lastDraft?.source_question_number ?? 0) + 1,
+        source_question_id: `manual-${manualId}`,
+        source_module_name: body.source_module_name,
+        source_module_position: modulePosition,
+        has_visual_stimulus: false,
+        parser_metadata: { manual_entry: true },
+      }).select("id").single();
+      if (dErr) return error(dErr.message, 500);
+
+      if (body.choices.length > 0) {
+        const { error: choiceErr } = await svc.from("draft_question_choices").insert(body.choices.map((choice) => ({
+          draft_question_id: draft.id,
+          label: choice.label,
+          text: choice.text,
+          position: choice.position,
+        })));
+        if (choiceErr) {
+          await svc.from("draft_questions").delete().eq("id", draft.id).eq("pdf_import_id", id);
+          return error(choiceErr.message, 500);
+        }
+      }
+
+      await svc.from("audit_logs").insert({
+        actor_id: ctx.user.id,
+        action: "draft_question.created_manually",
+        entity_type: "draft_question",
+        entity_id: draft.id,
+        details: { pdf_import_id: id, source_module_name: body.source_module_name },
+      });
+      const { data: created, error: reloadErr } = await svc.from("draft_questions")
+        .select("*, choices:draft_question_choices(*), answer_keys:draft_answer_keys(*)")
+        .eq("id", draft.id)
+        .single();
+      if (reloadErr) return error(reloadErr.message, 500);
+      return json({ draft: created }, 201);
+    }
+
     if (req.method === "POST" && seg.length === 3 && seg[2] === "generate-test") {
       const { data: imp, error: impErr } = await svc
         .from("pdf_imports")
@@ -487,6 +590,7 @@ Deno.serve(async (req) => {
           .from("draft_questions")
           .select("*, choices:draft_question_choices(*), answer_keys:draft_answer_keys(*)")
           .eq("id", draftId)
+          .eq("pdf_import_id", id)
           .maybeSingle();
         if (gErr) return error(gErr.message, 500);
         if (!draft) return error("Draft not found", 404);
@@ -505,15 +609,17 @@ Deno.serve(async (req) => {
         const body = approveDraftSchema.parse(await req.json());
         const { data: draft, error: dErr } = await svc
           .from("draft_questions")
-          .select("id, has_visual_stimulus, stimulus_crop_status")
+          .select("id, pdf_import_id, has_visual_stimulus, stimulus_crop_status, question_id, source_module_name, section")
           .eq("id", draftId)
+          .eq("pdf_import_id", id)
           .maybeSingle();
         if (dErr) return error(dErr.message, 500);
         if (!draft) return error("Draft not found", 404);
+        if (draft.question_id) return json({ ok: true, question_id: draft.question_id, already_approved: true });
         if (draft.has_visual_stimulus && draft.stimulus_crop_status === "pending") {
           return error("Crop review required: confirm or adjust this visual draft's crop before approving", 422);
         }
-        const updates: Record<string, unknown> = { status: "approved" };
+        const updates: Record<string, unknown> = {};
         if (body.section !== undefined) updates.section = body.section;
         if (body.question_type !== undefined) updates.question_type = body.question_type;
         if (body.passage_text !== undefined) updates.passage_text = body.passage_text;
@@ -522,8 +628,46 @@ Deno.serve(async (req) => {
         if (body.difficulty !== undefined) updates.difficulty = body.difficulty;
         if (body.correct_answer !== undefined) updates.suggested_answer = body.correct_answer;
         if (body.explanation !== undefined) updates.explanation = body.explanation;
-        const { error: uErr } = await svc.from("draft_questions").update(updates).eq("id", draftId);
+        const { error: uErr } = await svc.from("draft_questions").update(updates).eq("id", draftId).eq("pdf_import_id", id);
         if (uErr) return error(uErr.message, 500);
+
+        const { data: imp, error: impErr } = await svc.from("pdf_imports").select("generated_test_id").eq("id", id).maybeSingle();
+        if (impErr) return error(impErr.message, 500);
+        if (imp?.generated_test_id) {
+          const sectionType = (body.section ?? draft.section) as string;
+          const group = moduleGroup(draft.source_module_name, sectionType);
+          const { data: sections, error: sectionErr } = await svc.from("test_sections")
+            .select("id, section_type")
+            .eq("test_id", imp.generated_test_id);
+          if (sectionErr) return error(sectionErr.message, 500);
+          const sectionIds = (sections ?? []).filter((section) => section.section_type === group.sectionType).map((section) => section.id);
+          const { data: modules, error: moduleErr } = await svc.from("test_modules")
+            .select("id, name, position, section_id")
+            .in("section_id", sectionIds.length ? sectionIds : ["00000000-0000-0000-0000-000000000000"]);
+          if (moduleErr) return error(moduleErr.message, 500);
+          const targetModule = (modules ?? []).find((module) => moduleGroup(module.name, group.sectionType).key === group.key);
+          if (!targetModule) return error(`No ${group.label} module exists in the generated test`, 422);
+          const { data: lastLink, error: linkErr } = await svc.from("test_module_questions")
+            .select("position")
+            .eq("module_id", targetModule.id)
+            .order("position", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          if (linkErr) return error(linkErr.message, 500);
+          try {
+            const approved = await approveDraft(svc, ctx.user.id, draftId, {
+              add_to_module_id: targetModule.id,
+              position: (lastLink?.position ?? 0) + 1,
+            });
+            await recomputeFullTestKeySummary(svc, imp.generated_test_id);
+            return json({ ok: true, question_id: approved.question_id, added_to_test: true });
+          } catch (e) {
+            return error(e instanceof HttpError ? e.message : e instanceof Error ? e.message : "Unable to approve and add question", e instanceof HttpError ? e.status : 500);
+          }
+        }
+
+        const { error: statusErr } = await svc.from("draft_questions").update({ status: "approved" }).eq("id", draftId).eq("pdf_import_id", id);
+        if (statusErr) return error(statusErr.message, 500);
         await svc.from("draft_answer_keys").update({ status: "approved" }).eq("draft_question_id", draftId).eq("status", "suggested");
         await svc.from("audit_logs").insert({
           actor_id: ctx.user.id,
@@ -539,6 +683,7 @@ Deno.serve(async (req) => {
           .from("draft_questions")
           .select("id, has_visual_stimulus")
           .eq("id", draftId)
+          .eq("pdf_import_id", id)
           .maybeSingle();
         if (cErr) return error(cErr.message, 500);
         if (!draft) return error("Draft not found", 404);
@@ -546,14 +691,28 @@ Deno.serve(async (req) => {
         const { error: uErr } = await svc
           .from("draft_questions")
           .update({ stimulus_crop_status: "confirmed" })
-          .eq("id", draftId);
+          .eq("id", draftId)
+          .eq("pdf_import_id", id);
         if (uErr) return error(uErr.message, 500);
+        const { data: linkedDraft } = await svc.from("draft_questions")
+          .select("question_id, stimulus_image_path")
+          .eq("id", draftId)
+          .eq("pdf_import_id", id)
+          .maybeSingle();
+        if (linkedDraft?.question_id) {
+          const { error: imageErr } = await svc.from("questions")
+            .update({ stimulus_image_path: linkedDraft.stimulus_image_path ?? null })
+            .eq("id", linkedDraft.question_id);
+          if (imageErr) return error(imageErr.message, 500);
+        }
         await svc.from("audit_logs").insert({ actor_id: ctx.user.id, action: "draft_question.crop_confirmed", entity_type: "draft_question", entity_id: draftId });
         return json({ ok: true });
       }
 
       if (req.method === "POST" && seg[4] === "reject") {
-        await svc.from("draft_questions").update({ status: "rejected" }).eq("id", draftId);
+        const { data: rejected, error: rejectErr } = await svc.from("draft_questions").update({ status: "rejected" }).eq("id", draftId).eq("pdf_import_id", id).select("id").maybeSingle();
+        if (rejectErr) return error(rejectErr.message, 500);
+        if (!rejected) return error("Draft not found", 404);
         await svc.from("audit_logs").insert({ actor_id: ctx.user.id, action: "draft_question.rejected", entity_type: "draft_question", entity_id: draftId });
         return json({ ok: true });
       }
@@ -573,16 +732,17 @@ Deno.serve(async (req) => {
           updates.stimulus_crop_source = null;
           updates.stimulus_crop_status = null;
         }
-        const { error: uErr } = await svc.from("draft_questions").update(updates).eq("id", draftId);
+        const { error: uErr } = await svc.from("draft_questions").update(updates).eq("id", draftId).eq("pdf_import_id", id);
         if (uErr) return error(uErr.message, 500);
-        if (updates.stimulus_image_path !== undefined || updates.has_visual_stimulus === false) {
-          const { data: linked } = await svc.from("draft_questions").select("question_id").eq("id", draftId).maybeSingle();
+        const cropIsApproved = updates.stimulus_crop_status !== "pending";
+        if ((updates.stimulus_image_path !== undefined && cropIsApproved) || updates.has_visual_stimulus === false) {
+          const { data: linked } = await svc.from("draft_questions").select("question_id").eq("id", draftId).eq("pdf_import_id", id).maybeSingle();
           if (linked?.question_id) {
             const { error: pErr } = await svc.from("questions").update({ stimulus_image_path: updates.stimulus_image_path ?? null }).eq("id", linked.question_id);
             if (pErr) return error(pErr.message, 500);
           }
         }
-        if (choices && choices.length > 0) {
+        if (choices !== undefined) {
           const { error: dErr } = await svc.from("draft_question_choices").delete().eq("draft_question_id", draftId);
           if (dErr) return error(dErr.message, 500);
           const { error: iErr } = await svc.from("draft_question_choices").insert(

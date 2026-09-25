@@ -407,6 +407,7 @@ export interface DraftQuestion {
   choices: DraftChoice[];
   answer_keys: Array<{ id: string; detected_answer: string; confidence: number; status: string }>;
   parser_metadata?: {
+    manual_entry?: boolean;
     source_number_origin?: "observed" | "inferred";
     parse_flags?: string[];
     answer_key_state?: "matched" | "unmatched" | "not_detected";

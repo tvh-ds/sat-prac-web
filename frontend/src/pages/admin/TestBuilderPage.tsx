@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import { Link, useParams } from "react-router-dom";
-import { fnJson, getToken } from "../../lib/supabase";
+import { fnJson, getToken, supabase } from "../../lib/supabase";
 import { Button, Modal, Pill, Spinner, EmptyState } from "../../components/ui";
 import PassageBlock from "../../components/PassageBlock";
 import {
@@ -23,6 +23,9 @@ interface Question {
   skill: string | null;
   difficulty: number | null;
   correct_answer: string | null;
+  explanation?: string | null;
+  stimulus_image_path?: string | null;
+  stimulus_image_url?: string | null;
   status: string;
   choices: Choice[];
   passage?: { id: string; title: string | null; content: string } | null;
@@ -30,7 +33,7 @@ interface Question {
 interface LinkRow { id: string; module_id: string; question_id: string; position: number; points: number; question: Question }
 interface ModuleRow { id: string; section_id: string; name: string; time_limit_minutes: number; position: number; is_adaptive: boolean; questions: LinkRow[] }
 interface SectionRow { id: string; test_id: string; name: string; section_type: "reading_writing" | "math"; position: number; modules: ModuleRow[] }
-interface TestDetail { id: string; title: string; description: string | null; status: string; is_public: boolean; created_at: string; sections: SectionRow[] }
+interface TestDetail { id: string; title: string; description: string | null; status: string; created_at: string; sections: SectionRow[] }
 
 const TEMP_POS = 9999;
 
@@ -42,6 +45,7 @@ export default function TestBuilderPage() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [showMeta, setShowMeta] = useState(false);
+  const [editingQuestion, setEditingQuestion] = useState<LinkRow | null>(null);
   const [sectionModal, setSectionModal] = useState<{ open: boolean; section?: SectionRow }>({ open: false });
   const [moduleModal, setModuleModal] = useState<{ open: boolean; section?: SectionRow; module?: ModuleRow }>({ open: false });
   const [manualFor, setManualFor] = useState<ModuleRow | null>(null);
@@ -77,14 +81,6 @@ export default function TestBuilderPage() {
   async function api(path: string, opts: { method?: string; body?: unknown } = {}) {
     const token = await getToken();
     return fnJson(`admin-tests/${testId}${path}`, { method: opts.method ?? "POST", token, body: opts.body });
-  }
-
-  async function publish() {
-    await run(() => api("/publish"));
-  }
-
-  async function archive() {
-    await run(() => api("", { method: "PATCH", body: { status: "archived" } }));
   }
 
   async function deleteSection(s: SectionRow) {
@@ -157,8 +153,8 @@ export default function TestBuilderPage() {
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
         <h2 style={{ margin: "4px 0", fontWeight: 700 }}>{test.title}</h2>
-        <Pill tone={test.status === "published" ? "green" : test.status === "archived" ? "gray" : "amber"}>{test.status}</Pill>
-        <Pill tone={test.is_public ? "blue" : "gray"}>{test.is_public ? "Public" : "Assigned only"}</Pill>
+        <Pill tone={test.status === "archived" ? "gray" : "green"}>{test.status === "archived" ? "Archived" : "Ready to assign"}</Pill>
+        <Pill tone="gray">Assigned only</Pill>
         <span className="muted" style={{ fontSize: 13 }}>
           {sections.length} section(s) · {moduleCount} module(s) · {questionCount} question(s)
         </span>
@@ -166,12 +162,6 @@ export default function TestBuilderPage() {
 
       <div className="toolbar" style={{ marginTop: 14 }}>
         <Button variant="outline" onClick={() => setShowMeta(true)} disabled={busy}>Edit Details</Button>
-        {test.status === "draft" && (
-          <Button onClick={() => void publish()} disabled={busy}>Publish Full-Length Test</Button>
-        )}
-        {test.status === "published" && (
-          <Button variant="outline" onClick={() => void archive()} disabled={busy}>Archive Full-Length Test</Button>
-        )}
       </div>
 
       {error && <div className="login-error">{error}</div>}
@@ -241,6 +231,7 @@ export default function TestBuilderPage() {
                           <div style={{ display: "flex", gap: 6 }}>
                             <Button size="sm" variant="ghost" onClick={() => void moveQuestion(l, -1)} disabled={busy || qi === 0}>↑</Button>
                             <Button size="sm" variant="ghost" onClick={() => void moveQuestion(l, 1)} disabled={busy || qi === m.questions.length - 1}>↓</Button>
+                            <Button size="sm" variant="outline" onClick={() => setEditingQuestion(l)} disabled={busy}>Edit</Button>
                             <Button size="sm" variant="danger" onClick={() => void unlinkQuestion(l)} disabled={busy}>Remove</Button>
                           </div>
                         </div>
@@ -281,6 +272,15 @@ export default function TestBuilderPage() {
             setShowMeta(false);
             void run(async () => {});
           }}
+        />
+      )}
+      {editingQuestion && (
+        <EditQuestionModal
+          key={editingQuestion.id}
+          testId={test.id}
+          link={editingQuestion}
+          onClose={() => setEditingQuestion(null)}
+          onSaved={() => { setEditingQuestion(null); void run(async () => {}); }}
         />
       )}
       {sectionModal.open && (
@@ -325,7 +325,6 @@ export default function TestBuilderPage() {
 function TestMetaModal({ test, onClose, onSaved }: { test: TestDetail; onClose: () => void; onSaved: () => void }) {
   const [title, setTitle] = useState(test.title);
   const [description, setDescription] = useState(test.description ?? "");
-  const [isPublic, setIsPublic] = useState(test.is_public);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -338,7 +337,7 @@ function TestMetaModal({ test, onClose, onSaved }: { test: TestDetail; onClose: 
       await fnJson(`admin-tests/${test.id}`, {
         method: "PATCH",
         token,
-        body: { title, description: description || null, is_public: isPublic },
+        body: { title, description: description || null, is_public: false },
       });
       onSaved();
       onClose();
@@ -359,14 +358,196 @@ function TestMetaModal({ test, onClose, onSaved }: { test: TestDetail; onClose: 
           <label className="field-label">Description</label>
           <textarea className="textarea" rows={3} value={description} onChange={(e) => setDescription(e.target.value)} />
         </div>
-        <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14 }}>
-          <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} />
-          Visible to all students (no assignment needed)
-        </label>
         {error && <div className="login-error">{error}</div>}
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
           <Button variant="outline" onClick={onClose}>Cancel</Button>
           <Button type="submit" disabled={busy}>{busy ? "Saving…" : "Save"}</Button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
+function EditQuestionModal({
+  testId,
+  link,
+  onClose,
+  onSaved,
+}: {
+  testId: string;
+  link: LinkRow;
+  onClose: () => void;
+  onSaved: () => void;
+}) {
+  const question = link.question;
+  const [prompt, setPrompt] = useState(question.prompt);
+  const [passage, setPassage] = useState(question.passage?.content ?? "");
+  const [answer, setAnswer] = useState(question.correct_answer ?? "");
+  const [explanation, setExplanation] = useState(question.explanation ?? "");
+  const [choices, setChoices] = useState(
+    [...question.choices].sort((a, b) => a.position - b.position).map(({ label, text }) => ({ label, text })),
+  );
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [removeImage, setRemoveImage] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!imageFile) {
+      setPreviewUrl(null);
+      return;
+    }
+    const url = URL.createObjectURL(imageFile);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [imageFile]);
+
+  function handleImage(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0] ?? null;
+    event.target.value = "";
+    if (!file) return;
+    if (!(["image/png", "image/jpeg", "image/webp"].includes(file.type)) || file.size > 10 * 1024 * 1024) {
+      setError("Choose a PNG, JPEG, or WebP image under 10 MB.");
+      return;
+    }
+    setError(null);
+    setImageFile(file);
+    setRemoveImage(false);
+  }
+
+  async function submit(event: FormEvent) {
+    event.preventDefault();
+    if (!prompt.trim()) return setError("Question prompt is required.");
+    if (question.question_type === "multiple_choice") {
+      if (choices.length < 2 || choices.some((choice) => !choice.label.trim() || !choice.text.trim())) {
+        return setError("Multiple-choice questions need at least two complete choices.");
+      }
+      if (new Set(choices.map((choice) => choice.label.toUpperCase())).size !== choices.length) {
+        return setError("Choice labels must be unique.");
+      }
+      if (!choices.some((choice) => choice.label.toUpperCase() === answer.trim().toUpperCase())) {
+        return setError("Choose a correct answer that matches one of the choice labels.");
+      }
+    }
+
+    setBusy(true);
+    setError(null);
+    let uploadedPath: string | null = null;
+    try {
+      const token = await getToken();
+      let imagePath = removeImage ? null : question.stimulus_image_path ?? null;
+      if (imageFile) {
+        const extension = imageFile.type === "image/jpeg" ? "jpg" : imageFile.type === "image/webp" ? "webp" : "png";
+        uploadedPath = `tests/${testId}/questions/${link.id}/${crypto.randomUUID()}.${extension}`;
+        const { error: uploadError } = await supabase.storage.from("question-assets").upload(uploadedPath, imageFile, {
+          contentType: imageFile.type,
+          upsert: false,
+        });
+        if (uploadError) throw new Error(`Image upload failed: ${uploadError.message}`);
+        imagePath = uploadedPath;
+      }
+
+      await fnJson(`admin-tests/${testId}/questions/${link.id}/content`, {
+        method: "POST",
+        token,
+        body: {
+          prompt: prompt.trim(),
+          passage_text: passage.trim() || null,
+          correct_answer: answer.trim() || null,
+          explanation: explanation.trim() || null,
+          stimulus_image_path: imagePath,
+          choices: question.question_type === "multiple_choice" ? choices : [],
+        },
+      });
+      onSaved();
+    } catch (err) {
+      if (uploadedPath) await supabase.storage.from("question-assets").remove([uploadedPath]).catch(() => undefined);
+      setError(err instanceof Error ? err.message : "Unable to save question.");
+      setBusy(false);
+    }
+  }
+
+  return (
+    <Modal title="Edit Test Question" onClose={busy ? () => undefined : onClose}>
+      <form onSubmit={(event) => void submit(event)} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div>
+          <label className="field-label">Question prompt</label>
+          <textarea className="textarea" rows={5} required value={prompt} onChange={(event) => setPrompt(event.target.value)} />
+        </div>
+        <div>
+          <label className="field-label">Passage (clear to remove)</label>
+          <textarea className="textarea" rows={5} value={passage} onChange={(event) => setPassage(event.target.value)} placeholder="No passage" />
+        </div>
+        {question.question_type === "multiple_choice" && (
+          <div>
+            <label className="field-label">Answer choices</label>
+            {choices.map((choice, index) => (
+              <div className="choice-edit" key={`${index}-${choice.label}`}>
+                <input
+                  className="input"
+                  aria-label={`Choice ${index + 1} label`}
+                  style={{ width: 64 }}
+                  maxLength={2}
+                  value={choice.label}
+                  onChange={(event) => setChoices((items) => items.map((item, i) => i === index ? { ...item, label: event.target.value.toUpperCase() } : item))}
+                />
+                <input
+                  className="input"
+                  aria-label={`Choice ${choice.label || index + 1} text`}
+                  value={choice.text}
+                  onChange={(event) => setChoices((items) => items.map((item, i) => i === index ? { ...item, text: event.target.value } : item))}
+                />
+                <Button type="button" size="sm" variant="ghost" disabled={choices.length <= 2} aria-label={`Remove choice ${choice.label}`} onClick={() => {
+                  setChoices((items) => items.filter((_, i) => i !== index));
+                  if (answer.toUpperCase() === choice.label.toUpperCase()) setAnswer("");
+                }}>Remove</Button>
+              </div>
+            ))}
+            <Button type="button" size="sm" variant="outline" disabled={choices.length >= 6} onClick={() => {
+              const used = new Set(choices.map((choice) => choice.label.toUpperCase()));
+              const label = ["A", "B", "C", "D", "E", "F"].find((candidate) => !used.has(candidate));
+              if (!label) return;
+              setChoices((items) => [...items, { label, text: "" }]);
+            }}>+ Add choice</Button>
+          </div>
+        )}
+        <div>
+          <label className="field-label">Correct answer</label>
+          {question.question_type === "multiple_choice" ? (
+            <select className="select" required value={answer} onChange={(event) => setAnswer(event.target.value)}>
+              <option value="">Choose the correct answer</option>
+              {choices.map((choice) => <option key={choice.label} value={choice.label}>{choice.label} · {choice.text.slice(0, 80)}</option>)}
+            </select>
+          ) : (
+            <input className="input" value={answer} onChange={(event) => setAnswer(event.target.value)} placeholder="e.g. 24 or 3/5" />
+          )}
+        </div>
+        <div>
+          <label className="field-label">Explanation (optional)</label>
+          <textarea className="textarea" rows={3} value={explanation} onChange={(event) => setExplanation(event.target.value)} />
+        </div>
+        <div>
+          <label className="field-label">Question image</label>
+          {(previewUrl || (!removeImage && question.stimulus_image_url)) && (
+            <img src={previewUrl ?? question.stimulus_image_url!} alt="Question stimulus preview" style={{ display: "block", maxWidth: "100%", maxHeight: 260, objectFit: "contain", borderRadius: 8, border: "1px solid var(--border)", marginBottom: 8 }} />
+          )}
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <label className="btn btn-outline btn-sm" style={{ cursor: "pointer" }}>
+              {imageFile ? "Replace image" : question.stimulus_image_path && !removeImage ? "Change image" : "Add image"}
+              <input type="file" accept="image/png,image/jpeg,image/webp" onChange={handleImage} style={{ display: "none" }} />
+            </label>
+            {(imageFile || question.stimulus_image_path) && !removeImage && (
+              <Button type="button" size="sm" variant="ghost" onClick={() => { setImageFile(null); setRemoveImage(true); }}>Remove image</Button>
+            )}
+            {removeImage && <Button type="button" size="sm" variant="ghost" onClick={() => setRemoveImage(false)}>Undo remove</Button>}
+          </div>
+          <p className="muted" style={{ fontSize: 12, margin: "6px 0 0" }}>PNG, JPEG, or WebP up to 10 MB.</p>
+        </div>
+        {error && <div className="login-error">{error}</div>}
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+          <Button type="button" variant="outline" onClick={onClose} disabled={busy}>Cancel</Button>
+          <Button type="submit" disabled={busy}>{busy ? "Saving…" : "Save question"}</Button>
         </div>
       </form>
     </Modal>

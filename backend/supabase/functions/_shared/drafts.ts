@@ -106,11 +106,16 @@ export async function approveDraft(
     .insert({ question_id: question.id, pdf_import_id: draft.pdf_import_id, page_number: draft.page_number, raw_text: draft.prompt });
 
   if (opts.add_to_module_id && opts.position) {
-    await svc.from("test_module_questions").insert({
+    const { error: linkErr } = await svc.from("test_module_questions").insert({
       module_id: opts.add_to_module_id,
       question_id: question.id,
       position: opts.position,
     });
+    if (linkErr) {
+      await svc.from("questions").delete().eq("id", question.id);
+      if (passageId) await svc.from("passages").delete().eq("id", passageId);
+      throw new HttpError(500, `Question was created but could not be added to its test module: ${linkErr.message}`);
+    }
   }
 
   await svc.from("draft_questions").update({ status: "approved", question_id: question.id }).eq("id", draftId);

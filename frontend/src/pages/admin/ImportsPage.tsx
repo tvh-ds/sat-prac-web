@@ -5,6 +5,20 @@ import type { ImportReadinessMetric, PdfImport } from "../../lib/types";
 import { Spinner, fmtDate } from "../../components/ui";
 import { polishTestTitle } from "../../lib/testTitle";
 
+type OverallReadiness = "complete" | "partial" | "failed" | "processing";
+
+function overallReadiness(im: PdfImport): OverallReadiness {
+  const readiness = im.import_readiness;
+  if (["queued", "processing", "running", "uploaded"].includes(im.status)) return "processing";
+  if (im.status === "failed") return "failed";
+  if (!readiness) return "processing";
+  const { questions, answer_key: answerKey } = readiness;
+  if (questions.status === "failed" || answerKey.status === "failed") return "failed";
+  if (questions.status === "complete" && answerKey.status === "complete") return "complete";
+  if (questions.status === "processing" || answerKey.status === "processing") return "processing";
+  return "partial";
+}
+
 function ReadinessBadge({ metric, noun }: { metric: ImportReadinessMetric | undefined; noun: string }) {
   if (!metric) return <span className="muted">—</span>;
 
@@ -48,6 +62,7 @@ export default function ImportsPage() {
   const [imports, setImports] = useState<PdfImport[] | null>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [readinessFilter, setReadinessFilter] = useState<"all" | Exclude<OverallReadiness, "processing">>("all");
 
   async function load() {
     const token = await getToken();
@@ -89,6 +104,14 @@ export default function ImportsPage() {
     }
   }
 
+  const counts = {
+    all: imports?.length ?? 0,
+    complete: imports?.filter((im) => overallReadiness(im) === "complete").length ?? 0,
+    partial: imports?.filter((im) => overallReadiness(im) === "partial").length ?? 0,
+    failed: imports?.filter((im) => overallReadiness(im) === "failed").length ?? 0,
+  };
+  const visibleImports = (imports ?? []).filter((im) => readinessFilter === "all" || overallReadiness(im) === readinessFilter);
+
   return (
     <div>
       <div className="section-label">Imports</div>
@@ -109,6 +132,19 @@ export default function ImportsPage() {
 
       {imports && (
         <div className="card card-pad">
+          <div className="toolbar" style={{ marginBottom: 14 }} aria-label="Filter imports by completeness">
+            {(["all", "complete", "partial", "failed"] as const).map((filter) => (
+              <button
+                key={filter}
+                type="button"
+                className={`draft-filter${readinessFilter === filter ? " active" : ""}`}
+                aria-pressed={readinessFilter === filter}
+                onClick={() => setReadinessFilter(filter)}
+              >
+                {filter === "all" ? "All" : filter.charAt(0).toUpperCase() + filter.slice(1)} ({counts[filter]})
+              </button>
+            ))}
+          </div>
           <table className="table">
             <thead>
               <tr>
@@ -123,7 +159,7 @@ export default function ImportsPage() {
               </tr>
             </thead>
             <tbody>
-              {imports.map((im) => {
+              {visibleImports.map((im) => {
                 const draftCount = Object.values(im.draft_counts ?? {}).reduce((a: number, n) => a + (n as number), 0);
                 return (
                   <tr key={im.id} className="row-link">
@@ -146,10 +182,10 @@ export default function ImportsPage() {
                   </tr>
                 );
               })}
-              {imports.length === 0 && (
+              {visibleImports.length === 0 && (
                 <tr>
                   <td colSpan={8} className="muted" style={{ textAlign: "center", padding: 30 }}>
-                    No imports yet — upload a practice PDF above.
+                    {imports.length === 0 ? "No imports yet — upload a practice PDF above." : `No ${readinessFilter} imports.`}
                   </td>
                 </tr>
               )}
