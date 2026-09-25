@@ -34,7 +34,7 @@ Deno.serve(async (req) => {
     if (req.method === "GET" && seg.length === 1) {
       const { data, error: err } = await svc
         .from("student_profiles")
-        .select("id, grade_level, school, profile_status, profile_submitted_at, profile_approved_at, created_at, profiles(full_name), attempts(id, status)")
+        .select("id, grade_level, school, profile_status, profile_submitted_at, profile_approved_at, created_at, profiles:profiles!student_profiles_id_fkey(full_name), attempts(id, status)")
         .order("created_at", { ascending: false });
       if (err) return error(err.message, 500);
       const { data: users } = await svc.auth.admin.listUsers({ perPage: 1000 });
@@ -82,7 +82,7 @@ Deno.serve(async (req) => {
     if (req.method === "GET" && seg.length === 2) {
       const { data: sp, error: spErr } = await svc
         .from("student_profiles")
-        .select("*, profiles(full_name)")
+        .select("*, profiles:profiles!student_profiles_id_fkey(full_name)")
         .eq("id", id)
         .maybeSingle();
       if (spErr) return error(spErr.message, 500);

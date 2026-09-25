@@ -13,7 +13,7 @@ Deno.serve(async (req) => {
     if (req.method === "GET" && seg.length === 2 && seg[1] === "students") {
       const { data: students, error: err } = await svc
         .from("student_profiles")
-        .select("*, profiles(full_name), attempts(id, status), topic_performance(student_id, attempted, correct)")
+        .select("*, profiles:profiles!student_profiles_id_fkey(full_name), attempts(id, status), topic_performance(student_id, attempted, correct)")
         .order("created_at", { ascending: false });
       if (err) return error(err.message, 500);
       const rows = (students ?? []).map((s: Record<string, unknown>) => {
@@ -52,7 +52,7 @@ Deno.serve(async (req) => {
     if (req.method === "GET" && seg.length === 3 && seg[1] === "attempts") {
       const { data: attempt, error: err } = await svc
         .from("attempts")
-        .select("*, test:tests(title), student:student_profiles(profiles(full_name)), score:scores(*)")
+        .select("*, test:tests(title), student:student_profiles(profiles:profiles!student_profiles_id_fkey(full_name)), score:scores(*)")
         .eq("id", id)
         .maybeSingle();
       if (err) return error(err.message, 500);

@@ -278,7 +278,7 @@ Deno.serve(async (req) => {
       const studentIds = (assignments ?? []).map((a) => a.student_id);
       const [{ data: profiles }, authList] = await Promise.all([
         studentIds.length > 0
-          ? svc.from("student_profiles").select("id, profiles(full_name)").in("id", studentIds)
+          ? svc.from("student_profiles").select("id, profiles:profiles!student_profiles_id_fkey(full_name)").in("id", studentIds)
           : Promise.resolve({ data: [] as Array<{ id: string; profiles: { full_name?: string } | null }> }),
         svc.auth.admin.listUsers({ perPage: 1000 }).catch(() => null),
       ]);
