@@ -345,6 +345,28 @@ export interface PdfImport {
     answer_key_warnings?: string[];
     key_fallback_matches?: number;
     key_scoped_matches?: number;
+    question_issues?: Array<{
+      pageNumber: number;
+      moduleName: string | null;
+      questionNumber: number | null;
+      prompt: string;
+      flags: string[];
+    }>;
+    ocr_retry_results?: Array<{
+      page: number;
+      reason: string;
+      status: "accepted" | "rejected" | "failed";
+      beforeQuestions: number;
+      afterQuestions: number;
+      error?: string;
+    }>;
+    unmatched_key_entries?: Array<{
+      questionNumber: number;
+      moduleName: string | null;
+      pageNumber: number;
+      sourceText: string;
+      reason: "question_key_count_mismatch" | "no_matching_question";
+    }>;
   } | null;
 }
 
@@ -388,6 +410,8 @@ export interface DraftQuestion {
     source_number_origin?: "observed" | "inferred";
     parse_flags?: string[];
     answer_key_state?: "matched" | "unmatched" | "not_detected";
+    key_match_method?: "question_id" | "recovered_question_id" | "module_position" | "document_position" | "bank" | null;
+    key_match_confidence?: "high" | "low" | null;
   } | null;
 }
 

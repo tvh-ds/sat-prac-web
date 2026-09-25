@@ -3,6 +3,95 @@ import { parseFullTest } from "../src/fullTestParser";
 import { evaluateModuleCompleteness, normalizeSectionHeading, parseScraperQuestions } from "../src/scraperParser";
 import { normalizeText } from "../src/textNormalize";
 
+describe("refinement source-boundary regressions", () => {
+  it("assigns global screenshot IDs by exact source position and keeps four-column keys for review", () => {
+    const questions = Array.from({ length: 98 }, (_, index) => ({
+      pageNumber: index + 1,
+      text: `**${300 + index}.** ${index < 54
+        ? "Which choice best completes the passage about migration?"
+        : "For the equation $x + 2 = 5$, what is the solution?"}\nA. One\nB. Two\nC. Three\nD. Four`,
+    }));
+    const key = Array.from({ length: 27 }, (_, index) => index < 22
+      ? `${index + 300} A ${index + 327} B ${index + 354} C ${index + 376} D`
+      : `${index + 300} A ${index + 327} B`).join("\n");
+    const parsed = parseFullTest(normalizeText([...questions, { pageNumber: 99, text: key }]), { contentScope: "full_test" });
+    expect(parsed.questions).toHaveLength(98);
+    expect(parsed.modules.map((module) => module.questionCount)).toEqual([27, 27, 22, 22]);
+    expect(parsed.questions[27]).toMatchObject({
+      sourceModuleName: "Reading and Writing Module 2", sourceQuestionNumber: 1,
+      sourceQuestionNumberOrigin: "inferred", sourceGlobalQuestionId: "327",
+    });
+    expect(parsed.questions[54]).toMatchObject({
+      sourceModuleName: "Math Module 1", sourceQuestionNumber: 1, sourceGlobalQuestionId: "354",
+    });
+    expect(parsed.keyEntries).toHaveLength(98);
+    expect(parsed.keyEntries[2]).toMatchObject({
+      moduleName: "Math Module 1", questionNumber: 1, column: 2,
+    });
+    expect(parsed.questions.every((question) => question.parseFlags.includes("positional_answer_review_required"))).toBe(true);
+  });
+
+  it("does not positionally complete a global-ID source that is one question short", () => {
+    const questions = Array.from({ length: 97 }, (_, index) => ({
+      pageNumber: index + 1,
+      text: `**${300 + index}.** ${index < 54
+        ? "Which choice best completes the passage about migration?"
+        : "For the equation $x + 2 = 5$, what is the solution?"}\nA. One\nB. Two\nC. Three\nD. Four`,
+    }));
+    const key = Array.from({ length: 27 }, (_, index) => index < 22
+      ? `${index + 300} A ${index + 327} B ${index + 354} C ${index + 376} D`
+      : `${index + 300} A ${index + 327} B`).join("\n");
+    const parsed = parseFullTest(normalizeText([...questions, { pageNumber: 98, text: key }]), { contentScope: "full_test" });
+    expect(parsed.questions).toHaveLength(97);
+    expect(parsed.questions.some((question) => question.parseFlags.includes("source_global_id_positional_slot"))).toBe(false);
+  });
+
+  it("coalesces an adjacent unnumbered crop that adds the missing choices", () => {
+    const stem = "The graph models Quinidra's distance from home. Which trip could the model describe?";
+    const parsed = parseScraperQuestions(normalizeText([
+      { pageNumber: 1, text: `# Math Module 1\n1 Mark for Review\n${stem}` },
+      { pageNumber: 2, text: `# Math Module 1\n${stem}\nA. Drive away\nB. Return home\nC. Stop twice\nD. Stay home` },
+      { pageNumber: 3, text: "# Math Module 1\n2 Mark for Review\nWhat is the value of x?\nA. 1\nB. 2\nC. 3\nD. 4" },
+    ]));
+    expect(parsed.questions).toHaveLength(2);
+    expect(parsed.questions[0]).toMatchObject({ sourceQuestionNumber: 1, pageNumber: 1 });
+    expect(parsed.questions[0]?.choices).toHaveLength(4);
+    expect(parsed.questions[0]?.parseFlags).toContain("repeated_source_question_coalesced");
+  });
+
+  it("treats a blank grid-in widget as layout before the next visual question", () => {
+    const parsed = parseScraperQuestions(normalizeText([
+      { pageNumber: 1, text: "# Math Module 1\n9 Mark for Review\nWhat is the value of b?\n[ ] ______" },
+      { pageNumber: 2, text: "# Math Module 1\n[figure: a line graph]\nThe point (v, -5) lies on the line shown. What is the value of v?\nA. -2\nB. -1\nC. 1\nD. 2" },
+      { pageNumber: 3, text: "# Math Module 1\n11 Mark for Review\nWhat is the value of x?\nA. 1\nB. 2\nC. 3\nD. 4" },
+    ]));
+    expect(parsed.questions).toHaveLength(3);
+    expect(parsed.questions[1]?.prompt).toContain("point (v, -5)");
+  });
+
+  it("restores four modules only for exact 98 local markers and a 98-key grid", () => {
+    const lengths = [27, 27, 22, 22];
+    const pages = lengths.map((length, moduleIndex) => ({
+      pageNumber: moduleIndex + 1,
+      text: `${moduleIndex === 0 ? "# Section 1, Module 1: Reading and Writing\n" : ""}${Array.from({ length }, (_, i) =>
+        `# Question ${i + 1}\n${moduleIndex < 2 ? `For passage ${moduleIndex + 1}-${i + 1}, which choice completes the text?` : `For equation ${moduleIndex + 1}-${i + 1}, what is the solution to x + 1 = 2?`}\nA. One\nB. Two\nC. Three\nD. Four`).join("\n")}`,
+    }));
+    pages.push({ pageNumber: 5, text: Array.from({ length: 27 }, (_, i) =>
+      i < 22 ? `${i + 1} A ${i + 1} B ${i + 1} C ${i + 1} D` : `${i + 1} A ${i + 1} B`).join("\n") });
+    const parsed = parseFullTest(normalizeText(pages), { contentScope: "full_test" });
+    expect(Object.fromEntries([...new Set(parsed.questions.map((q) => q.sourceModuleName))].map((name) =>
+      [name, parsed.questions.filter((q) => q.sourceModuleName === name).length]))).toEqual({
+      "Reading and Writing Module 1": 27,
+      "Reading and Writing Module 2": 27,
+      "Math Module 1": 22,
+      "Math Module 2": 22,
+    });
+    expect(parsed.keyEntries).toHaveLength(98);
+    expect(parsed.questions.filter((q) => q.sourceModuleName === "Math Module 1")).toHaveLength(22);
+    expect(parsed.questions.filter((q) => q.sourceModuleName === "Reading and Writing Module 2")).toHaveLength(27);
+  });
+});
+
 // Format observed in 202605usv1-rw.pdf: "Module 1: Reading and Writing Question N"
 const MODULE_HEADER_PREFIXED = `
 Module 1: Reading and Writing Question 1
@@ -357,6 +446,39 @@ describe("parseFullTest universal patterns (post-OCR corpus)", () => {
     expect(result.questions[1]!.prompt).toContain("Which expression");
   });
 
+  it("keeps an unnumbered math grid-in after response directions for neighbor ID recovery", () => {
+    const pages = normalizeText([
+      {
+        pageNumber: 1,
+        text: `Math Module 1
+22 QUESTIONS
+15
+What is the value of this expression?
+A. One
+B. Two`,
+      },
+      {
+        pageNumber: 2,
+        text: `Student-produced response directions
+- If you find more than one correct answer, enter only one answer.
+- You can enter up to 5 characters for a positive answer.
+[figure: a circle centered at (0, 5) on a coordinate grid]
+Circle A shown is defined by an equation. If Circle B is translated, what is the value of 4a?
+Answer Preview:`,
+      },
+      {
+        pageNumber: 3,
+        text: `17
+The function estimates an object's height. How many seconds until it hits the ground?`,
+      },
+    ]);
+    const result = parseFullTest(pages, { contentScope: "full_test" });
+    expect(result.questions.map((q) => q.sourceQuestionNumber)).toEqual([15, 16, 17]);
+    expect(result.questions[1]!.prompt).toContain("Circle A shown");
+    expect(result.questions[1]!.sourceQuestionNumberOrigin).toBe("inferred");
+    expect(result.questions[1]!.parseFlags).toContain("question_id_recovered_from_neighbors");
+  });
+
   it("resyncs bars after dropped number lines", () => {
     const pages = normalizeText([
       {
@@ -374,6 +496,42 @@ describe("parseFullTest universal patterns (post-OCR corpus)", () => {
     expect(result.questions[2]!.prompt).toContain("Tenth");
   });
 
+  it("keeps detached numeric answer choices from resynchronizing question bars", () => {
+    const pages = normalizeText([{
+      pageNumber: 1,
+      text: `Math Module 1
+22 QUESTIONS
+1
+What is the value of the expression?
+A.
+106
+B.
+45
+C.
+28
+D.
+$y + z = 180$
+2
+A line passes through two points. What is the slope?
+2
+3
+The length of a rectangle diagonal is 10. What is its perimeter?
+A.
+26
+B.
+28
+C.
+30
+D.
+32`,
+    }]);
+    const result = parseScraperQuestions(pages);
+    expect(result.questions).toHaveLength(3);
+    expect(result.questions.map((q) => q.sourceQuestionNumber)).toEqual([1, 2, 3]);
+    expect(result.questions[0]!.choices.map((choice) => choice.text)).toEqual(["106", "45", "28", "$y + z = 180$"]);
+    expect(result.questions[2]!.choices.map((choice) => choice.text)).toEqual(["26", "28", "30", "32"]);
+  });
+
   it("splits a choiceless prompt from a following visual question, not a lead-in", () => {
     const pages = normalizeText([
       {
@@ -389,7 +547,7 @@ describe("parseFullTest universal patterns (post-OCR corpus)", () => {
   it("renumbers bank compilations by printed prefix and matches keys safely", () => {
     const lines: string[] = [];
     for (let n = 321; n <= 326; n++) {
-      lines.push(`**${n}** Which choice completes the text?\nA) One\nB) Two`);
+      lines.push(`**${n}.** Which choice completes the text?\nA) One\nB) Two`);
     }
     lines.push("321 C 322 A\n323 B 324 D\n325 A 326 B");
     const pages = normalizeText([{ pageNumber: 1, text: lines.join("\n") }]);
@@ -398,7 +556,7 @@ describe("parseFullTest universal patterns (post-OCR corpus)", () => {
     expect(result.modules[0]!.name).toMatch(/Question Bank/);
     const q321 = result.questions.find((q) => q.sourceQuestionNumber === 321);
     expect(q321).toBeDefined();
-    expect(q321!.prompt).not.toMatch(/^\*\*321\*\*/);
+    expect(q321!.prompt).not.toMatch(/^\*\*321\.\*\*/);
     expect(result.keyMap.get(`${q321!.sourceModuleName}|321`)?.answer).toBe("C");
     // unnumbered questions never auto-match
     const stray = result.questions.filter((q) => q.sourceQuestionNumber === -1);

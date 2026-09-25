@@ -44,6 +44,8 @@ const MODULE_COLON_HEADING_RE =
 /** Number-first key heading ("Module 1: Reading and Writing Answers"). */
 const MODULE_COLON_KEY_HEADING_RE =
   /^\s*module\s+(\d)\s*:\s*(reading\s*(?:and|&)?\s*writing|math)\s+answers?\s*:?\s*$/i;
+/** Compact math key labels used after two RW key runs ("M1:" / "M2:"). */
+const SHORT_MATH_KEY_HEADING_RE = /^\s*M([12])\s*:\s*$/i;
 
 /**
  * Trailing metadata on College Board headings is discarded:
@@ -100,7 +102,7 @@ function stripMarkdown(line: string): string {
  * "$4 \\frac{4}{31}$" or "$1/4 \\mid 0.25$") or a separated list of
  * acceptable answers ("43/3, 14.33", "27, 28, 29", "27/4; 6.75").
  */
-const KEY_ANSWER_RE = `[A-Ha-h]|\\$[^$]{1,60}\\$|[+-]?(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:\\s*\\/\\s*\\d+)?`;
+const KEY_ANSWER_RE = `[A-Ha-h]|\\$[^$]{1,60}\\$|[+-]?\\s*(?:\\d+(?:\\.\\d+)?|\\.\\d+)(?:\\s*\\/\\s*\\d+)?`;
 
 /** Split pipe-separated key rows, ignoring pipes inside $…$ math. */
 export function splitKeySegments(clean: string): string[] {
@@ -120,7 +122,7 @@ export function splitKeySegments(clean: string): string[] {
   segs.push(cur);
   return segs;
 }
-const KEY_ANSWER_LIST_RE = `(?:${KEY_ANSWER_RE})(?:\\s*[,;]\\s*(?:${KEY_ANSWER_RE}))*`;
+const KEY_ANSWER_LIST_RE = `(?:${KEY_ANSWER_RE})(?:\\s*(?:[,;]|or)\\s*(?:${KEY_ANSWER_RE}))*`;
 
 /** Single entry: "1. B" or "1 : B" or "1 . B" or "1  B" or "9. 43/3, 14.33" */
 const SINGLE_ENTRY_RE = new RegExp(`^\\s*(\\d{1,3})\\s*[.:)]?\\s*(${KEY_ANSWER_LIST_RE})\\s*$`);
@@ -210,8 +212,11 @@ export function normalizeKeyAnswer(raw: string): string {
   let s = raw.replace(/\$/g, "").trim();
   s = s.replace(/\\[dt]?frac\{([^{}]+)\}\{([^{}]+)\}/g, "$1/$2");
   s = s.replace(/\\mid/g, ",");
+  s = s.replace(/\s+or\s+/gi, ", ");
   s = s.replace(/\\/g, "");
   s = s.replace(/\s+/g, " ").trim();
+  // OCR sometimes separates a unary minus from the grid-in value ("- 13/14").
+  s = s.replace(/^([+-])\s+(?=(?:\d|\.))/, "$1");
   s = s.replace(/\s*,\s*/g, ", ");
   return s.toUpperCase();
 }
@@ -341,6 +346,16 @@ export function parseAnswerKey(
         resetKeyState();
         continue;
       }
+      const shortMathMatch = clean.match(SHORT_MATH_KEY_HEADING_RE);
+      if (shortMathMatch && entries.length >= 40 && /^Math Module/.test(lastQuestionModule)) {
+        inKey = true;
+        currentModule = "Math Module " + shortMathMatch[1];
+        keyInferredModule = null;
+        autoKeyed = false;
+        autoMisses = 0;
+        resetKeyState();
+        continue;
+      }
 
       // Check for general key heading (including mangled OCR variants)
       if (KEY_HEADING_RE.test(clean) || isMangledKeyHeading(clean)) {
@@ -376,7 +391,11 @@ export function parseAnswerKey(
         const singleStart = clean.match(EXPLICIT_SINGLE_RE) ?? clean.match(NO_DELIM_SINGLE_RE);
         if (
           (lastQuestionModule || (totalQuestions ?? 0) > 0) &&
-          (isKeyTableLine(clean) || (singleStart && Number(singleStart[1]) === 1 && lastNumber === 0))
+          (isKeyTableLine(clean) || (singleStart && Number(singleStart[1]) === 1 && lastNumber === 0 &&
+            // A numbered equation in a math question ("1. $y = 7x + 3$")
+            // has the same surface shape as a LaTeX answer. It is not a
+            // heading-less key block; never enter key mode on an equation.
+            !singleStart[2]!.includes("=")))
         ) {
           inKey = true;
           currentModule = "";
@@ -553,6 +572,33 @@ export function parseAnswerKey(
           lastRowPairs = null;
         }
       }
+    }
+  }
+
+  // Some bank PDFs append a headingless, single-column *global-ID* key page
+  // (e.g. 643 A ... 669 A). A long consecutive run on the final page is
+  // stronger evidence than the missing heading; short data tables and page
+  // footers must not be mistaken for keys.
+  if (entries.length === 0 && pages.length > 1) {
+    const tail = pages.at(-1)!;
+    const lines = tail.text.split("\n").map((line) => stripMarkdown(line.trim()));
+    const candidates = lines.map((line) => line.match(/^(\d{3,4})\s+([A-D])$/i));
+    const run: Array<{ number: number; answer: string; sourceText: string }> = [];
+    for (let i = 0; i < candidates.length; i++) {
+      const match = candidates[i];
+      if (!match) continue;
+      const number = Number(match[1]);
+      if (run.length && number !== run.at(-1)!.number + 1) run.length = 0;
+      run.push({ number, answer: match[2]!.toUpperCase(), sourceText: lines[i]! });
+    }
+    if (run.length >= 20 && run.length <= 100 &&
+        candidates.filter(Boolean).length === run.length) {
+      for (const item of run) entries.push({
+        questionNumber: item.number,
+        answer: item.answer,
+        pageNumber: tail.pageNumber,
+        sourceText: item.sourceText,
+      });
     }
   }
 

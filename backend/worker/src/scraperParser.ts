@@ -125,8 +125,15 @@ function stripBoldChoice(line: string): string {
   return line.replace(/^\s*\*+([A-H])\**\s*[.)]\**\s*/, "$1. ");
 }
 
+/** Normalize Parse's inline bold numeric question marker ("**25.** Stem"). */
+function stripBoldQuestionNumber(line: string): string {
+  return line.replace(/^\s*\*\*(\d{1,3}[.)])\*\*\s*(\S.*)$/, "$1 $2");
+}
+
 /** "Module 1: Reading and Writing" — number-first heading variant. */
 const MODULE_COLON_RE = /^\s*module\s+(\d)\s*:\s*(reading\s*(?:and|&)?\s*writing|math)\s*$/i;
+/** OCR shorthand under the current section: "MODULE 1" / "Module2". */
+const BARE_MODULE_RE = /^\s*module\s*([12])\s*$/i;
 /** "Module 1: Reading and Writing Answers" — number-first key heading. */
 const MODULE_COLON_ANSWERS_RE = /^\s*module\s+(\d)\s*:\s*(reading\s*(?:and|&)?\s*writing|math)\s+answers?\s*:?\s*$/i;
 /** "n. answer" tokens anywhere in a line (crammed key lists). */
@@ -252,8 +259,37 @@ function isUiScreenshotFigure(line: string): boolean {
  * end with "." and must not trigger the figure split.
  */
 function isCompletePrompt(promptLines: string[]): boolean {
-  const text = promptLines.join(" ").replace(/\s+/g, " ").trim();
+  const text = promptLines.map(stripOcrLayoutArtifact).join(" ").replace(/\s+/g, " ").trim();
   return text.length >= 20 && /\?\s*$/.test(text);
+}
+
+/** Parse sometimes emits this trailing layout glyph after a finished block. */
+function stripOcrLayoutArtifact(text: string): string {
+  return text.replace(/\s*↔\s*$/u, "").trim();
+}
+
+function isStandaloneAnswerLabel(line: string): boolean {
+  return /^\s*\*{0,2}answer\s*:\s*\*{0,2}\s*$/i.test(stripOcrLayoutArtifact(line));
+}
+
+function isGridInputPlaceholder(line: string): boolean {
+  return /^\s*\[\s*\]\s*_{3,}\s*$/.test(stripOcrLayoutArtifact(line));
+}
+
+function isStandaloneMathQuestionLine(line: string): boolean {
+  const text = stripOcrLayoutArtifact(line);
+  return (
+    text.length >= 30 &&
+    /\?/.test(text) &&
+    /^(?:the\s+(?:table|graph|scatterplot|histogram|function|equation|expression)|in\s+(?:triangle|the\s+xy-plane|the\s+figure)|what|which|how|if|for\s+the)\b/i.test(text)
+  );
+}
+
+function lastCompletePromptLine(lines: string[]): number {
+  for (let i = lines.length - 1; i >= 0; i--) {
+    if (isCompletePrompt([lines[i]!])) return i;
+  }
+  return -1;
 }
 
 function normalizedQuestionText(text: string): string {
@@ -291,6 +327,28 @@ function mergeRepeatedQuestion(a: ScraperQuestion, b: ScraperQuestion): ScraperQ
     hasVisualStimulus: a.hasVisualStimulus || b.hasVisualStimulus,
     visualMarkerCount: Math.max(a.visualMarkerCount, b.visualMarkerCount),
     confidence: Math.max(a.confidence, b.confidence),
+    parseFlags: [...new Set([...a.parseFlags, ...b.parseFlags, "repeated_source_question_coalesced"])],
+  };
+}
+
+/** A later crop can show the choices while losing the printed number. */
+function mergeUnnumberedRepeat(a: ScraperQuestion, b: ScraperQuestion): ScraperQuestion | null {
+  if (a.sourceQuestionNumberOrigin !== "observed" || b.sourceQuestionNumberOrigin !== "inferred") return null;
+  if (a.sourceModuleName !== b.sourceModuleName || b.pageNumber - a.pageNumber !== 1) return null;
+  if (normalizedQuestionText(a.prompt) !== normalizedQuestionText(b.prompt) || a.prompt.length < 35) return null;
+  if (b.choices.length < a.choices.length || b.choices.length < 3) return null;
+  for (const choice of a.choices) {
+    const counterpart = b.choices.find((candidate) => candidate.label === choice.label);
+    if (!counterpart || normalizedQuestionText(counterpart.text) !== normalizedQuestionText(choice.text)) return null;
+  }
+  return {
+    ...b,
+    sourceQuestionNumber: a.sourceQuestionNumber,
+    sourceQuestionNumberOrigin: "observed",
+    pageNumber: a.pageNumber,
+    passageText: (a.passageText?.length ?? 0) >= (b.passageText?.length ?? 0) ? a.passageText : b.passageText,
+    hasVisualStimulus: a.hasVisualStimulus || b.hasVisualStimulus,
+    visualMarkerCount: Math.max(a.visualMarkerCount, b.visualMarkerCount),
     parseFlags: [...new Set([...a.parseFlags, ...b.parseFlags, "repeated_source_question_coalesced"])],
   };
 }
@@ -347,8 +405,11 @@ function figureSplitAhead(
   for (let p = pi; p < pages.length && seen < 12; p++) {
     const lines = pages[p]!.text.split("\n");
     for (let i = p === pi ? li + 1 : 0; i < lines.length && seen < 12; i++) {
-      const line = lines[i]!.trim();
+      const line = stripOcrLayoutArtifact(lines[i]!);
       if (!line || /^===== PAGE \d+ =====\s*$/.test(line)) continue;
+      // Parse may put the grid-in answer label between the finished prior
+      // question and the next figure/stem. It is widget chrome, not a stem.
+      if (isStandaloneAnswerLabel(line)) continue;
       seen++;
       const kind = classifyLine(line).kind;
       if (kind === "choice") return promptSeen;
@@ -358,7 +419,13 @@ function figureSplitAhead(
         // (no choices of its own); with no prompt seen it ends a tick run.
         return promptSeen;
       }
-      if (line.length >= 30 && /[a-zA-Z]{3}/.test(line) && /[?.!…:]$/.test(line)) promptSeen = true;
+      if (
+        line.length >= 25 &&
+        /[a-zA-Z]{3}/.test(line) &&
+        (/[?.!…:]$/.test(line) || /\b(?:what|which|how|why|where|when)\b/i.test(line))
+      ) {
+        promptSeen = true;
+      }
     }
   }
   return false;
@@ -377,6 +444,7 @@ function looksLikeQuestionAhead(
   pages: Array<{ pageNumber: number; text: string }>,
   pi: number,
   li: number,
+  acceptChoices = true,
 ): boolean {
   const cand = Number(stripMarkdown(pages[pi]!.text.split("\n")[li]!));
   let lastNum = cand;
@@ -389,7 +457,7 @@ function looksLikeQuestionAhead(
       if (!line || /^===== PAGE \d+ =====\s*$/.test(line)) continue;
       seen++;
       const kind = classifyLine(line).kind;
-      if (kind === "choice" || kind === "stem" || kind === "inline" || kind === "question-marker") return true;
+      if ((acceptChoices && kind === "choice") || kind === "stem" || kind === "inline" || kind === "question-marker") return true;
       if (kind === "module-heading" || kind === "key-heading" || kind === "questions-count") return false;
       if (kind === "bar") {
         const n = Number(stripMarkdown(line));
@@ -519,7 +587,7 @@ interface LineClass {
 }
 
 function classifyLine(line: string): LineClass {
-  const clean = stripBoldChoice(stripMarkdown(line));
+  const clean = stripBoldQuestionNumber(stripBoldChoice(stripMarkdown(stripOcrLayoutArtifact(line))));
   if (
     MODULE_ANSWERS_RE.test(clean) ||
     MODULE_COLON_ANSWERS_RE.test(clean) ||
@@ -531,6 +599,7 @@ function classifyLine(line: string): LineClass {
   if (
     MODULE_HEADING_RE.test(clean) ||
     MODULE_COLON_RE.test(clean) ||
+    BARE_MODULE_RE.test(clean) ||
     SECTION_PREFIX_RE.test(clean) ||
     SECTION_SHORT_RE.test(clean)
   )
@@ -666,6 +735,7 @@ function isSectionHeading(line: string): boolean {
   return (
     MODULE_HEADING_RE.test(clean) ||
     MODULE_COLON_RE.test(clean) ||
+    BARE_MODULE_RE.test(clean) ||
     SECTION_PREFIX_RE.test(clean) ||
     SECTION_SHORT_RE.test(clean)
   );
@@ -702,10 +772,31 @@ function moduleLabel(which: string, num: number): string {
  *    parsed per module
  */
 export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: string }>): ScraperParseResult {
+  // Some full tests use bare RW "MODULE 1/2" headings and explicit Math
+  // section headings, with only the inline question number bolded. Normalize
+  // that form only for this document family; global-ID banks must retain their
+  // existing number handling even when an ID happens to be <= 27.
+  const hasBareRwHeading = pages.some((page) => /^\s*#{0,6}\s*module\s*[12]\s*$/im.test(page.text));
+  const hasMathSectionHeading = pages.some((page) => /^\s*#{0,6}\s*section\s+2,\s*module\s+[12]:\s*math\b/im.test(page.text));
+  if (hasBareRwHeading && hasMathSectionHeading) {
+    pages = pages.map((page) => ({ ...page, text: page.text.replace(
+      /^(\s*)\*\*([1-9]|1\d|2[0-7])[.)]\*\*(?=\s|$)/gm, "$1$2.",
+    ) }));
+  }
   const questions: ScraperQuestion[] = [];
   const keys: ScraperKeyEntry[] = [];
   const modules: ScraperParseResult["modules"] = [];
   const moduleCounters = new Map<string, number>();
+  // A trailing page containing almost nothing but four single-column answer
+  // runs is not question content. The separate answer-key parser handles it;
+  // the question parser must not turn its numeric alternatives into prompts.
+  const denseKeyPages = new Set(pages.filter((page, index) => {
+    const lines = page.text.split("\n").map((line) => line.trim()).filter(Boolean);
+    const entries = lines.filter((line) => /^\d{1,3}[.)]\s*(?:[A-H]\b|\$?[+-]?(?:\d|\.\d))/i.test(line)).length;
+    const strongTailContinuation = index >= pages.length - 2 && entries >= 10 && entries / lines.length >= 0.9;
+    return (entries >= 40 && entries / lines.length >= 0.75 || strongTailContinuation) &&
+      lines.every((line) => line.length < 100);
+  }).map((page) => page.pageNumber));
 
   // Bluebook app-export detection: "N Mark for Review" markers + "Question N
   // of 22/27" footers. Gates bare-letter choices ("A mock").
@@ -976,6 +1067,10 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
 
   for (let pi = 0; pi < pages.length; pi++) {
     const page = pages[pi]!;
+    if (denseKeyPages.has(page.pageNumber)) {
+      flushBlock({ withCarryover: true });
+      continue;
+    }
     currentPage = page.pageNumber;
     const lines = page.text.split("\n");
     if (pi > 0 && currentSection === "math" && blockPrompt.length > 0 && blockChoices.length === 0 && isCompletePrompt(blockPrompt)) {
@@ -993,7 +1088,7 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
       }
     }
     for (let li = 0; li < lines.length; li++) {
-      const line = lines[li]!.trim();
+      const line = stripOcrLayoutArtifact(lines[li]!);
       if (!line) continue;
       if (HRULE_RE.test(stripMarkdown(line))) continue;
       // Answer-entry boxes ("[figure: A rectangular box … write the answer]")
@@ -1158,6 +1253,20 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
 
       const rawKind = classifyLine(line);
       let cls = rawKind;
+      // A prompt-only math block can be held at the preceding question bar in
+      // case its choices continue beneath the next marker. If the numbered
+      // marker is followed by a new stem/figure instead of choices, finish the
+      // held prompt before transferring that marker number to the new block.
+      // Otherwise the held grid-in steals the following question ID.
+      if (
+        pendingQuestionNumber !== null &&
+        carryoverPrompt &&
+        blockPrompt.length === 0 && blockChoices.length === 0 && blockPassage.length === 0 &&
+        ["stem", "inline", "prose"].includes(rawKind.kind) &&
+        !isStrayInstructionLine(line)
+      ) {
+        flushCarryover();
+      }
       if (
         pendingQuestionNumber !== null &&
         blockPrompt.length === 0 && blockChoices.length === 0 && blockPassage.length === 0 &&
@@ -1208,13 +1317,27 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
       }
       if (rawKind.kind === "bar") {
         const barNum = Number(stripMarkdown(line));
-        const prevNoise = currentSection === "math" && lastNonBlank !== "" && isMathNoise(lastNonBlank);
-        if (prevNoise) {
-          // Bar runs through a graph axis tick (e.g. "2" after "0"); not a boundary.
+        const lastChoice = blockChoices.at(-1);
+        // OCR often places a numeric answer choice on the line after its
+        // label ("A." then "106"). Do not mistake that value for a
+        // question-number bar when no new prompt follows it.
+        if (
+          currentSection === "math" &&
+          lastChoice?.text.trim() === "" &&
+          classifyLine(lastNonBlank).kind === "choice" &&
+          !looksLikeQuestionAhead(pages, pi, li, false)
+        ) {
+          lastChoice.text = stripMarkdown(line).trim();
           continue;
         }
+        const prevNoise = currentSection === "math" && lastNonBlank !== "" && isMathNoise(lastNonBlank);
         const inWindow =
           barNum === expectedQuestionNumber || (barNum > expectedQuestionNumber && barNum <= expectedQuestionNumber + 2);
+        if (prevNoise && !(inWindow && looksLikeQuestionAhead(pages, pi, li, blockChoices.length === 0))) {
+          // Ignore graph-axis ticks after numeric labels, but preserve an
+          // in-sequence boundary when a complete question prompt follows.
+          continue;
+        }
         if (!inWindow) {
           // Axis ticks and stray page numbers (60, 55, 0, ...) are single
           // numbers too; only an in-sequence bar is a real question boundary.
@@ -1250,9 +1373,10 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
           const cleanHeading = stripMarkdown(line);
           const mm = cleanHeading.match(MODULE_HEADING_RE);
           const cm = mm ? null : cleanHeading.match(MODULE_COLON_RE);
-          const sm = mm || cm ? null : (cleanHeading.match(SECTION_PREFIX_RE) ?? cleanHeading.match(SECTION_SHORT_RE));
-          const sectionName = mm ? mm[1]! : cm ? cm[2]! : sm![3]!;
-          const modNum = mm ? (mm[2] ? Number(mm[2]) : currentModuleNumber) : cm ? Number(cm[1]) : Number(sm![2]);
+          const bm = mm || cm ? null : cleanHeading.match(BARE_MODULE_RE);
+          const sm = mm || cm || bm ? null : (cleanHeading.match(SECTION_PREFIX_RE) ?? cleanHeading.match(SECTION_SHORT_RE));
+          const sectionName = mm ? mm[1]! : cm ? cm[2]! : bm ? currentSection : sm![3]!;
+          const modNum = mm ? (mm[2] ? Number(mm[2]) : currentModuleNumber) : cm ? Number(cm[1]) : bm ? Number(bm[1]) : Number(sm![2]);
           const label = moduleLabel(sectionName, modNum);
           // Per-page header repeating the current module: not a boundary.
           if (label === currentModule) break;
@@ -1338,13 +1462,14 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
         case "inline": {
           // Inline numbers advance the bar-sequence window so later
           // standalone bars ("18.") stay in-window.
-          const inlineNum = Number(stripBoldChoice(stripMarkdown(line)).match(INLINE_QUESTION_RE)?.[1] ?? 0);
+          const normalizedLine = stripBoldQuestionNumber(stripBoldChoice(stripMarkdown(line)));
+          const inlineNum = Number(normalizedLine.match(INLINE_QUESTION_RE)?.[1] ?? 0);
           if (inlineNum >= expectedQuestionNumber && inlineNum <= expectedQuestionNumber + 2) {
             expectedQuestionNumber = inlineNum + 1;
           }
           flushBlock({ withCarryover: true });
           pendingQuestionNumber = null;
-          blockPrompt = [line];
+          blockPrompt = [normalizedLine];
           blockQuestionNumber = inlineNum || null;
           blockPage = page.pageNumber;
           pendingNewQuestion = false;
@@ -1465,6 +1590,41 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
           ) {
             break;
           }
+          // A standalone grid-in widget label must not make a completed
+          // prompt appear incomplete to the following figure-boundary test.
+          if (
+            !inKeyBlock &&
+            currentSection === "math" &&
+            blockChoices.length === 0 &&
+            (
+              (blockPrompt.length > 0 && lastCompletePromptLine(blockPrompt) === blockPrompt.length - 1) ||
+              (blockPassage.length > 0 && isCompletePrompt(blockPassage))
+            ) &&
+            (isStandaloneAnswerLabel(line) || isGridInputPlaceholder(line))
+          ) {
+            break;
+          }
+          // Flattened tables often have no [table] marker. Once a complete
+          // grid-in prompt has been seen, a second complete math stem is a
+          // new question even if table rows were emitted between the stems.
+          if (
+            !inKeyBlock &&
+            currentSection === "math" &&
+            blockChoices.length === 0 &&
+            blockPrompt.length > 0 &&
+            isStandaloneMathQuestionLine(line)
+          ) {
+            const boundary = lastCompletePromptLine(blockPrompt);
+            if (boundary >= 0) {
+              const carryover = blockPrompt.slice(boundary + 1);
+              blockPrompt = blockPrompt.slice(0, boundary + 1);
+              flushBlock();
+              blockPrompt = [...carryover, line];
+              blockPage = page.pageNumber;
+              pendingNewQuestion = false;
+              break;
+            }
+          }
           // Math figure split: a figure/table marker arriving after a
           // complete choiceless prompt, with another prompt + choices ahead,
           // starts a new (visual) question — the previous grid-in prompt is
@@ -1485,7 +1645,18 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
           if (blockChoices.length > 0) {
             const next = nextSpecial(pages, pi, li);
             const last = blockChoices[blockChoices.length - 1]!;
-            if (next?.kind === "choice" && next.label && continues(last.label, next.label)) {
+            const pageLeadingContinuation =
+              last.label === "D" &&
+              page.pageNumber > blockPage &&
+              lines.slice(0, li).every((prior) => !prior.trim()) &&
+              /[A-Za-z]$/.test(last.text.trim()) &&
+              /^[a-z]/.test(line.trim()) &&
+              Boolean(next && ["bar", "question-marker", "module-heading"].includes(next.kind));
+            const detachedChoiceText =
+              last.text.trim() === "" &&
+              classifyLine(lastNonBlank).kind === "choice" &&
+              Boolean(next && ["bar", "question-marker", "module-heading", "key-heading"].includes(next.kind));
+            if ((next?.kind === "choice" && next.label && continues(last.label, next.label)) || pageLeadingContinuation || detachedChoiceText) {
               // continuation of the last choice's text across a line/page break
               // (visual markers stripped here too — continuations bypass the
               // choice-creation strip above)
@@ -1519,6 +1690,12 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
             }
             blockPage = page.pageNumber;
             pendingNewQuestion = false;
+          } else if (currentSection === "math" && isCompletePrompt([line])) {
+            // Grid-in math can begin with arbitrary wording after OCR drops
+            // its number. Start a complete prompt rather than buffering it
+            // as shared passage text; neighboring IDs can repair its ordinal.
+            blockPrompt = [line];
+            blockPage = page.pageNumber;
           } else {
             passageBuffer.push(line);
           }
@@ -1545,6 +1722,13 @@ export function parseScraperQuestions(pages: Array<{ pageNumber: number; text: s
   const coalescedModules = new Map<string, number>();
   for (const question of questions) {
     if (question.sourceQuestionNumberOrigin !== "observed") {
+      const previous = coalesced.at(-1);
+      const merged = previous && mergeUnnumberedRepeat(previous, question);
+      if (merged) {
+        coalesced[coalesced.length - 1] = merged;
+        coalescedModules.set(question.sourceModuleName, question.pageNumber);
+        continue;
+      }
       coalesced.push(question);
       continue;
     }

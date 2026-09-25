@@ -140,6 +140,9 @@ export default function ImportDetailPage() {
   const maxPageIdx = Math.max(0, Math.ceil(draftTotal / draftLimit) - 1);
   const incompleteModules = importInfo.text_quality?.incomplete_modules ?? [];
   const parserFlagCounts = Object.entries(importInfo.text_quality?.parser_flag_counts ?? {});
+  const questionIssues = importInfo.text_quality?.question_issues ?? [];
+  const retryResults = importInfo.text_quality?.ocr_retry_results ?? [];
+  const unmatchedKeys = importInfo.text_quality?.unmatched_key_entries ?? [];
 
   return (
     <div>
@@ -198,6 +201,9 @@ export default function ImportDetailPage() {
         incompleteModules.length > 0 ||
         (importInfo.text_quality?.inferred_question_numbers ?? 0) > 0 ||
         parserFlagCounts.length > 0 ||
+        questionIssues.length > 0 ||
+        retryResults.length > 0 ||
+        unmatchedKeys.length > 0 ||
         (importInfo.text_quality?.answer_key_source != null && importInfo.text_quality.answer_key_source !== "parsed")) && (
         <div className="panel" style={{ marginTop: 18, borderColor: "var(--border-medium)" }}>
           <h3 style={{ margin: "0 0 8", fontSize: 15 }}>Parser warnings</h3>
@@ -225,6 +231,52 @@ export default function ImportDetailPage() {
             <p className="muted" style={{ margin: "8px 0 0", fontSize: 12.5 }}>
               Parse flags: {parserFlagCounts.map(([flag, count]) => flag.replaceAll("_", " ") + " (" + count + ")").join(" · ")}
             </p>
+          )}
+          {retryResults.length > 0 && (
+            <div style={{ marginTop: 8, fontSize: 12.5 }}>
+              <strong>Targeted OCR retries</strong>
+              <ul style={{ margin: "4px 0 0", paddingLeft: 18 }}>
+                {retryResults.map((retry) => (
+                  <li key={retry.page}>
+                    Page {retry.page}: {retry.status}
+                    {retry.status !== "failed" && " (" + retry.beforeQuestions + " → " + retry.afterQuestions + " parsed questions)"}
+                    {retry.error ? " — " + retry.error : ""}
+                    {retry.reason ? "; " + retry.reason : ""}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          {questionIssues.length > 0 && (
+            <div style={{ marginTop: 8, fontSize: 12.5 }}>
+              <strong>Question boundaries to verify</strong>
+              <ul style={{ margin: "4px 0 0", paddingLeft: 18 }}>
+                {questionIssues.slice(0, 8).map((issue, i) => (
+                  <li key={issue.pageNumber + "-" + (issue.questionNumber ?? "?") + "-" + i}>
+                    Page {issue.pageNumber}{issue.moduleName ? " · " + issue.moduleName : ""}
+                    {issue.questionNumber ? " · Q" + issue.questionNumber : ""}
+                    {" — "}{issue.flags.map((flag) => flag.replaceAll("_", " ")).join(", ")}
+                    {issue.prompt ? ": " + issue.prompt : ""}
+                  </li>
+                ))}
+                {questionIssues.length > 8 && <li>{questionIssues.length - 8} more issue(s) recorded in import diagnostics.</li>}
+              </ul>
+            </div>
+          )}
+          {unmatchedKeys.length > 0 && (
+            <div style={{ marginTop: 8, fontSize: 12.5 }}>
+              <strong>Unmatched answer-key entries</strong>
+              <ul style={{ margin: "4px 0 0", paddingLeft: 18 }}>
+                {unmatchedKeys.slice(0, 8).map((key, i) => (
+                  <li key={key.pageNumber + "-" + key.questionNumber + "-" + i}>
+                    Page {key.pageNumber}{key.moduleName ? " · " + key.moduleName : ""}
+                    {" · key " + key.questionNumber + ": " + key.reason.replaceAll("_", " ")}
+                    {key.sourceText ? " (" + key.sourceText + ")" : ""}
+                  </li>
+                ))}
+                {unmatchedKeys.length > 8 && <li>{unmatchedKeys.length - 8} more unmatched key(s) recorded in import diagnostics.</li>}
+              </ul>
+            </div>
           )}
           {importInfo.text_quality?.answer_key_source === "present_but_unparsed" && (
             <p className="muted" style={{ margin: "8px 0 0", fontSize: 12.5 }}>
@@ -728,12 +780,19 @@ function DraftEditor({
         </p>
       )}
 
-      {((draft.parser_metadata?.parse_flags?.length ?? 0) > 0 || draft.parser_metadata?.source_number_origin === "inferred") && (
+      {((draft.parser_metadata?.parse_flags?.length ?? 0) > 0 ||
+        draft.parser_metadata?.source_number_origin === "inferred" ||
+        draft.parser_metadata?.key_match_confidence === "low") && (
         <div className="panel" style={{ marginTop: 12, borderColor: "var(--border-medium)" }}>
           <strong style={{ fontSize: 13 }}>Parser review</strong>
          {draft.parser_metadata?.source_number_origin === "inferred" && (
            <p className="muted" style={{ margin: "6px 0 0", fontSize: 12.5 }}>Question number was inferred from document order; verify it against the source.</p>
          )}
+          {draft.parser_metadata?.key_match_confidence === "low" && (
+            <p className="muted" style={{ margin: "6px 0 0", fontSize: 12.5 }}>
+              Suggested answer matched by {draft.parser_metadata.key_match_method?.replaceAll("_", " ") ?? "inferred alignment"}; verify it against the source before approval.
+            </p>
+          )}
           {(draft.parser_metadata?.parse_flags?.length ?? 0) > 0 && (
             <ul style={{ margin: "6px 0 0", paddingLeft: 18, fontSize: 12.5 }}>
               {draft.parser_metadata?.parse_flags?.map((flag) => <li key={flag}>{flag.replaceAll("_", " ")}</li>)}

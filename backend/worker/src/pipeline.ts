@@ -61,6 +61,33 @@ export interface OcrPageFailure {
   error: string;
 }
 
+export interface OcrRetryDiagnostic {
+  page: number;
+  reason: string;
+  status: "accepted" | "rejected" | "failed";
+  beforeQuestions: number;
+  afterQuestions: number;
+  error?: string;
+}
+
+export interface UnmatchedKeyDiagnostic {
+  questionNumber: number;
+  moduleName: string | null;
+  pageNumber: number;
+  sourceText: string;
+  reason: "question_key_count_mismatch" | "no_matching_question";
+}
+
+export interface QuestionIssueDiagnostic {
+  pageNumber: number;
+  moduleName: string | null;
+  questionNumber: number | null;
+  prompt: string;
+  flags: string[];
+}
+
+export const MAX_SUSPECT_OCR_RETRIES = 4;
+
 export type KeyStatus = "complete" | "partial" | "missing";
 /**
  * Words showing the question text itself refers to a visual ("the graph
@@ -117,6 +144,7 @@ export interface IngestReport {
   ocrPagesSucceeded: number;
   ocrPagesFailed: OcrPageFailure[];
   billedParsePages: number;
+  ocrRetryResults?: OcrRetryDiagnostic[];
   finalQuestionsByModule: Record<string, number>;
   moduleChecks: ModuleCheck[];
   visualReviewQuestions: number;
@@ -137,6 +165,7 @@ interface AssembledQuestion {
   sourceModuleName: string | null;
   sourceModulePosition: number | null;
   sourceQuestionId: string | null;
+  sourceGlobalQuestionId?: string | null;
   pageNumber: number;
   section: "reading_writing" | "math";
   questionType: "multiple_choice" | "student_produced";
@@ -167,6 +196,20 @@ interface MatchedAnswer {
   answer: string;
   pageNumber: number;
   sourceText: string;
+  method?: "question_id" | "recovered_question_id" | "module_position" | "document_position" | "bank";
+  confidence?: "high" | "low";
+  keyEntryIndex?: number;
+}
+
+interface IndexedKeyEntry {
+  index: number;
+  questionNumber: number;
+  answer: string;
+  pageNumber: number;
+  sourceText: string;
+  moduleName: string | null;
+  inferredModule: string | null;
+  global: boolean;
 }
 
 function countByModule(questions: Array<{ sourceModuleName: string | null }>): Record<string, number> {
@@ -176,6 +219,87 @@ function countByModule(questions: Array<{ sourceModuleName: string | null }>): R
     out[mod] = (out[mod] ?? 0) + 1;
   }
   return out;
+}
+
+function retryCandidatePages(
+  parsed: ParsedBundle,
+  visualPages: number[],
+  failedPages: number[],
+): Array<{ page: number; reason: string }> {
+  const candidates = new Map<number, { score: number; reasons: string[] }>();
+  const add = (page: number, score: number, reason: string) => {
+    if (!Number.isInteger(page) || page < 1) return;
+    const current = candidates.get(page) ?? { score: 0, reasons: [] };
+    current.score = Math.max(current.score, score);
+    if (!current.reasons.includes(reason)) current.reasons.push(reason);
+    candidates.set(page, current);
+  };
+
+  for (const page of failedPages) add(page, 100, "initial OCR page failure");
+  if (parsed.fullTest && parsed.fullTest.documentFamily !== "question_bank") {
+    for (const module of parsed.completeness) {
+      const moduleQuestions = parsed.questions
+        .filter((q) => q.sourceModuleName === module.name)
+        .sort((a, b) =>
+          a.pageNumber - b.pageNumber ||
+          (a.sourceModulePosition ?? 0) - (b.sourceModulePosition ?? 0),
+        );
+      const hasUnresolvedBoundaries = moduleQuestions.some((q) =>
+        q.parseFlags.includes("source_question_id_unresolved"),
+      );
+      if (!((module.missing > 0 && module.missing <= 4) || hasUnresolvedBoundaries)) continue;
+      const questions = moduleQuestions;
+      for (const q of questions) {
+        if (q.sourceQuestionNumber < 1 || q.parseFlags.includes("source_question_id_unresolved")) {
+          add(q.pageNumber, 85, module.name + " has an unresolved question boundary");
+        }
+      }
+      const numbered = questions.filter((q) => q.sourceQuestionNumber > 0);
+      for (let i = 1; i < numbered.length; i++) {
+        const before = numbered[i - 1]!;
+        const after = numbered[i]!;
+        if (after.sourceQuestionNumber > before.sourceQuestionNumber + 1) {
+          add(before.pageNumber, 75, module.name + " has a source-question number gap");
+          add(after.pageNumber, 75, module.name + " has a source-question number gap");
+        }
+      }
+      for (const page of visualPages) {
+        if (page >= module.startPage && page <= module.endPage) {
+          add(page, 60, module.name + " is short and the page contains a visual/table");
+        }
+      }
+      if (![...candidates.keys()].some((page) => page >= module.startPage && page <= module.endPage)) {
+        // No stronger signal: retry only the final pages in the short module,
+        // where a missing trailing question is most likely to be truncated.
+        const pageCount = Math.max(0, module.endPage - module.startPage + 1);
+        for (let page = Math.max(module.startPage, module.endPage - Math.min(pageCount, 4) + 1); page <= module.endPage; page++) {
+          add(page, 10, module.name + " is short by " + module.missing + " question(s)");
+        }
+      }
+    }
+  }
+
+  return [...candidates.entries()]
+    .sort((a, b) => b[1].score - a[1].score || a[0] - b[0])
+    .slice(0, MAX_SUSPECT_OCR_RETRIES)
+    .map(([page, info]) => ({ page, reason: info.reasons.join("; ") }));
+}
+
+function parseQualityScore(parsed: ParsedBundle): number {
+  const unresolved = parsed.questions.filter((q) => q.parseFlags.includes("source_question_id_unresolved")).length;
+  const inferred = parsed.questions.filter((q) => q.sourceQuestionNumberOrigin === "inferred").length;
+  const observed = parsed.questions.filter((q) => q.sourceQuestionNumberOrigin === "observed").length;
+  const moduleDeviation = parsed.completeness.reduce((sum, m) => sum + Math.abs(m.expected - m.actual), 0);
+  const promptQuality = parsed.questions.reduce((sum, q) => sum + Math.min(q.prompt.length, 400) / 400, 0);
+  return parsed.questions.length * 100 + observed * 2 - inferred * 2 - unresolved * 30 - moduleDeviation * 25 + promptQuality;
+}
+
+function retryImprovesParse(before: ParsedBundle, after: ParsedBundle): boolean {
+  if (after.questions.length < before.questions.length) return false;
+  const beforeDeviation = before.completeness.reduce((sum, m) => sum + Math.abs(m.expected - m.actual), 0);
+  const afterDeviation = after.completeness.reduce((sum, m) => sum + Math.abs(m.expected - m.actual), 0);
+  if (afterDeviation > beforeDeviation) return false;
+  return parseQualityScore(after) > parseQualityScore(before);
 }
 
 /** Module-scoped key slots ("Module|n") parsed from the document. */
@@ -332,17 +456,33 @@ export class Pipeline {
       }
       const ocrMs = Date.now() - tOcr;
       console.log(`[pipeline] Parse OCR: ${ocrSucceeded.length}/${totalPages} pages (model ${this.ocrModel})`);
-      if (totalPages > 0 && ocrSucceeded.length === 0) {
+      // --- Step 2: parser reads OCR output, questions become drafts ---
+      const tParser = Date.now();
+      let parsed = this.parseAll(normalizeText(ocrPages), "full_test");
+      const retry = await this.retrySuspectPages(
+        bufferForFinalize,
+        ocrPages,
+        parsed,
+        visualByPage,
+        ocrFailed.map((failure) => failure.page),
+      );
+      parsed = retry.parsed;
+      billedParsePages += retry.billedPages;
+      if (totalPages > 0 && ocrSucceeded.length === 0 && !retry.results.some((result) => result.status === "accepted")) {
         throw new Error(
-          `Cohere Parse failed on all ${totalPages} page(s); first error: ${ocrFailed[0]?.error ?? "unknown"} (stopping for diagnosis)`,
+          "Cohere Parse failed on all " + totalPages + " page(s); first error: " +
+          (ocrFailed[0]?.error ?? "unknown") + " (stopping for diagnosis)",
         );
       }
       const quality = analyzeTextQuality(ocrPages);
+      for (const outcome of retry.results) {
+        if (outcome.status === "failed") {
+          warnings.push("Targeted OCR retry failed on page " + outcome.page + ": " + (outcome.error ?? "unknown error"));
+        } else if (outcome.status === "rejected") {
+          warnings.push("Targeted OCR retry on page " + outcome.page + " did not improve parser completeness; original OCR was kept.");
+        }
+      }
       await this.writePages(pdfImport.id, ocrPages);
-
-      // --- Step 2: parser reads OCR output, questions become drafts ---
-      const tParser = Date.now();
-      const parsed = this.parseAll(normalizeText(ocrPages), "full_test");
       const parserMs = Date.now() - tParser;
 
       // Nothing usable: fail with the OCR attempt recorded.
@@ -366,6 +506,7 @@ export class Pipeline {
               ocr_pages_succeeded: ocrSucceeded.length,
               ocr_pages_failed: ocrFailed,
               billed_parse_pages: billedParsePages,
+              ocr_retry_results: retry.results,
               timings_ms: timingsMs,
             },
           })
@@ -417,8 +558,19 @@ export class Pipeline {
         }
       }
       if (ocrFailed.length > 0) {
+        const recoveredPages = new Set(
+          (retry.results ?? [])
+            .filter((result) => result.status === "accepted" && ocrFailed.some((failure) => failure.page === result.page))
+            .map((result) => result.page),
+        );
+        const remainingFailures = ocrFailed.filter((failure) => !recoveredPages.has(failure.page));
         warnings.push(
-          `Parse OCR failed on ${ocrFailed.length} page(s), selectable text used instead: ${ocrFailed.map((f) => `${f.page} (${f.error.slice(0, 80)})`).join("; ")}.`,
+          "Initial Parse OCR failed on " + ocrFailed.length + " page(s)" +
+          (recoveredPages.size > 0 ? "; targeted retry recovered " + recoveredPages.size + " page(s)" : "") +
+          (remainingFailures.length > 0
+            ? "; selectable-text fallback remains on page(s) " + remainingFailures.map((failure) => failure.page).join(", ")
+            : "; no selectable-text fallback was needed after retry") +
+          ".",
         );
       }
       if (visualByPage.size > 0) {
@@ -434,6 +586,7 @@ export class Pipeline {
         ocrSucceeded: ocrSucceeded.length,
         ocrFailed,
         billedParsePages,
+        ocrRetryResults: retry.results,
         visualByPage: Object.fromEntries(visualByPage),
         warnings,
         moduleChecks,
@@ -525,6 +678,96 @@ export class Pipeline {
       .limit(1);
     if (error) throw new Error(`claim next: ${error.message}`);
     return data?.[0]?.id ?? null;
+  }
+
+  private async retrySuspectPages(
+    pdfBytes: Uint8Array,
+    pages: PageText[],
+    initialParse: ParsedBundle,
+    visualByPage: Map<number, PageVisualInfo>,
+    failedPages: number[],
+  ): Promise<{ parsed: ParsedBundle; results: OcrRetryDiagnostic[]; billedPages: number }> {
+    const candidates = retryCandidatePages(initialParse, [...visualByPage.keys()], failedPages);
+    let parsed = initialParse;
+    let billedPages = 0;
+    const results: OcrRetryDiagnostic[] = [];
+
+    for (const candidate of candidates) {
+      const beforeQuestions = parsed.questions.length;
+      try {
+        // Re-render only suspect pages at a higher scale; this uses the same
+        // configured Parse provider/key rotation and is capped per import.
+        const png = await renderPagePng(pdfBytes, candidate.page, PARSE_RENDER_SCALE + 1);
+        const fitted = await fitImageForParse(png);
+        const out = await parsePageTiled(this.parse, fitted);
+        billedPages += out.billedPages;
+        const text = out.text.trim();
+        if (!text) {
+          results.push({
+            page: candidate.page,
+            reason: candidate.reason,
+            status: "rejected",
+            beforeQuestions,
+            afterQuestions: beforeQuestions,
+          });
+          continue;
+        }
+
+        const pageIndex = pages.findIndex((page) => page.pageNumber === candidate.page);
+        if (pageIndex < 0) {
+          results.push({
+            page: candidate.page,
+            reason: candidate.reason,
+            status: "failed",
+            beforeQuestions,
+            afterQuestions: beforeQuestions,
+            error: "page is missing from OCR output",
+          });
+          continue;
+        }
+        const retryPages = pages.map((page, index) =>
+          index === pageIndex ? { pageNumber: page.pageNumber, text } : page,
+        );
+        const retryParse = this.parseAll(normalizeText(retryPages), "full_test");
+        const accepted = retryImprovesParse(parsed, retryParse);
+        if (accepted) {
+          pages[pageIndex] = { pageNumber: pages[pageIndex]!.pageNumber, text };
+          parsed = retryParse;
+          if (out.imageCount > 0 || out.tableCount > 0) {
+            visualByPage.set(candidate.page, {
+              imageCount: out.imageCount,
+              tableCount: out.tableCount,
+              notes: out.visuals.map((v) => v.kind + ": " + (v.description ?? v.category ?? "visual")),
+              boxes: out.visuals.map((v) => ({
+                kind: v.kind,
+                description: v.description,
+                category: v.category,
+                bbox: v.bbox,
+                bboxNormalized: v.bboxNormalized,
+              })),
+            });
+          }
+        }
+        results.push({
+          page: candidate.page,
+          reason: candidate.reason,
+          status: accepted ? "accepted" : "rejected",
+          beforeQuestions,
+          afterQuestions: accepted ? retryParse.questions.length : beforeQuestions,
+        });
+      } catch (e) {
+        results.push({
+          page: candidate.page,
+          reason: candidate.reason,
+          status: "failed",
+          beforeQuestions,
+          afterQuestions: beforeQuestions,
+          error: (e instanceof Error ? e.message : String(e)).slice(0, 240),
+        });
+      }
+    }
+
+    return { parsed, results, billedPages };
   }
 
   /** Parse normalized page texts: bank first, then full-test, then scraper, then legacy. */
@@ -631,49 +874,98 @@ export class Pipeline {
   private matchAnswers(parsed: ParsedBundle): {
     answers: Array<MatchedAnswer | null>;
     keyEntries: number;
-    /** Answers assigned via positional/inferred fallback rather than module scope. */
     fallbackMatches: number;
     scopedMatches: number;
+    unmatchedKeyEntries: UnmatchedKeyDiagnostic[];
   } {
     const questions = parsed.questions;
     if (parsed.bank) {
       const answers = questions.map((q) =>
-        q.correctAnswer ? { answer: q.correctAnswer, pageNumber: q.pageNumber, sourceText: `Correct Answer: ${q.correctAnswer}` } : null,
+        q.correctAnswer
+          ? {
+              answer: q.correctAnswer,
+              pageNumber: q.pageNumber,
+              sourceText: "Correct Answer: " + q.correctAnswer,
+              method: "bank" as const,
+              confidence: "high" as const,
+            }
+          : null,
       );
       return {
         answers,
         keyEntries: questions.filter((q) => q.correctAnswer).length,
         fallbackMatches: 0,
         scopedMatches: answers.filter(Boolean).length,
+        unmatchedKeyEntries: [],
       };
     }
-    const scoped = new Map<string, MatchedAnswer>();
-    const global: Array<{ n: number; inferred: string | null; v: MatchedAnswer }> = [];
-    if (parsed.fullTest && parsed.fullTest.questions.length > 0) {
-      for (const [k, v] of parsed.fullTest.keyMap) {
-        if (!k.startsWith("g|")) scoped.set(k, v);
-      }
-      for (const e of parsed.fullTest.keyEntries) {
-        if (!e.moduleName) {
-          global.push({ n: e.questionNumber, inferred: e.inferredModule ?? null, v: { answer: e.answer, pageNumber: e.pageNumber, sourceText: e.sourceText } });
-        }
-      }
-    } else if (parsed.scraper && parsed.scraper.questions.length > 0) {
-      for (const k of parsed.scraper.keys) {
-        const v = { answer: k.answer, pageNumber: k.pageNumber, sourceText: k.sourceText };
-        if (!k.global && k.moduleName) scoped.set(`${k.moduleName}|${k.questionNumber}`, v);
-        else global.push({ n: k.questionNumber, inferred: k.moduleName || null, v });
-      }
-    } else if (parsed.legacyGlobal) {
-      for (const [n, v] of parsed.legacyGlobal) global.push({ n, inferred: null, v });
-    }
-    // Document order (no numeric sort): end-of-test keys may repeat 1..N
-    // per module block, and positional mapping must follow block order.
 
-    const answers: Array<MatchedAnswer | null> = new Array(questions.length).fill(null);
-    const unmatched: number[] = [];
+    const entries: IndexedKeyEntry[] = [];
+    if (parsed.fullTest && parsed.fullTest.questions.length > 0) {
+      parsed.fullTest.keyEntries.forEach((e, index) => entries.push({
+        index,
+        questionNumber: e.questionNumber,
+        answer: e.answer,
+        pageNumber: e.pageNumber,
+        sourceText: e.sourceText,
+        moduleName: e.moduleName ?? null,
+        inferredModule: e.inferredModule ?? null,
+        global: !e.moduleName && !e.inferredModule,
+      }));
+    } else if (parsed.scraper && parsed.scraper.questions.length > 0) {
+      parsed.scraper.keys.forEach((k, index) => entries.push({
+        index,
+        questionNumber: k.questionNumber,
+        answer: k.answer,
+        pageNumber: k.pageNumber,
+        sourceText: k.sourceText,
+        moduleName: !k.global && k.moduleName ? k.moduleName : null,
+        inferredModule: k.global && k.moduleName ? k.moduleName : null,
+        global: k.global && !k.moduleName,
+      }));
+    } else if (parsed.legacyGlobal) {
+      for (const [n, v] of parsed.legacyGlobal) entries.push({
+        index: entries.length,
+        questionNumber: n,
+        answer: v.answer,
+        pageNumber: v.pageNumber,
+        sourceText: v.sourceText,
+        moduleName: null,
+        inferredModule: null,
+        global: true,
+      });
+    }
+
+    const answers: Array<MatchedAnswer | null> = new Array<MatchedAnswer | null>(questions.length).fill(null);
+    const usedEntries = new Set<number>();
+    const byModule = new Map<string, IndexedKeyEntry[]>();
+    const global: IndexedKeyEntry[] = [];
+    for (const entry of entries) {
+      const module = entry.moduleName ?? entry.inferredModule;
+      if (module) {
+        if (!byModule.has(module)) byModule.set(module, []);
+        byModule.get(module)!.push(entry);
+      } else if (entry.global) {
+        global.push(entry);
+      }
+    }
+
+    const questionsByModule = new Map<string, number[]>();
+    questions.forEach((q, index) => {
+      const module = q.sourceModuleName ?? "";
+      if (!questionsByModule.has(module)) questionsByModule.set(module, []);
+      questionsByModule.get(module)!.push(index);
+    });
+    const directEntryBySlot = new Map<string, IndexedKeyEntry[]>();
+    for (const entry of entries) {
+      if (!entry.moduleName) continue;
+      const slot = entry.moduleName + "|" + entry.questionNumber;
+      if (!directEntryBySlot.has(slot)) directEntryBySlot.set(slot, []);
+      directEntryBySlot.get(slot)!.push(entry);
+    }
+
     questions.forEach((q, i) => {
-      const eligibleForExactMatch =
+      const eligible =
         (q.sourceQuestionNumberOrigin === "observed" || q.parseFlags.includes("question_id_recovered_from_neighbors")) &&
         q.sourceQuestionNumber > 0 &&
         !q.parseFlags.some((flag) =>
@@ -681,48 +973,106 @@ export class Pipeline {
           flag === "source_question_id_unresolved" ||
           flag === "screenshot_section_unresolved"
         );
-      const key = q.sourceModuleName && eligibleForExactMatch ? q.sourceModuleName + "|" + q.sourceQuestionNumber : null;
-      const hit = key ? scoped.get(key) : undefined;
-      if (hit) answers[i] = hit;
-      else unmatched.push(i);
+      if (!q.sourceModuleName || !eligible) return;
+      const candidates = directEntryBySlot.get(q.sourceModuleName + "|" + q.sourceQuestionNumber) ?? [];
+      if (candidates.length !== 1) return;
+      const entry = candidates[0]!;
+      const lowConfidence =
+        q.sourceQuestionNumberOrigin !== "observed" ||
+        q.parseFlags.includes("question_id_recovered_from_neighbors") ||
+        Boolean(entry.inferredModule);
+      answers[i] = {
+        answer: entry.answer,
+        pageNumber: entry.pageNumber,
+        sourceText: entry.sourceText,
+        method: lowConfidence ? "recovered_question_id" : "question_id",
+        confidence: lowConfidence ? "low" : "high",
+        keyEntryIndex: entry.index,
+      };
+      usedEntries.add(entry.index);
     });
-    const scopedMatches = answers.filter(Boolean).length;
-    let fallbackMatches = 0;
-    const fallbackStructureTrusted = parsed.completeness.length > 0
-      ? parsed.completeness.every((module) => module.complete)
-      : parsed.fullTest?.documentFamily === "question_bank";
-    const safeForPositionalFallback =
-      questions.every((q) => q.sourceQuestionNumberOrigin === "observed" && q.sourceQuestionNumber > 0 && q.parseFlags.length === 0) &&
-      fallbackStructureTrusted;
-    if (unmatched.length > 0 && global.length === unmatched.length && safeForPositionalFallback) {
-      unmatched.forEach((qi, j) => {
-        answers[qi] = global[j]!.v;
+
+    // A module-position mapping is allowed only for an exact one-key-per-
+    // question list. Existing exact matches must agree with that same order.
+    for (const [module, questionIndexes] of questionsByModule) {
+      const moduleEntries = byModule.get(module) ?? [];
+      if (!module || moduleEntries.length !== questionIndexes.length) continue;
+      const orderAgrees = questionIndexes.every((qi, position) => {
+        const matched = answers[qi];
+        return !matched || matched.keyEntryIndex === moduleEntries[position]!.index;
       });
-      fallbackMatches = unmatched.length;
-    } else if (unmatched.length > 0 && safeForPositionalFallback) {
-      const unmatchedByModule = new Map<string, number[]>();
-      for (const qi of unmatched) {
-        const mod = questions[qi]!.sourceModuleName ?? "";
-        if (!unmatchedByModule.has(mod)) unmatchedByModule.set(mod, []);
-        unmatchedByModule.get(mod)!.push(qi);
-      }
-      const globalByInferred = new Map<string, Array<(typeof global)[number]>>();
-      for (const g of global) {
-        const key = g.inferred ?? "";
-        if (!globalByInferred.has(key)) globalByInferred.set(key, []);
-        globalByInferred.get(key)!.push(g);
-      }
-      for (const [mod, qis] of unmatchedByModule) {
-        const entries = globalByInferred.get(mod);
-        if (mod && entries && entries.length === qis.length) {
-          qis.forEach((qi, j) => {
-            answers[qi] = entries[j]!.v;
-          });
-          fallbackMatches += qis.length;
-        }
-      }
+      if (!orderAgrees) continue;
+      questionIndexes.forEach((qi, position) => {
+        if (answers[qi]) return;
+        const entry = moduleEntries[position]!;
+        answers[qi] = {
+          answer: entry.answer,
+          pageNumber: entry.pageNumber,
+          sourceText: entry.sourceText,
+          method: "module_position",
+          confidence: "low",
+          keyEntryIndex: entry.index,
+        };
+        usedEntries.add(entry.index);
+      });
     }
-    return { answers, keyEntries: scoped.size + global.length, fallbackMatches, scopedMatches };
+
+    // Bare document keys are safe only when their count equals the full
+    // question count; a short list never shifts onto subsequent questions.
+    const positionalFamily =
+      parsed.fullTest?.documentFamily === "full_test" ||
+      parsed.fullTest?.documentFamily === "section_test";
+    const noPriorMatches = answers.filter(Boolean).length === 0;
+    if (
+      global.length === questions.length &&
+      byModule.size === 0 &&
+      positionalFamily &&
+      noPriorMatches
+    ) {
+      questions.forEach((_, qi) => {
+        const entry = global[qi]!;
+        answers[qi] = {
+          answer: entry.answer,
+          pageNumber: entry.pageNumber,
+          sourceText: entry.sourceText,
+          method: "document_position",
+          confidence: "low",
+          keyEntryIndex: entry.index,
+        };
+        usedEntries.add(entry.index);
+      });
+    }
+
+    const scopedMatches = answers.filter(
+      (answer) => answer?.method === "question_id" || answer?.method === "recovered_question_id",
+    ).length;
+    const fallbackMatches = answers.filter((answer) => answer?.confidence === "low").length;
+    const unmatchedKeyEntries = entries
+      .filter((entry) => !usedEntries.has(entry.index))
+      .map((entry): UnmatchedKeyDiagnostic => {
+        const module = entry.moduleName ?? entry.inferredModule;
+        const targetQuestions = module
+          ? questions.filter((q) => q.sourceModuleName === module)
+          : questions;
+        const targetKeys = module ? byModule.get(module) ?? [] : global;
+        return {
+          questionNumber: entry.questionNumber,
+          moduleName: module,
+          pageNumber: entry.pageNumber,
+          sourceText: entry.sourceText.slice(0, 160),
+          reason: targetQuestions.length > 0 && targetKeys.length !== targetQuestions.length
+            ? "question_key_count_mismatch"
+            : "no_matching_question",
+        };
+      });
+
+    return {
+      answers,
+      keyEntries: entries.length,
+      fallbackMatches,
+      scopedMatches,
+      unmatchedKeyEntries,
+    };
   }
 
   private async finalize(
@@ -737,6 +1087,7 @@ export class Pipeline {
       ocrSucceeded: number;
       ocrFailed: OcrPageFailure[];
       billedParsePages: number;
+      ocrRetryResults?: OcrRetryDiagnostic[];
       visualByPage: Record<number, PageVisualInfo>;
       warnings: string[];
       moduleChecks: ModuleCheck[];
@@ -749,7 +1100,13 @@ export class Pipeline {
     const importId = opts.importId;
 
     // --- Match answer keys (scoped, inferred-module, then global positional) ---
-    const { answers: matchedAnswers, keyEntries, fallbackMatches, scopedMatches } = this.matchAnswers(parsed);
+    const {
+      answers: matchedAnswers,
+      keyEntries,
+      fallbackMatches,
+      scopedMatches,
+      unmatchedKeyEntries,
+    } = this.matchAnswers(parsed);
     const keyConfidence = bank
       ? 0.99
       : fullTest && fullTest.questions.length > 0
@@ -801,6 +1158,11 @@ export class Pipeline {
     for (let qi = 0; qi < questions.length; qi++) {
       const q = questions[qi]!;
       const matched = matchedAnswers[qi] ?? null;
+      const matchedConfidence = matched
+        ? matched.confidence === "low"
+          ? Math.min(keyConfidence, 0.65)
+          : keyConfidence
+        : null;
       // Visual attribution is per-question, not per-page: the parser flags
       // the block that actually contains the "[figure: …]"/"[table: …]"
       // marker. A page-level visual additionally applies only when the
@@ -849,7 +1211,7 @@ export class Pipeline {
           skill: q.skill,
           difficulty: q.difficulty,
           suggested_answer: q.correctAnswer ?? matched?.answer ?? null,
-          answer_confidence: matched ? keyConfidence : null,
+          answer_confidence: matchedConfidence,
           status,
           source_question_number: q.sourceQuestionNumber > 0 ? q.sourceQuestionNumber : null,
           source_module_name: q.sourceModuleName,
@@ -868,8 +1230,11 @@ export class Pipeline {
             ocr_provider: this.parse.name,
             ocr_model: this.ocrModel,
             source_number_origin: q.sourceQuestionNumberOrigin,
+            source_global_question_id: q.sourceGlobalQuestionId ?? null,
             parse_flags: q.parseFlags,
             answer_key_state: matched ? "matched" : keyEntries > 0 ? "unmatched" : "not_detected",
+            key_match_method: matched?.method ?? null,
+            key_match_confidence: matched?.confidence ?? null,
             visual: opts.visualByPage[q.pageNumber] ?? null,
           },
         })
@@ -888,7 +1253,7 @@ export class Pipeline {
         await this.svc.from("draft_answer_keys").insert({
           draft_question_id: draft.id,
           detected_answer: matched.answer,
-          confidence: keyConfidence,
+          confidence: matchedConfidence,
           source_text: matched.sourceText.slice(0, 200),
           source_page: matched.pageNumber,
           status: "suggested",
@@ -978,6 +1343,17 @@ export class Pipeline {
       answer_key_warnings: keyWarnings,
       key_fallback_matches: fallbackMatches,
       key_scoped_matches: scopedMatches,
+      question_issues: questions
+        .filter((q) => q.parseFlags.length > 0 || q.sourceQuestionNumberOrigin === "inferred")
+        .map((q): QuestionIssueDiagnostic => ({
+          pageNumber: q.pageNumber,
+          moduleName: q.sourceModuleName,
+          questionNumber: q.sourceQuestionNumber > 0 ? q.sourceQuestionNumber : null,
+          prompt: q.prompt.slice(0, 180),
+          flags: q.parseFlags.length > 0 ? [...q.parseFlags] : ["question_number_inferred"],
+        })),
+      ocr_retry_results: opts.ocrRetryResults ?? [],
+      unmatched_key_entries: unmatchedKeyEntries,
     };
     const { error: finErr } = await this.svc
       .from("pdf_imports")
@@ -1034,6 +1410,7 @@ export class Pipeline {
       ocrPagesSucceeded: opts.ocrSucceeded,
       ocrPagesFailed: opts.ocrFailed,
       billedParsePages: opts.billedParsePages,
+      ocrRetryResults: opts.ocrRetryResults ?? [],
       finalQuestionsByModule: countByModule(questions),
       moduleChecks: opts.moduleChecks,
       visualReviewQuestions,

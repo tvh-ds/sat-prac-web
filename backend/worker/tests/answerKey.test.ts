@@ -41,10 +41,26 @@ describe("parseAnswerKey", () => {
     expect(key.confidence).toBeGreaterThan(0.8);
   });
 
+  it("normalizes an OCR-spaced minus in a module-scoped grid-in key", () => {
+    const lines = ["Math Module 1 Answers", ...Array.from({ length: 21 }, (_, i) => `${i + 1}. B`), "22. - 13/14"];
+    const key = parseAnswerKey([{ pageNumber: 36, text: lines.join("\n") }], 22);
+    expect(key.entries).toHaveLength(22);
+    expect(key.entries[21]).toMatchObject({ questionNumber: 22, answer: "-13/14", moduleName: "Math Module 1" });
+  });
+
   it("returns empty when no key section exists", () => {
     const key = parseAnswerKey(MISSING_KEY);
     expect(key.entries).toHaveLength(0);
     expect(key.confidence).toBe(0);
+  });
+
+  it("does not treat a numbered math equation as a heading-less key", () => {
+    const key = parseAnswerKey([
+      { pageNumber: 6, text: "Math Module 1\nQuestion 1\n1. $y = 7x + 3$\nWhat is the value of y?" },
+      { pageNumber: 7, text: "1 A  1 C\n2 B  2 D\n3 C  3 A" },
+    ], 3);
+    expect(key.entries).toHaveLength(6);
+    expect(key.entries.some((entry) => entry.sourceText.includes("y ="))).toBe(false);
   });
 
   it("parses module-scoped keys with spaced-period entries", () => {
@@ -150,5 +166,26 @@ describe("answerMapGlobal", () => {
   it("builds a legacy global map keyed by question number", () => {
     const map = answerMapGlobal(parseAnswerKey(KEY_PAGES, 5));
     expect(map.get(3)).toMatchObject({ answer: "D" });
+  });
+});
+
+describe("headingless global bank keys", () => {
+  it("accepts a long consecutive final-page letter key, but not its footer", () => {
+    const tail = Array.from({ length: 27 }, (_, i) => `${643 + i} ${i % 2 ? "B" : "A"}`).join("\n");
+    const parsed = parseAnswerKey([
+      { pageNumber: 1, text: "**589.** Which choice completes the text?\nA. One\nB. Two" },
+      { pageNumber: 2, text: `${tail}\n13/13` },
+    ], 89);
+    expect(parsed.entries).toHaveLength(27);
+    expect(parsed.entries[0]).toMatchObject({ questionNumber: 643, answer: "A" });
+    expect(parsed.entries.at(-1)).toMatchObject({ questionNumber: 669, answer: "A" });
+  });
+
+  it("does not promote a short numeric data list to a key", () => {
+    const parsed = parseAnswerKey([
+      { pageNumber: 1, text: "Which choice is best?\nA. One\nB. Two" },
+      { pageNumber: 2, text: "643 A\n644 B\n645 A\n646 B" },
+    ], 89);
+    expect(parsed.entries).toHaveLength(0);
   });
 });
