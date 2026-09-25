@@ -18,15 +18,24 @@ export default function StudentsPage() {
   const [search, setSearch] = useState("");
   const [showCreate, setShowCreate] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   async function load() {
-    const token = await getToken();
-    const d = await fnJson<{ students: AdminStudent[] }>("admin-students", { token });
-    setStudents(d.students);
+    setLoading(true);
+    setError(null);
+    try {
+      const token = await getToken();
+      const d = await fnJson<{ students: AdminStudent[] }>("admin-students", { token });
+      setStudents(d.students);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load students");
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
-    void load().catch((e) => setError(e instanceof Error ? e.message : "Failed to load students"));
+    void load();
   }, []);
 
   const filtered = (students ?? []).filter(
@@ -45,7 +54,7 @@ export default function StudentsPage() {
       </div>
 
       {error && <div className="login-error">{error}</div>}
-      {!students && <Spinner />}
+      {loading && !students && <Spinner />}
 
       {students && (
         <div className="card card-pad">
