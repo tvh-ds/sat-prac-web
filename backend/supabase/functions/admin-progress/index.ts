@@ -26,7 +26,6 @@ Deno.serve(async (req) => {
           full_name: (s.profiles as { full_name?: string } | null)?.full_name ?? "",
           grade_level: s.grade_level,
           school: s.school,
-          is_active: s.is_active,
           total_attempts: attempts.length,
           completed_attempts: attempts.filter((a) => a.status === "graded").length,
           total_questions_attempted: attempted,

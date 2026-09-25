@@ -9,12 +9,24 @@ export const createStudentSchema = z.object({
   notes: z.string().max(2000).optional().nullable(),
 });
 
+const requiredPhoneSchema = z.string().trim().min(8).max(30).regex(/^\+?[\d\s().-]+$/)
+  .refine((value) => (value.match(/\d/g)?.length ?? 0) >= 8, "Enter a valid Zalo phone number");
+
 export const updateStudentSchema = z.object({
-  full_name: z.string().min(1).max(200).optional(),
+  full_name: z.string().trim().min(1).max(200).optional(),
   grade_level: z.string().max(50).optional().nullable(),
   school: z.string().max(200).optional().nullable(),
   notes: z.string().max(2000).optional().nullable(),
-  is_active: z.boolean().optional(),
+  phone_number: requiredPhoneSchema.optional(),
+  parent_name: z.string().trim().min(1).max(200).optional(),
+  parent_phone_number: requiredPhoneSchema.optional(),
+});
+
+export const studentProfileSubmissionSchema = z.object({
+  full_name: z.string().trim().min(1).max(200),
+  phone_number: requiredPhoneSchema,
+  parent_name: z.string().trim().min(1).max(200),
+  parent_phone_number: requiredPhoneSchema,
 });
 
 export const resetPasswordSchema = z.object({
@@ -136,6 +148,7 @@ export const manualImportDraftCreateSchema = z.object({
   prompt: z.string().min(1).max(20000),
   passage_text: z.string().max(20000).optional().nullable(),
   suggested_answer: z.string().max(500).optional().nullable(),
+  stimulus_image_path: z.string().max(1000).optional().nullable(),
   choices: z.array(z.object({
     label: z.string().trim().min(1).max(2),
     text: z.string().min(1).max(10000),

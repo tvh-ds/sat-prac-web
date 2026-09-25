@@ -39,6 +39,21 @@ export async function requireRole(req: Request, role: "admin" | "student"): Prom
   return ctx;
 }
 
+export async function requireApprovedStudent(req: Request): Promise<UserContext> {
+  const ctx = await requireRole(req, "student");
+  const client = userClient(req);
+  const { data, error } = await client
+    .from("student_profiles")
+    .select("profile_status")
+    .eq("id", ctx.user.id)
+    .maybeSingle();
+  if (error) throw new HttpError(500, `Failed to load student profile status: ${error.message}`);
+  if (data?.profile_status !== "approved") {
+    throw new HttpError(403, "Student profile approval is required before accessing study features");
+  }
+  return ctx;
+}
+
 export function pathSegments(req: Request): string[] {
   return new URL(req.url).pathname.split("/").filter(Boolean);
 }

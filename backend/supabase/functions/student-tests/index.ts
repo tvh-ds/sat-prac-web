@@ -1,11 +1,11 @@
-import { requireRole, HttpError } from "../_shared/auth.ts";
+import { requireApprovedStudent, HttpError } from "../_shared/auth.ts";
 import { serviceClient } from "../_shared/supabase.ts";
 import { corsHeaders, json, error } from "../_shared/cors.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   try {
-    const ctx = await requireRole(req, "student");
+    const ctx = await requireApprovedStudent(req);
     const svc = serviceClient();
 
     const { data: assignments } = await svc

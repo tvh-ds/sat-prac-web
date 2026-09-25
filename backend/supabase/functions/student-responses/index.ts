@@ -1,4 +1,4 @@
-import { requireRole, HttpError, pathSegments } from "../_shared/auth.ts";
+import { requireApprovedStudent, HttpError, pathSegments } from "../_shared/auth.ts";
 import { serviceClient } from "../_shared/supabase.ts";
 import { corsHeaders, json, error } from "../_shared/cors.ts";
 import { responseSaveSchema } from "../_shared/validation.ts";
@@ -103,7 +103,7 @@ async function saveResponse(
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   try {
-    const ctx = await requireRole(req, "student");
+    const ctx = await requireApprovedStudent(req);
     const svc = serviceClient();
     const seg = pathSegments(req);
 

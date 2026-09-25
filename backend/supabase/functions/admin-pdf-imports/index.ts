@@ -334,6 +334,16 @@ Deno.serve(async (req) => {
         return error("Wait for PDF ingestion to finish before adding a manual question", 409);
       }
 
+      const stimulusImagePath = body.stimulus_image_path?.trim() || null;
+      if (stimulusImagePath) {
+        if (!stimulusImagePath.startsWith(`imports/${id}/manual-stimuli/`)) {
+          return error("Manual stimulus images must be stored under this import's manual-stimuli folder", 422);
+        }
+        const { error: imageErr } = await svc.storage.from("question-assets")
+          .createSignedUrl(stimulusImagePath, 60);
+        if (imageErr) return error("Uploaded stimulus image could not be found", 422);
+      }
+
       const { data: lastDraft, error: lastErr } = await svc.from("draft_questions")
         .select("source_question_number")
         .eq("pdf_import_id", id)
@@ -358,7 +368,12 @@ Deno.serve(async (req) => {
         source_question_id: `manual-${manualId}`,
         source_module_name: body.source_module_name,
         source_module_position: modulePosition,
-        has_visual_stimulus: false,
+        has_visual_stimulus: Boolean(stimulusImagePath),
+        stimulus_image_path: stimulusImagePath,
+        stimulus_source_image_path: stimulusImagePath,
+        stimulus_crop_rect: null,
+        stimulus_crop_source: stimulusImagePath ? "full_page" : null,
+        stimulus_crop_status: stimulusImagePath ? "pending" : null,
         parser_metadata: { manual_entry: true },
       }).select("id").single();
       if (dErr) return error(dErr.message, 500);
@@ -388,6 +403,7 @@ Deno.serve(async (req) => {
         .eq("id", draft.id)
         .single();
       if (reloadErr) return error(reloadErr.message, 500);
+      await attachDraftStimulusUrls(svc, [created as Record<string, unknown>]);
       return json({ draft: created }, 201);
     }
 

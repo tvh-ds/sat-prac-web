@@ -297,8 +297,7 @@ Deno.serve(async (req) => {
       if (req.method === "GET") {
         const { data: students, error: sErr } = await svc
           .from("student_profiles")
-          .select("id, is_active")
-          .eq("is_active", true)
+          .select("id")
           .order("created_at", { ascending: true });
         if (sErr) return error(sErr.message, 500);
         const studentIds = (students ?? []).map((s: { id: string }) => s.id);
@@ -348,8 +347,7 @@ Deno.serve(async (req) => {
         const { data: valid, error: vErr } = await svc
           .from("student_profiles")
           .select("id")
-          .in("id", toAdd.length > 0 ? toAdd : [""])
-          .eq("is_active", true);
+          .in("id", toAdd.length > 0 ? toAdd : [""]);
         if (vErr) return error(vErr.message, 500);
         const validIds = new Set((valid ?? []).map((s: { id: string }) => s.id));
 

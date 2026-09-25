@@ -163,11 +163,12 @@ Deno.serve(async (req) => {
 
       const { data: students, error: stErr } = await svc
         .from("student_profiles")
-        .select("id, is_active")
+        .select("id")
         .in("id", body.student_ids);
       if (stErr) return error(stErr.message, 500);
-      const active = (students ?? []).filter((s) => s.is_active !== false);
-      if (active.length === 0) return error("No active students selected", 422);
+      const validStudentIds = new Set((students ?? []).map((student) => student.id));
+      const assignedStudentIds = body.student_ids.filter((studentId) => validStudentIds.has(studentId));
+      if (assignedStudentIds.length === 0) return error("No valid students selected", 422);
 
       // Immutable snapshot: clone structure (shared question rows; template
       // edits use copy-on-write so snapshots never change).
@@ -233,9 +234,9 @@ Deno.serve(async (req) => {
       const { data: inserted, error: aErr } = await svc
         .from("test_assignments")
         .insert(
-          active.map((s) => ({
+          assignedStudentIds.map((studentId) => ({
             test_id: snapshot.id,
-            student_id: s.id,
+            student_id: studentId,
             due_at: body.due_at ?? null,
             assigned_by: ctx.user.id,
             content_scope: "full_test",

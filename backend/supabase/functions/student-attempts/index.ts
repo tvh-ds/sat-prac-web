@@ -1,4 +1,4 @@
-import { requireRole, HttpError, pathSegments } from "../_shared/auth.ts";
+import { requireApprovedStudent, HttpError, pathSegments } from "../_shared/auth.ts";
 import { serviceClient } from "../_shared/supabase.ts";
 import { corsHeaders, json, error } from "../_shared/cors.ts";
 import { startAttemptSchema, advanceModuleSchema } from "../_shared/validation.ts";
@@ -79,7 +79,7 @@ function filterTestToModules(test: Record<string, unknown> | null, allowed: Set<
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   try {
-    const ctx = await requireRole(req, "student");
+    const ctx = await requireApprovedStudent(req);
     const svc = serviceClient();
     const seg = pathSegments(req);
 
