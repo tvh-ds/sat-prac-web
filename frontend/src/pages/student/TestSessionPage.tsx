@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { Flag, MapPin } from "lucide-react";
 import { fnJson, getToken } from "../../lib/supabase";
 import type { Attempt, AttemptModule, SavedResponse, Test, TestModule, TestSection } from "../../lib/types";
+import { AnswerSaveQueue } from "../../lib/answerSaveQueue";
 import { Button, Modal, Spinner, fmtSeconds } from "../../components/ui";
 import HighlightableText from "../../components/HighlightableText";
 
@@ -48,11 +49,15 @@ export default function TestSessionPage() {
   const [modal, setModal] = useState<ModalKind | null>(null);
   const [autoFlag, setAutoFlag] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [navigationPending, setNavigationPending] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [typedDraft, setTypedDraft] = useState("");
   const [highlighterOn, setHighlighterOn] = useState(false);
 
   const saveTimer = useRef<number | null>(null);
   const pendingTypedSave = useRef<{ qid: string; value: string } | null>(null);
+  const responsesRef = useRef<Record<string, SavedResponse>>({});
+  const saveQueue = useRef(new AnswerSaveQueue());
   const enteredAt = useRef(Date.now());
   const moduleStart = useRef(Date.now());
   const paneRef = useRef<HTMLDivElement | null>(null);
@@ -91,6 +96,7 @@ export default function TestSessionPage() {
 
         const map: Record<string, SavedResponse> = {};
         for (const r of res.responses) map[r.question_id] = r;
+        responsesRef.current = map;
         setResponses(map);
 
         const am = res.modules.find((m) => m.module_id === mods[idx]?.id);
@@ -120,7 +126,7 @@ export default function TestSessionPage() {
   const saveResponse = useCallback(
     async (qid: string, patch: Partial<SavedResponse>, waitForRemote = false) => {
       if (!data || !module) return;
-      const prev = responses[qid];
+      const prev = responsesRef.current[qid];
       const next: SavedResponse = {
         attempt_id: data.attempt.id,
         question_id: qid,
@@ -133,29 +139,35 @@ export default function TestSessionPage() {
         is_correct: prev?.is_correct ?? null,
         ...patch,
       };
-      setResponses((r) => ({ ...r, [qid]: next }));
+      responsesRef.current = { ...responsesRef.current, [qid]: next };
+      setResponses(responsesRef.current);
       const spent = Math.round((Date.now() - enteredAt.current) / 1000);
-      const token = await getToken().catch(() => undefined);
-      if (!token) return;
-      const request = fnJson("student-responses", {
-        method: "POST",
-        token,
-        body: {
-          attempt_id: next.attempt_id,
-          question_id: qid,
-          module_id: next.module_id,
-          selected_choice_id: next.selected_choice_id,
-          typed_answer: next.typed_answer,
-          marked_for_review: next.marked_for_review,
-          eliminated_choice_ids: next.eliminated_choice_ids,
-          highlights: next.highlights,
-          time_spent_seconds: spent,
-        },
+      const request = saveQueue.current.enqueue(qid, async () => {
+        const token = await getToken();
+        await fnJson("student-responses", {
+          method: "POST",
+          token,
+          body: {
+            attempt_id: next.attempt_id,
+            question_id: qid,
+            module_id: next.module_id,
+            selected_choice_id: next.selected_choice_id,
+            typed_answer: next.typed_answer,
+            marked_for_review: next.marked_for_review,
+            eliminated_choice_ids: next.eliminated_choice_ids,
+            highlights: next.highlights,
+            time_spent_seconds: spent,
+          },
+        });
+      });
+      void request.then(() => {
+        if (saveQueue.current.failedQuestionIds.length === 0) setSaveError(null);
+      }).catch(() => {
+        setSaveError("An answer could not be saved. Retry the save before moving on or submitting.");
       });
       if (waitForRemote) await request;
-      else void request.catch(() => undefined);
     },
-    [data, module, responses],
+    [data, module],
   );
 
   const saveTypedDebounced = useCallback(
@@ -190,12 +202,32 @@ export default function TestSessionPage() {
     await saveResponse(pending.qid, { typed_answer: pending.value.trim() || null }, true);
   }
 
+  async function flushAnswerSaves() {
+    await flushPendingSave();
+    await saveQueue.current.flush();
+  }
+
+  async function retryFailedSaves() {
+    const questionIds = saveQueue.current.failedQuestionIds;
+    if (questionIds.length === 0) return;
+    setNavigationPending(true);
+    try {
+      for (const questionId of questionIds) await saveResponse(questionId, {}, false);
+      await flushAnswerSaves();
+      setSaveError(null);
+    } catch {
+      setSaveError("The answer still could not be saved. Check your connection and retry.");
+    } finally {
+      setNavigationPending(false);
+    }
+  }
+
   // ---- yellow highlighter ----
   function addHighlight(text: string) {
     if (!current) return;
     const entry = text.trim();
     if (entry.length < 2 || entry.length > 2000) return;
-    const existing = responses[current.question_id]?.highlights ?? [];
+    const existing = responsesRef.current[current.question_id]?.highlights ?? [];
     if (existing.includes(entry) || existing.some((h) => h.includes(entry))) return;
     if (existing.length >= 50) return;
     void saveResponse(current.question_id, { highlights: [...existing, entry] });
@@ -203,13 +235,13 @@ export default function TestSessionPage() {
 
   function removeHighlight(entry: string) {
     if (!current) return;
-    const existing = responses[current.question_id]?.highlights ?? [];
+    const existing = responsesRef.current[current.question_id]?.highlights ?? [];
     void saveResponse(current.question_id, { highlights: existing.filter((h) => h !== entry) });
   }
 
   function undoHighlight() {
     if (!current) return;
-    const existing = responses[current.question_id]?.highlights ?? [];
+    const existing = responsesRef.current[current.question_id]?.highlights ?? [];
     if (existing.length === 0) return;
     void saveResponse(current.question_id, { highlights: existing.slice(0, -1) });
   }
@@ -235,10 +267,22 @@ export default function TestSessionPage() {
   }
 
   // ---- navigation ----
-  function goTo(index: number) {
-    setQIndex(Math.max(0, Math.min(questions.length - 1, index)));
-    setTypedDraft(responses[questions[index]?.question_id]?.typed_answer ?? "");
-    enteredAt.current = Date.now();
+  async function goTo(index: number): Promise<boolean> {
+    const nextIndex = Math.max(0, Math.min(questions.length - 1, index));
+    if (nextIndex === qIndex) return true;
+    setNavigationPending(true);
+    try {
+      await flushAnswerSaves();
+      setQIndex(nextIndex);
+      setTypedDraft(responsesRef.current[questions[nextIndex]?.question_id]?.typed_answer ?? "");
+      enteredAt.current = Date.now();
+      return true;
+    } catch {
+      setSaveError("An answer could not be saved. Retry the save before moving to another question.");
+      return false;
+    } finally {
+      setNavigationPending(false);
+    }
   }
 
   function nextModuleId(): string | null {
@@ -250,7 +294,7 @@ export default function TestSessionPage() {
     setSubmitting(true);
     try {
       const token = await getToken();
-      await flushPendingSave();
+      await flushAnswerSaves();
       const nextId = nextModuleId();
       const spent = Math.max(1, Math.round((Date.now() - moduleStart.current) / 1000));
       if (nextId) {
@@ -273,7 +317,11 @@ export default function TestSessionPage() {
         navigate(`/student/scores/${data.attempt.id}`, { replace: true });
       }
     } catch (err) {
-      setLoadError(err instanceof Error ? err.message : "Submit failed");
+      if (saveQueue.current.failedQuestionIds.length > 0) {
+        setSaveError("An answer could not be saved. Retry the save before submitting.");
+      } else {
+        setLoadError(err instanceof Error ? err.message : "Submit failed");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -289,13 +337,15 @@ export default function TestSessionPage() {
     setSubmitting(true);
     try {
       const token = await getToken();
-      await flushPendingSave();
-      const hl = responses[current.question_id]?.highlights ?? [];
-      await saveResponse(current.question_id, { highlights: hl }, true);
+      await flushAnswerSaves();
       await fnJson("student-submit", { method: "POST", token, body: { attempt_id: data.attempt.id } });
       navigate(`/student/scores/${data.attempt.id}`, { replace: true });
     } catch (err) {
-      setLoadError(err instanceof Error ? err.message : "Submit failed");
+      if (saveQueue.current.failedQuestionIds.length > 0) {
+        setSaveError("An answer could not be saved. Retry the save before submitting.");
+      } else {
+        setLoadError(err instanceof Error ? err.message : "Submit failed");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -337,6 +387,14 @@ export default function TestSessionPage() {
 
   return (
     <div className={`session-root${highlighterOn ? " highlight-mode" : ""}`}>
+      {saveError && (
+        <div className="login-error" role="alert" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+          <span>{saveError}</span>
+          <Button variant="outline" disabled={navigationPending || submitting} onClick={() => void retryFailedSaves()}>
+            Retry answer saves
+          </Button>
+        </div>
+      )}
       {/* ---------- top bar ---------- */}
       <div className="session-topbar">
         <div className="session-title-block" style={{ minWidth: 0 }}>
@@ -353,6 +411,7 @@ export default function TestSessionPage() {
         <div className="session-tools">
           <button
             className={`session-tool${highlighterOn ? " active" : ""}`}
+            disabled={navigationPending || submitting}
             onClick={() => setHighlighterOn((v) => !v)}
             title="Select text to highlight it yellow"
           >
@@ -362,7 +421,7 @@ export default function TestSessionPage() {
             <>
               <button
                 className="session-tool"
-                disabled={(resp?.highlights?.length ?? 0) === 0}
+                disabled={navigationPending || submitting || (resp?.highlights?.length ?? 0) === 0}
                 onClick={() => undoHighlight()}
                 title="Remove the most recent highlight on this question"
               >
@@ -370,7 +429,7 @@ export default function TestSessionPage() {
               </button>
               <button
                 className="session-tool"
-                disabled={(resp?.highlights?.length ?? 0) === 0}
+                disabled={navigationPending || submitting || (resp?.highlights?.length ?? 0) === 0}
                 onClick={() => clearHighlights()}
                 title="Remove all highlights on this question"
               >
@@ -378,9 +437,9 @@ export default function TestSessionPage() {
               </button>
             </>
           )}
-          <button className="session-tool" onClick={() => setModal("directions")}>Directions</button>
-          {isMath && <button className="session-tool" onClick={() => setModal("reference")}>Reference</button>}
-          <button className="session-tool" onClick={() => setModal("grid")}>Review</button>
+          <button className="session-tool" disabled={navigationPending || submitting} onClick={() => setModal("directions")}>Directions</button>
+          {isMath && <button className="session-tool" disabled={navigationPending || submitting} onClick={() => setModal("reference")}>Reference</button>}
+          <button className="session-tool" disabled={navigationPending || submitting} onClick={() => setModal("grid")}>Review</button>
         </div>
       </div>
 
@@ -416,6 +475,7 @@ export default function TestSessionPage() {
               <span>Question {qIndex + 1}</span>
               <button
                 className={`mark-toggle${resp?.marked_for_review ? " on" : ""}`}
+                disabled={navigationPending || submitting}
                 onClick={() => void saveResponse(current.question_id, { marked_for_review: !resp?.marked_for_review })}
                 title={resp?.marked_for_review ? "Remove review flag" : "Flag for review later"}
               >
@@ -449,6 +509,7 @@ export default function TestSessionPage() {
                     <button
                       key={c.id}
                       className={`choice ${resp?.selected_choice_id === c.id ? "selected" : ""} ${eliminated ? "eliminated" : ""}`}
+                      disabled={navigationPending || submitting}
                       onClick={() => {
                         // While highlighting, clicks select text — never answers.
                         if (highlighterOn) return;
@@ -465,6 +526,7 @@ export default function TestSessionPage() {
                       </span>
                       <span
                         className="eliminate-btn"
+                        aria-disabled={navigationPending || submitting}
                         role="button"
                         tabIndex={0}
                         onClick={(e) => {
@@ -490,6 +552,7 @@ export default function TestSessionPage() {
                 <input
                   value={typedDraft}
                   placeholder="Enter your answer"
+                  disabled={navigationPending || submitting}
                   onChange={(e) => {
                     setTypedDraft(e.target.value);
                     saveTypedDebounced(current.question_id, e.target.value);
@@ -504,21 +567,21 @@ export default function TestSessionPage() {
 
         {/* ---------- bottom bar ---------- */}
         <div className="session-bottombar">
-          <Button variant="outline" onClick={() => goTo(qIndex - 1)} disabled={qIndex === 0}>
+          <Button variant="outline" onClick={() => void goTo(qIndex - 1)} disabled={qIndex === 0 || navigationPending || submitting}>
             Back
           </Button>
           <div className="bottombar-center">
             <span className="q-position">
               Question {qIndex + 1} of {questions.length}
             </span>
-            <button className="session-tool" style={{ color: "var(--primary-dark)", background: "var(--primary-soft)" }} onClick={() => setModal("grid")}>
+            <button className="session-tool" style={{ color: "var(--primary-dark)", background: "var(--primary-soft)" }} disabled={navigationPending || submitting} onClick={() => setModal("grid")}>
               Question grid
             </button>
           </div>
           {qIndex < questions.length - 1 ? (
-            <Button onClick={() => goTo(qIndex + 1)}>Next</Button>
+            <Button disabled={navigationPending || submitting} onClick={() => void goTo(qIndex + 1)}>{navigationPending ? "Saving…" : "Next"}</Button>
           ) : (
-            <Button onClick={() => setModal("end")}>{isLastModule ? `Submit ${kindLabel}` : "Submit Module"}</Button>
+            <Button disabled={navigationPending || submitting} onClick={() => setModal("end")}>{isLastModule ? `Submit ${kindLabel}` : "Submit Module"}</Button>
           )}
         </div>
       </div>
@@ -529,7 +592,7 @@ export default function TestSessionPage() {
           title={gridTitle}
           onClose={() => setModal(null)}
           footer={
-            <Button disabled={submitting} onClick={() => setModal("submitAll")}>
+            <Button disabled={submitting || navigationPending} onClick={() => setModal("submitAll")}>
               Submit {kindLabel}
             </Button>
           }
@@ -539,8 +602,8 @@ export default function TestSessionPage() {
             qIndex={qIndex}
             responses={responses}
             onJump={(i) => {
-              goTo(i);
-              setModal(null);
+              if (navigationPending || submitting) return;
+              void goTo(i).then((moved) => { if (moved) setModal(null); });
             }}
           />
         </Modal>
@@ -553,7 +616,7 @@ export default function TestSessionPage() {
           footer={
             <>
               <Button variant="outline" onClick={() => setModal("grid")}>Back to review</Button>
-              <Button disabled={submitting} onClick={() => void submitAll()}>
+              <Button disabled={submitting || navigationPending} onClick={() => void submitAll()}>
                 {submitting ? "Submitting…" : `Submit ${kindLabel}`}
               </Button>
             </>
@@ -585,7 +648,7 @@ export default function TestSessionPage() {
           footer={
             <>
               <Button variant="outline" onClick={() => setModal(null)}>Back to {kindLabel}</Button>
-              <Button disabled={submitting} onClick={() => void submitModule()}>
+              <Button disabled={submitting || navigationPending} onClick={() => void submitModule()}>
                 {submitting ? "Submitting…" : isLastModule ? `Submit ${kindLabel}` : "Submit Module"}
               </Button>
             </>
@@ -600,8 +663,8 @@ export default function TestSessionPage() {
             qIndex={qIndex}
             responses={responses}
             onJump={(i) => {
-              goTo(i);
-              setModal(null);
+              if (navigationPending || submitting) return;
+              void goTo(i).then((moved) => { if (moved) setModal(null); });
             }}
           />
           <div style={{ display: "flex", gap: 18, marginTop: 20, fontSize: 13, color: "var(--muted)", flexWrap: "wrap" }}>

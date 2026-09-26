@@ -2,6 +2,8 @@
 import { serviceClient } from "../_shared/supabase.ts";
 import { corsHeaders, json, error } from "../_shared/cors.ts";
 import { requireApprovedStudent } from "../_shared/auth.ts";
+
+const DAY_MS = 86_400_000;
 import {
   deckCreateSchema,
   deckUpdateSchema,
@@ -10,51 +12,6 @@ import {
   importCardsSchema,
   vocabReviewSchema,
 } from "../_shared/validation.ts";
-
-const DAY_MS = 86_400_000;
-
-/** Anki-style SM-2 scheduler. Isolated so it can be swapped later. */
-function schedule(rating: number, state: {
-  ease_factor: number;
-  interval_days: number;
-  repetitions: number;
-  lapses: number;
-}): { ease_factor: number; interval_days: number; repetitions: number; lapses: number; status: string; due_at: string } {
-  let ef = state.ease_factor;
-  let ivl = state.interval_days;
-  let reps = state.repetitions;
-  let lapses = state.lapses;
-
-  // Anki button semantics: 1 = Again, 2 = Hard, 3 = Good, 4 = Easy
-  if (rating === 1) {
-    reps = 0;
-    ivl = 0;
-    lapses += 1;
-    ef = Math.max(1.3, ef - 0.2);
-  } else if (rating === 2) {
-    reps += 1;
-    ivl = reps === 1 ? 1 : Math.max(1, Math.ceil(ivl * 1.2));
-    ef = Math.max(1.3, ef - 0.15);
-  } else if (rating === 3) {
-    reps += 1;
-    ivl = reps === 1 ? 1 : reps === 2 ? 6 : Math.ceil(ivl * ef);
-  } else {
-    reps += 1;
-    ivl = reps === 1 ? 1 : reps === 2 ? 7 : Math.ceil(ivl * ef * 1.3);
-    ef = Math.min(3.0, ef + 0.15);
-  }
-
-  const status = lapses >= 4 ? "leech" : ivl <= 1 ? "learning" : "review";
-  const dueAt = new Date(Date.now() + ivl * DAY_MS).toISOString();
-  return {
-    ease_factor: Math.round(ef * 100) / 100,
-    interval_days: ivl,
-    repetitions: reps,
-    lapses,
-    status,
-    due_at: dueAt,
-  };
-}
 
 interface DeckRow { id: string; name: string; description: string | null; color: string; student_id: string | null; status: string }
 interface CardRow {
@@ -182,20 +139,27 @@ Deno.serve(async (req) => {
 
     // ---- dashboard ---------------------------------------------------------
     if (req.method === "GET" && seg.length === 1) {
-      const { data: own, error: ownErr } = await svc
-        .from("vocab_decks")
-        .select("id, name, description, color, created_at, student_id")
-        .eq("student_id", ctx.user.id)
-        .eq("status", "active")
-        .order("created_at", { ascending: true });
-      if (ownErr) return error(ownErr.message, 500);
+      const now = new Date();
+      const cutoff = new Date(now.getTime() - 182 * DAY_MS).toISOString().slice(0, 10);
+      const [ownResult, assignedResult, activityResult] = await Promise.all([
+        svc.from("vocab_decks")
+          .select("id, name, description, color, created_at, student_id")
+          .eq("student_id", ctx.user.id)
+          .eq("status", "active")
+          .order("created_at", { ascending: true }),
+        svc.from("vocab_deck_assignments").select("deck_id").eq("student_id", ctx.user.id),
+        svc.from("vocab_daily_activity")
+          .select("activity_date, cards_reviewed")
+          .eq("student_id", ctx.user.id)
+          .gte("activity_date", cutoff)
+          .order("activity_date", { ascending: true }),
+      ]);
+      if (ownResult.error) return error(ownResult.error.message, 500);
+      if (assignedResult.error) return error(assignedResult.error.message, 500);
+      if (activityResult.error) return error(activityResult.error.message, 500);
+      const own = ownResult.data;
       const ownIds = new Set((own ?? []).map((d: { id: string }) => d.id));
-
-      const { data: assigned, error: asgErr } = await svc
-        .from("vocab_deck_assignments")
-        .select("deck_id")
-        .eq("student_id", ctx.user.id);
-      if (asgErr) return error(asgErr.message, 500);
+      const assigned = assignedResult.data;
       const assignedIds = (assigned ?? []).map((a: { deck_id: string }) => a.deck_id);
 
       let decksOut: Array<Record<string, unknown>> = [];
@@ -213,39 +177,28 @@ Deno.serve(async (req) => {
       const deckRows = decksOut as unknown as DeckRow[];
       const ids = deckRows.map((d) => d.id);
 
-      const { data: cards, error: cErr } = await svc
+      const { data: cardRows, error: cErr } = await svc
         .from("vocab_cards")
-        .select("id, deck_id")
-        .in("deck_id", ids.length > 0 ? ids : [""]);
+        .select("id, deck_id, study_states:vocab_card_state(card_id, due_at)")
+        .in("deck_id", ids.length > 0 ? ids : [""])
+        .eq("study_states.student_id", ctx.user.id);
       if (cErr) return error(cErr.message, 500);
-
-      const cardIds = (cards ?? []).map((c: { id: string }) => c.id);
-      const { data: states, error: sErr } = await svc
-        .from("vocab_card_state")
-        .select("card_id, due_at")
-        .eq("student_id", ctx.user.id)
-        .in("card_id", cardIds.length > 0 ? cardIds : [""]);
-      if (sErr) return error(sErr.message, 500);
+      const cards = (cardRows ?? []) as unknown as Array<{
+        id: string;
+        deck_id: string;
+        study_states?: Array<Pick<StateRow, "card_id" | "due_at">>;
+      }>;
+      const states = cards.flatMap((card) => card.study_states ?? []);
 
       const nowIso = new Date().toISOString();
-      const stateRows = (states ?? []) as StateRow[];
       const cardCountByDeck = new Map<string, number>();
-      const dueSet = new Set<string>(stateRows.filter((s) => s.due_at <= nowIso).map((s) => s.card_id));
-      const stateSet = new Set<string>(stateRows.map((s) => s.card_id));
-      for (const c of cards ?? []) {
-        const row = c as { id: string; deck_id: string };
+      const dueSet = new Set<string>(states.filter((s) => s.due_at <= nowIso).map((s) => s.card_id));
+      const stateSet = new Set<string>(states.map((s) => s.card_id));
+      for (const row of cards) {
         cardCountByDeck.set(row.deck_id, (cardCountByDeck.get(row.deck_id) ?? 0) + 1);
       }
 
-      const now = new Date();
-      const cutoff = new Date(now.getTime() - 182 * DAY_MS).toISOString().slice(0, 10);
-      const { data: activity, error: aErr } = await svc
-        .from("vocab_daily_activity")
-        .select("activity_date, cards_reviewed")
-        .eq("student_id", ctx.user.id)
-        .gte("activity_date", cutoff)
-        .order("activity_date", { ascending: true });
-      if (aErr) return error(aErr.message, 500);
+      const activity = activityResult.data;
 
       const dates = new Set((activity ?? []).map((a: { activity_date: string }) => a.activity_date));
       let current = 0;
@@ -276,7 +229,7 @@ Deno.serve(async (req) => {
       const totals = { cards: 0, due: 0, fresh: 0 };
       const decksOut2 = deckRows.map((d) => {
         const total = cardCountByDeck.get(d.id) ?? 0;
-        const deckCards = (cards ?? []).filter((c: { deck_id: string }) => (c as { deck_id: string }).deck_id === d.id) as Array<{ id: string }>;
+        const deckCards = cards.filter((c) => c.deck_id === d.id);
         const due = deckCards.filter((c) => dueSet.has(c.id)).length;
         const fresh = deckCards.filter((c) => !stateSet.has(c.id)).length;
         totals.cards += total;
@@ -472,74 +425,21 @@ Deno.serve(async (req) => {
     // ---- reviews -------------------------------------------------------------
     if (req.method === "POST" && seg.length === 2 && seg[1] === "review") {
       const body = vocabReviewSchema.parse(await req.json());
-      const { data: card, error: cErr } = await svc
-        .from("vocab_cards")
-        .select("id, deck_id")
-        .eq("id", body.card_id)
-        .maybeSingle();
-      if (cErr) return error(cErr.message, 500);
-      if (!card) return error("Card not found", 404);
-      await getReadableDeck(svc, ctx.user.id, card.deck_id);
-
-      let nextState: { ease_factor: number; interval_days: number; repetitions: number; lapses: number; status: string; due_at: string } | null = null;
-      if (body.mode === "study") {
-        const { data: existing, error: stErr } = await svc
-          .from("vocab_card_state")
-          .select("ease_factor, interval_days, repetitions, lapses")
-          .eq("student_id", ctx.user.id)
-          .eq("card_id", body.card_id)
-          .maybeSingle();
-        if (stErr) return error(stErr.message, 500);
-        const base = existing
-          ? {
-              ease_factor: Number(existing.ease_factor),
-              interval_days: existing.interval_days,
-              repetitions: existing.repetitions,
-              lapses: existing.lapses,
-            }
-          : { ease_factor: 2.5, interval_days: 0, repetitions: 0, lapses: 0 };
-        nextState = schedule(body.rating, base);
-        const { error: uErr } = await svc
-          .from("vocab_card_state")
-          .upsert(
-            {
-              student_id: ctx.user.id,
-              card_id: body.card_id,
-              ...nextState,
-              last_reviewed_at: new Date().toISOString(),
-            },
-            { onConflict: "student_id,card_id" },
-          );
-        if (uErr) return error(uErr.message, 500);
-      }
-
       const reviewedOn = body.reviewed_on ?? new Date().toISOString().slice(0, 10);
-      const { error: rErr } = await svc.from("vocab_reviews").insert({
-        student_id: ctx.user.id,
-        card_id: body.card_id,
-        rating: body.rating,
-        mode: body.mode,
-        response_ms: body.response_ms ?? null,
-        reviewed_on: reviewedOn,
+      const { data: nextState, error: reviewErr } = await svc.rpc("record_student_vocab_review", {
+        p_student_id: ctx.user.id,
+        p_card_id: body.card_id,
+        p_rating: body.rating,
+        p_mode: body.mode,
+        p_response_ms: body.response_ms ?? null,
+        p_reviewed_on: reviewedOn,
       });
-      if (rErr) return error(rErr.message, 500);
-
-      const { data: day, error: dErr } = await svc
-        .from("vocab_daily_activity")
-        .select("cards_reviewed, cards_correct")
-        .eq("student_id", ctx.user.id)
-        .eq("activity_date", reviewedOn)
-        .maybeSingle();
-      if (dErr) return error(dErr.message, 500);
-      const reviewed = (day?.cards_reviewed ?? 0) + 1;
-      const correct = (day?.cards_correct ?? 0) + (body.rating >= 3 ? 1 : 0);
-      const { error: aErr } = await svc
-        .from("vocab_daily_activity")
-        .upsert(
-          { student_id: ctx.user.id, activity_date: reviewedOn, cards_reviewed: reviewed, cards_correct: correct },
-          { onConflict: "student_id,activity_date" },
-        );
-      if (aErr) return error(aErr.message, 500);
+      if (reviewErr) {
+        if (reviewErr.code === "P0002") return error("Card not found", 404);
+        if (reviewErr.code === "42501") return error("Deck not found", 403);
+        console.error("Failed to record vocabulary review", reviewErr);
+        return error("Failed to save vocabulary review", 500);
+      }
 
       return json({ ok: true, next_state: nextState });
     }

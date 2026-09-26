@@ -8,22 +8,25 @@ Deno.serve(async (req) => {
     const ctx = await requireApprovedStudent(req);
     const svc = serviceClient();
 
-    const { data: assignments } = await svc
-      .from("test_assignments")
-      .select("id, test_id, due_at, status, content_scope, module_ids")
-      .eq("student_id", ctx.user.id);
-
-    const { data: attempts } = await svc
-      .from("attempts")
-      .select("test_id, assignment_id, id, status, started_at")
-      .eq("student_id", ctx.user.id);
-
-    const { data: tests, error: err } = await svc
-      .from("tests")
-      .select("id, title, description, status, is_public, kind")
-      .eq("status", "published")
-      .order("created_at", { ascending: false });
-    if (err) return error(err.message, 500);
+    const [assignmentsResult, attemptsResult, testsResult] = await Promise.all([
+      svc.from("test_assignments")
+        .select("id, test_id, due_at, status, content_scope, module_ids")
+        .eq("student_id", ctx.user.id),
+      svc.from("attempts")
+        .select("test_id, assignment_id, id, status, started_at")
+        .eq("student_id", ctx.user.id),
+      svc.from("tests")
+        .select("id, title, description, status, is_public, kind")
+        .eq("status", "published")
+        .order("created_at", { ascending: false }),
+    ]);
+    if (assignmentsResult.error || attemptsResult.error || testsResult.error) {
+      console.error("Failed to load student test list", assignmentsResult.error, attemptsResult.error, testsResult.error);
+      return error("Failed to load tests", 500);
+    }
+    const assignments = assignmentsResult.data;
+    const attempts = attemptsResult.data;
+    const tests = testsResult.data;
 
     // Repeat assignments: each assignment is its own row (own due date,
     // scope, attempt, score). Attempts attach by assignment when present,
@@ -46,29 +49,34 @@ Deno.serve(async (req) => {
     const visible = (tests ?? []).filter((t) => t.is_public || byTest.has(t.id));
     const visibleIds = visible.map((t) => t.id);
 
-    // test -> section_type by section id (needed to resolve section scopes)
-    const { data: secs } = await svc.from("test_sections").select("id, test_id, section_type").in("test_id", visibleIds.length > 0 ? visibleIds : [""]);
+    // Load sections, modules, and roster counts together instead of issuing
+    // three dependent round trips for every test-list request.
+    const { data: secs, error: structureErr } = await svc
+      .from("test_sections")
+      .select("id, test_id, section_type, modules:test_modules(id, section_id, time_limit_minutes, position, question_counts:test_module_questions(count))")
+      .in("test_id", visibleIds.length > 0 ? visibleIds : [""]);
+    if (structureErr) return error("Failed to load test structure", 500);
+    const sectionRows = (secs ?? []) as unknown as Array<{
+      id: string;
+      test_id: string;
+      section_type: string;
+      modules?: Array<{ id: string; section_id: string; time_limit_minutes: number; position: number; question_counts?: Array<{ count: number }> }>;
+    }>;
     const sectionByTest = new Map<string, Array<{ id: string; section_type: string }>>();
-    for (const s of secs ?? []) {
+    for (const s of sectionRows) {
       if (!sectionByTest.has(s.test_id)) sectionByTest.set(s.test_id, []);
       sectionByTest.get(s.test_id)!.push(s);
     }
 
-    const secIdList = (secs ?? []).map((s) => s.id);
-    const { data: mods } = await svc.from("test_modules").select("id, section_id, time_limit_minutes, position").in("section_id", secIdList.length > 0 ? secIdList : [""]);
     const modsByTest = new Map<string, Array<{ id: string; section_id: string; time_limit_minutes: number; position: number }>>();
-    const secToTest = new Map((secs ?? []).map((s) => [s.id, s.test_id]));
-    for (const m of mods ?? []) {
-      const tid = secToTest.get(m.section_id);
-      if (!tid) continue;
-      if (!modsByTest.has(tid)) modsByTest.set(tid, []);
-      modsByTest.get(tid)!.push(m);
-    }
-
-    const modIdList = (mods ?? []).map((m) => m.id);
-    const { data: qlinks } = await svc.from("test_module_questions").select("module_id").in("module_id", modIdList.length > 0 ? modIdList : [""]);
     const qCountByModule = new Map<string, number>();
-    for (const ql of qlinks ?? []) qCountByModule.set(ql.module_id, (qCountByModule.get(ql.module_id) ?? 0) + 1);
+    for (const section of sectionRows) {
+      for (const module of section.modules ?? []) {
+        if (!modsByTest.has(section.test_id)) modsByTest.set(section.test_id, []);
+        modsByTest.get(section.test_id)!.push(module);
+        qCountByModule.set(module.id, Number(module.question_counts?.[0]?.count ?? 0));
+      }
+    }
 
     // Resolve which module ids count for a given test + assignment scope.
     function scopedModules(

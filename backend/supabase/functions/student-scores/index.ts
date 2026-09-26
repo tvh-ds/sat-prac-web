@@ -110,21 +110,42 @@ Deno.serve(async (req) => {
 
       const modRows = (modules ?? []).filter((m) => attemptedModuleIds.has(m.id));
       const modIds = modRows.map((m) => m.id);
-      const { data: links, error: lErr } = await svc
-        .from("test_module_questions")
-        .select("module_id, question_id, position, question:questions(*, choices:question_choices(*), passage:passages(id, title, content))")
-        .in("module_id", modIds.length > 0 ? modIds : [""])
-        .order("position", { ascending: true });
-      if (lErr) return error(lErr.message, 500);
-      const linkRows = (links ?? []) as unknown as LinkRow[];
-
-      const { data: responses, error: rErr } = await svc
-        .from("attempt_responses")
-        .select("question_id, selected_choice_id, typed_answer, is_correct, marked_for_review")
-        .eq("attempt_id", attempt.id);
-      if (rErr) return error(rErr.message, 500);
+      const [linksResult, responsesResult] = await Promise.all([
+        svc.from("test_module_questions")
+          .select("module_id, question_id, position, question:questions(*, choices:question_choices(*), passage:passages(id, title, content))")
+          .in("module_id", modIds.length > 0 ? modIds : [""])
+          .order("position", { ascending: true }),
+        svc.from("attempt_responses")
+          .select("question_id, selected_choice_id, typed_answer, is_correct, marked_for_review")
+          .eq("attempt_id", attempt.id),
+      ]);
+      if (linksResult.error) return error(linksResult.error.message, 500);
+      if (responsesResult.error) return error(responsesResult.error.message, 500);
+      const linkRows = (linksResult.data ?? []) as unknown as LinkRow[];
+      const responses = responsesResult.data;
 
       const responseByQ = new Map((responses ?? []).map((r) => [r.question_id, r]));
+
+      const imagePaths = [...new Set(linkRows
+        .map((link) => link.question?.stimulus_image_path)
+        .filter((path): path is string => Boolean(path)))];
+      const signedByPath = new Map<string, string>();
+      for (let i = 0; i < imagePaths.length; i += 100) {
+        const { data, error: signErr } = await svc.storage
+          .from("question-assets")
+          .createSignedUrls(imagePaths.slice(i, i + 100), 60 * 60);
+        if (signErr) {
+          console.error("Failed to sign score-review stimulus images", signErr);
+          continue;
+        }
+        for (const item of data ?? []) {
+          if (item.path && item.signedUrl) signedByPath.set(item.path, item.signedUrl);
+        }
+      }
+      for (const link of linkRows) {
+        const path = link.question?.stimulus_image_path;
+        link.question.stimulus_image_url = path ? signedByPath.get(path) ?? null : null;
+      }
 
       let num = 0;
       const review = [];
@@ -133,10 +154,6 @@ Deno.serve(async (req) => {
           for (const link of linkRows.filter((l) => l.module_id === mod.id)) {
             const q = link.question;
             if (!q) continue;
-            if (q.stimulus_image_path) {
-              const { data } = await svc.storage.from("question-assets").createSignedUrl(q.stimulus_image_path, 60 * 60);
-              q.stimulus_image_url = data?.signedUrl ?? null;
-            }
             num++;
             const r = responseByQ.get(q.id);
             const selected = r?.selected_choice_id

@@ -5,6 +5,8 @@ import { startAttemptSchema, advanceModuleSchema } from "../_shared/validation.t
 
 const TEST_STRUCTURE_QUERY =
   "id, title, description, status, is_public, kind, sections:test_sections(id, test_id, name, section_type, position, modules:test_modules(id, section_id, name, time_limit_minutes, position, is_adaptive, questions:test_module_questions(id, module_id, question_id, position, points, question:questions(id, section, question_type, passage_id, prompt, domain, skill, difficulty, stimulus_image_path, choices:question_choices(id, label, text, position), passage:passages(id, title, content)))))";
+const ASSIGNED_TEST_QUERY =
+  `id, test_id, content_scope, module_ids, test:tests!test_assignments_test_id_fkey(${TEST_STRUCTURE_QUERY})`;
 
 async function loadTestStructure(svc: ReturnType<typeof serviceClient>, testId: string) {
   const { data, error: err } = await svc
@@ -19,16 +21,38 @@ async function loadTestStructure(svc: ReturnType<typeof serviceClient>, testId: 
 async function attachStimulusUrls(svc: ReturnType<typeof serviceClient>, test: Record<string, unknown> | null): Promise<void> {
   if (!test) return;
   const sections = (test.sections ?? []) as Array<{ modules?: Array<{ questions?: Array<{ question?: Record<string, unknown> }> }> }>;
+  const questions: Array<{ question: Record<string, unknown>; path: string }> = [];
+  const paths = new Set<string>();
   for (const section of sections) {
     for (const module of section.modules ?? []) {
       for (const link of module.questions ?? []) {
         const question = link.question;
         const path = question?.stimulus_image_path;
         if (typeof path !== "string" || !path) continue;
-        const { data } = await svc.storage.from("question-assets").createSignedUrl(path, 60 * 60);
-        if (data?.signedUrl) question.stimulus_image_url = data.signedUrl;
+        questions.push({ question, path });
+        paths.add(path);
       }
     }
+  }
+  if (paths.size === 0) return;
+
+  const signedByPath = new Map<string, string>();
+  const uniquePaths = [...paths];
+  for (let i = 0; i < uniquePaths.length; i += 100) {
+    const { data, error: signErr } = await svc.storage
+      .from("question-assets")
+      .createSignedUrls(uniquePaths.slice(i, i + 100), 60 * 60);
+    if (signErr) {
+      console.error("Failed to sign stimulus image URLs", signErr);
+      continue;
+    }
+    for (const item of data ?? []) {
+      if (item.path && item.signedUrl) signedByPath.set(item.path, item.signedUrl);
+    }
+  }
+  for (const { question, path } of questions) {
+    const signedUrl = signedByPath.get(path);
+    if (signedUrl) question.stimulus_image_url = signedUrl;
   }
 }
 
@@ -92,21 +116,34 @@ Deno.serve(async (req) => {
       let testId = body.test_id;
       let assignmentId: string | null = null;
       let assignmentScope: { content_scope?: string | null; module_ids?: string[] | null } | null = null;
+      let preloadedExistingResult: { data: { id: string } | null; error: { message: string } | null } | null = null;
+      let test: Record<string, unknown> | null = null;
       if (body.assignment_id) {
-        const { data: asg, error: asgErr } = await svc
-          .from("test_assignments")
-          .select("id, test_id, content_scope, module_ids")
-          .eq("id", body.assignment_id)
+        const [assignmentResult, activeAttemptResult] = await Promise.all([
+          svc.from("test_assignments")
+            .select(ASSIGNED_TEST_QUERY)
+            .eq("id", body.assignment_id)
+            .eq("student_id", ctx.user.id)
+            .maybeSingle(),
+          svc.from("attempts")
+          .select("id")
           .eq("student_id", ctx.user.id)
-          .maybeSingle();
-        if (asgErr) return error(asgErr.message, 500);
+          .eq("assignment_id", body.assignment_id)
+          .in("status", ["in_progress", "submitted"])
+            .maybeSingle(),
+        ]);
+        const { data: asg, error: asgErr } = assignmentResult;
+        if (asgErr) return error("Unable to load test assignment", 500);
         if (!asg) return error("Assignment not found", 404);
         testId = asg.test_id;
         assignmentId = asg.id;
         assignmentScope = asg;
+        test = (asg.test as unknown as Record<string, unknown> | null) ?? null;
+        preloadedExistingResult = activeAttemptResult;
+      } else {
+        test = await loadTestStructure(svc, testId);
       }
 
-      const test = await loadTestStructure(svc, testId);
       if (!test) return error("Test not found", 404);
       if (test.status !== "published") return error("Test is not available", 403);
 
@@ -127,7 +164,6 @@ Deno.serve(async (req) => {
 
       const allowed = allowedModuleIds(test as Record<string, unknown>, assignmentScope);
       filterTestToModules(test as Record<string, unknown>, allowed);
-      await attachStimulusUrls(svc, test as Record<string, unknown>);
       if (allowed.size === 0) return error("This assignment has no modules", 409);
 
       // One active attempt per assignment (public attempts: per test).
@@ -139,43 +175,52 @@ Deno.serve(async (req) => {
       existingQuery = assignmentId
         ? existingQuery.eq("assignment_id", assignmentId)
         : existingQuery.eq("test_id", testId).is("assignment_id", null);
-      const { data: existing } = await existingQuery.maybeSingle();
-      if (existing) return error("An attempt for this test already exists", 409);
-
-      const { data: attempt, error: aErr } = await svc
-        .from("attempts")
-        .insert({ student_id: ctx.user.id, test_id: testId, assignment_id: assignmentId, status: "in_progress" })
-        .select("*")
-        .single();
-      if (aErr) return error(aErr.message, 500);
-
-      if (assignmentId) {
-        await svc.from("test_assignments").update({ status: "in_progress" }).eq("id", assignmentId);
+      const [existingResult] = await Promise.all([
+        preloadedExistingResult ?? existingQuery.maybeSingle(),
+        attachStimulusUrls(svc, test as Record<string, unknown>),
+      ]);
+      const { data: existing, error: existingErr } = existingResult;
+      if (existingErr) {
+        console.error("Failed to check for an active student attempt", existingErr);
+        return error("Unable to check active attempt", 500);
       }
+      if (existing) return error("An attempt for this test already exists", 409);
 
       const modules = ((test.sections ?? []) as Array<{ modules?: Array<{ id: string; position: number }> }>)
         .flatMap((s) => s.modules ?? []);
       const firstModule = modules.sort((a, b) => a.position - b.position)[0];
 
-      if (modules.length > 0) {
-        const { error: mErr } = await svc.from("attempt_modules").insert(
-          modules.map((m: { id: string }) => ({
-            attempt_id: attempt.id,
-            module_id: m.id,
-            status: m.id === firstModule?.id ? "in_progress" : "not_started",
-            started_at: m.id === firstModule?.id ? new Date().toISOString() : null,
-          })),
-        );
-        if (mErr) return error(mErr.message, 500);
-      }
-
-      const { error: uErr } = await svc
+      const { data: attempt, error: aErr } = await svc
         .from("attempts")
-        .update({ current_module_id: firstModule?.id ?? null, current_question_position: 1 })
-        .eq("id", attempt.id);
-      if (uErr) return error(uErr.message, 500);
+        .insert({
+          student_id: ctx.user.id,
+          test_id: testId,
+          assignment_id: assignmentId,
+          status: "in_progress",
+          current_module_id: firstModule?.id ?? null,
+          current_question_position: 1,
+        })
+        .select("*")
+        .single();
+      if (aErr) return error(aErr.message, 500);
 
-      await svc.from("attempt_events").insert({ attempt_id: attempt.id, event_type: "attempt.started", payload: { test_id: body.test_id } });
+      const startedAt = new Date().toISOString();
+      const [moduleResult, assignmentResult] = await Promise.all([
+        modules.length > 0
+          ? svc.from("attempt_modules").insert(modules.map((m: { id: string }) => ({
+              attempt_id: attempt.id,
+              module_id: m.id,
+              status: m.id === firstModule?.id ? "in_progress" : "not_started",
+              started_at: m.id === firstModule?.id ? startedAt : null,
+            })))
+          : Promise.resolve({ error: null }),
+        assignmentId
+          ? svc.from("test_assignments").update({ status: "in_progress" }).eq("id", assignmentId)
+          : Promise.resolve({ error: null }),
+        svc.from("attempt_events").insert({ attempt_id: attempt.id, event_type: "attempt.started", payload: { test_id: body.test_id } }),
+      ]);
+      if (moduleResult.error) return error(moduleResult.error.message, 500);
+      if (assignmentResult.error) return error(assignmentResult.error.message, 500);
 
       return json({ attempt_id: attempt.id, test }, 201);
     }
@@ -221,18 +266,20 @@ Deno.serve(async (req) => {
       const resolvedTestId = testId ?? attempt.test_id;
       if (testId && attempt.test_id !== testId) return error("No active attempt found for this test", 404);
 
-      const test = await loadTestStructure(svc, resolvedTestId);
-      const { data: attemptModules } = await svc
-        .from("attempt_modules")
-        .select("*, module:test_modules(*)")
-        .eq("attempt_id", attempt.id);
+      const [test, modulesResult, responsesResult] = await Promise.all([
+        loadTestStructure(svc, resolvedTestId),
+        svc.from("attempt_modules").select("*, module:test_modules(*)").eq("attempt_id", attempt.id),
+        svc.from("attempt_responses")
+          .select("attempt_id, question_id, module_id, selected_choice_id, typed_answer, marked_for_review, eliminated_choice_ids, highlights")
+          .eq("attempt_id", attempt.id),
+      ]);
+      if (modulesResult.error) return error(modulesResult.error.message, 500);
+      if (responsesResult.error) return error(responsesResult.error.message, 500);
+      const attemptModules = modulesResult.data;
       const attemptModuleIds = new Set<string>((attemptModules ?? []).map((am) => am.module_id));
       filterTestToModules(test as Record<string, unknown>, attemptModuleIds);
       await attachStimulusUrls(svc, test as Record<string, unknown>);
-      const { data: responses } = await svc
-        .from("attempt_responses")
-        .select("attempt_id, question_id, module_id, selected_choice_id, typed_answer, marked_for_review, eliminated_choice_ids, highlights")
-        .eq("attempt_id", attempt.id);
+      const responses = responsesResult.data;
 
       const now = Date.now();
       const modules = (attemptModules ?? []).map((am) => {
