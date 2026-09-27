@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { fnJson, getToken, supabase } from "../../lib/supabase";
-import type { DraftQuestion, DraftSummary, ImportDetailSummary, ModuleSummary, PdfImport } from "../../lib/types";
+import type { AiIngestionReviewSummary, IngestionReviewState, DraftQuestion, DraftSummary, ImportDetailSummary, ModuleSummary, PdfImport } from "../../lib/types";
 import { Button, Modal, Pill, Spinner, fmtDate } from "../../components/ui";
 import { CropImageModal } from "../../components/CropImageModal";
 import MathText from "../../components/MathText";
@@ -21,6 +21,8 @@ export default function ImportDetailPage() {
   const [moduleSummary, setModuleSummary] = useState<ModuleSummary[]>([]);
   const [draftStatus, setDraftStatus] = useState<string | null>(null);
   const [draftModule, setDraftModule] = useState<string | null>(null);
+  const [reviewState, setReviewState] = useState<IngestionReviewState | null>(null);
+  const [aiReview, setAiReview] = useState<AiIngestionReviewSummary | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [details, setDetails] = useState<Record<string, DraftQuestion>>({});
   const [loadingDetailId, setLoadingDetailId] = useState<string | null>(null);
@@ -30,15 +32,18 @@ export default function ImportDetailPage() {
   const [generateResult, setGenerateResult] = useState<{ test_id: string; title: string; linked: number; failed: number; already_generated?: boolean } | null>(null);
   const [rejectId, setRejectId] = useState<string | null>(null);
   const [addingQuestion, setAddingQuestion] = useState(false);
+  const [reprocessing, setReprocessing] = useState(false);
   const editorRef = useRef<HTMLDivElement | null>(null);
   const offsetRef = useRef(0);
   const selectedRef = useRef<string | null>(null);
   const draftStatusRef = useRef<string | null>(null);
   const draftModuleRef = useRef<string | null>(null);
+  const reviewStateRef = useRef<IngestionReviewState | null>(null);
   offsetRef.current = draftOffset;
   selectedRef.current = selectedId;
   draftStatusRef.current = draftStatus;
   draftModuleRef.current = draftModule;
+  reviewStateRef.current = reviewState;
 
   const loadPage = useCallback(async (offset: number) => {
     if (!importId) return;
@@ -48,6 +53,8 @@ export default function ImportDetailPage() {
     if (status) params.set("draft_status", status);
     const mod = draftModuleRef.current;
     if (mod) params.set("draft_module", mod);
+    const state = reviewStateRef.current;
+    if (state) params.set("review_state", state);
     const d = await fnJson<ImportDetailSummary>(`admin-pdf-imports/${importId}?${params.toString()}`, { token });
     setImportInfo(d.import);
     setDrafts(d.drafts);
@@ -56,11 +63,32 @@ export default function ImportDetailPage() {
     setDraftLimit(d.draft_limit);
     setDraftCounts(d.draft_counts);
     setModuleSummary(d.module_summary ?? []);
+    setAiReview(d.ai_review ?? null);
   }, [importId]);
 
   useEffect(() => {
     void loadPage(0).catch((e) => setError(e.message));
-  }, [loadPage, draftStatus, draftModule]);
+  }, [loadPage, draftStatus, draftModule, reviewState]);
+
+  useEffect(() => {
+    if (!aiReview?.current_job || !["queued", "running"].includes(aiReview.current_job.status)) return;
+    const timer = window.setInterval(() => {
+      void loadPage(offsetRef.current).catch((e) => setError(e.message));
+    }, 3000);
+    return () => window.clearInterval(timer);
+  }, [aiReview?.current_job?.id, aiReview?.current_job?.status, loadPage]);
+
+  useEffect(() => {
+    if (!reprocessing || !importInfo) return;
+    const terminal = (importInfo.status === "completed" && ["passed", "failed"].includes(importInfo.deterministic_review_status ?? "")) ||
+      (importInfo.status === "failed" && importInfo.deterministic_review_status === "failed");
+    if (terminal) {
+      setReprocessing(false);
+      return;
+    }
+    const timer = window.setInterval(() => void loadPage(0).catch((e) => setError(e.message)), 3000);
+    return () => window.clearInterval(timer);
+  }, [reprocessing, importInfo, loadPage]);
 
   async function openDraft(id: string) {
     setSelectedId((prev) => (prev === id ? null : id));
@@ -98,42 +126,53 @@ export default function ImportDetailPage() {
     setAddingQuestion(false);
     setDraftStatus(null);
     setDraftModule(null);
+    setReviewState(null);
     setDraftOffset(0);
     draftStatusRef.current = null;
     draftModuleRef.current = null;
+    reviewStateRef.current = null;
     offsetRef.current = 0;
     setDetails((prev) => ({ ...prev, [draft.id]: draft }));
     setSelectedId(draft.id);
     void loadPage(0);
   }
 
-  async function approveFullDraft() {
-    const incomplete = importInfo?.text_quality?.incomplete_modules ?? [];
-    const acknowledgeIncomplete = incomplete.length > 0;
-    if (
-      acknowledgeIncomplete &&
-      !window.confirm(
-        "The parser found incomplete or overfull modules: " +
-          incomplete.map((m) => `${m.module} ${m.actual}/${m.expected}`).join(", ") +
-          ". Review the source and drafts before continuing. Generate this test anyway?",
-      )
-    ) {
-      return;
-    }
+  async function approveImport() {
     setGenerating(true);
     setError(null);
     try {
       const token = await getToken();
+      await fnJson(`admin-pdf-imports/${importId}/approve-import`, {
+        method: "POST",
+        token,
+        body: {},
+      });
       const res = await fnJson<{ test_id: string; title: string; linked: number; failed: number; already_generated?: boolean }>(
         `admin-pdf-imports/${importId}/generate-test`,
-        { method: "POST", token, body: { acknowledge_incomplete: acknowledgeIncomplete } },
+        { method: "POST", token, body: { acknowledge_incomplete: true } },
       );
       setGenerateResult(res);
       await loadPage(offsetRef.current);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Full-draft approval failed");
+      setError(e instanceof Error ? e.message : "Import approval or test generation failed");
     } finally {
       setGenerating(false);
+    }
+  }
+
+  async function fullReprocess() {
+    setBusy(true);
+    setReprocessing(true);
+    setError(null);
+    try {
+      const token = await getToken();
+      await fnJson(`admin-pdf-imports/${importId}/process`, { method: "POST", token, body: {} });
+      await loadPage(0);
+    } catch (e) {
+      setReprocessing(false);
+      setError(e instanceof Error ? e.message : "Full reprocess could not be started");
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -157,6 +196,8 @@ export default function ImportDetailPage() {
   const questionIssues = importInfo.text_quality?.question_issues ?? [];
   const retryResults = importInfo.text_quality?.ocr_retry_results ?? [];
   const unmatchedKeys = importInfo.text_quality?.unmatched_key_entries ?? [];
+  const allQuestionsComplete = aiReview != null && aiReview.can_approve_import &&
+    aiReview.total_questions > 0 && aiReview.state_counts.complete === aiReview.total_questions;
 
   return (
     <div>
@@ -164,7 +205,7 @@ export default function ImportDetailPage() {
         <div>
           <h1 className="page-title">{polishTestTitle(importInfo.original_filename)}</h1>
           <p className="page-sub" style={{ marginBottom: 0 }}>
-            <span className="muted">{importInfo.original_filename}</span> · Uploaded {fmtDate(importInfo.created_at)} · <ImportStatus status={importInfo.status} /> · {draftTotal} drafts
+            <span className="muted">{importInfo.original_filename}</span> · Uploaded {fmtDate(importInfo.created_at)} · <ImportStatus status={importInfo.status} /> · {aiReview?.total_questions ?? draftTotal} drafts
             <span style={{ marginLeft: 8 }}>
               <Pill tone="gray">{importInfo.extraction_method ?? "text"} extract</Pill>
             </span>
@@ -174,20 +215,61 @@ export default function ImportDetailPage() {
           </p>
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          {importInfo.deterministic_review_status === "failed" && (
+            <Button variant="outline" disabled={busy || reprocessing} onClick={() => void fullReprocess()}>
+              {busy || reprocessing ? "Reprocessing…" : "Full Reprocess"}
+            </Button>
+          )}
           {importInfo.generated_test_id ? (
             <Button variant="outline" onClick={() => navigate(`/admin/tests/${importInfo.generated_test_id}/build`)}>
               Open Full-Length Test
             </Button>
           ) : (
-            importInfo.status === "completed" && (
-              <Button disabled={generating || busy} onClick={() => void approveFullDraft()}>
-                {generating ? "Assembling…" : "Approve Full Draft"}
+            importInfo.status === "completed" && importInfo.deterministic_review_status !== "failed" && (
+              <Button
+                disabled={generating || busy || !allQuestionsComplete}
+                title={allQuestionsComplete ? "Approve the import and assemble the test" : "Every question must be Complete, have a usable answer, and have confirmed visual crops before approval"}
+                onClick={() => void approveImport()}
+              >
+                {generating ? "Approving…" : "Approve Import"}
               </Button>
             )
           )}
           <Button variant="outline" onClick={() => navigate("/admin/imports")}>Back</Button>
         </div>
       </div>
+
+      <div className="panel" style={{ marginTop: 18 }}>
+        <h3 style={{ margin: 0, fontSize: 15 }}>Human review queue</h3>
+        <p className="muted" style={{ margin: "5px 0 0", fontSize: 12.5 }}>
+          Review means a human must inspect and approve the question. Complete questions are ready for import approval; Failed imports require Full Reprocess.
+        </p>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12 }}>
+          <Pill tone="green">Complete {aiReview?.state_counts.complete ?? 0}</Pill>
+          <Pill tone="amber">Human Review {aiReview?.state_counts.review ?? 0}</Pill>
+          <Pill tone="red">Failed {aiReview?.state_counts.failed ?? 0}</Pill>
+        </div>
+      </div>
+
+      {importInfo.deterministic_review_status === "failed" && (
+        <div className="panel" style={{ marginTop: 18, borderColor: "var(--danger)" }}>
+          <h3 style={{ margin: "0 0 7px", fontSize: 15 }}>Structural review failed</h3>
+          <p style={{ margin: "0 0 8px", fontSize: 13 }}>Processing stopped before question review. AI review, import approval, and test generation are disabled until a full reprocess passes.</p>
+          <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13 }}>
+            {(importInfo.deterministic_major_risks ?? []).map((risk) => <li key={risk.code}>{risk.message}</li>)}
+          </ul>
+        </div>
+      )}
+
+      {(importInfo.deterministic_warnings?.length ?? 0) > 0 && (
+        <div className="panel" style={{ marginTop: 18, borderColor: "var(--border-medium)" }}>
+          <h3 style={{ margin: "0 0 7px", fontSize: 15 }}>Import warnings</h3>
+          <p className="muted" style={{ margin: "0 0 8px", fontSize: 12.5 }}>These import-level warnings do not trigger AI review. Verify them while reviewing the questions.</p>
+          <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13 }}>
+            {importInfo.deterministic_warnings?.map((risk) => <li key={risk.code}>{risk.message}</li>)}
+          </ul>
+        </div>
+      )}
 
       {(() => {
         const ks = keyStatusInfo(importInfo);
@@ -406,14 +488,35 @@ export default function ImportDetailPage() {
             ))}
           </div>
         )}
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
+          {([
+            [null, "All review states", undefined],
+            ["complete", `Complete (${aiReview?.state_counts.complete ?? 0})`, "green"],
+            ["review", `Review (${aiReview?.state_counts.review ?? 0})`, "amber"],
+            ["failed", `Failed (${aiReview?.state_counts.failed ?? 0})`, "red"],
+          ] as const).map(([state, label]) => (
+            <button
+              key={state ?? "all"}
+              type="button"
+              className={`draft-filter${reviewState === state ? " active" : ""}`}
+              onClick={() => {
+                setSelectedId(null);
+                setReviewState(state);
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
         {drafts.length === 0 && <p className="muted">No drafts yet.</p>}
         {drafts.map((d) => (
           <div key={d.id}>
-            <button
-              className={`draft-card${d.id === selectedId ? " selected" : ""}`}
-              style={{ width: "100%", textAlign: "left", cursor: "pointer", border: "1px solid var(--border)" }}
-              onClick={() => void openDraft(d.id)}
-            >
+            <div style={{ display: "flex", gap: 8, alignItems: "stretch" }}>
+              <button
+                className={`draft-card${d.id === selectedId ? " selected" : ""}`}
+                style={{ flex: 1, width: "100%", textAlign: "left", cursor: "pointer", border: "1px solid var(--border)" }}
+                onClick={() => void openDraft(d.id)}
+              >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 6 }}>
                 <strong>
                   Q{d.source_question_number} · {d.section === "math" ? "Math" : "Reading & Writing"}
@@ -421,11 +524,14 @@ export default function ImportDetailPage() {
                 </strong>
                 <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
                   {d.has_visual_stimulus && <Pill tone="amber">Visual</Pill>}
+                  {d.review_state && <ReviewStateBadge state={d.review_state} />}
+                  {d.review_state === "complete" && d.status === "approved" && <Pill tone="green">Approved</Pill>}
                   <DraftStatus d={d} />
                 </div>
               </div>
               <div style={{ fontSize: 13.5, margin: 0 }}><MathText text={d.prompt.slice(0, 120)} /></div>
-            </button>
+              </button>
+            </div>
             {d.id === selectedId && (
               <div className="draft-inline-editor" ref={editorRef}>
                 {selectedDetail ? (
@@ -695,6 +801,16 @@ function ManualDraftModal({
   );
 }
 
+function ReviewStateBadge({ state }: { state: IngestionReviewState }) {
+  const map: Record<IngestionReviewState, [string, "green" | "amber" | "red"]> = {
+    complete: ["Complete", "green"],
+    review: ["Review", "amber"],
+    failed: ["Failed", "red"],
+  };
+  const [label, tone] = map[state];
+  return <Pill tone={tone}>{label}</Pill>;
+}
+
 function DraftEditor({
   draft,
   onSaved,
@@ -718,12 +834,13 @@ function DraftEditor({
   const [skill, setSkill] = useState(draft.skill ?? "");
   const [explanation, setExplanation] = useState(draft.explanation ?? "");
   const [cropOpen, setCropOpen] = useState(false);
+  const [sourceOpen, setSourceOpen] = useState(false);
   const [showFull, setShowFull] = useState(false);
   const [savedNote, setSavedNote] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  useEffect(() => { setShowFull(false); setCropOpen(false); }, [draft.id]);
+  useEffect(() => { setShowFull(false); setCropOpen(false); setSourceOpen(false); }, [draft.id]);
 
   useEffect(() => {
     if (!imageFile) {
@@ -745,6 +862,34 @@ function DraftEditor({
     }
     setImageFile(file);
     setSavedNote(null);
+  }
+
+  async function acceptFinding(findingId: string) {
+    setBusy(true);
+    try {
+      const token = await getToken();
+      await fnJson(`admin-pdf-imports/${draft.pdf_import_id}/findings/${findingId}/accept`, { method: "POST", token, body: {} });
+      onSaved();
+    } catch (e) {
+      onError(e instanceof Error ? e.message : "Finding could not be accepted");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function dismissFinding(findingId: string) {
+    const reason = window.prompt("Why is this finding being dismissed?")?.trim();
+    if (!reason) return;
+    setBusy(true);
+    try {
+      const token = await getToken();
+      await fnJson(`admin-pdf-imports/${draft.pdf_import_id}/findings/${findingId}/dismiss`, { method: "POST", token, body: { reason } });
+      onSaved();
+    } catch (e) {
+      onError(e instanceof Error ? e.message : "Finding could not be dismissed");
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function saveCrop(blob: Blob, rect: { x: number; y: number; w: number; h: number }) {
@@ -914,6 +1059,12 @@ function DraftEditor({
     }
   }
 
+  const originalSnapshot = draft.parser_original_snapshot ?? null;
+  const repairedSnapshot = draft.ai_repair_snapshot ?? null;
+  const aiChangedFields = originalSnapshot && repairedSnapshot
+    ? Object.keys(repairedSnapshot).filter((field) => field !== "ai_repair_snapshot" && JSON.stringify(originalSnapshot[field]) !== JSON.stringify(repairedSnapshot[field]))
+    : [];
+
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
@@ -922,6 +1073,9 @@ function DraftEditor({
           {draft.source_module_name ? <span className="muted" style={{ fontSize: 12.5 }}> · {draft.source_module_name}</span> : null}
         </h3>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          {(draft.review_source_image_url ?? draft.stimulus_source_image_url) && (
+            <Button size="sm" variant="outline" onClick={() => setSourceOpen(true)}>View source image</Button>
+          )}
           {draft.parser_metadata?.manual_entry && <Pill tone="blue">Manual entry</Pill>}
           <DraftStatus d={draft} />
         </div>
@@ -1056,6 +1210,66 @@ function DraftEditor({
           Source ID: {draft.source_question_id}
         </p>
       )}
+      {(draft.deterministic_risks?.length ?? 0) > 0 && (
+        <div className="panel" style={{ marginTop: 12, borderColor: "var(--border-medium)" }}>
+          <strong style={{ fontSize: 13 }}>Deterministic review risks</strong>
+          <ul style={{ margin: "7px 0 0", paddingLeft: 18, fontSize: 12.5 }}>
+            {draft.deterministic_risks?.map((risk) => (
+              <li key={risk.code} style={{ marginBottom: 4 }}>
+                <strong>{risk.severity}</strong>: {risk.message}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {draft.review_error_category && (
+        <div className="login-error" style={{ marginTop: 12 }}>
+          AI review could not complete for this draft ({draft.review_error_category.replaceAll("_", " ")}). Review it individually or rerun the import review.
+        </div>
+      )}
+      {aiChangedFields.length > 0 && (
+        <div className="panel" style={{ marginTop: 12, borderColor: "var(--border-medium)" }}>
+          <strong style={{ fontSize: 13 }}>AI-fixed working version</strong>
+          <p className="muted" style={{ margin: "6px 0", fontSize: 12.5 }}>Changed fields: {aiChangedFields.map((field) => field.replaceAll("_", " ")).join(", ")}. Human approval is still required.</p>
+          <details>
+            <summary style={{ cursor: "pointer", fontSize: 12.5 }}>Compare parser original and AI-fixed snapshots</summary>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 10, marginTop: 8 }}>
+              <pre style={{ margin: 0, padding: 10, overflow: "auto", whiteSpace: "pre-wrap", fontSize: 11.5, background: "var(--surface)" }}>{JSON.stringify(originalSnapshot, null, 2)}</pre>
+              <pre style={{ margin: 0, padding: 10, overflow: "auto", whiteSpace: "pre-wrap", fontSize: 11.5, background: "var(--surface)" }}>{JSON.stringify(repairedSnapshot, null, 2)}</pre>
+            </div>
+          </details>
+        </div>
+      )}
+      {(draft.review_findings?.filter((finding) => finding.status === "open").length ?? 0) > 0 && (
+        <div className="panel" style={{ marginTop: 12, borderColor: "var(--border-medium)" }}>
+          <strong style={{ fontSize: 13 }}>AI review findings</strong>
+          {draft.review_findings?.filter((finding) => finding.status === "open").map((finding) => {
+            const canApply = ["prompt", "passage_text", "suggested_answer"].includes(finding.proposed_field) && finding.proposed_value != null;
+            return (
+              <div key={finding.id} style={{ marginTop: 10, paddingTop: 10, borderTop: "1px solid var(--border)" }}>
+                <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+                  <Pill tone={finding.severity === "major" ? "red" : "blue"}>{finding.severity}</Pill>
+                  {finding.applied_automatically && <Pill tone="green">AI repair applied</Pill>}
+                  <strong style={{ fontSize: 12.5 }}>{finding.issue_type.replaceAll("_", " ")} · source page {finding.source_page}</strong>
+                </div>
+                <p style={{ fontSize: 13, margin: "7px 0 0" }}>{finding.explanation}</p>
+                <blockquote style={{ margin: "7px 0", padding: "8px 10px", borderLeft: "3px solid var(--border-medium)", fontSize: 12.5 }}>
+                  {finding.source_evidence}
+                </blockquote>
+                {finding.proposed_field !== "none" && (
+                  <p className="muted" style={{ fontSize: 12.5, margin: "5px 0" }}>
+                    Proposed {finding.proposed_field.replaceAll("_", " ")}: {typeof finding.proposed_value === "string" ? finding.proposed_value : finding.proposed_value == null ? "Review manually" : JSON.stringify(finding.proposed_value)}
+                  </p>
+                )}
+                <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                  {canApply && <Button size="sm" disabled={busy} onClick={() => void acceptFinding(finding.id)}>Accept correction</Button>}
+                  <Button size="sm" variant="outline" disabled={busy} onClick={() => void dismissFinding(finding.id)}>Dismiss</Button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
       {((draft.parser_metadata?.parse_flags?.length ?? 0) > 0 ||
         draft.parser_metadata?.source_number_origin === "inferred" ||
         draft.parser_metadata?.key_match_confidence === "low") && (
@@ -1097,7 +1311,7 @@ function DraftEditor({
       <div style={{ display: "flex", gap: 10, marginTop: 18, justifyContent: "flex-end" }}>
         <Button variant="danger" disabled={busy} onClick={onReject}>Reject</Button>
         <Button variant="outline" disabled={busy} onClick={() => void handleSave()}>{busy ? "Saving…" : "Save draft"}</Button>
-        <Button disabled={busy} onClick={() => void approve()}>{busy ? "Saving…" : "Approve Draft"}</Button>
+        {draft.review_state === "review" && <Button disabled={busy} onClick={() => void approve()}>{busy ? "Saving…" : "Approve Draft"}</Button>}
       </div>
 
       {cropOpen && (draft.stimulus_source_image_url ?? draft.stimulus_image_url) && (
@@ -1110,6 +1324,15 @@ function DraftEditor({
           }}
           onSave={saveCrop}
         />
+      )}
+      {sourceOpen && (draft.review_source_image_url ?? draft.stimulus_source_image_url) && (
+        <Modal title={`Source image — Q${draft.source_question_number}`} onClose={() => setSourceOpen(false)}>
+          <img
+            src={(draft.review_source_image_url ?? draft.stimulus_source_image_url)!}
+            alt={`Source page for Q${draft.source_question_number}`}
+            style={{ display: "block", maxWidth: "100%", maxHeight: "75vh", margin: "0 auto", objectFit: "contain" }}
+          />
+        </Modal>
       )}
     </div>
   );

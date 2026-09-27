@@ -397,12 +397,21 @@ export class Pipeline {
       throw new Error(`import ${importId} is in status ${pdfImport.status}; not processable`);
     }
 
+    const rebuilding = pdfImport.status === "failed";
     await this.svc.from("pdf_imports").update({ status: "extracting", error_message: null }).eq("id", importId);
 
     const t0 = Date.now();
     const fileName: string | null = typeof pdfImport.original_filename === "string" ? pdfImport.original_filename : null;
     try {
       const buffer = await this.download(pdfImport.storage_path);
+      if (rebuilding) {
+        const { error: jobDeleteError } = await this.svc.from("ai_ingestion_review_jobs").delete().eq("pdf_import_id", importId);
+        if (jobDeleteError) throw new Error(`clear old AI review jobs: ${jobDeleteError.message}`);
+        const { error: draftDeleteError } = await this.svc.from("draft_questions").delete().eq("pdf_import_id", importId);
+        if (draftDeleteError) throw new Error(`clear old drafts: ${draftDeleteError.message}`);
+        const { error: pageDeleteError } = await this.svc.from("pdf_import_pages").delete().eq("pdf_import_id", importId);
+        if (pageDeleteError) throw new Error(`clear old import pages: ${pageDeleteError.message}`);
+      }
       const bufferForFinalize = new Uint8Array(new ArrayBuffer(buffer.byteLength));
       bufferForFinalize.set(new Uint8Array(buffer));
       // Selectable text is kept only as a per-page fallback when Parse fails
@@ -597,7 +606,16 @@ export class Pipeline {
       return result;
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
-      await this.svc.from("pdf_imports").update({ status: "failed", error_message: message.slice(0, 2000) }).eq("id", importId);
+      const risk = [{ code: "import_processing_failed", severity: "major", message: "Import processing failed before structural validation completed." }];
+      await this.svc.from("pdf_imports").update({
+        status: "failed",
+        error_message: message.slice(0, 2000),
+        deterministic_review_status: "failed",
+        deterministic_policy_version: "ingestion-review-v2",
+        deterministic_major_risks: risk,
+        deterministic_reviewed_at: new Date().toISOString(),
+      }).eq("id", importId);
+      await this.svc.from("draft_questions").update({ review_state: "failed", deterministic_risks: risk, review_route: "blocked" }).eq("pdf_import_id", importId);
       return { importId, status: "failed", pages: 0, drafts: 0, suggestedKeys: 0, method: null, message, report: null };
     }
   }

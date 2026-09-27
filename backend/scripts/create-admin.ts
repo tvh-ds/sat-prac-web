@@ -61,7 +61,34 @@ if (existingId) {
   console.log(`Created ${email} (id ${userId})`);
 }
 
-const { error: upErr } = await svc.from("profiles").update({ role: "admin" }).eq("id", userId);
+const { data: existingProfile, error: profileLookupErr } = await svc
+  .from("profiles")
+  .select("role")
+  .eq("id", userId)
+  .maybeSingle();
+if (profileLookupErr) {
+  console.error("profile lookup failed:", profileLookupErr.message);
+  process.exit(1);
+}
+
+const { data: existingStudentProfile, error: studentProfileLookupErr } = await svc
+  .from("student_profiles")
+  .select("id")
+  .eq("id", userId)
+  .maybeSingle();
+if (studentProfileLookupErr) {
+  console.error("student profile lookup failed:", studentProfileLookupErr.message);
+  process.exit(1);
+}
+
+if (existingId && (existingProfile?.role === "student" || (!existingProfile && existingStudentProfile))) {
+  console.error("This email already belongs to a student. Use a separate staging-only admin email.");
+  process.exit(1);
+}
+
+const { error: upErr } = await svc
+  .from("profiles")
+  .upsert({ id: userId, role: "admin" }, { onConflict: "id" });
 if (upErr) {
   console.error("promote failed:", upErr.message);
   process.exit(1);
@@ -75,6 +102,5 @@ if (studentProfileErr) {
 
 console.log("Admin ready:");
 console.log("  email:   " + email);
-console.log("  password: " + password);
 console.log("  role:    admin");
 console.log("Promote more admins by re-running this script with their credentials.");

@@ -330,6 +330,11 @@ export interface PdfImport {
   content_scope?: string;
   target_module?: string | null;
   generated_test_id?: string | null;
+  deterministic_review_status?: "pending" | "passed" | "failed";
+  deterministic_policy_version?: string | null;
+  deterministic_major_risks?: Array<{ code: string; severity: "major"; message: string }>;
+  deterministic_warnings?: Array<{ code: string; severity: "minor"; message: string }>;
+  deterministic_reviewed_at?: string | null;
   answer_key_status?: "complete" | "partial" | "missing" | null;
   answer_key_summary?: Record<string, { questions: number; keys: number; status: string }> | null;
   draft_counts?: Record<string, number>;
@@ -383,6 +388,41 @@ export interface DraftChoice {
   position: number;
 }
 
+export type IngestionReviewState = "complete" | "review" | "failed";
+
+export interface AiReviewFinding {
+  id: string;
+  issue_type: "ocr_corruption" | "question_boundary" | "passage_or_prompt" | "choice_structure" | "answer_key_conflict" | "visual_association" | "crop_problem" | "other";
+  severity: "major" | "minor";
+  source_page: number;
+  source_evidence: string;
+  explanation: string;
+  proposed_field: "passage_text" | "prompt" | "choices" | "suggested_answer" | "stimulus_crop" | "none";
+  proposed_value: unknown;
+  model_confidence: number | null;
+  status: "open" | "accepted" | "dismissed" | "superseded";
+  decision_reason?: string | null;
+  applied_automatically?: boolean;
+}
+
+export interface AiIngestionReviewSummary {
+  current_job: {
+    id: string;
+    status: "queued" | "running" | "completed" | "completed_with_errors" | "failed" | "cancelled" | "stale";
+    model: string;
+    prompt_version: string;
+    reviewed_drafts: number;
+    failed_drafts: number;
+    estimated_cost_usd: number | null;
+    started_at: string | null;
+    finished_at: string | null;
+    error_category?: string | null;
+  } | null;
+  state_counts: { complete: number; review: number; failed: number };
+  total_questions: number;
+  can_approve_import: boolean;
+}
+
 export interface DraftQuestion {
   id: string;
   pdf_import_id: string;
@@ -402,6 +442,8 @@ export interface DraftQuestion {
   stimulus_image_url?: string | null;
   stimulus_source_image_path?: string | null;
   stimulus_source_image_url?: string | null;
+  review_source_image_path?: string | null;
+  review_source_image_url?: string | null;
   stimulus_crop_rect?: { x: number; y: number; w: number; h: number } | null;
   stimulus_crop_source?: "auto" | "manual" | "full_page" | null;
   stimulus_crop_status?: "pending" | "confirmed" | null;
@@ -420,6 +462,15 @@ export interface DraftQuestion {
     key_match_method?: "question_id" | "recovered_question_id" | "module_position" | "document_position" | "bank" | null;
     key_match_confidence?: "high" | "low" | null;
   } | null;
+  review_state?: IngestionReviewState | null;
+  review_snapshot_hash?: string | null;
+  review_policy_version?: string | null;
+  deterministic_risks?: Array<{ code: string; severity: "major" | "minor"; message: string }>;
+  parser_original_snapshot?: Record<string, unknown> | null;
+  ai_repair_snapshot?: Record<string, unknown> | null;
+  review_error_category?: string | null;
+  reviewed_at?: string | null;
+  review_findings?: AiReviewFinding[];
 }
 
 export interface DraftSummary {
@@ -433,6 +484,11 @@ export interface DraftSummary {
   source_question_number: number;
   source_module_name?: string | null;
   has_visual_stimulus?: boolean;
+  review_state?: IngestionReviewState | null;
+  review_snapshot_hash?: string | null;
+  deterministic_risks?: Array<{ code: string; severity: "major" | "minor"; message: string }>;
+  review_error_category?: string | null;
+  reviewed_at?: string | null;
 }
 
 export interface ModuleSummary {
@@ -458,6 +514,8 @@ export interface ImportDetailSummary {
   module_summary?: ModuleSummary[];
   draft_status?: string | null;
   draft_module?: string | null;
+  review_state?: IngestionReviewState | null;
+  ai_review?: AiIngestionReviewSummary;
 }
 
 export interface ImportDetail {
@@ -468,6 +526,7 @@ export interface ImportDetail {
     extracted_text?: string | null;
   }>;
   drafts: DraftQuestion[];
+  ai_review?: AiIngestionReviewSummary;
 }
 
 export interface ImportListItem {

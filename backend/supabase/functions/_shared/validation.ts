@@ -258,6 +258,17 @@ export const updateDraftSchema = z.object({
   choices: z.array(choiceSchema.partial().extend({ id: z.string().uuid().optional() })).optional(),
 });
 
+export const aiFindingDecisionSchema = z.object({
+  reason: z.string().trim().min(1).max(2000).optional(),
+});
+
+export const aiBatchApproveSchema = z.object({
+  drafts: z.array(z.object({
+    id: z.string().uuid(),
+    snapshot_hash: z.string().regex(/^[a-f0-9]{64}$/),
+  })).min(1).max(200),
+});
+
 // ---------------------------------------------------------------------------
 // Practice sets (admin)
 // ---------------------------------------------------------------------------

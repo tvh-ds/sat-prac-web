@@ -119,6 +119,18 @@ COHERE_API_KEY=<cohere parse key>
 # Optional: COHERE_OCR_MODEL=parse-v5.0
 OCR_PROVIDER=cohere
 OCR_MODE=auto
+# Optional AI repair. It turns on automatically only when this key exists.
+COHERE_REVIEW_API_KEY=<dedicated Cohere review key>
+# Optional kill switch; omit or leave true when the key should be active.
+AI_INGESTION_REVIEW_ENABLED=true
+COHERE_REVIEW_MODEL=command-a-plus-05-2026
+AI_REVIEW_MAX_DRAFTS=120
+AI_REVIEW_TIMEOUT_MS=45000
+AI_REVIEW_CONCURRENCY=2
+AI_REVIEW_COST_CEILING_USD=5
+# Set these to the current provider rates for cost telemetry.
+AI_REVIEW_INPUT_USD_PER_MILLION=0
+AI_REVIEW_OUTPUT_USD_PER_MILLION=0
 PORT=8000
 POLL_INTERVAL_MS=15000
 ```
@@ -138,6 +150,7 @@ Worker endpoints:
 | `GET` | `/health` | none | Health check and configured poll interval. |
 | `POST` | `/process` | `Authorization: Bearer <WORKER_AUTH_TOKEN>` | Process a specific `{ import_id }`. |
 | `POST` | `/jobs/poll` | `Authorization: Bearer <WORKER_AUTH_TOKEN>` | Claim and process the next pending import. |
+| `POST` | `/review` | `Authorization: Bearer <WORKER_AUTH_TOKEN>` | Internal automatic deterministic review and optional AI-repair entry point for `{ import_id, force? }`. |
 
 If Edge Functions should call the worker directly, serve/deploy functions with these variables set. Restart `functions serve` after changing them:
 

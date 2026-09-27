@@ -10,7 +10,7 @@ type OverallReadiness = "complete" | "partial" | "failed" | "processing";
 function overallReadiness(im: PdfImport): OverallReadiness {
   const readiness = im.import_readiness;
   if (["queued", "processing", "running", "uploaded"].includes(im.status)) return "processing";
-  if (im.status === "failed") return "failed";
+  if (im.status === "failed" || im.deterministic_review_status === "failed") return "failed";
   if (!readiness) return "processing";
   const { questions, answer_key: answerKey } = readiness;
   if (questions.status === "failed" || answerKey.status === "failed") return "failed";
@@ -167,6 +167,9 @@ export default function ImportsPage() {
                     <td>
                       <div style={{ fontWeight: 600 }}>{polishTestTitle(im.original_filename)}</div>
                       <div className="muted" style={{ fontSize: 12 }}>{im.original_filename}</div>
+                      {im.deterministic_review_status === "failed" && (
+                        <span className="pill pill-red" style={{ marginTop: 6 }}>Structural review failed</span>
+                      )}
                       {im.generated_test_id && (
                         <Link to={`/admin/tests/${im.generated_test_id}/build`} style={{ fontSize: 12 }}>Open full-length test</Link>
                       )}

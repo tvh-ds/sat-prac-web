@@ -18,6 +18,8 @@ coverage/
 
 backend/supabase/.temp/
 backend/supabase/.branches/
+supabase/.temp/
+/tmp/
 
 # Local PDF corpus + OCR output (GBs, includes >100MB files GitHub rejects).
 # Kept on disk; worker scripts read it directly. Never track in git.

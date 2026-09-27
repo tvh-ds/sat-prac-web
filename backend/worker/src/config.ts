@@ -14,6 +14,15 @@ export interface WorkerConfig {
   ocrModel?: string;
   ocrProvider: string;
   ocrMode: "auto" | "all" | "none";
+  aiIngestionReviewEnabled: boolean;
+  aiReviewApiKey?: string;
+  aiReviewModel: string;
+  aiReviewMaxDrafts: number;
+  aiReviewTimeoutMs: number;
+  aiReviewConcurrency: number;
+  aiReviewCostCeilingUsd: number;
+  aiReviewInputPricePerMillion: number;
+  aiReviewOutputPricePerMillion: number;
 }
 
 /**
@@ -42,6 +51,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): WorkerConfig {
     throw new Error("SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, and WORKER_AUTH_TOKEN are required");
   }
   const cohereApiKeys = collectCohereKeys(env);
+  const aiReviewApiKey = env.COHERE_REVIEW_API_KEY?.trim() || undefined;
   return {
     supabaseUrl,
     supabaseServiceKey,
@@ -54,5 +64,14 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): WorkerConfig {
     ocrModel: env.COHERE_OCR_MODEL || undefined,
     ocrProvider: env.OCR_PROVIDER || "cohere_parse",
     ocrMode: (env.OCR_MODE as WorkerConfig["ocrMode"]) || "auto",
+    aiIngestionReviewEnabled: Boolean(aiReviewApiKey) && env.AI_INGESTION_REVIEW_ENABLED !== "false",
+    aiReviewApiKey,
+    aiReviewModel: env.COHERE_REVIEW_MODEL || "command-a-plus-05-2026",
+    aiReviewMaxDrafts: Math.max(1, Number(env.AI_REVIEW_MAX_DRAFTS ?? 120)),
+    aiReviewTimeoutMs: Math.max(5000, Number(env.AI_REVIEW_TIMEOUT_MS ?? 45000)),
+    aiReviewConcurrency: Math.max(1, Math.min(8, Number(env.AI_REVIEW_CONCURRENCY ?? 2))),
+    aiReviewCostCeilingUsd: Math.max(0, Number(env.AI_REVIEW_COST_CEILING_USD ?? 5)),
+    aiReviewInputPricePerMillion: Math.max(0, Number(env.AI_REVIEW_INPUT_USD_PER_MILLION ?? 0)),
+    aiReviewOutputPricePerMillion: Math.max(0, Number(env.AI_REVIEW_OUTPUT_USD_PER_MILLION ?? 0)),
   };
 }

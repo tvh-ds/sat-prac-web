@@ -1,7 +1,7 @@
 import { requireRole, HttpError, pathSegments } from "../_shared/auth.ts";
 import { serviceClient } from "../_shared/supabase.ts";
 import { corsHeaders, json, error } from "../_shared/cors.ts";
-import { pdfImportCreateSchema, approveDraftSchema, updateDraftSchema, manualImportDraftCreateSchema } from "../_shared/validation.ts";
+import { pdfImportCreateSchema, approveDraftSchema, updateDraftSchema, manualImportDraftCreateSchema, aiFindingDecisionSchema } from "../_shared/validation.ts";
 import { approveDraft } from "../_shared/drafts.ts";
 import { moduleGroup, groupByModuleKey } from "../_shared/modules.ts";
 import { summarizePdfImportReadiness, type ImportReadinessDraft } from "../_shared/importReadiness.ts";
@@ -19,6 +19,41 @@ async function triggerWorker(importId: string): Promise<void> {
   }).catch((e) => console.error("Worker trigger failed:", e.message));
 }
 
+async function triggerAiReview(importId: string, force = false): Promise<void> {
+  if (!WORKER_URL) throw new HttpError(503, "AI review worker is not configured");
+  if (!WORKER_AUTH_TOKEN) throw new HttpError(500, "WORKER_AUTH_TOKEN is not configured");
+  const response = await fetch(`${WORKER_URL}/review`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${WORKER_AUTH_TOKEN}` },
+    body: JSON.stringify({ import_id: importId, force }),
+  });
+  if (!response.ok) throw new HttpError(502, "AI review worker could not accept the job");
+}
+
+async function loadReviewSummary(svc: ReturnType<typeof serviceClient>, importId: string) {
+  const [{ data: job, error: jobErr }, { data: routes, error: routeErr }, { data: imp, error: importErr }] = await Promise.all([
+    svc.from("ai_ingestion_review_jobs")
+      .select("id,status,model,prompt_version,reviewed_drafts,failed_drafts,estimated_cost_usd,started_at,finished_at,error_category")
+      .eq("pdf_import_id", importId).order("created_at", { ascending: false }).limit(1).maybeSingle(),
+    svc.from("draft_questions").select("review_state,status,suggested_answer,has_visual_stimulus,stimulus_crop_status").eq("pdf_import_id", importId),
+    svc.from("pdf_imports").select("deterministic_review_status").eq("id", importId).maybeSingle(),
+  ]);
+  if (jobErr) throw new HttpError(500, jobErr.message);
+  if (routeErr) throw new HttpError(500, routeErr.message);
+  if (importErr) throw new HttpError(500, importErr.message);
+  const counts = { complete: 0, review: 0, failed: 0 };
+  for (const row of routes ?? []) {
+    const state = row.review_state as keyof typeof counts | null;
+    if (state && state in counts) counts[state] += 1;
+  }
+  const drafts = routes ?? [];
+  const canApproveImport = imp?.deterministic_review_status === "passed" && drafts.length > 0 && drafts.every((draft) =>
+    draft.review_state === "complete" && draft.status !== "rejected" && Boolean(draft.suggested_answer?.trim()) &&
+    (!draft.has_visual_stimulus || draft.stimulus_crop_status === "confirmed")
+  );
+  return { current_job: job ?? null, state_counts: counts, total_questions: drafts.length, can_approve_import: canApproveImport };
+}
+
 async function attachDraftStimulusUrls(svc: ReturnType<typeof serviceClient>, drafts: Array<Record<string, unknown>>): Promise<void> {
   for (const draft of drafts) {
     const path = draft.stimulus_image_path;
@@ -33,6 +68,11 @@ async function attachDraftStimulusUrls(svc: ReturnType<typeof serviceClient>, dr
     if (typeof sourcePath === "string" && sourcePath) {
       const { data } = await svc.storage.from("question-assets").createSignedUrl(sourcePath, 60 * 60);
       if (data?.signedUrl) draft.stimulus_source_image_url = data.signedUrl;
+    }
+    const reviewSourcePath = draft.review_source_image_path;
+    if (typeof reviewSourcePath === "string" && reviewSourcePath) {
+      const { data } = await svc.storage.from("question-assets").createSignedUrl(reviewSourcePath, 60 * 60);
+      if (data?.signedUrl) draft.review_source_image_url = data.signedUrl;
     }
   }
 }
@@ -189,12 +229,15 @@ Deno.serve(async (req) => {
         const applyStatus = status && status.length > 0;
         const module = params.get("draft_module")?.trim();
         const applyModule = module && module.length > 0;
+        const reviewState = params.get("review_state")?.trim();
+        const applyReviewState = reviewState && ["complete", "review", "failed"].includes(reviewState);
 
         let query = svc
           .from("draft_questions")
-          .select("id, pdf_import_id, page_number, section, question_type, prompt, status, source_question_number, source_module_name, has_visual_stimulus");
+          .select("id, pdf_import_id, page_number, section, question_type, prompt, status, source_question_number, source_module_name, has_visual_stimulus, review_state, review_snapshot_hash, deterministic_risks, review_error_category, reviewed_at");
         if (applyStatus) query = query.eq("status", status);
         if (applyModule) query = query.eq("source_module_name", module);
+        if (applyReviewState) query = query.eq("review_state", reviewState);
         const { data: batch, error: sErr } = await query
           .eq("pdf_import_id", id)
           .order("page_number")
@@ -205,6 +248,7 @@ Deno.serve(async (req) => {
         let countQuery = svc.from("draft_questions").select("id", { count: "exact", head: true });
         if (applyStatus) countQuery = countQuery.eq("status", status);
         if (applyModule) countQuery = countQuery.eq("source_module_name", module);
+        if (applyReviewState) countQuery = countQuery.eq("review_state", reviewState);
         const { count: total, error: cErr } = await countQuery.eq("pdf_import_id", id);
         if (cErr) return error(cErr.message, 500);
 
@@ -245,6 +289,7 @@ Deno.serve(async (req) => {
           a.section === b.section ? a.module.localeCompare(b.module) : a.section === "reading_writing" ? -1 : 1,
         );
 
+        const ai_review = await loadReviewSummary(svc, id);
         return json({
           import: imp,
           drafts: (batch ?? []) as Array<Record<string, unknown>>,
@@ -255,6 +300,8 @@ Deno.serve(async (req) => {
           module_summary,
           draft_status: applyStatus ? status : null,
           draft_module: applyModule ? module : null,
+          review_state: applyReviewState ? reviewState : null,
+          ai_review,
         });
       }
 
@@ -274,7 +321,7 @@ Deno.serve(async (req) => {
       for (let offset = 0; ; offset += PAGE) {
         const { data: batch, error: dErr } = await svc
           .from("draft_questions")
-          .select("*, choices:draft_question_choices(*), answer_keys:draft_answer_keys(*)")
+          .select("*, choices:draft_question_choices(*), answer_keys:draft_answer_keys(*), review_findings:ai_ingestion_review_findings(*)")
           .eq("pdf_import_id", id)
           .order("page_number")
           .order("source_question_number")
@@ -284,7 +331,8 @@ Deno.serve(async (req) => {
         if ((batch?.length ?? 0) < PAGE) break;
       }
       await attachDraftStimulusUrls(svc, drafts);
-      return json({ import: imp, pages, drafts });
+      const ai_review = await loadReviewSummary(svc, id);
+      return json({ import: imp, pages, drafts, ai_review });
     }
 
     if (req.method === "POST" && seg.length === 1) {
@@ -321,8 +369,80 @@ Deno.serve(async (req) => {
     }
 
     if (req.method === "POST" && seg.length === 3 && seg[2] === "process") {
+      const { data: imp, error: impErr } = await svc.from("pdf_imports").select("id,status").eq("id", id).maybeSingle();
+      if (impErr) return error(impErr.message, 500);
+      if (!imp) return error("Import not found", 404);
+      if (!["uploaded", "failed", "completed"].includes(imp.status)) return error("Import is already processing", 409);
+      if (imp.status === "completed") {
+        const { error: resetErr } = await svc.from("pdf_imports").update({
+          status: "failed",
+          error_message: null,
+          deterministic_review_status: "pending",
+          deterministic_major_risks: [],
+          deterministic_warnings: [],
+          deterministic_reviewed_at: null,
+        }).eq("id", id);
+        if (resetErr) return error(resetErr.message, 500);
+      }
       await triggerWorker(id);
+      await svc.from("audit_logs").insert({ actor_id: ctx.user.id, action: "pdf_import.full_reprocess_requested", entity_type: "pdf_import", entity_id: id });
       return json({ ok: true, note: WORKER_URL ? "Worker notified" : "No WORKER_URL configured; worker will poll" });
+    }
+
+    if (req.method === "POST" && seg.length === 3 && seg[2] === "ai-review") {
+      const { data: imp, error: impErr } = await svc.from("pdf_imports").select("id,status,deterministic_review_status").eq("id", id).maybeSingle();
+      if (impErr) return error(impErr.message, 500);
+      if (!imp) return error("Import not found", 404);
+      if (imp.status !== "completed") return error("AI review requires a completed import", 409);
+      if (imp.deterministic_review_status === "failed") return error("Structurally failed imports cannot create AI review jobs", 409);
+      const { data: latestJob, error: latestErr } = await svc.from("ai_ingestion_review_jobs")
+        .select("status,created_at").eq("pdf_import_id", id).order("created_at", { ascending: false }).limit(1).maybeSingle();
+      if (latestErr) return error(latestErr.message, 500);
+      if (latestJob && ["queued", "running"].includes(latestJob.status)) return error("An AI review is already in progress", 409);
+      if (latestJob && Date.now() - new Date(latestJob.created_at).getTime() < 30_000) return error("Wait 30 seconds before rerunning AI review", 429);
+      await triggerAiReview(id, true);
+      await svc.from("audit_logs").insert({ actor_id: ctx.user.id, action: "ai_ingestion_review.requested", entity_type: "pdf_import", entity_id: id });
+      return json({ ok: true }, 202);
+    }
+
+    if (req.method === "POST" && seg.length === 3 && seg[2] === "approve-import") {
+      const { data, error: rpcErr } = await svc.rpc("approve_complete_ingestion_import", {
+        p_import_id: id,
+        p_admin_id: ctx.user.id,
+      });
+      if (rpcErr) {
+        return error("Every question must be Complete with a usable answer and confirmed visual crop before approving the import", 409);
+      }
+      return json({ ok: true, approved: data });
+    }
+
+    if (seg[2] === "findings" && seg.length === 5) {
+      const findingId = seg[3];
+      const action = seg[4];
+      if (req.method === "POST" && action === "accept") {
+        aiFindingDecisionSchema.parse(await req.json().catch(() => ({})));
+        const { data, error: rpcErr } = await svc.rpc("accept_ai_ingestion_finding", {
+          p_import_id: id,
+          p_finding_id: findingId,
+          p_admin_id: ctx.user.id,
+        });
+        if (rpcErr) return error("The finding is stale, already decided, or requires the question editor", 409);
+        await triggerAiReview(id).catch((cause) => console.error("AI reassessment enqueue failed", cause));
+        return json({ ok: true, draft_id: data });
+      }
+      if (req.method === "POST" && action === "dismiss") {
+        const body = aiFindingDecisionSchema.parse(await req.json());
+        if (!body.reason) return error("A dismissal reason is required", 422);
+        const { data: finding, error: fErr } = await svc.from("ai_ingestion_review_findings")
+          .update({ status: "dismissed", decided_by: ctx.user.id, decided_at: new Date().toISOString(), decision_reason: body.reason })
+          .eq("id", findingId).eq("pdf_import_id", id).eq("status", "open").select("id,draft_question_id").maybeSingle();
+        if (fErr) return error(fErr.message, 500);
+        if (!finding) return error("Finding not found, stale, or already decided", 409);
+        await svc.from("audit_logs").insert({ actor_id: ctx.user.id, action: "ai_ingestion_finding.dismissed", entity_type: "draft_question", entity_id: finding.draft_question_id, details: { finding_id: findingId, reason: body.reason } });
+        await svc.from("draft_questions").update({ review_state: "review", review_route: "individual_review" }).eq("id", finding.draft_question_id);
+        await triggerAiReview(id, true).catch((cause) => console.error("AI reassessment enqueue failed", cause));
+        return json({ ok: true });
+      }
     }
 
     if (req.method === "POST" && seg.length === 3 && seg[2] === "drafts") {
@@ -404,18 +524,21 @@ Deno.serve(async (req) => {
         .single();
       if (reloadErr) return error(reloadErr.message, 500);
       await attachDraftStimulusUrls(svc, [created as Record<string, unknown>]);
+      await triggerAiReview(id, true).catch((cause) => console.error("AI reassessment enqueue failed", cause));
       return json({ draft: created }, 201);
     }
 
     if (req.method === "POST" && seg.length === 3 && seg[2] === "generate-test") {
       const { data: imp, error: impErr } = await svc
         .from("pdf_imports")
-        .select("id, status, original_filename, generated_test_id, text_quality")
+        .select("id, status, original_filename, generated_test_id, text_quality, deterministic_review_status")
         .eq("id", id)
         .maybeSingle();
       if (impErr) return error(impErr.message, 500);
       if (!imp) return error("Import not found", 404);
+      if (imp.deterministic_review_status === "failed") return error("Structurally failed imports cannot generate tests. Run Full Reprocess first.", 409);
       if (imp.generated_test_id) return json({ ok: true, test_id: imp.generated_test_id, already_generated: true });
+      if (imp.deterministic_review_status !== "passed") return error("Import must pass deterministic review before generating a test.", 409);
 
       const body = await req.json().catch(() => ({})) as { acknowledge_incomplete?: boolean };
       const quality = (imp.text_quality ?? {}) as { incomplete_modules?: Array<{ module: string; expected: number; actual: number }> };
@@ -426,6 +549,13 @@ Deno.serve(async (req) => {
       }
 
       const drafts = await loadAllDrafts(svc, id, "*, choices:draft_question_choices(*)");
+      const incomplete = drafts.filter((d) =>
+        d.review_state !== "complete" || d.status === "rejected" || !String(d.suggested_answer ?? "").trim() ||
+        (d.has_visual_stimulus && d.stimulus_crop_status !== "confirmed")
+      );
+      if (incomplete.length > 0) {
+        return error("Every question must be Complete with a usable answer and confirmed visual crop before generating a test.", 422);
+      }
       const usable = drafts.filter((d) => d.status !== "rejected");
       if (usable.length === 0) return error("No reviewable drafts on this import; generate a test needs at least one draft", 422);
 
@@ -604,25 +734,21 @@ Deno.serve(async (req) => {
       if (req.method === "GET" && seg.length === 4) {
         const { data: draft, error: gErr } = await svc
           .from("draft_questions")
-          .select("*, choices:draft_question_choices(*), answer_keys:draft_answer_keys(*)")
+          .select("*, choices:draft_question_choices(*), answer_keys:draft_answer_keys(*), review_findings:ai_ingestion_review_findings(*)")
           .eq("id", draftId)
           .eq("pdf_import_id", id)
           .maybeSingle();
         if (gErr) return error(gErr.message, 500);
         if (!draft) return error("Draft not found", 404);
-        if (typeof draft.stimulus_image_path === "string" && draft.stimulus_image_path) {
-          const { data } = await svc.storage.from("question-assets").createSignedUrl(draft.stimulus_image_path, 60 * 60);
-          if (data?.signedUrl) draft.stimulus_image_url = data.signedUrl;
-        }
-        if (typeof draft.stimulus_source_image_path === "string" && draft.stimulus_source_image_path) {
-          const { data } = await svc.storage.from("question-assets").createSignedUrl(draft.stimulus_source_image_path, 60 * 60);
-          if (data?.signedUrl) draft.stimulus_source_image_url = data.signedUrl;
-        }
+        await attachDraftStimulusUrls(svc, [draft as Record<string, unknown>]);
         return json({ draft });
       }
 
       if (req.method === "POST" && seg[4] === "approve") {
         const body = approveDraftSchema.parse(await req.json());
+        const { data: importGate, error: gateErr } = await svc.from("pdf_imports").select("deterministic_review_status").eq("id", id).maybeSingle();
+        if (gateErr) return error(gateErr.message, 500);
+        if (importGate?.deterministic_review_status === "failed") return error("Questions from a structurally failed import cannot be approved", 409);
         const { data: draft, error: dErr } = await svc
           .from("draft_questions")
           .select("id, pdf_import_id, has_visual_stimulus, stimulus_crop_status, question_id, source_module_name, section")
@@ -675,6 +801,13 @@ Deno.serve(async (req) => {
               add_to_module_id: targetModule.id,
               position: (lastLink?.position ?? 0) + 1,
             });
+            await svc.from("draft_questions").update({
+              review_state: "complete",
+              review_route: "batch_ready",
+              human_review_mode: "individual",
+              human_reviewed_by: ctx.user.id,
+              human_reviewed_at: new Date().toISOString(),
+            }).eq("id", draftId).is("human_review_mode", null);
             await recomputeFullTestKeySummary(svc, imp.generated_test_id);
             return json({ ok: true, question_id: approved.question_id, added_to_test: true });
           } catch (e) {
@@ -682,7 +815,14 @@ Deno.serve(async (req) => {
           }
         }
 
-        const { error: statusErr } = await svc.from("draft_questions").update({ status: "approved" }).eq("id", draftId).eq("pdf_import_id", id);
+        const { error: statusErr } = await svc.from("draft_questions").update({
+          status: "approved",
+          review_state: "complete",
+          review_route: "batch_ready",
+          human_review_mode: "individual",
+          human_reviewed_by: ctx.user.id,
+          human_reviewed_at: new Date().toISOString(),
+        }).eq("id", draftId).eq("pdf_import_id", id);
         if (statusErr) return error(statusErr.message, 500);
         await svc.from("draft_answer_keys").update({ status: "approved" }).eq("draft_question_id", draftId).eq("status", "suggested");
         await svc.from("audit_logs").insert({
@@ -722,6 +862,7 @@ Deno.serve(async (req) => {
           if (imageErr) return error(imageErr.message, 500);
         }
         await svc.from("audit_logs").insert({ actor_id: ctx.user.id, action: "draft_question.crop_confirmed", entity_type: "draft_question", entity_id: draftId });
+        await triggerAiReview(id).catch((cause) => console.error("AI reassessment enqueue failed", cause));
         return json({ ok: true });
       }
 
@@ -771,6 +912,7 @@ Deno.serve(async (req) => {
           );
           if (iErr) return error(iErr.message, 500);
         }
+        await triggerAiReview(id).catch((cause) => console.error("AI reassessment enqueue failed", cause));
         return json({ ok: true });
       }
     }
