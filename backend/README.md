@@ -18,19 +18,19 @@ Postgres + Auth + Storage + RLS
   │ private storage, import rows, draft rows
   ▼
 Node PDF Worker
-  │ render pages + Cohere Parse 5 OCR + parsers
+  │ extraction/OCR → parser → import gate → question risks → optional AI repair
   ▼
-Draft questions + answer-key summaries + visual review metadata
+Draft questions + answer-key evidence + Complete/Review/Failed state
 ```
 
-Nothing imported from a PDF is exposed to students until it is approved or intentionally generated into a practice/full test by an admin.
+Nothing imported from a PDF is exposed to students until an admin approves the question or approves an eligible import and generates a test.
 
 ## Directory Layout
 
 | Path | Purpose |
 | --- | --- |
 | `supabase/migrations/` | Database schema, RLS policies, buckets, seed data, and feature migrations. |
-| `supabase/functions/` | 13 Deno Edge Functions for admin and student APIs. |
+| `supabase/functions/` | 15 Deno Edge Functions for admin and student APIs. |
 | `supabase/functions/_shared/` | Shared auth, CORS, validation, Supabase clients, draft approval, and scoring helpers. |
 | `worker/` | Node/TypeScript ingestion worker with OCR, PDF rendering, parsing, and tests. |
 | `worker/src/` | Worker server, pipeline, parsers, answer-key extraction, OCR provider, and Supabase integration. |
@@ -54,6 +54,10 @@ Current migrations include:
 - `20260914000000_ocr_and_full_test.sql`: OCR/import metadata for full-test parsing.
 - `20260915000000_full_test_imports.sql`: generated full tests and scoped assignments.
 - `20260916000000_answer_key_status.sql`: import/test answer-key completeness fields.
+- `20260927010000_three_state_ingestion_review.sql`: import and draft deterministic review, AI repair revisions, and three-state review data.
+- `20260927020000_import_level_approval.sql` and `20260927030000_serialize_import_approval.sql`: admin import approval and concurrent-edit protection.
+- `20260928000000_draft_question_display_order.sql`: assigned module, consecutive editorial positions, and transactional editor saves.
+- `20260928010000_validate_assigned_module_counts.sql`: final 27/27/22/22 full-test counts at import approval.
 
 Avoid `supabase db reset` once useful local data exists. Apply new migrations intentionally and keep `supabase_migrations.schema_migrations` accurate.
 
@@ -171,10 +175,11 @@ Live PDF processing uses Cohere Parse 5 as the OCR/parser input path.
 4. Parse output is reconstructed into ordered page text. Tables and figures are recorded as visual metadata.
 5. Parsers run in this order: question-bank parser, full-test parser, scraper parser, legacy parser.
 6. The worker matches answer keys using module-scoped keys first, then global/inferred keys where safe.
-7. Drafts are stored with statuses such as `needs_review`, `has_suggested_key`, and `missing_key`.
-8. Import-level reports record module completeness, OCR failures, billed Parse pages, visual pages, warnings, timings, and answer-key status.
-9. Page images and cropped stimulus assets are stored in `question-assets` when visual review is needed.
-10. Admins review, edit, crop, approve, reject, generate practice sets, or generate a full test from the import.
+7. Drafts are saved with automatic assigned-module positions, source numbering kept separately, answer suggestions, visual metadata, and parser diagnostics.
+8. The automatic import gate marks structurally invalid imports **Failed** and stops AI work. Full tests require 98 questions in four modules of 27/27/22/22; question banks and section tests use their own structure. Nonblocking OCR, parser, and key warnings appear above the review queues.
+9. Question-level checks put clean drafts in **Complete**, major-risk drafts in human **Review**, and minor-only-risk drafts in the optional AI queue. Unknown parser flags require human review. Without `COHERE_REVIEW_API_KEY`, minor-risk drafts go to Review directly.
+10. When enabled, multimodal AI uses source images, OCR text, draft content, and answer-key evidence for validated high-confidence repairs. Its output remains in human Review. The reviewer can inspect source images and AI revisions, edit content and crop, and change the assigned module or insertion position.
+11. Admins approve Review drafts individually. Once every draft is Complete with an answer and confirmed visual crop, **Approve Import** approves the import and generates a test. Final assigned-module counts are checked for full tests, and generated tests use saved assigned order. Placement is locked after generation.
 
 The worker supports multiple Cohere keys. It collects `COHERE_API_KEYS`, `COHERE_API_KEY`, and `COHERE_API_KEY_2` through `COHERE_API_KEY_32`, dedupes them, and rotates on quota/rate-limit/timeout or after `COHERE_KEY_PAGE_CAP` billed pages.
 
@@ -202,8 +207,9 @@ All application routes expect `Authorization: Bearer <user JWT>`. Admin routes r
 | `admin-students` | `GET /`, `POST /`, `GET /{id}`, `PATCH /{id}`, `DELETE /{id}`, `GET /{id}/attempts/{attemptId}`, `POST /{id}/reset-password`, `POST /{id}/toggle-active` | Student roster, per-student attempts/review, password-confirmed permanent deletion, and Auth admin management. |
 | `admin-questions` | `GET /`, `GET /{id}`, `POST /`, `PATCH /{id}`, `DELETE /{id}` | Question bank CRUD with choices, passages, metadata, answers, explanations, and stimulus asset paths. |
 | `admin-tests` | `GET /`, `GET/PATCH /{id}`, `POST /`, `POST /{id}/sections`, `PATCH/DELETE /{id}/sections/{sectionId}`, `POST /{id}/modules`, `PATCH/DELETE /{id}/modules/{moduleId}`, `POST/PATCH/DELETE /{id}/questions/{linkId?}`, `POST /{id}/publish`, `POST /{id}/assign`, `POST /{id}/assignees` | Full test builder and assignments. Assignment scopes include full test, Reading/Writing, Math, and custom modules. |
-| `admin-pdf-imports` | `GET /`, `GET /{id}`, `POST /`, `PATCH /{id}`, `POST /{id}/process`, `POST /{id}/generate-test`, `GET/PATCH /{id}/drafts/{draftId}`, `POST /{id}/drafts/{draftId}/approve`, `POST /{id}/drafts/{draftId}/reject` | Import registration, worker triggering, draft review, stimulus URL signing, and generated full tests. |
+| `admin-pdf-imports` | `GET /`, `GET /{id}`, `POST /`, `PATCH /{id}`, `POST /{id}/process`, `POST /{id}/approve-import`, `POST /{id}/generate-test`, `GET/PATCH /{id}/drafts/{draftId}`, `PUT /{id}/drafts/{draftId}/editor`, `POST /{id}/drafts/{draftId}/approve`, `POST /{id}/drafts/{draftId}/reject` | Import registration, automatic review, transactional draft editor/placement, human approval, and generated tests. |
 | `admin-practice` | `GET /`, `GET /{id}`, `POST /`, `POST /from-import`, `PATCH /{id}`, `POST /{id}/questions`, `DELETE /{id}/questions/{linkId}` | Practice sets are published `tests` with `kind = 'practice'` and one module timer. |
+| `admin-practice-assignments` | `GET/POST /`, `GET /{batchId}`, `GET /{batchId}/attempts/{attemptId}`, `POST /{batchId}/release` | Scoped practice assignments, release, and result review. |
 | `admin-progress` | `GET /students`, `GET /students/{id}`, `GET /attempts/{id}` | Student progress and attempt detail views. |
 | `admin-vocab` | `GET/POST /decks`, `GET/PATCH/DELETE /decks/{deckId}`, `GET/POST /decks/{deckId}/cards`, `POST /decks/{deckId}/cards/import`, `PATCH/DELETE /decks/{deckId}/cards/{cardId}`, `GET/POST /decks/{deckId}/assignments` | Admin-owned vocabulary decks, card import, and student assignment. |
 | `student-tests` | `GET /` | Lists published public tests plus tests assigned to the student, honoring assignment scopes. |
@@ -211,6 +217,7 @@ All application routes expect `Authorization: Bearer <user JWT>`. Admin routes r
 | `student-responses` | `POST /`, `POST /bulk` | Saves active-module answers, marked-for-review state, eliminated choices, notes, and highlights. |
 | `student-submit` | `POST /{attemptId}` | Scores multiple-choice and typed answers, writes score rows, and marks assignment completion. |
 | `student-scores` | `GET /`, `GET /{attemptId}` | Score history and detailed per-question review with signed stimulus image URLs. |
+| `student-profile` | `GET/POST /` | Student profile read and submission. |
 | `student-vocab` | `GET /`, `POST/PATCH/DELETE /decks/{id?}`, `GET /decks/{deckId}/cards`, `POST/PATCH/DELETE /cards/{id?}`, `POST /cards/import`, `GET /study`, `GET /sprint`, `POST /review` | Student-owned and assigned decks, bulk import, SM-2 review, sprint mode, dashboard. |
 
 ## Verification
@@ -222,6 +229,7 @@ Run the relevant checks after starting the local Supabase stack. Some E2E suites
 cd backend
 deno check supabase/functions/**/*.ts
 deno test supabase/functions/_shared/scoring_test.ts
+deno test supabase/functions/_shared/validation_test.ts
 
 # Core API E2E
 powershell -ExecutionPolicy Bypass -File scripts\e2e.ps1
@@ -252,6 +260,8 @@ PowerShell 5.1 note: `npx supabase status -o env` may emit non-fatal stderr abou
 ## Deployment
 
 ### Supabase Cloud
+
+Staging is the local working tree connected to Cloud project `sat-website-staging` (`wgkggknyndgaoyazdhdf`). Production is the GitHub `master` push with Cloudflare Pages plus Supabase project `sat-practice` (`ygqndcgpbtmewzkruyuq`). The repository workflow applies migrations before deploying production Edge Functions; verify the project reference before manual cloud operations.
 
 ```powershell
 cd backend
@@ -293,4 +303,4 @@ Set Supabase `WORKER_URL` to the public worker URL so imports can notify it. Kee
 - Students cannot self-register.
 - Admin APIs enforce role checks before privileged operations.
 - Worker endpoints that mutate imports require `WORKER_AUTH_TOKEN`.
-- PDF-derived answer keys are suggestions until admin review. Generated tests preserve complete/partial/missing answer-key status.
+- PDF-derived answer keys are draft suggestions until individual human approval or admin import approval. AI repair never approves questions. Generated tests preserve answer-key status.

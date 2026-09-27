@@ -57,6 +57,7 @@ src/
 ├── components/
 │   ├── AccentSwitcher.tsx          Accent color selector
 │   ├── CropImageModal.tsx          Client-side crop tool for stimulus images
+│   ├── ImportStatus.tsx            Shared PDF import status badge
 │   ├── ThemeToggle.tsx             Light/dark theme control
 │   └── ui.tsx                      Shared Button, Modal, Spinner, EmptyState, helpers
 ├── lib/
@@ -71,7 +72,6 @@ src/
 │   ├── LoginPage.tsx               Role-aware login
 │   ├── admin/
 │   │   ├── AdminLayout.tsx         Admin shell/navigation
-│   │   ├── AdminDashboard.tsx      Overview landing page
 │   │   ├── StudentsPage.tsx        Roster, Manage, password-confirmed delete
 │   │   ├── StudentDetailPage.tsx   Per-student attempts and answer review
 │   │   ├── ImportsPage.tsx         PDF import list/upload/status
@@ -90,6 +90,7 @@ src/
 │   │   └── AdminVocabDeckPage.tsx  Cards, import, assignments
 │   └── student/
 │       ├── StudentLayout.tsx       Student shell/navigation/theme controls
+│       ├── StudentProfilePage.tsx  Student profile submission/status
 │       ├── StudentTestsPage.tsx    Available tests and attempts
 │       ├── PracticePage.tsx        Available practice sets
 │       ├── PracticeStartPage.tsx   Practice start screen
@@ -120,6 +121,7 @@ Student routes:
 | Path | Component | Notes |
 | --- | --- | --- |
 | `/student/tests` | `StudentTestsPage` | Published public tests and assigned tests. |
+| `/student/profile` | `StudentProfilePage` | Submit profile details and see approval status. |
 | `/student/practice` | `PracticePage` | Published practice sets. |
 | `/student/results` | `ResultsPage` | Graded attempt history. |
 | `/student/scores/:attemptId` | `ScoreReportPage` | Full review for one graded attempt. |
@@ -127,15 +129,15 @@ Student routes:
 | `/student/vocabulary/decks/:deckId` | `DeckCards` | Cards for one deck. |
 | `/student/vocabulary/study` | `StudySession` | Scheduled review. |
 | `/student/vocabulary/sprint` | `SprintSession` | Unscheduled sprint practice. |
-| `/student/tests/:testId/start` | `TestStartPage` | Full test confirmation. |
-| `/student/practice/:testId/start` | `PracticeStartPage` | Practice set confirmation. |
-| `/student/attempts/:attemptId/session` | `TestSessionPage` | Active testing UI. |
+| `/student/tests/:testId/start` | `TestStartPage` | Full test confirmation; requires an approved student profile. |
+| `/student/practice/:testId/start` | `PracticeStartPage` | Practice set confirmation; requires an approved student profile. |
+| `/student/attempts/:attemptId/session` | `TestSessionPage` | Active testing UI; requires an approved student profile. |
 
 Admin routes:
 
 | Path | Component | Notes |
 | --- | --- | --- |
-| `/admin` | `AdminDashboard` | Admin overview. |
+| `/admin` | redirect | Opens `/admin/students`, including after admin login. |
 | `/admin/students` | `StudentsPage` | Create, Manage, reset password, toggle active, password-confirmed delete. |
 | `/admin/students/:studentId` | `StudentDetailPage` | All attempts with scores and answer review. |
 | `/admin/imports` | `ImportsPage` | Register/upload PDF imports and view status. |
@@ -193,10 +195,11 @@ All role-sensitive operations are still enforced server-side in Edge Functions. 
 ### Admin Imports
 
 - PDF imports list status, draft counts, OCR/parser reports, and answer-key completeness.
+- The review page shows import-level structural failures or warnings and Complete, Review, and Failed question queues. Deterministic checks run automatically; optional AI repair handles minor-risk drafts when a review key is configured.
 - Import detail pages page through large draft sets instead of loading every draft at once.
-- Drafts can be edited before approval, including prompt, choices, metadata, answers, and stimulus image path.
+- Drafts can be edited before approval, including prompt, passage, choices, metadata, answers, and stimulus images. Opening a question shows its assigned SAT module and position; saving an occupied insertion position shifts neighboring questions while the source number stays unchanged.
 - Visual questions can be reviewed with signed image URLs and cropped through `CropImageModal`.
-- Admins can generate a full test from an import. Generated tests preserve module structure and answer-key status.
+- Admins approve Review questions individually. When all questions are Complete with answers and confirmed visual crops, Approve Import approves and generates a test in saved assigned-module order. Full tests must finish with 27/27/22/22 module counts.
 
 ### Admin Vocabulary
 

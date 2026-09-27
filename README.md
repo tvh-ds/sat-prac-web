@@ -1,6 +1,6 @@
 # SAT Practice Platform
 
-A self-hosted SAT practice platform for schools, tutors, and private study. It includes a student testing experience, an admin console, a question bank, vocabulary study, and a PDF import pipeline for turning SAT-style PDFs into reviewable drafts.
+A SAT practice platform for schools, tutors, and private study. It includes a student testing experience, an admin console, a question bank, vocabulary study, and a multi-layer PDF ingestion pipeline that turns SAT-style PDFs into auditable question drafts.
 
 This is a practice-only app. It does not implement proctoring, College Board integrations, or official score reporting.
 
@@ -10,7 +10,7 @@ This is a practice-only app. It does not implement proctoring, College Board int
 | --- | --- |
 | Frontend | React 18, Vite, TypeScript, React Router, Supabase JS (`frontend/`) |
 | Backend | Supabase Postgres, Auth, Storage, RLS, Deno Edge Functions (`backend/supabase/`) |
-| Worker | Node, TypeScript, Express, pdfjs-dist, MuPDF, Cohere Parse 5 OCR (`backend/worker/`) |
+| Worker | Node, TypeScript, Express, pdfjs-dist, MuPDF, Cohere Parse 5 OCR, optional Cohere multimodal review (`backend/worker/`) |
 | Scripts | PowerShell E2E suites and Node/TS provisioning utilities (`backend/scripts/`) |
 | Data corpus | Local SAT PDFs, OCR text, and parser JSON outputs under `Tests Unparsed/` |
 
@@ -25,7 +25,7 @@ This is a practice-only app. It does not implement proctoring, College Board int
 ├── backend/
 │   ├── supabase/
 │   │   ├── migrations/       Database schema, RLS, seeds, feature migrations
-│   │   └── functions/        13 Deno Edge Functions
+│   │   └── functions/        15 Deno Edge Functions
 │   ├── worker/               PDF ingestion and OCR/parser worker
 │   └── scripts/              Provisioning and E2E checks
 ├── Tests Unparsed/           Local PDF/OCR corpus used by the parser workflow
@@ -40,6 +40,7 @@ Generated and installed artifacts such as `frontend/dist/`, `node_modules/`, and
 ### Student App
 
 - Role-gated login and student navigation.
+- Student profile submission and approval gate before starting tests or practice.
 - Bluebook-style full test sessions with timers, module flow, passage/question split, answer saving, choice elimination, mark-for-review, question grid, review screen, and auto-submit.
 - Practice sets built by admins from question-bank items or PDF import drafts.
 - Score reports with per-question review, section/domain summaries, filters, explanations, selected answers, typed answers, and visual stimulus images when present.
@@ -48,25 +49,32 @@ Generated and installed artifacts such as `frontend/dist/`, `node_modules/`, and
 
 ### Admin Console
 
-- Student management, including account creation, profile updates, password reset, and active/inactive toggling.
+- Student management, including account creation, profile approval and updates, password reset, and active/inactive toggling.
 - Question bank CRUD with passages, choices, metadata, correct answers, explanations, and stimulus image support.
 - Full test builder with sections, modules, ordered question links, publishing, assignment support, and generated tests from imports.
 - PDF imports with upload registration, worker processing, page text, draft review, answer-key status, visual warnings, crop/edit stimulus flow, approve/reject/edit actions, and one-click full-test generation.
 - Practice set creation from existing questions or selected import drafts.
 - Admin vocabulary deck management, card import, archive/delete, and student assignment.
 - Progress views for students and attempts.
+- The admin home route opens Students; there is no separate dashboard page.
 
-### PDF Import Pipeline
+### Multi-layer PDF Ingestion Pipeline
 
-1. Admin uploads a PDF into the private Supabase Storage bucket.
-2. The `admin-pdf-imports` edge function registers an import row and notifies the worker when `WORKER_URL` is configured.
-3. The worker renders each page, sends it through Cohere Parse 5 OCR, falls back to selectable text on per-page failures, and stores extracted page text.
-4. Parsers classify the document as a question-bank export, full test, scraper-format test, or legacy question list.
-5. Draft questions are created with module names, positions, answer-key suggestions, visual stimulus markers, and import-level parser reports.
-6. Admins review drafts before anything reaches the question bank.
-7. Admins can generate a full test from an import; drafts are approved as needed and linked into sections/modules using detected SAT module structure.
+```text
+Private PDF upload → page extraction / OCR → SAT parser + answer-key matching
+  → import-level deterministic gate → question-level deterministic risks
+  → optional AI repair of minor-risk questions → human review where needed
+  → Approve Import → generated test
+```
 
-The worker requires Cohere Parse credentials for normal PDF ingestion. Saved `post_ocr` text under `Tests Unparsed/` can also be imported without new Parse calls through worker helper scripts.
+1. **Extraction and parsing:** The worker extracts selectable text, uses Cohere Parse 5 OCR for pages that need it, and records page text, visual evidence, parser diagnostics, module identity, and answer-key matches. It creates drafts with an automatic initial position within each assigned module. The source module and printed question number remain separate provenance fields.
+2. **Import-level deterministic gate:** A full test must have 98 readable questions distributed 27/27/22/22 across the four SAT modules, with unambiguous module assignments and no duplicate identities within a module. A structural failure marks the import and its drafts **Failed**, stops AI review, and requires **Full Reprocess**. Question-bank and section-test imports are not subject to the 98-question rule. Lesser OCR, parser, and answer-key warnings remain visible above the questions.
+3. **Question-level deterministic review:** Each draft is checked for source evidence, required answer, prompt and choice quality, parser flags, answer alignment, and visual/crop state. No-risk drafts become **Complete** automatically. Major or unrecognized risks go directly to human **Review**. Minor risks are eligible for AI repair only when no major risk is present.
+4. **Conditional AI repair:** With `COHERE_REVIEW_API_KEY` configured, the worker reviews eligible drafts using OCR text, source-page images, draft content, and answer-key evidence. It applies a proposed repair only at confidence `≥ 0.80` after field and evidence validation; other findings remain suggestions. Every AI-reviewed draft still goes to human **Review**; provider failure also leaves it there. Without the key, deterministic review still runs and those minor-risk drafts wait for human review. AI never approves or publishes questions.
+5. **Human review and approval:** The import page shows **Complete**, **Review**, and **Failed** queues. Admins inspect source images, compare AI changes with parser originals, edit content and crops, and approve Review drafts individually. The editor lets them change the assigned module and insertion position; neighboring positions shift while PDF source numbering remains intact. A module change requires human approval again. Placement cannot change after test generation.
+6. **Import approval and generation:** When every draft is Complete, has a usable answer, and has a confirmed visual crop where required, **Approve Import** approves the drafts and assembles a test. Full-test module counts are checked again against the final assigned modules. Automated Complete drafts do not need individual sign-off, but import approval is an admin action. Only approved drafts can enter the generated test.
+
+The worker requires Cohere Parse credentials for normal PDF ingestion. Saved `post_ocr` text under `Tests Unparsed/` can also be imported without new Parse calls through worker helper scripts. The optional AI-review key is separate from the Parse key; see [`backend/README.md`](backend/README.md) for worker configuration and API details.
 
 ## Quick Start
 
@@ -102,6 +110,8 @@ SUPABASE_URL=http://127.0.0.1:54321
 SUPABASE_SERVICE_ROLE_KEY=<from supabase status>
 WORKER_AUTH_TOKEN=<local shared secret>
 COHERE_API_KEY=<cohere parse key>
+# Optional: enables AI repair for minor-risk drafts; deterministic review works without it.
+# COHERE_REVIEW_API_KEY=<cohere review key>
 # Optional: COHERE_API_KEYS=key1,key2,key3
 # Optional: COHERE_KEY_PAGE_CAP=1000
 OCR_PROVIDER=cohere
@@ -174,8 +184,9 @@ Admin functions:
 - `admin-students`: create, list, update, reset passwords, and toggle active state.
 - `admin-questions`: question bank CRUD.
 - `admin-tests`: test CRUD, publish/archive, assignment, and builder support.
-- `admin-pdf-imports`: PDF import registration, worker triggering, draft review, and full-test generation.
+- `admin-pdf-imports`: PDF import registration, processing, review queues, draft editing/placement, approval, and full-test generation.
 - `admin-practice`: practice set creation and management.
+- `admin-practice-assignments`: practice assignments and result access.
 - `admin-progress`: student and attempt analytics.
 - `admin-vocab`: admin vocabulary decks, cards, imports, and assignments.
 
@@ -186,6 +197,7 @@ Student functions:
 - `student-responses`: save answers, review marks, eliminated choices, notes, and highlights.
 - `student-submit`: score an attempt.
 - `student-scores`: score list and detailed review.
+- `student-profile`: student profile reads and updates.
 - `student-vocab`: student deck, card, import, study, sprint, review, and dashboard workflows.
 
 ## Verification
@@ -201,6 +213,7 @@ npm run build
 cd ..\backend
 deno check supabase/functions/**/*.ts
 deno test supabase/functions/_shared/scoring_test.ts
+deno test supabase/functions/_shared/validation_test.ts
 
 # Live API and UI E2E suites
 powershell -ExecutionPolicy Bypass -File scripts\e2e.ps1
@@ -220,7 +233,10 @@ npm run typecheck
 npm run verify:corpus
 ```
 
-## Deployment Notes
+## Environments and Deployment
+
+- **Staging** means local, unpushed code connected to Supabase Cloud project `sat-website-staging` (`wgkggknyndgaoyazdhdf`). Local frontend and worker processes use that project for integration tests. Staging does not trigger GitHub or Cloudflare deployment.
+- **Production** means a push to GitHub `master`, Cloudflare Pages deployment of the frontend, and migrations plus Edge Functions deployed to Supabase Cloud project `sat-practice` (`ygqndcgpbtmewzkruyuq`). The [Supabase workflow](.github/workflows/deploy-supabase.yml) runs on `master` pushes that change `backend/supabase/**`; Cloudflare deploys through its GitHub integration.
 
 - Supabase migrations create the schema, RLS policies, seed data, storage buckets, vocabulary tables, import metadata, full-test generation metadata, and answer-key status fields.
 - Edge Functions require Supabase project secrets for any deployed environment. Set `WORKER_URL` and `WORKER_AUTH_TOKEN` if imports should notify a hosted worker directly.
@@ -232,11 +248,12 @@ npm run verify:corpus
 - Students cannot self-register. Admins create student accounts.
 - Role checks are enforced in Edge Functions and backed by `profiles.role`.
 - Tables use RLS; privileged writes use the Supabase service role inside trusted backend code only.
-- PDF-derived answers are suggestions until an admin reviews and approves the draft.
-- Import-generated tests are assembled from approved or auto-approved drafts, but still preserve answer-key status so incomplete keys are visible.
+- PDF-derived answers remain draft suggestions until individual human approval or admin import approval. AI repair alone never approves a draft.
+- Import-generated tests contain approved drafts with Complete review state and confirmed visual crops; answer-key status remains visible for audit.
 
 ## Documentation
 
 - [`frontend/README.md`](frontend/README.md): frontend setup, routing, UI systems, and verification.
 - [`backend/README.md`](backend/README.md): Supabase schema/functions, worker setup, API table, ingestion pipeline, and deployment.
+- [`docs/evals/ai-content-ingestion-evaluation.md`](docs/evals/ai-content-ingestion-evaluation.md): ingestion metric definitions and an unmeasured results template.
 - [`DESIGN.md`](DESIGN.md): visual design guidance for the app.
