@@ -7,7 +7,7 @@ import { CropImageModal } from "../../components/CropImageModal";
 import MathText from "../../components/MathText";
 import KeyStatusBadge, { keyStatusInfo } from "../../components/KeyStatusBadge";
 import { polishTestTitle, EXPECTED_MODULE_COUNTS } from "../../lib/testTitle";
-import { ImportStatus } from "./AdminDashboard";
+import ImportStatus from "../../components/ImportStatus";
 
 export default function ImportDetailPage() {
   const { importId } = useParams<{ importId: string }>();
@@ -135,6 +135,25 @@ export default function ImportDetailPage() {
     setDetails((prev) => ({ ...prev, [draft.id]: draft }));
     setSelectedId(draft.id);
     void loadPage(0);
+  }
+
+  async function refreshAfterEditorSave(moduleName: string, position: number) {
+    const offset = Math.floor((position - 1) / draftLimit) * draftLimit;
+    setDraftStatus(null);
+    setReviewState(null);
+    setDraftModule(moduleName);
+    setDraftOffset(offset);
+    draftStatusRef.current = null;
+    reviewStateRef.current = null;
+    draftModuleRef.current = moduleName;
+    offsetRef.current = offset;
+    await loadPage(offset);
+    const selected = selectedRef.current;
+    if (selected) {
+      const token = await getToken();
+      const response = await fnJson<{ draft: DraftQuestion }>(`admin-pdf-imports/${importId}/drafts/${selected}`, { token });
+      setDetails((previous) => ({ ...previous, [selected]: response.draft }));
+    }
   }
 
   async function approveImport() {
@@ -519,8 +538,8 @@ export default function ImportDetailPage() {
               >
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 6 }}>
                 <strong>
-                  Q{d.source_question_number} · {d.section === "math" ? "Math" : "Reading & Writing"}
-                  {d.source_module_name ? ` · ${d.source_module_name}` : ""}
+                  Position {d.display_order} · Source Q{d.source_question_number ?? "?"} · {d.section === "math" ? "Math" : "Reading & Writing"}
+                  {d.assigned_module_name ? ` · ${d.assigned_module_name}` : ""}
                 </strong>
                 <div style={{ display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
                   {d.has_visual_stimulus && <Pill tone="amber">Visual</Pill>}
@@ -538,7 +557,9 @@ export default function ImportDetailPage() {
                   <DraftEditor
                     key={d.id}
                     draft={selectedDetail}
-                    onSaved={() => void refresh()}
+                    onSaved={(moduleName, position) => moduleName && position ? refreshAfterEditorSave(moduleName, position) : refresh()}
+                    moduleSummary={moduleSummary}
+                    placementLocked={Boolean(importInfo.generated_test_id)}
                     onReject={() => setRejectId(d.id)}
                     busy={busy}
                     setBusy={setBusy}
@@ -814,13 +835,17 @@ function ReviewStateBadge({ state }: { state: IngestionReviewState }) {
 function DraftEditor({
   draft,
   onSaved,
+  moduleSummary,
+  placementLocked,
   onReject,
   busy,
   setBusy,
   onError,
 }: {
   draft: DraftQuestion;
-  onSaved: () => void;
+  onSaved: (moduleName?: string, position?: number) => Promise<void>;
+  moduleSummary: ModuleSummary[];
+  placementLocked: boolean;
   onReject: () => void;
   busy: boolean;
   setBusy: (b: boolean) => void;
@@ -833,6 +858,8 @@ function DraftEditor({
   const [domain, setDomain] = useState(draft.domain ?? "");
   const [skill, setSkill] = useState(draft.skill ?? "");
   const [explanation, setExplanation] = useState(draft.explanation ?? "");
+  const [assignedModule, setAssignedModule] = useState(draft.assigned_module_name as (typeof IMPORT_MODULES)[number]);
+  const [positionInput, setPositionInput] = useState(String(draft.display_order));
   const [cropOpen, setCropOpen] = useState(false);
   const [sourceOpen, setSourceOpen] = useState(false);
   const [showFull, setShowFull] = useState(false);
@@ -841,6 +868,10 @@ function DraftEditor({
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => { setShowFull(false); setCropOpen(false); setSourceOpen(false); }, [draft.id]);
+  useEffect(() => {
+    setAssignedModule(draft.assigned_module_name as (typeof IMPORT_MODULES)[number]);
+    setPositionInput(String(draft.display_order));
+  }, [draft.id, draft.assigned_module_name, draft.display_order]);
 
   useEffect(() => {
     if (!imageFile) {
@@ -977,7 +1008,10 @@ function DraftEditor({
   }
 
   /** Persist every editable field so approval publishes what the admin sees. */
-  async function saveDraft() {
+  async function saveDraft(): Promise<number> {
+    if (!/^[1-9]\d*$/.test(positionInput)) throw new Error("Position must be a whole number starting at 1.");
+    const position = Number(positionInput);
+    if (!Number.isSafeInteger(position)) throw new Error("Position is too large.");
     const token = await getToken();
     let uploadedPath: string | null = null;
     try {
@@ -999,21 +1033,28 @@ function DraftEditor({
           stimulus_crop_status: "pending",
         };
       }
-      await fnJson(`admin-pdf-imports/${draft.pdf_import_id}/drafts/${draft.id}`, {
-        method: "PATCH",
+      await fnJson(`admin-pdf-imports/${draft.pdf_import_id}/drafts/${draft.id}/editor`, {
+        method: "PUT",
         token,
         body: {
+          assigned_module_name: assignedModule,
+          display_order: position,
+          expected_updated_at: draft.updated_at,
           prompt,
           passage_text: passage.trim() ? passage : null,
           suggested_answer: correct || null,
           domain: domain || null,
           skill: skill || null,
           explanation: explanation || null,
-          ...(draft.question_type === "multiple_choice" && { choices: choices.map((c, i) => ({ label: c.label, text: c.text, position: i + 1 })) }),
+          ...(draft.question_type === "multiple_choice" && JSON.stringify(choices.map((c, i) => ({ label: c.label, text: c.text, position: i + 1 }))) !==
+            JSON.stringify(draft.choices.map((c, i) => ({ label: c.label, text: c.text, position: i + 1 }))) && {
+            choices: choices.map((c, i) => ({ label: c.label, text: c.text, position: i + 1 })),
+          }),
           ...imageUpdates,
         },
       });
       setImageFile(null);
+      return position;
     } catch (err) {
       if (uploadedPath) await supabase.storage.from("question-assets").remove([uploadedPath]).catch(() => undefined);
       throw err;
@@ -1024,9 +1065,9 @@ function DraftEditor({
     setBusy(true);
     setSavedNote(null);
     try {
-      await saveDraft();
+      const position = await saveDraft();
       setSavedNote(imageFile ? "Draft and image saved. Review and confirm the crop before approval." : "Draft saved.");
-      onSaved();
+      await onSaved(assignedModule, position);
     } catch (e) {
       onError(e instanceof Error ? e.message : "Save failed");
     } finally {
@@ -1039,10 +1080,10 @@ function DraftEditor({
     try {
       // Save first: approval reads the draft row, so edited prompt, passage,
       // choices, and key must be persisted before publishing.
-      await saveDraft();
+      const position = await saveDraft();
       if (imageFile) {
         setSavedNote("Image saved. Review and confirm its crop before approval.");
-        onSaved();
+        await onSaved(assignedModule, position);
         return;
       }
       const token = await getToken();
@@ -1051,7 +1092,7 @@ function DraftEditor({
         token,
         body: {},
       });
-      onSaved();
+      await onSaved(assignedModule, position);
     } catch (e) {
       onError(e instanceof Error ? e.message : "Approve failed");
     } finally {
@@ -1069,8 +1110,7 @@ function DraftEditor({
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
         <h3 style={{ margin: 0, fontSize: 15 }}>
-          Q{draft.source_question_number} — {draft.section === "math" ? "Math" : "Reading & Writing"} ({draft.question_type === "multiple_choice" ? "Multiple choice" : "Student-produced"})
-          {draft.source_module_name ? <span className="muted" style={{ fontSize: 12.5 }}> · {draft.source_module_name}</span> : null}
+          Source Q{draft.source_question_number ?? "?"} — {draft.section === "math" ? "Math" : "Reading & Writing"} ({draft.question_type === "multiple_choice" ? "Multiple choice" : "Student-produced"})
         </h3>
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           {(draft.review_source_image_url ?? draft.stimulus_source_image_url) && (
@@ -1080,6 +1120,29 @@ function DraftEditor({
           <DraftStatus d={draft} />
         </div>
       </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(220px, 1fr) minmax(120px, 180px)", gap: 12, marginBottom: 14 }}>
+        <div>
+          <label className="field-label" htmlFor={`draft-module-${draft.id}`}>Assigned module</label>
+          <select id={`draft-module-${draft.id}`} className="select" value={assignedModule} disabled={busy || placementLocked}
+            onChange={(event) => {
+              const nextModule = event.target.value as (typeof IMPORT_MODULES)[number];
+              setAssignedModule(nextModule);
+              setPositionInput(String((moduleSummary.find((module) => module.module === nextModule)?.total ?? 0) + 1));
+            }}>
+            {IMPORT_MODULES.map((module) => <option key={module} value={module}>{module}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="field-label" htmlFor={`draft-position-${draft.id}`}>Position in module</label>
+          <input id={`draft-position-${draft.id}`} className="input" type="number" min={1} step={1}
+            value={positionInput} disabled={busy || placementLocked}
+            onChange={(event) => setPositionInput(event.target.value)} />
+        </div>
+      </div>
+      <p className="muted" style={{ margin: "-6px 0 12px", fontSize: 12 }}>
+        Source: {draft.source_module_name ?? "module not identified"}, Q{draft.source_question_number ?? "?"}. Changing the assigned module requires human approval.
+      </p>
 
       <label className="field-label">Prompt</label>
       <textarea className="textarea" rows={4} value={prompt} onChange={(e) => setPrompt(e.target.value)} />

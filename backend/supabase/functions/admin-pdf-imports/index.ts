@@ -1,7 +1,7 @@
 import { requireRole, HttpError, pathSegments } from "../_shared/auth.ts";
 import { serviceClient } from "../_shared/supabase.ts";
 import { corsHeaders, json, error } from "../_shared/cors.ts";
-import { pdfImportCreateSchema, approveDraftSchema, updateDraftSchema, manualImportDraftCreateSchema, aiFindingDecisionSchema } from "../_shared/validation.ts";
+import { pdfImportCreateSchema, approveDraftSchema, updateDraftSchema, saveDraftEditorSchema, manualImportDraftCreateSchema, aiFindingDecisionSchema } from "../_shared/validation.ts";
 import { approveDraft } from "../_shared/drafts.ts";
 import { moduleGroup, groupByModuleKey } from "../_shared/modules.ts";
 import { summarizePdfImportReadiness, type ImportReadinessDraft } from "../_shared/importReadiness.ts";
@@ -35,8 +35,8 @@ async function loadReviewSummary(svc: ReturnType<typeof serviceClient>, importId
     svc.from("ai_ingestion_review_jobs")
       .select("id,status,model,prompt_version,reviewed_drafts,failed_drafts,estimated_cost_usd,started_at,finished_at,error_category")
       .eq("pdf_import_id", importId).order("created_at", { ascending: false }).limit(1).maybeSingle(),
-    svc.from("draft_questions").select("review_state,status,suggested_answer,has_visual_stimulus,stimulus_crop_status").eq("pdf_import_id", importId),
-    svc.from("pdf_imports").select("deterministic_review_status").eq("id", importId).maybeSingle(),
+    svc.from("draft_questions").select("review_state,status,suggested_answer,has_visual_stimulus,stimulus_crop_status,assigned_module_name").eq("pdf_import_id", importId),
+    svc.from("pdf_imports").select("deterministic_review_status,text_quality").eq("id", importId).maybeSingle(),
   ]);
   if (jobErr) throw new HttpError(500, jobErr.message);
   if (routeErr) throw new HttpError(500, routeErr.message);
@@ -47,11 +47,29 @@ async function loadReviewSummary(svc: ReturnType<typeof serviceClient>, importId
     if (state && state in counts) counts[state] += 1;
   }
   const drafts = routes ?? [];
-  const canApproveImport = imp?.deterministic_review_status === "passed" && drafts.length > 0 && drafts.every((draft) =>
+  const assignedCountsValid = fullTestAssignedCountsError(imp?.text_quality, drafts) === null;
+  const canApproveImport = imp?.deterministic_review_status === "passed" && assignedCountsValid && drafts.length > 0 && drafts.every((draft) =>
     draft.review_state === "complete" && draft.status !== "rejected" && Boolean(draft.suggested_answer?.trim()) &&
     (!draft.has_visual_stimulus || draft.stimulus_crop_status === "confirmed")
   );
   return { current_job: job ?? null, state_counts: counts, total_questions: drafts.length, can_approve_import: canApproveImport };
+}
+
+const FULL_TEST_MODULE_COUNTS: Record<string, number> = {
+  "Reading and Writing Module 1": 27,
+  "Reading and Writing Module 2": 27,
+  "Math Module 1": 22,
+  "Math Module 2": 22,
+};
+
+function fullTestAssignedCountsError(quality: unknown, drafts: Array<{ assigned_module_name?: string | null }>): string | null {
+  if ((quality as { document_family?: string } | null)?.document_family !== "full_test") return null;
+  const counts = new Map<string, number>();
+  for (const draft of drafts) counts.set(draft.assigned_module_name ?? "", (counts.get(draft.assigned_module_name ?? "") ?? 0) + 1);
+  const mismatches = Object.entries(FULL_TEST_MODULE_COUNTS)
+    .filter(([module, expected]) => (counts.get(module) ?? 0) !== expected)
+    .map(([module, expected]) => `${module}: ${counts.get(module) ?? 0}/${expected}`);
+  return drafts.length !== 98 || mismatches.length > 0 ? `Full-test module counts must be 27/27/22/22 (${mismatches.join(", ")})` : null;
 }
 
 async function attachDraftStimulusUrls(svc: ReturnType<typeof serviceClient>, drafts: Array<Record<string, unknown>>): Promise<void> {
@@ -106,8 +124,9 @@ async function loadAllDrafts(svc: ReturnType<typeof serviceClient>, importId: st
       .from("draft_questions")
       .select(select)
       .eq("pdf_import_id", importId)
-      .order("page_number")
-      .order("source_question_number")
+      .order("section", { ascending: false })
+      .order("assigned_module_name")
+      .order("display_order")
       .order("id")
       .range(offset, offset + PAGE - 1);
     if (err) throw new HttpError(500, err.message);
@@ -234,20 +253,22 @@ Deno.serve(async (req) => {
 
         let query = svc
           .from("draft_questions")
-          .select("id, pdf_import_id, page_number, section, question_type, prompt, status, source_question_number, source_module_name, has_visual_stimulus, review_state, review_snapshot_hash, deterministic_risks, review_error_category, reviewed_at");
+          .select("id, pdf_import_id, page_number, section, question_type, prompt, status, source_question_number, source_module_name, assigned_module_name, display_order, has_visual_stimulus, review_state, review_snapshot_hash, deterministic_risks, review_error_category, reviewed_at");
         if (applyStatus) query = query.eq("status", status);
-        if (applyModule) query = query.eq("source_module_name", module);
+        if (applyModule) query = query.eq("assigned_module_name", module);
         if (applyReviewState) query = query.eq("review_state", reviewState);
         const { data: batch, error: sErr } = await query
           .eq("pdf_import_id", id)
-          .order("page_number")
-          .order("source_question_number")
+          .order("section", { ascending: false })
+          .order("assigned_module_name")
+          .order("display_order")
+          .order("id")
           .range(offset, offset + limit - 1);
         if (sErr) return error(sErr.message, 500);
 
         let countQuery = svc.from("draft_questions").select("id", { count: "exact", head: true });
         if (applyStatus) countQuery = countQuery.eq("status", status);
-        if (applyModule) countQuery = countQuery.eq("source_module_name", module);
+        if (applyModule) countQuery = countQuery.eq("assigned_module_name", module);
         if (applyReviewState) countQuery = countQuery.eq("review_state", reviewState);
         const { count: total, error: cErr } = await countQuery.eq("pdf_import_id", id);
         if (cErr) return error(cErr.message, 500);
@@ -258,13 +279,13 @@ Deno.serve(async (req) => {
         for (;;) {
           const { data: statusRows, error: stErr } = await svc
             .from("draft_questions")
-            .select("status, section, source_module_name, suggested_answer")
+            .select("status, section, assigned_module_name, suggested_answer")
             .eq("pdf_import_id", id)
             .range(stOffset, stOffset + PAGE - 1);
           if (stErr) return error(stErr.message, 500);
-          for (const row of (statusRows ?? []) as Array<{ status: string; section: string; source_module_name: string | null; suggested_answer: string | null }>) {
+          for (const row of (statusRows ?? []) as Array<{ status: string; section: string; assigned_module_name: string | null; suggested_answer: string | null }>) {
             draft_counts[row.status] = (draft_counts[row.status] ?? 0) + 1;
-            const group = moduleGroup(row.source_module_name, row.section);
+            const group = moduleGroup(row.assigned_module_name, row.section);
             moduleSummaryRows.push({ section: group.sectionType, module: group.label, status: row.status, with_key: !!row.suggested_answer });
           }
           if ((statusRows?.length ?? 0) < PAGE) break;
@@ -323,8 +344,10 @@ Deno.serve(async (req) => {
           .from("draft_questions")
           .select("*, choices:draft_question_choices(*), answer_keys:draft_answer_keys(*), review_findings:ai_ingestion_review_findings(*)")
           .eq("pdf_import_id", id)
-          .order("page_number")
-          .order("source_question_number")
+          .order("section", { ascending: false })
+          .order("assigned_module_name")
+          .order("display_order")
+          .order("id")
           .range(offset, offset + PAGE - 1);
         if (dErr) return error(dErr.message, 500);
         drafts.push(...((batch ?? []) as Array<Record<string, unknown>>));
@@ -549,6 +572,8 @@ Deno.serve(async (req) => {
       }
 
       const drafts = await loadAllDrafts(svc, id, "*, choices:draft_question_choices(*)");
+      const assignedCountError = fullTestAssignedCountsError(imp.text_quality, drafts);
+      if (assignedCountError) return error(assignedCountError, 422);
       const incomplete = drafts.filter((d) =>
         d.review_state !== "complete" || d.status === "rejected" || !String(d.suggested_answer ?? "").trim() ||
         (d.has_visual_stimulus && d.stimulus_crop_status !== "confirmed")
@@ -587,7 +612,9 @@ Deno.serve(async (req) => {
         testId = test.id;
 
         // Group by module key (Map, not Set — see _shared/modules.ts).
-        const groupedBySection = groupByModuleKey(usable);
+        const groupedBySection = groupByModuleKey(usable.map((draft) => ({
+          ...draft, source_module_name: draft.assigned_module_name,
+        })));
 
         const sectionOrder: Array<"reading_writing" | "math"> = groupedBySection.has("reading_writing") ? ["reading_writing"] : [];
         if (groupedBySection.has("math")) sectionOrder.push("math");
@@ -632,7 +659,7 @@ Deno.serve(async (req) => {
         const failed: Array<{ draft_id: string; question_number: number; reason: string }> = [];
         let linked = 0;
         for (const d of usable) {
-          const group = moduleGroup(d.source_module_name as string | null | undefined, d.section as string | null | undefined);
+          const group = moduleGroup(d.assigned_module_name as string | null | undefined, d.section as string | null | undefined);
           const moduleId = moduleIds.get(group.key);
           if (!moduleId) continue;
 
@@ -731,6 +758,31 @@ Deno.serve(async (req) => {
     if (seg[2] === "drafts" && seg.length >= 4) {
       const draftId = seg[3];
 
+      if (req.method === "PUT" && seg.length === 5 && seg[4] === "editor") {
+        const body = saveDraftEditorSchema.parse(await req.json());
+        const { assigned_module_name, display_order, expected_updated_at, ...patch } = body;
+        const updates: Record<string, unknown> = { ...patch };
+        if (updates.has_visual_stimulus === false) {
+          updates.stimulus_image_path = null;
+          updates.stimulus_source_image_path = null;
+          updates.stimulus_crop_rect = null;
+          updates.stimulus_crop_source = null;
+          updates.stimulus_crop_status = null;
+        }
+        const { error: saveErr } = await svc.rpc("save_import_draft_editor", {
+          p_import_id: id,
+          p_draft_id: draftId,
+          p_actor_id: ctx.user.id,
+          p_expected_updated_at: expected_updated_at,
+          p_module_name: assigned_module_name,
+          p_position: display_order,
+          p_patch: updates,
+        });
+        if (saveErr) return error(saveErr.message, 409);
+        await triggerAiReview(id).catch((cause) => console.error("AI reassessment enqueue failed", cause));
+        return json({ ok: true });
+      }
+
       if (req.method === "GET" && seg.length === 4) {
         const { data: draft, error: gErr } = await svc
           .from("draft_questions")
@@ -751,18 +803,28 @@ Deno.serve(async (req) => {
         if (importGate?.deterministic_review_status === "failed") return error("Questions from a structurally failed import cannot be approved", 409);
         const { data: draft, error: dErr } = await svc
           .from("draft_questions")
-          .select("id, pdf_import_id, has_visual_stimulus, stimulus_crop_status, question_id, source_module_name, section")
+          .select("id, pdf_import_id, has_visual_stimulus, stimulus_crop_status, question_id, assigned_module_name, section, review_state")
           .eq("id", draftId)
           .eq("pdf_import_id", id)
           .maybeSingle();
         if (dErr) return error(dErr.message, 500);
         if (!draft) return error("Draft not found", 404);
-        if (draft.question_id) return json({ ok: true, question_id: draft.question_id, already_approved: true });
-        if (draft.has_visual_stimulus && draft.stimulus_crop_status === "pending") {
+        if (body.section !== undefined && body.section !== draft.section) {
+          return error("Change the assigned module in the question editor to change its section", 422);
+        }
+        if (draft.has_visual_stimulus && draft.stimulus_crop_status !== "confirmed") {
           return error("Crop review required: confirm or adjust this visual draft's crop before approving", 422);
         }
+        if (draft.question_id) {
+          const { error: reviewedErr } = await svc.from("draft_questions").update({
+            status: "approved", review_state: "complete", review_route: "batch_ready",
+            human_review_mode: "individual", human_reviewed_by: ctx.user.id,
+            human_reviewed_at: new Date().toISOString(),
+          }).eq("id", draftId).eq("pdf_import_id", id);
+          if (reviewedErr) return error(reviewedErr.message, 500);
+          return json({ ok: true, question_id: draft.question_id, already_approved: true });
+        }
         const updates: Record<string, unknown> = {};
-        if (body.section !== undefined) updates.section = body.section;
         if (body.question_type !== undefined) updates.question_type = body.question_type;
         if (body.passage_text !== undefined) updates.passage_text = body.passage_text;
         if (body.domain !== undefined) updates.domain = body.domain;
@@ -777,7 +839,7 @@ Deno.serve(async (req) => {
         if (impErr) return error(impErr.message, 500);
         if (imp?.generated_test_id) {
           const sectionType = (body.section ?? draft.section) as string;
-          const group = moduleGroup(draft.source_module_name, sectionType);
+          const group = moduleGroup(draft.assigned_module_name, sectionType);
           const { data: sections, error: sectionErr } = await svc.from("test_sections")
             .select("id, section_type")
             .eq("test_id", imp.generated_test_id);
@@ -876,6 +938,7 @@ Deno.serve(async (req) => {
 
       if (req.method === "PATCH") {
         const body = updateDraftSchema.parse(await req.json());
+        if (body.section !== undefined) return error("Change the assigned module in the question editor to change its section", 422);
         const { prompt, choices, ...rest } = body;
         const updates: Record<string, unknown> = { ...rest };
         if (prompt !== undefined) updates.prompt = prompt;

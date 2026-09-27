@@ -451,6 +451,9 @@ export interface DraftQuestion {
   source_question_number: number;
   source_module_name?: string | null;
   source_module_position?: number | null;
+  assigned_module_name: string;
+  display_order: number;
+  updated_at: string;
   question_id?: string | null;
   choices: DraftChoice[];
   answer_keys: Array<{ id: string; detected_answer: string; confidence: number; status: string }>;
@@ -483,6 +486,8 @@ export interface DraftSummary {
   status: string;
   source_question_number: number;
   source_module_name?: string | null;
+  assigned_module_name: string;
+  display_order: number;
   has_visual_stimulus?: boolean;
   review_state?: IngestionReviewState | null;
   review_snapshot_hash?: string | null;

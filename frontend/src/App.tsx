@@ -16,7 +16,6 @@ const DeckCards = lazy(() => import("./pages/student/vocab/DeckCards"));
 const StudySession = lazy(() => import("./pages/student/vocab/StudySession"));
 const SprintSession = lazy(() => import("./pages/student/vocab/SprintSession"));
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
-const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const StudentsPage = lazy(() => import("./pages/admin/StudentsPage"));
 const StudentDetailPage = lazy(() => import("./pages/admin/StudentDetailPage"));
 const ImportsPage = lazy(() => import("./pages/admin/ImportsPage"));
@@ -121,7 +120,7 @@ export default function App() {
                 </RequireRole>
               }
             >
-              <Route index element={<AdminDashboard />} />
+              <Route index element={<Navigate to="students" replace />} />
               <Route path="students" element={<StudentsPage />} />
               <Route path="students/:studentId" element={<StudentDetailPage />} />
               <Route path="imports" element={<ImportsPage />} />

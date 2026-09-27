@@ -1,7 +1,7 @@
 import { Link, NavLink, Navigate, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
 import { Spinner } from "../../components/ui";
-import { LayoutDashboard, Users, FileUp, Database, ClipboardList, Layers, BookOpen, ClipboardCheck, LogOut } from "lucide-react";
+import { Users, FileUp, Database, ClipboardList, Layers, BookOpen, ClipboardCheck, LogOut } from "lucide-react";
 
 export default function AdminLayout() {
   const { user, profile, loading, signOut } = useAuth();
@@ -26,7 +26,6 @@ export default function AdminLayout() {
           <small>Admin console</small>
           SAT Practice
         </div>
-        {link("/admin", "Dashboard", LayoutDashboard, true)}
         {link("/admin/students", "Students", Users)}
         {link("/admin/imports", "PDF Imports", FileUp)}
         {link("/admin/questions", "Practice Question Bank", Database)}

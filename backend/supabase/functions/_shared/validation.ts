@@ -258,6 +258,20 @@ export const updateDraftSchema = z.object({
   choices: z.array(choiceSchema.partial().extend({ id: z.string().uuid().optional() })).optional(),
 });
 
+export const saveDraftEditorSchema = updateDraftSchema.extend({
+  assigned_module_name: z.enum([
+    "Reading and Writing Module 1", "Reading and Writing Module 2",
+    "Math Module 1", "Math Module 2",
+  ]),
+  display_order: z.number().int().min(1),
+  expected_updated_at: z.string().datetime(),
+  choices: z.array(z.object({
+    label: z.string().min(1).max(2),
+    text: z.string().trim().min(1),
+    position: z.number().int().min(1).max(6),
+  })).min(2).max(6).optional(),
+});
+
 export const aiFindingDecisionSchema = z.object({
   reason: z.string().trim().min(1).max(2000).optional(),
 });

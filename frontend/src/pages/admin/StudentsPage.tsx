@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import { Button, Modal, Pill, Spinner, fmtDate } from "../../components/ui";
 
@@ -92,7 +92,7 @@ export default function StudentsPage() {
               {filtered.length === 0 && (
                 <tr>
                   <td colSpan={6} className="muted" style={{ textAlign: "center", padding: 30 }}>
-                    No students found. <Link to="/admin">Create one from the dashboard?</Link>
+                    {search ? "No students match your search." : "No students yet. Use New Student to create one."}
                   </td>
                 </tr>
               )}

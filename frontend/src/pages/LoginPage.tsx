@@ -18,7 +18,7 @@ export default function LoginPage() {
     setBusy(true);
     try {
       const profile = await signIn(email, password);
-      navigate(profile?.role === "admin" ? "/admin" : "/student", { replace: true });
+      navigate(profile?.role === "admin" ? "/admin/students" : "/student", { replace: true });
     } catch (err) {
       const raw = err instanceof Error ? err.message : "Sign in failed";
       if (raw.toLowerCase().includes("failed to fetch") || raw.toLowerCase().includes("networkerror") || raw.toLowerCase().includes("fetch")) {
