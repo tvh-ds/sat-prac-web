@@ -264,7 +264,7 @@ export const saveDraftEditorSchema = updateDraftSchema.extend({
     "Math Module 1", "Math Module 2",
   ]),
   display_order: z.number().int().min(1),
-  expected_updated_at: z.string().datetime(),
+  expected_updated_at: z.string().datetime({ offset: true }),
   choices: z.array(z.object({
     label: z.string().min(1).max(2),
     text: z.string().trim().min(1),

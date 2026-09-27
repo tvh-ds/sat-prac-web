@@ -759,7 +759,12 @@ Deno.serve(async (req) => {
       const draftId = seg[3];
 
       if (req.method === "PUT" && seg.length === 5 && seg[4] === "editor") {
-        const body = saveDraftEditorSchema.parse(await req.json());
+        const parsed = saveDraftEditorSchema.safeParse(await req.json());
+        if (!parsed.success) {
+          const issue = parsed.error.issues[0];
+          return error(`Draft save validation failed: ${issue.path.join(".") || "request"} ${issue.message}`, 422, parsed.error.issues);
+        }
+        const body = parsed.data;
         const { assigned_module_name, display_order, expected_updated_at, ...patch } = body;
         const updates: Record<string, unknown> = { ...patch };
         if (updates.has_visual_stimulus === false) {

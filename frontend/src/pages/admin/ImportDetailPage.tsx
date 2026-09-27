@@ -195,7 +195,7 @@ export default function ImportDetailPage() {
     }
   }
 
-  if (error) {
+  if (error && !importInfo) {
     return (
       <div className="center-fill">
         <p>{error}</p>
@@ -220,6 +220,12 @@ export default function ImportDetailPage() {
 
   return (
     <div>
+      {error && (
+        <div className="login-error" role="alert" style={{ marginBottom: 14, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
+          <span>{error}</span>
+          <Button type="button" variant="ghost" size="sm" onClick={() => setError(null)}>Dismiss</Button>
+        </div>
+      )}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12 }}>
         <div>
           <h1 className="page-title">{polishTestTitle(importInfo.original_filename)}</h1>
@@ -849,7 +855,7 @@ function DraftEditor({
   onReject: () => void;
   busy: boolean;
   setBusy: (b: boolean) => void;
-  onError: (e: string) => void;
+  onError: (e: string | null) => void;
 }) {
   const [prompt, setPrompt] = useState(draft.prompt);
   const [passage, setPassage] = useState(draft.passage_text ?? "");
@@ -1064,6 +1070,7 @@ function DraftEditor({
   async function handleSave() {
     setBusy(true);
     setSavedNote(null);
+    onError(null);
     try {
       const position = await saveDraft();
       setSavedNote(imageFile ? "Draft and image saved. Review and confirm the crop before approval." : "Draft saved.");
@@ -1077,6 +1084,7 @@ function DraftEditor({
 
   async function approve() {
     setBusy(true);
+    onError(null);
     try {
       // Save first: approval reads the draft row, so edited prompt, passage,
       // choices, and key must be persisted before publishing.
