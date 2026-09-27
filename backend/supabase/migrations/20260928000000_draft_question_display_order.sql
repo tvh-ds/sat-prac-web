@@ -105,7 +105,7 @@ begin
   end if;
   select count(*) into v_dest_count from public.draft_questions
   where pdf_import_id = p_import_id and assigned_module_name = p_module_name;
-  if p_position > v_dest_count + case when v_module_changed then 1 else 0 end then
+  if p_position > v_dest_count + (case when v_module_changed then 1 else 0 end) then
     raise exception 'Position is outside the destination module';
   end if;
 
