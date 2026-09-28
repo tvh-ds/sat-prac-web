@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { fnJson, getToken } from "../../../lib/supabase";
 import type { VocabCard, VocabDashboard, VocabDeck } from "../../../lib/types";
@@ -16,6 +16,8 @@ export default function SprintSession() {
   const [got, setGot] = useState(0);
   const [missed, setMissed] = useState(0);
   const [startedAt] = useState(Date.now());
+  const pendingSubmission = useRef<string | null>(null);
+  const pendingRating = useRef<number | null>(null);
 
   useEffect(() => {
     void (async () => {
@@ -40,8 +42,11 @@ export default function SprintSession() {
 
   const record = async (rating: number) => {
     if (busy || cards === null) return;
+    if (pendingRating.current !== null && pendingRating.current !== rating) return;
     setBusy(true);
     const card = cards[idx];
+    pendingSubmission.current ??= crypto.randomUUID();
+    pendingRating.current = rating;
     try {
       const token = await getToken();
       await fnJson<{ ok: boolean }>("student-vocab/review", {
@@ -51,6 +56,7 @@ export default function SprintSession() {
           rating,
           mode: "sprint",
           reviewed_on: new Date().toLocaleDateString("en-CA"),
+          submission_id: pendingSubmission.current,
         },
         token,
       });
@@ -58,6 +64,8 @@ export default function SprintSession() {
       setBusy(false);
       return;
     }
+    pendingSubmission.current = null;
+    pendingRating.current = null;
     setBusy(false);
     if (rating >= 3) setGot((g) => g + 1);
     else setMissed((m) => m + 1);
@@ -164,11 +172,11 @@ export default function SprintSession() {
 
       {flipped && (
         <div className="rating-row">
-          <button className="rating-btn" style={{ borderColor: "var(--red)", color: "var(--red)" }} disabled={busy} onClick={() => void record(1)}>
+          <button className="rating-btn" style={{ borderColor: "var(--red)", color: "var(--red)" }} disabled={busy || (pendingRating.current !== null && pendingRating.current !== 1)} onClick={() => void record(1)}>
             <strong>Missed</strong>
             <span className="muted">1</span>
           </button>
-          <button className="rating-btn" style={{ borderColor: "var(--green)", color: "var(--green)" }} disabled={busy} onClick={() => void record(4)}>
+          <button className="rating-btn" style={{ borderColor: "var(--green)", color: "var(--green)" }} disabled={busy || (pendingRating.current !== null && pendingRating.current !== 4)} onClick={() => void record(4)}>
             <strong>Got it</strong>
             <span className="muted">4</span>
           </button>

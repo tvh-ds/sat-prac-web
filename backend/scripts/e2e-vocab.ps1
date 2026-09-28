@@ -29,31 +29,33 @@ $first = $study.cards[0]
 Write-Host "   first: $($first.card.word) state=$($first.state.status)"
 
 # 5. reviews: good(3), again(1), easy(4), hard(2)
-$r1 = Invoke-RestMethod -Uri "$base/functions/v1/student-vocab/review" -Method Post -Headers $H -Body (@{ card_id = $first.card.id; rating = 3; mode = "study"; response_ms = 1200; reviewed_on = $today } | ConvertTo-Json)
-Write-Host "5a. good -> interval=$($r1.next_state.interval_days)d status=$($r1.next_state.status) due=$($r1.next_state.due_at.Substring(0,10))"
+$r1 = Invoke-RestMethod -Uri "$base/functions/v1/student-vocab/review" -Method Post -Headers $H -Body (@{ card_id = $first.card.id; rating = 3; mode = "study"; response_ms = 1200; reviewed_on = $today; submission_id = [guid]::NewGuid().ToString(); expected_version = $study.cards[0].state_version } | ConvertTo-Json)
+Write-Host "5a. good -> state=$($r1.next_state.fsrs_state) due=$($r1.next_state.due_at)"
 $c2 = $study.cards[1].card
-$r2 = Invoke-RestMethod -Uri "$base/functions/v1/student-vocab/review" -Method Post -Headers $H -Body (@{ card_id = $c2.id; rating = 1; mode = "study"; reviewed_on = $today } | ConvertTo-Json)
-Write-Host "5b. again -> interval=$($r2.next_state.interval_days)d status=$($r2.next_state.status)"
+$r2 = Invoke-RestMethod -Uri "$base/functions/v1/student-vocab/review" -Method Post -Headers $H -Body (@{ card_id = $c2.id; rating = 1; mode = "study"; reviewed_on = $today; submission_id = [guid]::NewGuid().ToString(); expected_version = $study.cards[1].state_version } | ConvertTo-Json)
+Write-Host "5b. again -> state=$($r2.next_state.fsrs_state) due=$($r2.next_state.due_at)"
 $c3 = $study.cards[2].card
-$r3 = Invoke-RestMethod -Uri "$base/functions/v1/student-vocab/review" -Method Post -Headers $H -Body (@{ card_id = $c3.id; rating = 4; mode = "study"; reviewed_on = $today } | ConvertTo-Json)
-Write-Host "5c. easy -> interval=$($r3.next_state.interval_days)d status=$($r3.next_state.status)"
+$r3 = Invoke-RestMethod -Uri "$base/functions/v1/student-vocab/review" -Method Post -Headers $H -Body (@{ card_id = $c3.id; rating = 4; mode = "study"; reviewed_on = $today; submission_id = [guid]::NewGuid().ToString(); expected_version = $study.cards[2].state_version } | ConvertTo-Json)
+Write-Host "5c. easy -> state=$($r3.next_state.fsrs_state) due=$($r3.next_state.due_at)"
 $c4 = $study.cards[3].card
-$r4 = Invoke-RestMethod -Uri "$base/functions/v1/student-vocab/review" -Method Post -Headers $H -Body (@{ card_id = $c4.id; rating = 2; mode = "study"; reviewed_on = $today } | ConvertTo-Json)
-Write-Host "5d. hard -> interval=$($r4.next_state.interval_days)d status=$($r4.next_state.status)"
+$r4 = Invoke-RestMethod -Uri "$base/functions/v1/student-vocab/review" -Method Post -Headers $H -Body (@{ card_id = $c4.id; rating = 2; mode = "study"; reviewed_on = $today; submission_id = [guid]::NewGuid().ToString(); expected_version = $study.cards[3].state_version } | ConvertTo-Json)
+Write-Host "5d. hard -> state=$($r4.next_state.fsrs_state) due=$($r4.next_state.due_at)"
 
-# 6. study queue now: only 'again' card remains due (dup card skipped has no state -> also due)
+# 6. study queue now: all four cards have future schedules
 $study2 = Invoke-RestMethod -Uri "$base/functions/v1/student-vocab/study?deck_id=$($d.id)" -Method Get -Headers $H
-Write-Host "6. study after reviews: due=$($study2.due_count) (again card + new dup)"
+if ($study2.due_count -ne 0) { throw "Reviewed cards became due before their FSRS schedule." }
+Write-Host "6. study after reviews: due=$($study2.due_count)"
 $stillDue = @($study2.cards | Where-Object { $_.card.id -eq $c2.id }).Count
-Write-Host "   again-card still due: $($stillDue -gt 0)"
+if ($stillDue -ne 0) { throw "The short-term Again card was returned before its due time." }
+Write-Host "   short-term Again card incorrectly due early: $($stillDue -gt 0)"
 
 # 7. sprint mode
 $sprint = Invoke-RestMethod -Uri "$base/functions/v1/student-vocab/sprint?deck_id=$($d.id)" -Method Get -Headers $H
 Write-Host "7. sprint cards: $($sprint.cards.Count)"
 $missed = $sprint.cards[0]
-Invoke-RestMethod -Uri "$base/functions/v1/student-vocab/review" -Method Post -Headers $H -Body (@{ card_id = $missed.id; rating = 1; mode = "sprint"; reviewed_on = $today } | ConvertTo-Json) | Out-Null
-$sp2 = Invoke-RestMethod -Uri "$base/functions/v1/student-vocab/review" -Method Post -Headers $H -Body (@{ card_id = $sprint.cards[1].id; rating = 4; mode = "sprint"; reviewed_on = $today } | ConvertTo-Json)
-Write-Host "   sprint reviews posted, no SM-2 state returned: $($null -eq $sp2.next_state)"
+Invoke-RestMethod -Uri "$base/functions/v1/student-vocab/review" -Method Post -Headers $H -Body (@{ card_id = $missed.id; rating = 1; mode = "sprint"; reviewed_on = $today; submission_id = [guid]::NewGuid().ToString() } | ConvertTo-Json) | Out-Null
+$sp2 = Invoke-RestMethod -Uri "$base/functions/v1/student-vocab/review" -Method Post -Headers $H -Body (@{ card_id = $sprint.cards[1].id; rating = 4; mode = "sprint"; reviewed_on = $today; submission_id = [guid]::NewGuid().ToString() } | ConvertTo-Json)
+Write-Host "   sprint reviews posted, no FSRS state returned: $($null -eq $sp2.next_state)"
 
 # 8. dashboard
 $db = Invoke-RestMethod -Uri "$base/functions/v1/student-vocab" -Method Get -Headers $H

@@ -2,6 +2,14 @@
 import { serviceClient } from "../_shared/supabase.ts";
 import { corsHeaders, json, error } from "../_shared/cors.ts";
 import { requireApprovedStudent } from "../_shared/auth.ts";
+import {
+  ratingFor,
+  previewFsrsRatings,
+  snapshotFsrsCard,
+  toFsrsCard,
+  vocabScheduler,
+  VOCAB_SCHEDULER_VERSION,
+} from "../_shared/vocab_fsrs.ts";
 
 const DAY_MS = 86_400_000;
 import {
@@ -25,12 +33,19 @@ interface CardRow {
 }
 interface StateRow {
   card_id: string;
-  ease_factor: number;
-  interval_days: number;
+  fsrs_difficulty: number | null;
+  fsrs_stability: number | null;
+  fsrs_state: string;
+  learning_steps: number;
+  scheduled_days: number;
   repetitions: number;
   lapses: number;
   status: string;
   due_at: string;
+  last_reviewed_at: string | null;
+  scheduler_version: number;
+  state_version: number;
+  legacy_lapses: number;
 }
 
 async function fetchDeck(
@@ -358,24 +373,38 @@ Deno.serve(async (req) => {
     // ---- study / sprint queues ---------------------------------------------
     if (req.method === "GET" && seg.length === 2 && seg[1] === "study") {
       const ids = await deckIdList(svc, ctx.user.id, url.searchParams.get("deck_id"));
-      const { data: cards, error: cErr } = await svc
-        .from("vocab_cards")
-        .select("id, deck_id, word, definition, example_sentence, part_of_speech, tags")
-        .in("deck_id", ids.length > 0 ? ids : [""])
-        .limit(400);
-      if (cErr) return error(cErr.message, 500);
-      const cardRows = (cards ?? []) as CardRow[];
-      const { data: states, error: sErr } = await svc
-        .from("vocab_card_state")
-        .select("card_id, ease_factor, interval_days, repetitions, lapses, status, due_at")
-        .eq("student_id", ctx.user.id)
-        .in("card_id", cardRows.map((c) => c.id).length > 0 ? cardRows.map((c) => c.id) : [""]);
-      if (sErr) return error(sErr.message, 500);
+      const pageSize = 1000;
+      const cardRows: CardRow[] = [];
+      for (let offset = 0; ; offset += pageSize) {
+        const { data, error: cErr } = await svc
+          .from("vocab_cards")
+          .select("id, deck_id, word, definition, example_sentence, part_of_speech, tags")
+          .in("deck_id", ids.length > 0 ? ids : [""])
+          .order("id")
+          .range(offset, offset + pageSize - 1);
+        if (cErr) return error(cErr.message, 500);
+        cardRows.push(...((data ?? []) as CardRow[]));
+        if ((data ?? []).length < pageSize) break;
+      }
+
+      const states: StateRow[] = [];
+      for (let offset = 0; ; offset += pageSize) {
+        const { data, error: sErr } = await svc
+          .from("vocab_card_state")
+          .select("card_id, fsrs_difficulty, fsrs_stability, fsrs_state, learning_steps, scheduled_days, repetitions, lapses, status, due_at, last_reviewed_at, scheduler_version, state_version, legacy_lapses")
+          .eq("student_id", ctx.user.id)
+          .order("card_id")
+          .range(offset, offset + pageSize - 1);
+        if (sErr) return error(sErr.message, 500);
+        states.push(...((data ?? []) as StateRow[]));
+        if ((data ?? []).length < pageSize) break;
+      }
       const stateMap = new Map<string, StateRow>((states ?? []).map((s) => [s.card_id, s as StateRow]));
-      const nowIso = new Date().toISOString();
+      const now = new Date();
+      const nowIso = now.toISOString();
       const due = cardRows.filter((c) => {
         const s = stateMap.get(c.id);
-        return !s || s.due_at <= nowIso;
+        return !s || new Date(s.due_at).getTime() <= now.getTime();
       });
       due.sort((a, b) => {
         const sa = stateMap.get(a.id);
@@ -389,21 +418,42 @@ Deno.serve(async (req) => {
       });
       const out = due.map((c) => {
         const s = stateMap.get(c.id);
+        const fsrsCard = toFsrsCard(s ? {
+          due_at: s.due_at,
+          stability: s.fsrs_stability,
+          difficulty: s.fsrs_difficulty,
+          learning_steps: s.learning_steps,
+          scheduled_days: s.scheduled_days,
+          repetitions: s.repetitions,
+          lapses: s.lapses,
+          fsrs_state: s.fsrs_state,
+          last_reviewed_at: s.last_reviewed_at,
+        } : null, now);
         return {
           card: c,
           state: s
             ? {
-                ease_factor: s.ease_factor,
-                interval_days: s.interval_days,
+                stability: s.fsrs_stability,
+                difficulty: s.fsrs_difficulty,
+                fsrs_state: s.fsrs_state,
+                learning_steps: s.learning_steps,
+                scheduled_days: s.scheduled_days,
                 repetitions: s.repetitions,
                 lapses: s.lapses,
+                legacy_lapses: s.legacy_lapses,
                 status: s.status,
                 due_at: s.due_at,
+                last_reviewed_at: s.last_reviewed_at,
+                scheduler_version: s.scheduler_version,
+                state_version: s.state_version,
               }
             : null,
+          state_version: s?.state_version ?? 0,
+          previews: previewFsrsRatings(fsrsCard, now),
+          ready_at: nowIso,
         };
       });
-      return json({ cards: out, due_count: due.length });
+      return json({ cards: out, due_count: due.length, server_time: nowIso });
     }
 
     if (req.method === "GET" && seg.length === 2 && seg[1] === "sprint") {
@@ -426,22 +476,66 @@ Deno.serve(async (req) => {
     if (req.method === "POST" && seg.length === 2 && seg[1] === "review") {
       const body = vocabReviewSchema.parse(await req.json());
       const reviewedOn = body.reviewed_on ?? new Date().toISOString().slice(0, 10);
-      const { data: nextState, error: reviewErr } = await svc.rpc("record_student_vocab_review", {
+      let stateBefore: ReturnType<typeof snapshotFsrsCard> | null = null;
+      let nextState: ReturnType<typeof snapshotFsrsCard> | null = null;
+      let predictedRecall: number | null = null;
+      if (body.mode === "study") {
+        const { data: stateRow, error: stateErr } = await svc
+          .from("vocab_card_state")
+          .select("fsrs_difficulty, fsrs_stability, fsrs_state, learning_steps, scheduled_days, repetitions, lapses, due_at, last_reviewed_at, state_version")
+          .eq("student_id", ctx.user.id)
+          .eq("card_id", body.card_id)
+          .maybeSingle();
+        if (stateErr) return error("Failed to load vocabulary schedule", 500);
+        const now = new Date();
+        const currentCard = toFsrsCard(stateRow ? {
+          due_at: stateRow.due_at,
+          stability: stateRow.fsrs_stability,
+          difficulty: stateRow.fsrs_difficulty,
+          fsrs_state: stateRow.fsrs_state,
+          learning_steps: stateRow.learning_steps,
+          scheduled_days: stateRow.scheduled_days,
+          repetitions: stateRow.repetitions,
+          lapses: stateRow.lapses,
+          last_reviewed_at: stateRow.last_reviewed_at,
+        } : null, now);
+        if (stateRow?.fsrs_stability && stateRow.last_reviewed_at) {
+          predictedRecall = vocabScheduler.get_retrievability(currentCard, now, false);
+        }
+        stateBefore = snapshotFsrsCard(currentCard);
+        const result = vocabScheduler.next(currentCard, now, ratingFor(body.rating));
+        nextState = {
+          ...snapshotFsrsCard(result.card),
+          state_version: (stateRow?.state_version ?? 0) + 1,
+          previews: previewFsrsRatings(result.card, now),
+        } as ReturnType<typeof snapshotFsrsCard>;
+      }
+      const { data: result, error: reviewErr } = await svc.rpc("record_student_vocab_review_fsrs", {
         p_student_id: ctx.user.id,
         p_card_id: body.card_id,
         p_rating: body.rating,
         p_mode: body.mode,
         p_response_ms: body.response_ms ?? null,
         p_reviewed_on: reviewedOn,
+        p_submission_id: body.submission_id,
+        p_expected_version: body.mode === "study" ? body.expected_version : null,
+        p_scheduler_version: body.mode === "study" ? VOCAB_SCHEDULER_VERSION : null,
+        p_state_before: stateBefore,
+        p_next_state: nextState,
+        p_predicted_recall: predictedRecall,
       });
       if (reviewErr) {
         if (reviewErr.code === "P0002") return error("Card not found", 404);
         if (reviewErr.code === "42501") return error("Deck not found", 403);
+        if (reviewErr.code === "P0001" && reviewErr.message.includes("Vocabulary schedule changed")) {
+          return error("This card was reviewed elsewhere. Reload the study session and try again.", 409);
+        }
+        if (reviewErr.code === "23505") return error("Review submission was already used", 409);
         console.error("Failed to record vocabulary review", reviewErr);
         return error("Failed to save vocabulary review", 500);
       }
 
-      return json({ ok: true, next_state: nextState });
+      return json({ ok: true, next_state: result?.next_state ?? null, replayed: result?.replayed ?? false, server_time: new Date().toISOString() });
     }
 
     return error("Not found", 404);

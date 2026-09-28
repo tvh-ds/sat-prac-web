@@ -566,17 +566,34 @@ export interface VocabCard {
 }
 
 export interface VocabCardState {
-  ease_factor: number;
-  interval_days: number;
+  stability: number | null;
+  difficulty: number | null;
+  fsrs_state: "new" | "learning" | "review" | "relearning";
+  learning_steps: number;
+  scheduled_days: number;
   repetitions: number;
   lapses: number;
+  legacy_lapses: number;
   status: string;
   due_at: string;
+  last_reviewed_at: string | null;
+  scheduler_version: number;
+  state_version: number;
+}
+
+export interface VocabRatingPreview {
+  rating: 1 | 2 | 3 | 4;
+  due_at: string;
+  scheduled_days: number;
+  state: "new" | "learning" | "review" | "relearning";
 }
 
 export interface VocabStudyCard {
   card: VocabCard;
   state: VocabCardState | null;
+  state_version: number;
+  previews: VocabRatingPreview[];
+  ready_at: string;
 }
 
 export interface VocabHeatmapDay {

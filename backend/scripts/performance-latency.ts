@@ -481,11 +481,17 @@ async function runActor(
   await measure("vocab_dashboard", () => functionRequest(url, anonKey, token, "student-vocab"));
   await measure("vocab_study_queue", () => functionRequest(url, anonKey, token, deckPath));
   const cardId = manifest.vocabCardIds[(cardOffset + studentIndex) % manifest.vocabCardIds.length];
+  const vocabStudentId = manifest.students[studentIndex].id;
+  const schedule = await db.from("vocab_card_state").select("state_version")
+    .eq("student_id", vocabStudentId).eq("card_id", cardId).maybeSingle();
+  dbCheck("Read synthetic vocabulary schedule version", schedule);
   await measure("vocab_review", () => functionRequest(url, anonKey, token, "student-vocab/review", "POST", {
     card_id: cardId,
     rating: 3,
     mode: "study",
     response_ms: 1050,
+    submission_id: randomUUID(),
+    expected_version: schedule.data?.state_version ?? 0,
   }));
 
   const fullRows = rowsForAttempt(fullAttempt.attemptId, manifest.questionIds, fullAttempt.moduleByQuestion, manifest.choiceIdsByQuestion);

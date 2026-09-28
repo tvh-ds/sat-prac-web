@@ -44,7 +44,7 @@ Generated and installed artifacts such as `frontend/dist/`, `node_modules/`, and
 - Bluebook-style full test sessions with timers, module flow, passage/question split, answer saving, choice elimination, mark-for-review, question grid, review screen, and auto-submit.
 - Practice sets built by admins from question-bank items or PDF import drafts.
 - Score reports with per-question review, section/domain summaries, filters, explanations, selected answers, typed answers, and visual stimulus images when present.
-- Vocabulary decks with student-owned decks, assigned admin decks, bulk card import, SM-2 spaced repetition, sprint mode, heatmap, and streaks.
+- Vocabulary decks with student-owned decks, assigned admin decks, bulk card import, FSRS-6 spaced repetition at a 95% target retention, short-term learning steps, sprint mode, heatmap, and streaks.
 - Persistent light/dark theme plus accent switching and reduced-motion-friendly transitions.
 
 ### Admin Console

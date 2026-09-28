@@ -384,4 +384,13 @@ export const vocabReviewSchema = z.object({
   mode: z.enum(["study", "sprint"]).default("study"),
   response_ms: z.number().int().min(0).optional().nullable(),
   reviewed_on: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional().nullable(),
+  submission_id: z.string().uuid(),
+  expected_version: z.number().int().min(0).optional(),
+}).superRefine((value, ctx) => {
+  if (value.mode === "study" && value.expected_version === undefined) {
+    ctx.addIssue({ code: "custom", path: ["expected_version"], message: "Study reviews require an expected state version" });
+  }
+  if (value.mode === "sprint" && value.expected_version !== undefined) {
+    ctx.addIssue({ code: "custom", path: ["expected_version"], message: "Sprint reviews do not accept a schedule version" });
+  }
 });

@@ -45,6 +45,7 @@ Current migrations include:
 - `20260817000000_init.sql`: core schema, profiles, tests, modules, questions, choices, attempts, scores, logs, storage setup, and RLS.
 - `20260817000001_seed.sql`: local seed accounts and sample data.
 - `20260818000000_vocab.sql`: student vocabulary decks, cards, study state, reviews, and activity.
+- `20260928100000_vocab_fsrs6.sql` and `20260928110000_vocab_fsrs_conflict_code.sql`: FSRS-6 scheduling state, idempotent review submissions, audit history, rollback snapshots, and stale-review conflict responses.
 - `20260819000000_scraper_module_columns.sql`: source module metadata for imported drafts.
 - `20260820000000_practice_sets.sql`: practice tests as `tests.kind = 'practice'`.
 - `20260822000000_remove_ocr.sql`: legacy OCR cleanup.
@@ -218,7 +219,23 @@ All application routes expect `Authorization: Bearer <user JWT>`. Admin routes r
 | `student-submit` | `POST /{attemptId}` | Scores multiple-choice and typed answers, writes score rows, and marks assignment completion. |
 | `student-scores` | `GET /`, `GET /{attemptId}` | Score history and detailed per-question review with signed stimulus image URLs. |
 | `student-profile` | `GET/POST /` | Student profile read and submission. |
-| `student-vocab` | `GET /`, `POST/PATCH/DELETE /decks/{id?}`, `GET /decks/{deckId}/cards`, `POST/PATCH/DELETE /cards/{id?}`, `POST /cards/import`, `GET /study`, `GET /sprint`, `POST /review` | Student-owned and assigned decks, bulk import, SM-2 review, sprint mode, dashboard. |
+| `student-vocab` | `GET /`, `POST/PATCH/DELETE /decks/{id?}`, `GET /decks/{deckId}/cards`, `POST/PATCH/DELETE /cards/{id?}`, `POST /cards/import`, `GET /study`, `GET /sprint`, `POST /review` | Student-owned and assigned decks, bulk import, FSRS-6 study scheduling and interval previews, practice-only sprint mode, dashboard. |
+
+Vocabulary Study uses pinned `ts-fsrs@5.4.2` with a 95% desired retention target, one-minute and ten-minute learning steps, and a ten-minute relearning step. Study reviews are calculated in the Edge Function and committed with review history and daily activity through an atomic service-only database function. Review submissions are idempotent and use state versions to reject concurrent stale answers. Sprint logs practice and activity but does not alter the schedule or enter the FSRS replay history.
+
+To inspect existing schedules before converting them, run this staging-only dry run from `backend/scripts`:
+
+```powershell
+deno run --allow-env --allow-net --env-file=.env migrate-vocab-fsrs.ts --project-ref=wgkggknyndgaoyazdhdf
+```
+
+After confirming the reported target is `wgkggknyndgaoyazdhdf`, add `--apply` to save legacy schedule snapshots and replay each card's Study reviews chronologically. The script refuses any other project reference, is safe to rerun, and does not change review history or daily activity.
+
+The staging end-to-end check creates a temporary approved student and vocabulary deck, tests the deployed Study/Sprint endpoints, then deletes the temporary student and its data:
+
+```powershell
+deno run --node-modules-dir=none --allow-env --allow-net --allow-read --env-file=.env e2e-vocab-fsrs-staging.ts --project-ref=wgkggknyndgaoyazdhdf
+```
 
 ## Verification
 
