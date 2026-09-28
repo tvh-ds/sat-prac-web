@@ -52,8 +52,8 @@ export default function PracticeStartPage() {
     <div className="app-layout">
       <header className="app-header scrolled" style={{ position: "sticky" }}>
         <div className="brand">
-          <span className="logo">S</span>
-          SAT Practice
+          <span className="logo">G</span>
+          The Grit
         </div>
       </header>
       <div className="app-content" style={{ maxWidth: 760 }}>

@@ -41,8 +41,8 @@ export default function StudentLayout() {
     <div className="app-layout">
       <header className="app-header">
         <div className="brand">
-          <span className="logo">S</span>
-          <span>SAT Practice</span>
+          <span className="logo">G</span>
+          <span>The Grit</span>
         </div>
         <nav className="student-nav">
           {profileApproved ? (
@@ -77,7 +77,7 @@ export default function StudentLayout() {
         <div className="footer-panel">
           <div className="footer-top">
             <div className="footer-brand">
-              <div className="brand"><span className="logo">S</span> SAT Practice</div>
+              <div className="brand"><span className="logo">G</span> The Grit</div>
               <p>Focused test practice, score review, and vocabulary work in a calm exam-grade workspace.</p>
             </div>
             <div className="footer-links">
@@ -95,7 +95,7 @@ export default function StudentLayout() {
             </div>
           </div>
           <div className="footer-bottom">
-            <span>© {new Date().getFullYear()} SAT Practice</span>
+            <span>© {new Date().getFullYear()} The Grit</span>
             <span className="status-badge"><span className="status-dot" /> Ready for practice</span>
           </div>
         </div>
