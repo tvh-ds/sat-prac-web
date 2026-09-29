@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import type { Test } from "../../lib/types";
 import { Button } from "../../components/ui";
+import TestThemeToggle from "../../components/TestThemeToggle";
 
 interface StartResult {
   attempt_id: string;
@@ -20,7 +21,7 @@ const STEPS = [
   },
   {
     title: "Calculator & reference",
-    body: "Math modules allow your own calculator. A formula reference sheet is available from the Reference button.",
+    body: "Math modules allow your own calculator. A formula reference sheet is available from the More menu.",
   },
   {
     title: "No going back",
@@ -87,6 +88,8 @@ export default function TestStartPage() {
             </div>
 
             {error && <div className="login-error">{error}</div>}
+
+            <TestThemeToggle />
 
             <div style={{ display: "flex", gap: 12 }}>
               <Button variant="outline" onClick={() => navigate("/student")}>← Back</Button>

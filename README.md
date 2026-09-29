@@ -190,7 +190,7 @@ Admin functions:
 - `admin-progress`: student and attempt analytics.
 - `admin-vocab`: admin vocabulary decks, cards, imports, and assignments.
 
-Student functions:
+Student functions
 
 - `student-tests`: public test and practice listing.
 - `student-attempts`: start attempts, load current attempt state, and advance modules.

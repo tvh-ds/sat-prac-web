@@ -208,6 +208,34 @@ export const advanceModuleSchema = z.object({
   time_spent_seconds: z.number().int().min(0).optional().default(0),
 });
 
+export const pauseAttemptSchema = z.object({
+  attempt_id: z.string().uuid(),
+});
+
+const textAnnotationSchema = z.object({
+  id: z.string().uuid(),
+  target: z.union([
+    z.enum(["passage", "prompt"]),
+    z.string().regex(/^choice:[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i),
+  ]),
+  quote: z.string().min(1).max(2000),
+  occurrence: z.number().int().min(0).max(100).optional(),
+  start: z.number().int().min(0).max(20000).optional(),
+  end: z.number().int().min(1).max(20000).optional(),
+  color: z.enum(["yellow", "blue", "pink", "none"]),
+  underline: z.boolean(),
+}).superRefine((annotation, ctx) => {
+  const hasStart = annotation.start !== undefined;
+  const hasEnd = annotation.end !== undefined;
+  if (hasStart !== hasEnd) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Annotation ranges need both start and end offsets" });
+    return;
+  }
+  if (hasStart && hasEnd && (annotation.end! <= annotation.start! || annotation.end! - annotation.start! !== annotation.quote.length)) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Annotation offsets must match the quoted source text" });
+  }
+});
+
 export const responseSaveSchema = z.object({
   attempt_id: z.string().uuid(),
   question_id: z.string().uuid(),
@@ -216,9 +244,22 @@ export const responseSaveSchema = z.object({
   typed_answer: z.string().max(500).optional().nullable(),
   marked_for_review: z.boolean().optional(),
   eliminated_choice_ids: z.array(z.string().uuid()).optional(),
-  notes: z.string().max(5000).optional().nullable(),
-  highlights: z.array(z.string().max(2000)).optional(),
+  highlights: z.array(z.string().max(2000))
+    .max(50)
+    .refine((items) => items.reduce((size, item) => size + item.length, 0) <= 24_000)
+    .optional(),
+  annotations: z.array(textAnnotationSchema)
+    .max(500)
+    .refine((items) => items.reduce((size, item) => size + item.quote.length, 0) <= 24_000)
+    .optional(),
   time_spent_seconds: z.number().int().min(0).optional(),
+});
+
+export const errorLogReviewSaveSchema = z.object({
+  attempt_id: z.string().uuid(),
+  question_id: z.string().uuid(),
+  note: z.string().trim().max(3000),
+  reviewed: z.boolean(),
 });
 
 export const submitAttemptSchema = z.object({

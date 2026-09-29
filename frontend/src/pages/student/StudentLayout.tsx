@@ -41,15 +41,15 @@ export default function StudentLayout() {
     <div className="app-layout">
       <header className="app-header">
         <div className="brand">
-          <span className="logo">G</span>
-          <span>The Grit</span>
+          <span className="student-wordmark">the Grit</span>
         </div>
         <nav className="student-nav">
           {profileApproved ? (
             <>
-              <NavLink to="/student/tests">Full-Length Tests</NavLink>
+              <NavLink to="/student/dashboard">Dashboard</NavLink>
               <NavLink to="/student/practice">Practice</NavLink>
-              <NavLink to="/student/results">Results</NavLink>
+              <NavLink to="/student/tests">Full-Length Tests</NavLink>
+              <NavLink to="/student/results">Review</NavLink>
               <NavLink to="/student/vocabulary">Vocabulary</NavLink>
               <NavLink to="/student/profile">Profile</NavLink>
             </>
@@ -77,7 +77,7 @@ export default function StudentLayout() {
         <div className="footer-panel">
           <div className="footer-top">
             <div className="footer-brand">
-              <div className="brand"><span className="logo">G</span> The Grit</div>
+              <div className="brand"><span className="student-wordmark">the Grit</span></div>
               <p>Focused test practice, score review, and vocabulary work in a calm exam-grade workspace.</p>
             </div>
             <div className="footer-links">
@@ -89,7 +89,7 @@ export default function StudentLayout() {
               </div>
               <div className="footer-col">
                 <h4>Progress</h4>
-                <Link to="/student/results">Results</Link>
+                <Link to="/student/results">Review</Link>
                 <Link to="/student/vocabulary">Streak</Link>
               </div>
             </div>

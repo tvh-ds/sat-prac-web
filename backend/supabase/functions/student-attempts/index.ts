@@ -1,7 +1,7 @@
 import { requireApprovedStudent, HttpError, pathSegments } from "../_shared/auth.ts";
 import { serviceClient } from "../_shared/supabase.ts";
 import { corsHeaders, json, error } from "../_shared/cors.ts";
-import { startAttemptSchema, advanceModuleSchema } from "../_shared/validation.ts";
+import { startAttemptSchema, advanceModuleSchema, pauseAttemptSchema } from "../_shared/validation.ts";
 
 const TEST_STRUCTURE_QUERY =
   "id, title, description, status, is_public, kind, sections:test_sections(id, test_id, name, section_type, position, modules:test_modules(id, section_id, name, time_limit_minutes, position, is_adaptive, questions:test_module_questions(id, module_id, question_id, position, points, question:questions(id, section, question_type, passage_id, prompt, domain, skill, difficulty, stimulus_image_path, choices:question_choices(id, label, text, position), passage:passages(id, title, content)))))";
@@ -270,31 +270,86 @@ Deno.serve(async (req) => {
         loadTestStructure(svc, resolvedTestId),
         svc.from("attempt_modules").select("*, module:test_modules(*)").eq("attempt_id", attempt.id),
         svc.from("attempt_responses")
-          .select("attempt_id, question_id, module_id, selected_choice_id, typed_answer, marked_for_review, eliminated_choice_ids, highlights")
+          .select("attempt_id, question_id, module_id, selected_choice_id, typed_answer, marked_for_review, eliminated_choice_ids, highlights, annotations")
           .eq("attempt_id", attempt.id),
       ]);
       if (modulesResult.error) return error(modulesResult.error.message, 500);
       if (responsesResult.error) return error(responsesResult.error.message, 500);
-      const attemptModules = modulesResult.data;
+      let attemptModules = modulesResult.data ?? [];
       const attemptModuleIds = new Set<string>((attemptModules ?? []).map((am) => am.module_id));
       filterTestToModules(test as Record<string, unknown>, attemptModuleIds);
       await attachStimulusUrls(svc, test as Record<string, unknown>);
       const responses = responsesResult.data;
 
+      // A paused module has no running clock. The first session load after
+      // leaving starts a new server-timed segment from its stored remainder.
+      if (attempt.status === "in_progress" && attempt.current_module_id) {
+        const active = attemptModules.find((am) => am.module_id === attempt.current_module_id && am.status === "in_progress");
+        if (active && !active.started_at) {
+          const resumeAt = new Date().toISOString();
+          const { data: resumed, error: resumeErr } = await svc
+            .from("attempt_modules")
+            .update({ started_at: resumeAt })
+            .eq("attempt_id", attempt.id)
+            .eq("module_id", active.module_id)
+            .eq("status", "in_progress")
+            .is("started_at", null)
+            .select("*, module:test_modules(*)")
+            .maybeSingle();
+          if (resumeErr) return error("Unable to resume the attempt timer", 500);
+          if (resumed) {
+            attemptModules = attemptModules.map((am) => am.module_id === resumed.module_id ? resumed : am);
+          } else {
+            const { data: refreshed, error: refreshErr } = await svc
+              .from("attempt_modules")
+              .select("*, module:test_modules(*)")
+              .eq("attempt_id", attempt.id);
+            if (refreshErr) return error("Unable to load the attempt timer", 500);
+            attemptModules = refreshed ?? [];
+          }
+        }
+      }
+
       const now = Date.now();
       const modules = (attemptModules ?? []).map((am) => {
-        const remaining = am.module.time_limit_minutes * 60 * 1000;
+        const remaining = (am.remaining_seconds ?? am.module.time_limit_minutes * 60) * 1000;
         let secondsLeft: number | null = null;
         if (am.started_at && am.status === "in_progress") {
           const elapsed = Math.max(0, now - new Date(am.started_at).getTime());
           secondsLeft = Math.max(0, Math.ceil((remaining - elapsed) / 1000));
         } else if (am.status === "not_started") {
-          secondsLeft = Math.ceil(remaining / 1000);
+          secondsLeft = am.remaining_seconds ?? Math.ceil(remaining / 1000);
         }
         return { ...am, seconds_left: secondsLeft };
       });
 
       return json({ attempt, test, responses: responses ?? [], modules });
+    }
+
+    if (req.method === "POST" && seg.length === 2 && seg[1] === "pause") {
+      const body = pauseAttemptSchema.parse(await req.json());
+      const { data, error: pauseErr } = await svc.rpc("pause_current_student_attempt", {
+        p_attempt_id: body.attempt_id,
+        p_student_id: ctx.user.id,
+      });
+      if (pauseErr) {
+        console.error("Unable to pause student attempt", pauseErr);
+        return error("Unable to pause this attempt", 500);
+      }
+      const pause = Array.isArray(data) ? data[0] : data;
+      if (!pause?.ok) {
+        const status = pause?.error_code === "not_found" ? 404 : 409;
+        const message = pause?.error_code === "not_found"
+          ? "Attempt not found"
+          : "This attempt is no longer in progress";
+        return error(message, status);
+      }
+      await svc.from("attempt_events").insert({
+        attempt_id: body.attempt_id,
+        event_type: "attempt.paused",
+        payload: { module_id: pause.module_id, remaining_seconds: pause.seconds_left },
+      });
+      return json({ ok: true, module_id: pause.module_id, remaining_seconds: pause.seconds_left });
     }
 
     if (req.method === "POST" && seg.length === 2 && seg[1] === "advance") {
@@ -318,9 +373,25 @@ Deno.serve(async (req) => {
       if (!targetModule) return error("Module not found", 404);
 
       if (attempt.current_module_id) {
+        const { data: activeModule, error: activeErr } = await svc
+          .from("attempt_modules")
+          .select("id, started_at, time_spent_seconds")
+          .eq("attempt_id", attempt.id)
+          .eq("module_id", attempt.current_module_id)
+          .maybeSingle();
+        if (activeErr) return error("Unable to load the current module timer", 500);
+        const activeSeconds = activeModule?.started_at
+          ? Math.max(0, Math.floor((Date.now() - new Date(activeModule.started_at).getTime()) / 1000))
+          : 0;
         const { error: cErr } = await svc
           .from("attempt_modules")
-          .update({ status: "completed", completed_at: new Date().toISOString(), time_spent_seconds: body.time_spent_seconds })
+          .update({
+            status: "completed",
+            completed_at: new Date().toISOString(),
+            time_spent_seconds: (activeModule?.time_spent_seconds ?? 0) + activeSeconds,
+            remaining_seconds: 0,
+            started_at: null,
+          })
           .eq("attempt_id", attempt.id)
           .eq("module_id", attempt.current_module_id);
         if (cErr) return error(cErr.message, 500);

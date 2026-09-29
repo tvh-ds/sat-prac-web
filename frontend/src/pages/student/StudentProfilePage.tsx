@@ -89,7 +89,7 @@ export default function StudentProfilePage() {
       <header className="student-profile-heading">
         <div>
           <h1 className="page-title">Your profile</h1>
-          <p className="page-sub">Add your contact details so your school can connect your practice progress with the right student.</p>
+          <p className="page-sub">Add and edit your contact details</p>
         </div>
         <Pill tone={statusTone}>{statusText}</Pill>
       </header>
@@ -126,7 +126,7 @@ export default function StudentProfilePage() {
             <input id="parent-zalo-phone" className="input" type="tel" autoComplete="tel" inputMode="tel" maxLength={30} required value={form.parent_phone_number} onChange={(event) => setField("parent_phone_number", event.target.value)} placeholder="+84 …" />
           </div>
         </div>
-        <p className="student-profile-privacy">Contact details are visible to school administrators and are used for student and parent communication.</p>
+        <p className="student-profile-privacy">Contact details are visible to tutors and are used for student and parent communication.</p>
         {error && <div className="login-error" role="alert">{error}</div>}
         {notice && <div className="student-profile-success" role="status">{notice}</div>}
         <div className="student-profile-submit">

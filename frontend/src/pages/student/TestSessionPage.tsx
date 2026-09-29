@@ -1,11 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Flag, MapPin } from "lucide-react";
+import { createPortal } from "react-dom";
+import { Bookmark, Flag, Highlighter, MoreVertical, PenLine, Trash2, Underline, MapPin } from "lucide-react";
 import { fnJson, getToken } from "../../lib/supabase";
 import type { Attempt, AttemptModule, SavedResponse, Test, TestModule, TestSection } from "../../lib/types";
 import { AnswerSaveQueue } from "../../lib/answerSaveQueue";
+import { findSourceRange, isRangeUnderlined, materializeLegacyHighlights, updateAnnotationsForRange, type AnnotationAction } from "../../lib/textAnnotations";
+import { getTestTheme, type TestTheme } from "../../lib/testTheme";
 import { Button, Modal, Spinner, fmtSeconds } from "../../components/ui";
 import HighlightableText from "../../components/HighlightableText";
+import "../../styles/test-session.css";
 
 interface CurrentData {
   attempt: Attempt;
@@ -15,6 +19,7 @@ interface CurrentData {
 }
 
 type ModalKind = "grid" | "directions" | "reference" | "end" | "submitAll";
+type SelectionToolbarState = { target: string; start: number; end: number; left: number; top: number };
 
 const MATH_REFERENCE = [
   "Area of a circle: A = πr²",
@@ -47,12 +52,18 @@ export default function TestSessionPage() {
   const [deadline, setDeadline] = useState<number | null>(null);
   const [now, setNow] = useState(Date.now());
   const [modal, setModal] = useState<ModalKind | null>(null);
+  const [testTheme] = useState<TestTheme>(getTestTheme);
+  const [timerVisible, setTimerVisible] = useState(true);
+  const [eliminateMode, setEliminateMode] = useState(false);
+  const [leaving, setLeaving] = useState(false);
+  const [leaveError, setLeaveError] = useState<string | null>(null);
   const [autoFlag, setAutoFlag] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [navigationPending, setNavigationPending] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [typedDraft, setTypedDraft] = useState("");
   const [highlighterOn, setHighlighterOn] = useState(false);
+  const [selectionToolbar, setSelectionToolbar] = useState<SelectionToolbarState | null>(null);
 
   const saveTimer = useRef<number | null>(null);
   const pendingTypedSave = useRef<{ qid: string; value: string } | null>(null);
@@ -60,6 +71,7 @@ export default function TestSessionPage() {
   const saveQueue = useRef(new AnswerSaveQueue());
   const enteredAt = useRef(Date.now());
   const moduleStart = useRef(Date.now());
+  const leavingRef = useRef(false);
   const paneRef = useRef<HTMLDivElement | null>(null);
 
   const allModules = useMemo(() => {
@@ -116,7 +128,7 @@ export default function TestSessionPage() {
   const secondsLeft = deadline ? Math.max(0, Math.ceil((deadline - now) / 1000)) : null;
 
   useEffect(() => {
-    if (secondsLeft !== null && secondsLeft === 0 && !autoFlag && !submitting) {
+    if (secondsLeft !== null && secondsLeft === 0 && !autoFlag && !submitting && !leavingRef.current) {
       setAutoFlag(true);
       void submitModule();
     }
@@ -136,6 +148,7 @@ export default function TestSessionPage() {
         marked_for_review: prev?.marked_for_review ?? false,
         eliminated_choice_ids: prev?.eliminated_choice_ids ?? [],
         highlights: prev?.highlights ?? [],
+        annotations: prev?.annotations ?? [],
         is_correct: prev?.is_correct ?? null,
         ...patch,
       };
@@ -156,6 +169,7 @@ export default function TestSessionPage() {
             marked_for_review: next.marked_for_review,
             eliminated_choice_ids: next.eliminated_choice_ids,
             highlights: next.highlights,
+            annotations: next.annotations,
             time_spent_seconds: spent,
           },
         });
@@ -193,6 +207,10 @@ export default function TestSessionPage() {
     setTypedDraft(responses[current.question_id]?.typed_answer ?? "");
   }, [current, responses]);
 
+  useEffect(() => {
+    setSelectionToolbar(null);
+  }, [current?.question_id]);
+
   async function flushPendingSave() {
     const pending = pendingTypedSave.current;
     if (!pending) return;
@@ -215,6 +233,7 @@ export default function TestSessionPage() {
       for (const questionId of questionIds) await saveResponse(questionId, {}, false);
       await flushAnswerSaves();
       setSaveError(null);
+      setLeaveError(null);
     } catch {
       setSaveError("The answer still could not be saved. Check your connection and retry.");
     } finally {
@@ -222,48 +241,107 @@ export default function TestSessionPage() {
     }
   }
 
-  // ---- yellow highlighter ----
-  function addHighlight(text: string) {
-    if (!current) return;
-    const entry = text.trim();
-    if (entry.length < 2 || entry.length > 2000) return;
-    const existing = responsesRef.current[current.question_id]?.highlights ?? [];
-    if (existing.includes(entry) || existing.some((h) => h.includes(entry))) return;
-    if (existing.length >= 50) return;
-    void saveResponse(current.question_id, { highlights: [...existing, entry] });
+  function closeSelectionToolbar() {
+    setSelectionToolbar(null);
+    window.getSelection()?.removeAllRanges();
   }
 
-  function removeHighlight(entry: string) {
-    if (!current) return;
-    const existing = responsesRef.current[current.question_id]?.highlights ?? [];
-    void saveResponse(current.question_id, { highlights: existing.filter((h) => h !== entry) });
+  useEffect(() => {
+    if (!selectionToolbar) return;
+    const dismissOnOutsidePress = (event: MouseEvent) => {
+      const target = event.target;
+      if (target instanceof Element && target.closest(".selection-annotation-toolbar")) return;
+      setSelectionToolbar(null);
+    };
+    const dismissOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeSelectionToolbar();
+    };
+    document.addEventListener("mousedown", dismissOnOutsidePress);
+    document.addEventListener("keydown", dismissOnEscape);
+    return () => {
+      document.removeEventListener("mousedown", dismissOnOutsidePress);
+      document.removeEventListener("keydown", dismissOnEscape);
+    };
+  }, [selectionToolbar]);
+
+  function annotationSource(target: string): string {
+    if (!current) return "";
+    if (target === "passage") return current.question.passage?.content ?? "";
+    if (target === "prompt") return current.question.prompt;
+    if (target.startsWith("choice:")) {
+      return current.question.choices.find((choice) => `choice:${choice.id}` === target)?.text ?? "";
+    }
+    return "";
   }
 
-  function undoHighlight() {
-    if (!current) return;
-    const existing = responsesRef.current[current.question_id]?.highlights ?? [];
-    if (existing.length === 0) return;
-    void saveResponse(current.question_id, { highlights: existing.slice(0, -1) });
+  function annotationTargets(): Array<{ target: string; text: string }> {
+    if (!current) return [];
+    return [
+      ...(current.question.passage?.content ? [{ target: "passage", text: current.question.passage.content }] : []),
+      { target: "prompt", text: current.question.prompt },
+      ...current.question.choices.map((choice) => ({ target: `choice:${choice.id}`, text: choice.text })),
+    ];
   }
 
-  function clearHighlights() {
-    if (!current) return;
-    void saveResponse(current.question_id, { highlights: [] });
+  function applySelectionAnnotation(action: AnnotationAction) {
+    if (!current || !selectionToolbar) return;
+    const response = responsesRef.current[current.question_id];
+    const legacy = materializeLegacyHighlights(response?.highlights ?? [], annotationTargets(), response?.annotations ?? []);
+    const updated = updateAnnotationsForRange(
+      [...(response?.annotations ?? []), ...legacy.annotations],
+      selectionToolbar.target,
+      annotationSource(selectionToolbar.target),
+      { start: selectionToolbar.start, end: selectionToolbar.end },
+      action,
+    );
+    if (updated.length > 500) {
+      setSaveError("This question has too many highlight ranges to save. Erase some ranges and retry.");
+      closeSelectionToolbar();
+      return;
+    }
+    void saveResponse(current.question_id, { annotations: updated, highlights: legacy.remaining });
+    closeSelectionToolbar();
   }
 
-  /** Capture a text selection as a highlight when the tool is armed. */
+  function isSelectionUnderlined(): boolean {
+    if (!current || !selectionToolbar) return false;
+    return isRangeUnderlined(
+      responsesRef.current[current.question_id]?.annotations ?? [],
+      selectionToolbar.target,
+      annotationSource(selectionToolbar.target),
+      { start: selectionToolbar.start, end: selectionToolbar.end },
+    );
+  }
+
+  /** Keep a text selection and place annotation actions beside it. */
   function handlePaneSelect() {
     if (!highlighterOn || !current) return;
     const sel = window.getSelection();
     if (!sel || sel.isCollapsed || sel.rangeCount === 0) return;
-    const anchor = sel.anchorNode;
-    if (!anchor) return;
-    if (!paneRef.current?.contains(anchor)) return;
-    const el = anchor instanceof Element ? anchor : anchor.parentElement;
-    if (el?.closest("input, textarea, .eliminate-btn")) return;
-    const text = sel.toString();
-    sel.removeAllRanges();
-    if (text.trim().length >= 2) addHighlight(text);
+    const range = sel.getRangeAt(0);
+    const start = range.startContainer instanceof Element ? range.startContainer : range.startContainer.parentElement;
+    const end = range.endContainer instanceof Element ? range.endContainer : range.endContainer.parentElement;
+    const startText = start?.closest<HTMLElement>("[data-annotation-scope]");
+    const endText = end?.closest<HTMLElement>("[data-annotation-scope]");
+    if (!startText || startText !== endText || !paneRef.current?.contains(startText)) return;
+    const quote = sel.toString().trim();
+    const target = startText.dataset.annotationScope;
+    if (!target || quote.length < 1 || quote.length > 2000) return;
+    const prefixRange = document.createRange();
+    prefixRange.selectNodeContents(startText);
+    prefixRange.setEnd(range.startContainer, range.startOffset);
+    const prefix = prefixRange.toString();
+    const visibleText = startText.textContent ?? "";
+    let occurrence = 0;
+    for (let index = visibleText.indexOf(quote); index >= 0 && index < prefix.length; index = visibleText.indexOf(quote, index + quote.length)) {
+      if (index + quote.length <= prefix.length) occurrence += 1;
+    }
+    const sourceRange = findSourceRange(annotationSource(target), quote, occurrence);
+    if (!sourceRange) return;
+    const rect = range.getBoundingClientRect();
+    const left = Math.max(8, Math.min(window.innerWidth - 292, rect.left + rect.width / 2 - 142));
+    const top = rect.top > 84 ? rect.top - 60 : rect.bottom + 10;
+    setSelectionToolbar({ target, ...sourceRange, left, top });
   }
 
   // ---- navigation ----
@@ -351,6 +429,34 @@ export default function TestSessionPage() {
     }
   }
 
+  async function leaveAttempt() {
+    if (!data || !current || submitting || navigationPending || leaving) return;
+    leavingRef.current = true;
+    setLeaving(true);
+    setNavigationPending(true);
+    setLeaveError(null);
+    try {
+      await flushAnswerSaves();
+      const token = await getToken();
+      await fnJson("student-attempts/pause", {
+        method: "POST",
+        token,
+        body: { attempt_id: data.attempt.id },
+      });
+      const destination = data.test.kind === "practice" ? "/student/practice" : "/student/tests";
+      navigate(destination, { replace: true });
+    } catch (err) {
+      leavingRef.current = false;
+      const message = err instanceof Error ? err.message : "Unable to leave this attempt";
+      setLeaveError(`Could not save and pause this attempt. ${message}`);
+      if (saveQueue.current.failedQuestionIds.length > 0) {
+        setSaveError("An answer could not be saved. Retry the save before leaving.");
+      }
+      setNavigationPending(false);
+      setLeaving(false);
+    }
+  }
+
   if (loadError) {
     return (
       <div className="center-fill">
@@ -383,10 +489,8 @@ export default function TestSessionPage() {
   const totalUnanswered = allTestQuestions.length - totalAnswered;
 
   const timerClass = secondsLeft === null ? "" : secondsLeft < 60 ? "danger" : secondsLeft < 300 ? "warn" : "";
-  const progressPercent = questions.length > 0 ? Math.round(((qIndex + 1) / questions.length) * 100) : 0;
-
   return (
-    <div className={`session-root${highlighterOn ? " highlight-mode" : ""}`}>
+    <div className={`session-root${highlighterOn ? " highlight-mode" : ""}`} data-test-theme={testTheme}>
       {saveError && (
         <div className="login-error" role="alert" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
           <span>{saveError}</span>
@@ -396,57 +500,57 @@ export default function TestSessionPage() {
         </div>
       )}
       {/* ---------- top bar ---------- */}
-      <div className="session-topbar">
-        <div className="session-title-block" style={{ minWidth: 0 }}>
-          <div className="t-title">{data.test.title}</div>
-          <div className="t-sub">
-            {section?.name ?? kindLabel} · {module.name} · Question {qIndex + 1} of {questions.length}
+      <header className="session-topbar">
+        <div className="session-header-main">
+          <div className="session-title-block">
+            <div className="t-title">Section {section?.position ?? 1}, Module {module.position}: {section?.name ?? kindLabel}</div>
+            <button className="session-directions-button" disabled={navigationPending || submitting} onClick={() => setModal("directions")}>
+              Directions <span aria-hidden="true">⌄</span>
+            </button>
           </div>
-          <div className="session-progress" aria-hidden="true"><span style={{ width: `${progressPercent}%` }} /></div>
+          <div className="session-timer-center" role="timer" aria-label="Module time left">
+            <span className={`timer-pill ${timerClass}`}>{timerVisible && secondsLeft !== null ? fmtSeconds(secondsLeft) : timerVisible ? "--:--" : "••:••"}</span>
+            <button className="timer-visibility-button" onClick={() => setTimerVisible((visible) => !visible)} aria-pressed={!timerVisible}>
+              {timerVisible ? "Hide" : "Show"}
+            </button>
+          </div>
+          <div className="session-tools">
+            <div
+              className={`session-annotation-toggle${highlighterOn ? " is-active" : ""}`}
+              role="switch"
+              aria-checked={highlighterOn}
+              aria-label="Highlights"
+              tabIndex={navigationPending || submitting ? -1 : 0}
+              aria-disabled={navigationPending || submitting}
+              onClick={() => {
+                if (navigationPending || submitting) return;
+                setHighlighterOn((enabled) => !enabled);
+                setSelectionToolbar(null);
+              }}
+              onKeyDown={(event) => {
+                if ((event.key === "Enter" || event.key === " ") && !navigationPending && !submitting) {
+                  event.preventDefault();
+                  setHighlighterOn((enabled) => !enabled);
+                  setSelectionToolbar(null);
+                }
+              }}
+            >
+              <span className="session-annotation-icons" aria-hidden="true"><PenLine size={15} /><Highlighter size={15} /></span>
+              <span>Highlights</span>
+            </div>
+            <div className="session-more-placeholder" aria-hidden="true">
+              <MoreVertical size={17} />
+              <span>More</span>
+            </div>
+          </div>
         </div>
-        <div className="session-timer-center" role="timer" aria-label="Module time left">
-          <span className="timer-label">Time left</span>
-          <span className={`timer-pill ${timerClass}`}>{secondsLeft === null ? "--:--" : fmtSeconds(secondsLeft)}</span>
-        </div>
-        <div className="session-tools">
-          <button
-            className={`session-tool${highlighterOn ? " active" : ""}`}
-            disabled={navigationPending || submitting}
-            onClick={() => setHighlighterOn((v) => !v)}
-            title="Select text to highlight it yellow"
-          >
-            Highlighter
-          </button>
-          {highlighterOn && (
-            <>
-              <button
-                className="session-tool"
-                disabled={navigationPending || submitting || (resp?.highlights?.length ?? 0) === 0}
-                onClick={() => undoHighlight()}
-                title="Remove the most recent highlight on this question"
-              >
-                Undo
-              </button>
-              <button
-                className="session-tool"
-                disabled={navigationPending || submitting || (resp?.highlights?.length ?? 0) === 0}
-                onClick={() => clearHighlights()}
-                title="Remove all highlights on this question"
-              >
-                Clear all
-              </button>
-            </>
-          )}
-          <button className="session-tool" disabled={navigationPending || submitting} onClick={() => setModal("directions")}>Directions</button>
-          {isMath && <button className="session-tool" disabled={navigationPending || submitting} onClick={() => setModal("reference")}>Reference</button>}
-          <button className="session-tool" disabled={navigationPending || submitting} onClick={() => setModal("grid")}>Review</button>
-        </div>
-      </div>
+        <ProgressStrip questions={questions} responses={responses} currentIndex={qIndex} />
+      </header>
 
       {/* ---------- question area ---------- */}
       <div className="session-body">
         <div
-          className="session-question-pane"
+          className={`session-question-pane${hasPassage ? " has-passage" : " no-passage"}`}
           ref={paneRef}
           onMouseUp={() => handlePaneSelect()}
           onTouchEnd={() => handlePaneSelect()}
@@ -462,8 +566,9 @@ export default function TestSessionPage() {
                 <div className="passage-text">
                   <HighlightableText
                     text={current.question.passage!.content}
-                    highlights={resp?.highlights}
-                    onRemoveHighlight={(h) => removeHighlight(h)}
+                    annotations={resp?.annotations}
+                    legacyHighlights={resp?.highlights}
+                    target="passage"
                   />
                 </div>
               </div>
@@ -472,22 +577,36 @@ export default function TestSessionPage() {
           <div className={`session-panel right${hasPassage ? "" : " solo"}`}>
             <div key={current.question_id} className="q-anim">
             <div className="q-number">
-              <span>Question {qIndex + 1}</span>
+              <span className="question-index-badge">{qIndex + 1}</span>
               <button
                 className={`mark-toggle${resp?.marked_for_review ? " on" : ""}`}
                 disabled={navigationPending || submitting}
                 onClick={() => void saveResponse(current.question_id, { marked_for_review: !resp?.marked_for_review })}
                 title={resp?.marked_for_review ? "Remove review flag" : "Flag for review later"}
               >
-                <Flag size={13} fill={resp?.marked_for_review ? "currentColor" : "none"} />
-                {resp?.marked_for_review ? "Flagged for review" : "Flag for review"}
+                <Bookmark size={15} fill={resp?.marked_for_review ? "currentColor" : "none"} />
+                {resp?.marked_for_review ? "Marked for Review" : "Mark for Review"}
               </button>
+              {current.question.question_type === "multiple_choice" && (
+                <button
+                  className={`eliminate-mode-toggle${eliminateMode ? " is-active" : ""}`}
+                  type="button"
+                  aria-label="Eliminate answer choices"
+                  aria-pressed={eliminateMode}
+                  title={eliminateMode ? "Turn off choice elimination" : "Eliminate choices"}
+                  disabled={navigationPending || submitting}
+                  onClick={() => setEliminateMode((enabled) => !enabled)}
+                >
+                  <ABCStrikeIcon />
+                </button>
+              )}
             </div>
             <p className="q-prompt">
               <HighlightableText
                 text={current.question.prompt}
-                highlights={resp?.highlights}
-                onRemoveHighlight={(h) => removeHighlight(h)}
+                annotations={resp?.annotations}
+                legacyHighlights={resp?.highlights}
+                target="prompt"
               />
             </p>
 
@@ -506,44 +625,43 @@ export default function TestSessionPage() {
                 {[...current.question.choices].sort((a, b) => a.position - b.position).map((c) => {
                   const eliminated = resp?.eliminated_choice_ids?.includes(c.id) ?? false;
                   return (
-                    <button
-                      key={c.id}
-                      className={`choice ${resp?.selected_choice_id === c.id ? "selected" : ""} ${eliminated ? "eliminated" : ""}`}
-                      disabled={navigationPending || submitting}
-                      onClick={() => {
-                        // While highlighting, clicks select text — never answers.
-                        if (highlighterOn) return;
-                        void saveResponse(current.question_id, { selected_choice_id: c.id, eliminated_choice_ids: resp?.eliminated_choice_ids?.filter((id) => id !== c.id) ?? [] });
-                      }}
-                    >
-                      <span className="letter">{c.label}</span>
-                      <span className="choice-text" style={{ flex: 1 }}>
-                        <HighlightableText
-                          text={c.text}
-                          highlights={resp?.highlights}
-                          onRemoveHighlight={(h) => removeHighlight(h)}
-                        />
-                      </span>
-                      <span
-                        className="eliminate-btn"
-                        aria-disabled={navigationPending || submitting}
-                        role="button"
-                        tabIndex={0}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          void saveResponse(current.question_id, {
+                    <div className="choice-row" key={c.id}>
+                      <button
+                        className={`choice ${resp?.selected_choice_id === c.id ? "selected" : ""} ${eliminated ? "eliminated" : ""}`}
+                        type="button"
+                        disabled={navigationPending || submitting}
+                        onClick={() => {
+                          if (highlighterOn) return;
+                          void saveResponse(current.question_id, { selected_choice_id: c.id, eliminated_choice_ids: resp?.eliminated_choice_ids?.filter((id) => id !== c.id) ?? [] });
+                        }}
+                      >
+                        <span className="letter">{c.label}</span>
+                        <span className="choice-text">
+                          <HighlightableText
+                            text={c.text}
+                            annotations={resp?.annotations}
+                            legacyHighlights={resp?.highlights}
+                            target={`choice:${c.id}`}
+                          />
+                        </span>
+                      </button>
+                      {eliminateMode && (
+                        <button
+                          className={`choice-eliminate${eliminated ? " is-eliminated" : ""}`}
+                          type="button"
+                          aria-label={`${eliminated ? "Restore" : "Eliminate"} choice ${c.label}`}
+                          aria-pressed={eliminated}
+                          disabled={navigationPending || submitting}
+                          onClick={() => void saveResponse(current.question_id, {
                             eliminated_choice_ids: eliminated
                               ? (resp?.eliminated_choice_ids ?? []).filter((id) => id !== c.id)
                               : [...(resp?.eliminated_choice_ids ?? []), c.id],
-                          });
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") e.currentTarget.click();
-                        }}
-                      >
-                        {eliminated ? "Restore" : "Eliminate"}
-                      </span>
-                    </button>
+                          })}
+                        >
+                          <CrossedLetter label={c.label} />
+                        </button>
+                      )}
+                    </div>
                   );
                 })}
               </div>
@@ -566,18 +684,16 @@ export default function TestSessionPage() {
         </div>
 
         {/* ---------- bottom bar ---------- */}
+        <div className="session-bottom-progress">
+          <ProgressStrip questions={questions} responses={responses} currentIndex={qIndex} />
+        </div>
         <div className="session-bottombar">
           <Button variant="outline" onClick={() => void goTo(qIndex - 1)} disabled={qIndex === 0 || navigationPending || submitting}>
             Back
           </Button>
-          <div className="bottombar-center">
-            <span className="q-position">
-              Question {qIndex + 1} of {questions.length}
-            </span>
-            <button className="session-tool" style={{ color: "var(--primary-dark)", background: "var(--primary-soft)" }} disabled={navigationPending || submitting} onClick={() => setModal("grid")}>
-              Question grid
-            </button>
-          </div>
+          <button className="question-count-button" disabled={navigationPending || submitting} onClick={() => setModal("grid")}>
+            Question {qIndex + 1} of {questions.length} <span aria-hidden="true">⌃</span>
+          </button>
           {qIndex < questions.length - 1 ? (
             <Button disabled={navigationPending || submitting} onClick={() => void goTo(qIndex + 1)}>{navigationPending ? "Saving…" : "Next"}</Button>
           ) : (
@@ -592,11 +708,26 @@ export default function TestSessionPage() {
           title={gridTitle}
           onClose={() => setModal(null)}
           footer={
-            <Button disabled={submitting || navigationPending} onClick={() => setModal("submitAll")}>
-              Submit {kindLabel}
-            </Button>
+            <div className="session-grid-actions">
+              <Button variant="outline" disabled={submitting || navigationPending || leaving} onClick={() => void leaveAttempt()}>
+                {leaving ? "Saving and leaving…" : "Leave"}
+              </Button>
+              <Button disabled={submitting || navigationPending || leaving} onClick={() => setModal("submitAll")}>
+                Submit {kindLabel}
+              </Button>
+            </div>
           }
         >
+          {leaveError && (
+            <div className="login-error" role="alert" style={{ marginBottom: 16 }}>
+              <div>{leaveError}</div>
+              {saveQueue.current.failedQuestionIds.length > 0 && (
+                <Button variant="outline" disabled={navigationPending || submitting} onClick={() => void retryFailedSaves()} style={{ marginTop: 10 }}>
+                  Retry answer saves
+                </Button>
+              )}
+            </div>
+          )}
           <QuestionGrid
             questions={questions}
             qIndex={qIndex}
@@ -606,6 +737,11 @@ export default function TestSessionPage() {
               void goTo(i).then((moved) => { if (moved) setModal(null); });
             }}
           />
+          <div className="session-review-counts">
+            <span>{answeredCount} answered</span>
+            <span>{unanswered} unanswered</span>
+            <span>{markedCount} flagged</span>
+          </div>
         </Modal>
       )}
 
@@ -687,6 +823,7 @@ export default function TestSessionPage() {
             This module has {questions.length} questions and a {module.time_limit_minutes}-minute time limit. Your
             answers are saved automatically as you move through the full-length test.
           </p>
+          {isMath && <button type="button" className="session-reference-link" onClick={() => setModal("reference")}>Open math reference</button>}
         </Modal>
       )}
 
@@ -701,7 +838,57 @@ export default function TestSessionPage() {
           </div>
         </Modal>
       )}
+      {selectionToolbar && createPortal(
+        <div
+          className="selection-annotation-toolbar"
+          data-test-theme={testTheme}
+          style={{ left: selectionToolbar.left, top: selectionToolbar.top }}
+          role="toolbar"
+          aria-label="Text annotation tools"
+          onMouseDown={(event) => event.preventDefault()}
+        >
+          <div className="annotation-toolbar-actions">
+            <button type="button" className="annotation-color yellow" aria-label="Highlight yellow" title="Yellow highlight" onClick={() => applySelectionAnnotation({ kind: "color", color: "yellow" })} />
+            <button type="button" className="annotation-color blue" aria-label="Highlight blue" title="Blue highlight" onClick={() => applySelectionAnnotation({ kind: "color", color: "blue" })} />
+            <button type="button" className="annotation-color pink" aria-label="Highlight pink" title="Pink highlight" onClick={() => applySelectionAnnotation({ kind: "color", color: "pink" })} />
+            <span className="annotation-toolbar-divider" />
+            <button
+              type="button"
+              className={`annotation-tool-button${isSelectionUnderlined() ? " is-active" : ""}`}
+              aria-label="Underline selection"
+              title="Underline"
+              onClick={() => applySelectionAnnotation({ kind: "underline" })}
+            ><Underline size={20} /></button>
+            <button type="button" className="annotation-tool-button" aria-label="Erase highlights from selection" title="Erase" onClick={() => applySelectionAnnotation({ kind: "erase" })}><Trash2 size={18} /></button>
+          </div>
+        </div>,
+        document.body,
+      )}
     </div>
+  );
+}
+
+function ABCStrikeIcon() {
+  return (
+    <svg className="abc-strike-icon" viewBox="0 0 52 24" aria-hidden="true">
+      <g fill="none" stroke="currentColor" strokeWidth="1.35">
+        <circle cx="10" cy="12" r="8" /><circle cx="26" cy="12" r="8" /><circle cx="42" cy="12" r="8" />
+      </g>
+      <g fill="currentColor" fontFamily="Arial, sans-serif" fontSize="8" fontWeight="700" textAnchor="middle">
+        <text x="10" y="15">A</text><text x="26" y="15">B</text><text x="42" y="15">C</text>
+      </g>
+      <path d="M2 20 50 4" fill="none" stroke="currentColor" strokeWidth="2" />
+    </svg>
+  );
+}
+
+function CrossedLetter({ label }: { label: string }) {
+  return (
+    <svg className="crossed-letter-icon" viewBox="0 0 30 30" aria-hidden="true">
+      <circle cx="15" cy="15" r="10.5" fill="none" stroke="currentColor" strokeWidth="1.7" />
+      <text x="15" y="19" fill="currentColor" fontFamily="Arial, sans-serif" fontSize="11" fontWeight="700" textAnchor="middle">{label}</text>
+      <path d="M4 15h22" fill="none" stroke="currentColor" strokeWidth="1.8" />
+    </svg>
   );
 }
 
@@ -710,6 +897,32 @@ function BookmarkRibbon() {
     <svg className="qflag" viewBox="0 0 12 16" aria-hidden="true">
       <path d="M1 0.5h10V15l-5-3.6L1 15z" fill="var(--error)" />
     </svg>
+  );
+}
+
+function ProgressStrip({
+  questions,
+  responses,
+  currentIndex,
+}: {
+  questions: TestModule["questions"];
+  responses: Record<string, SavedResponse>;
+  currentIndex: number;
+}) {
+  return (
+    <div className="session-progress-strip" aria-hidden="true">
+      {questions.map((item, index) => {
+        const response = responses[item.question_id];
+        const answered = !!response?.selected_choice_id || !!response?.typed_answer;
+        const marked = !!response?.marked_for_review;
+        return (
+          <span
+            key={item.question_id}
+            className={`${index === currentIndex ? "current " : ""}${answered ? "answered " : ""}${marked ? "marked" : ""}`.trim()}
+          />
+        );
+      })}
+    </div>
   );
 }
 

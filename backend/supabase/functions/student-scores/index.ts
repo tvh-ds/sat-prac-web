@@ -1,7 +1,18 @@
-import { requireRole, HttpError, pathSegments } from "../_shared/auth.ts";
+import { HttpError, pathSegments } from "../_shared/auth.ts";
 import { serviceClient } from "../_shared/supabase.ts";
 import { corsHeaders, json, error } from "../_shared/cors.ts";
 import { requireApprovedStudent } from "../_shared/auth.ts";
+import { errorLogReviewSaveSchema } from "../_shared/validation.ts";
+
+const ERROR_LOG_PAGE_SIZE = 10;
+
+interface ErrorLogPage {
+  items: Array<Record<string, unknown> & { stimulus_image_path?: string | null }>;
+  total: number;
+  needs_review_count: number;
+  domains: string[];
+  skills: string[];
+}
 
 interface ReviewChoice { id: string; label: string; text: string; is_correct: boolean; position: number }
 interface ReviewQuestion {
@@ -32,6 +43,117 @@ Deno.serve(async (req) => {
     const ctx = await requireApprovedStudent(req);
     const svc = serviceClient();
     const seg = pathSegments(req);
+
+    if (req.method === "GET" && seg.length === 2 && seg[1] === "error-log") {
+      const url = new URL(req.url);
+      const rawPage = url.searchParams.get("page") ?? "1";
+      const page = Number(rawPage);
+      const domain = url.searchParams.get("domain")?.trim() ?? "";
+      const skill = url.searchParams.get("skill")?.trim() ?? "";
+      if (!/^\d+$/.test(rawPage) || !Number.isSafeInteger(page) || page < 1 || page > 10000) {
+        return error("Invalid error log page", 400);
+      }
+      if (domain.length > 100 || skill.length > 100) return error("Invalid error log filter", 400);
+
+      const { data, error: pageErr } = await svc.rpc("get_student_error_log_page", {
+        p_student_id: ctx.user.id,
+        p_domain: domain || null,
+        p_skill: skill || null,
+        p_page: page,
+        p_page_size: ERROR_LOG_PAGE_SIZE,
+      });
+      if (pageErr) {
+        console.error("Unable to load student error log", pageErr);
+        return error("Unable to load your error log", 500);
+      }
+      const result = data as ErrorLogPage;
+      const imagePaths = [...new Set((result.items ?? [])
+        .map((item) => item.stimulus_image_path)
+        .filter((path): path is string => typeof path === "string" && Boolean(path)))];
+      const signedByPath = new Map<string, string>();
+      if (imagePaths.length > 0) {
+        const { data: signed, error: signErr } = await svc.storage
+          .from("question-assets")
+          .createSignedUrls(imagePaths, 60 * 60);
+        if (signErr) console.error("Failed to sign error log stimulus images", signErr);
+        for (const item of signed ?? []) {
+          if (item.path && item.signedUrl) signedByPath.set(item.path, item.signedUrl);
+        }
+      }
+      const items = (result.items ?? []).map(({ stimulus_image_path, ...item }) => ({
+        ...item,
+        stimulus_image_url: stimulus_image_path ? signedByPath.get(stimulus_image_path) ?? null : null,
+      }));
+      return json({ ...result, items, page, page_size: ERROR_LOG_PAGE_SIZE });
+    }
+
+    if (req.method === "POST" && seg.length === 3 && seg[1] === "error-log" && seg[2] === "review") {
+      const body = errorLogReviewSaveSchema.parse(await req.json());
+      const { data: attempt, error: attemptErr } = await svc
+        .from("attempts")
+        .select("id, status")
+        .eq("id", body.attempt_id)
+        .eq("student_id", ctx.user.id)
+        .maybeSingle();
+      if (attemptErr) {
+        console.error("Unable to verify error log attempt ownership", attemptErr);
+        return error("Unable to save this review", 500);
+      }
+      if (!attempt || attempt.status !== "graded") return error("Review item not found", 404);
+
+      const { data: attemptModules, error: moduleErr } = await svc
+        .from("attempt_modules")
+        .select("module_id")
+        .eq("attempt_id", body.attempt_id);
+      if (moduleErr) {
+        console.error("Unable to verify error log module ownership", moduleErr);
+        return error("Unable to save this review", 500);
+      }
+      const moduleIds = (attemptModules ?? []).map((module) => module.module_id);
+      const { count, error: questionErr } = await svc
+        .from("test_module_questions")
+        .select("question_id", { count: "exact", head: true })
+        .eq("question_id", body.question_id)
+        .in("module_id", moduleIds.length > 0 ? moduleIds : [""]);
+      if (questionErr) {
+        console.error("Unable to verify error log question ownership", questionErr);
+        return error("Unable to save this review", 500);
+      }
+      if (!count) return error("Review item not found", 404);
+
+      const { data: response, error: responseErr } = await svc
+        .from("attempt_responses")
+        .select("selected_choice_id, typed_answer, is_correct")
+        .eq("attempt_id", body.attempt_id)
+        .eq("question_id", body.question_id)
+        .maybeSingle();
+      if (responseErr) {
+        console.error("Unable to verify error log response", responseErr);
+        return error("Unable to save this review", 500);
+      }
+      const unanswered = !response || (
+        !response.selected_choice_id && !String(response.typed_answer ?? "").trim()
+      );
+      if (!unanswered && response?.is_correct === true) return error("Review item not found", 404);
+
+      const reviewedAt = body.reviewed ? new Date().toISOString() : null;
+      const { data: saved, error: saveErr } = await svc
+        .from("student_error_log_reviews")
+        .upsert({
+          student_id: ctx.user.id,
+          attempt_id: body.attempt_id,
+          question_id: body.question_id,
+          note_text: body.note,
+          reviewed_at: reviewedAt,
+        }, { onConflict: "student_id,attempt_id,question_id" })
+        .select("note_text, reviewed_at, updated_at")
+        .single();
+      if (saveErr) {
+        console.error("Unable to save student error log review", saveErr);
+        return error("Unable to save this review", 500);
+      }
+      return json({ review: saved });
+    }
 
     if (req.method === "GET" && seg.length === 1) {
       const { data, error: err } = await svc

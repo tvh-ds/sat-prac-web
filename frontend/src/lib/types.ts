@@ -86,6 +86,7 @@ export interface AttemptModule {
   module_id: string;
   status: "in_progress" | "not_started" | "completed";
   started_at: string | null;
+  remaining_seconds?: number | null;
   seconds_left: number | null;
 }
 
@@ -98,7 +99,19 @@ export interface SavedResponse {
   marked_for_review: boolean;
   eliminated_choice_ids: string[];
   highlights: string[];
+  annotations: TextAnnotation[];
   is_correct: boolean | null;
+}
+
+export interface TextAnnotation {
+  id: string;
+  target: string;
+  quote: string;
+  occurrence?: number;
+  start?: number;
+  end?: number;
+  color: "yellow" | "blue" | "pink" | "none";
+  underline: boolean;
 }
 
 export interface TestListItem {
@@ -198,6 +211,26 @@ export interface ScoreDetail {
   attempt: ScoreEntry;
   review: ReviewItem[];
   explanations_released?: boolean;
+}
+
+export interface ErrorLogItem extends ReviewItem {
+  item_id: string;
+  attempt_id: string;
+  attempt_title: string;
+  attempt_kind: string | null;
+  submitted_at: string | null;
+  note_text: string;
+  reviewed_at: string | null;
+}
+
+export interface ErrorLogPage {
+  items: ErrorLogItem[];
+  total: number;
+  needs_review_count: number;
+  domains: string[];
+  skills: string[];
+  page: number;
+  page_size: number;
 }
 
 export interface PracticeAssignmentBatch {
@@ -626,3 +659,13 @@ export interface VocabAssignmentStudent {
   email: string | null;
   assigned: boolean;
 }
+export type StudentDashboardState = "assigned" | "complete" | "overdue";
+export type StudentDashboardItem = {
+  id: string;
+  title: string;
+  kind: "test" | "practice" | "vocabulary";
+  due_at: string | null;
+  state: StudentDashboardState;
+  href: string;
+};
+export type StudentDashboardData = { items: StudentDashboardItem[] };

@@ -3,6 +3,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import type { Test } from "../../lib/types";
 import { Button, Spinner } from "../../components/ui";
+import TestThemeToggle from "../../components/TestThemeToggle";
 
 interface StartResult {
   attempt_id: string;
@@ -96,6 +97,8 @@ export default function PracticeStartPage() {
             </div>
 
             {error && <div className="login-error">{error}</div>}
+
+            <TestThemeToggle />
 
             <div style={{ display: "flex", gap: 12 }}>
               <Button variant="outline" onClick={() => navigate("/student/practice")}>← Back</Button>

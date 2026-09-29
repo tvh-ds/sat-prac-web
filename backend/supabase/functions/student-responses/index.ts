@@ -79,10 +79,10 @@ async function saveResponse(
     typed_answer: body.typed_answer ?? null,
     marked_for_review: body.marked_for_review ?? false,
     eliminated_choice_ids: body.eliminated_choice_ids ?? [],
-    notes: body.notes ?? null,
     highlights: body.highlights ?? [],
     time_spent_seconds: body.time_spent_seconds ?? 0,
   };
+  if (body.annotations !== undefined) patch.annotations = body.annotations;
   const { data, error: err } = await svc
     .from("attempt_responses")
     .upsert(
@@ -94,7 +94,7 @@ async function saveResponse(
       },
       { onConflict: "attempt_id,question_id" },
     )
-    .select("attempt_id, question_id, module_id, selected_choice_id, typed_answer, marked_for_review, eliminated_choice_ids, highlights, is_correct")
+    .select("attempt_id, question_id, module_id, selected_choice_id, typed_answer, marked_for_review, eliminated_choice_ids, highlights, annotations, is_correct")
     .single();
   if (err) throw new HttpError(500, err.message);
   return data;

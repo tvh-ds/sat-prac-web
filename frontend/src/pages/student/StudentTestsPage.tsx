@@ -26,9 +26,9 @@ export default function StudentTestsPage() {
 
   useEffect(() => { if (tests) requestAnimationFrame(() => initReveal()); }, [tests, history]);
 
-  const fullTests = (tests ?? []).filter((t) => t.kind !== "practice");
+  const fullTests = (tests ?? []).filter((t) => t.kind === "full");
   const inProgressTests = fullTests.filter((t) => t.attempt?.status === "in_progress");
-  const graded = history.filter((h) => h.status === "graded" && (h.test?.kind ?? "full") !== "practice");
+  const graded = history.filter((h) => h.status === "graded" && h.test?.kind === "full");
   // Repeat assignments: each assignment row stands alone. A row is available
   // when its own assignment has no attempt yet — other assignments of the
   // same test do not hide it.

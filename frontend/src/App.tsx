@@ -5,6 +5,7 @@ import { Spinner } from "./components/ui";
 
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const StudentLayout = lazy(() => import("./pages/student/StudentLayout"));
+const StudentDashboardPage = lazy(() => import("./pages/student/StudentDashboardPage"));
 const StudentProfilePage = lazy(() => import("./pages/student/StudentProfilePage"));
 const StudentTestsPage = lazy(() => import("./pages/student/StudentTestsPage"));
 const ResultsPage = lazy(() => import("./pages/student/ResultsPage"));
@@ -75,7 +76,8 @@ export default function App() {
                 </RequireRole>
               }
             >
-              <Route index element={<Navigate to="tests" replace />} />
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<StudentDashboardPage />} />
               <Route path="profile" element={<StudentProfilePage />} />
               <Route path="tests" element={<StudentTestsPage />} />
               <Route path="practice" element={<PracticeStudentPage />} />
