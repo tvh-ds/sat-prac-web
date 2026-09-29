@@ -13,7 +13,7 @@ Deno.serve(async (req) => {
     if (req.method === "GET" && seg.length === 2 && seg[1] === "students") {
       const { data: students, error: err } = await svc
         .from("student_profiles")
-        .select("*, profiles:profiles!student_profiles_id_fkey(full_name), attempts(id, status), topic_performance(student_id, attempted, correct)")
+        .select("*, profiles:profiles!student_profiles_id_fkey(full_name), attempts!attempts_student_id_fkey(id, status), topic_performance(student_id, attempted, correct)")
         .order("created_at", { ascending: false });
       if (err) return error(err.message, 500);
       const rows = (students ?? []).map((s: Record<string, unknown>) => {
