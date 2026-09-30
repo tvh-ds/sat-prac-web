@@ -50,65 +50,51 @@ export default function PracticeStartPage() {
   }
 
   return (
-    <div className="app-layout">
-      <header className="app-header scrolled" style={{ position: "sticky" }}>
-        <div className="brand">
-          <span className="logo">G</span>
-          The Grit
-        </div>
+    <div className="app-layout navy-shell prep-shell">
+      <header className="app-header scrolled prep-header">
+        <div className="brand"><span className="student-wordmark">Grit</span></div>
+        <span className="prep-header-note">Practice set · Before you begin</span>
       </header>
-      <div className="app-content" style={{ maxWidth: 760 }}>
-        <div className="page-fade">
-          <div className="card card-pad" style={{ padding: 34 }}>
-            <h1 className="page-title">Practice Set</h1>
-            <p className="page-sub">A short set with a single timer. Answers save automatically as you go.</p>
-
+      <main className="app-content prep-content page-fade">
+        <section className="prep-stage">
+          <div className="prep-lead">
+            <span className="prep-eyebrow">A focused session</span>
+            <h1>Small set.<br /><em>Strong finish.</em></h1>
+            <p>A short practice run with one timer and instant feedback. Choose a calm moment, then work through the questions at your pace.</p>
+            <div className="prep-rule" aria-hidden="true"><span>01</span><i /><span>03</span></div>
+            <div className="prep-lead-note">Your answers save as you go.</div>
+          </div>
+          <div className="prep-panel">
+            <div className="prep-panel-top"><span>Practice set</span><span>Ready when you are</span></div>
+            <h2>Before you begin</h2>
             {meta === null && <Spinner />}
-
             {meta && (
-              <div className="card-row" style={{ marginTop: 4, marginBottom: 22 }}>
-                <span className="pill" style={{ background: "var(--primary-soft)", color: "var(--primary)" }}>
-                  {meta.questions} question{meta.questions === 1 ? "" : "s"}
-                </span>
-                {meta.minutes != null && (
-                  <span className="pill" style={{ background: "var(--primary-soft)", color: "var(--primary)" }}>
-                    {meta.minutes}-minute timer
-                  </span>
-                )}
+              <div className="prep-facts">
+                <div><strong>{meta.questions}</strong><span>Question{meta.questions === 1 ? "" : "s"}</span></div>
+                {meta.minutes != null && <div><strong>{meta.minutes}</strong><span>Minutes</span></div>}
               </div>
             )}
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 28 }}>
+            <div className="prep-steps">
               {[
                 { title: "One timer for the whole set", body: "The countdown starts when you begin. When it reaches zero, the set submits automatically." },
                 { title: "Free navigation", body: "Move between questions freely and mark any you want to double-check. Your work saves automatically." },
                 { title: "Instant grading", body: "When you finish, your answers are graded right away and your score report opens immediately." },
               ].map((s, i) => (
-                <div key={s.title} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
-                  <span className="avatar" style={{ width: 28, height: 28, fontSize: 13, flexShrink: 0 }}>
-                    {i + 1}
-                  </span>
-                  <div style={{ minWidth: 0 }}>
-                    <strong style={{ fontSize: 14.5 }}>{s.title}</strong>
-                    <p style={{ margin: "2px 0 0", fontSize: 14, color: "var(--muted)" }}>{s.body}</p>
-                  </div>
+                <div className="prep-step" key={s.title}>
+                  <span className="prep-step-number">0{i + 1}</span>
+                  <div><strong>{s.title}</strong><p>{s.body}</p></div>
                 </div>
               ))}
             </div>
-
             {error && <div className="login-error">{error}</div>}
-
-            <TestThemeToggle />
-
-            <div style={{ display: "flex", gap: 12 }}>
-              <Button variant="outline" onClick={() => navigate("/student/practice")}>← Back</Button>
-              <Button size="lg" onClick={() => void start()} disabled={starting}>
-                {starting ? "Starting…" : "Start practice"}
-              </Button>
+            <div className="prep-theme"><TestThemeToggle /></div>
+            <div className="prep-actions">
+              <Button variant="outline" onClick={() => navigate("/student/practice")}>← Back to practice</Button>
+              <Button size="lg" onClick={() => void start()} disabled={starting}>{starting ? "Starting…" : "Start practice"}</Button>
             </div>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
   );
 }

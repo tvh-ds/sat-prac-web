@@ -57,49 +57,40 @@ export default function TestStartPage() {
   }
 
   return (
-    <div className="app-layout">
-      <header className="app-header scrolled" style={{ position: "sticky" }}>
-        <div className="brand">
-          <span className="logo">G</span>
-          The Grit
-        </div>
+    <div className="app-layout navy-shell prep-shell">
+      <header className="app-header scrolled prep-header">
+        <div className="brand"><span className="student-wordmark">Grit</span></div>
+        <span className="prep-header-note">Full-length test · Before you begin</span>
       </header>
-      <div className="app-content" style={{ maxWidth: 760 }}>
-        <div className="page-fade">
-          <div className="card card-pad" style={{ padding: 34 }}>
-            <h1 className="page-title">Starting a Full-Length Test</h1>
-            <p className="page-sub">Read the instructions before you begin.</p>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 28 }}>
+      <main className="app-content prep-content page-fade">
+        <section className="prep-stage">
+          <div className="prep-lead">
+            <span className="prep-eyebrow">Test day, on your terms</span>
+            <h1>Set your focus.<br /><em>Then begin.</em></h1>
+            <p>Four timed modules. One complete SAT experience. Take a moment to review the essentials before entering the exam.</p>
+            <div className="prep-rule" aria-hidden="true"><span>01</span><i /><span>04</span></div>
+            <div className="prep-lead-note">Your answers save as you go.</div>
+          </div>
+          <div className="prep-panel">
+            <div className="prep-panel-top"><span>Full-length test</span><span>Ready when you are</span></div>
+            <h2>Before you begin</h2>
+            <div className="prep-steps">
               {STEPS.map((s, i) => (
-                <div key={s.title} style={{ display: "flex", gap: 14, alignItems: "flex-start" }}>
-                  <span
-                    className="avatar"
-                    style={{ width: 28, height: 28, fontSize: 13, flexShrink: 0 }}
-                  >
-                    {i + 1}
-                  </span>
-                  <div style={{ minWidth: 0 }}>
-                    <strong style={{ fontSize: 14.5 }}>{s.title}</strong>
-                    <p style={{ margin: "2px 0 0", fontSize: 14, color: "var(--muted)" }}>{s.body}</p>
-                  </div>
+                <div className="prep-step" key={s.title}>
+                  <span className="prep-step-number">0{i + 1}</span>
+                  <div><strong>{s.title}</strong><p>{s.body}</p></div>
                 </div>
               ))}
             </div>
-
             {error && <div className="login-error">{error}</div>}
-
-            <TestThemeToggle />
-
-            <div style={{ display: "flex", gap: 12 }}>
-              <Button variant="outline" onClick={() => navigate("/student")}>← Back</Button>
-              <Button size="lg" onClick={() => void start()} disabled={starting}>
-                {starting ? "Starting…" : "Start full-length test"}
-              </Button>
+            <div className="prep-theme"><TestThemeToggle /></div>
+            <div className="prep-actions">
+              <Button variant="outline" onClick={() => navigate("/student/tests")}>← Back to tests</Button>
+              <Button size="lg" onClick={() => void start()} disabled={starting}>{starting ? "Starting…" : "Start full-length test"}</Button>
             </div>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
   );
 }

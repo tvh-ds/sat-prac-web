@@ -1222,7 +1222,8 @@ body::before { opacity: 0.03; mix-blend-mode: soft-light; }
   color: var(--text-primary);
   line-height: 1;
 }
-.login-wordmark {
+.login-wordmark,
+.admin-wordmark {
   position: relative;
   isolation: isolate;
   display: inline-flex;
@@ -1234,7 +1235,8 @@ body::before { opacity: 0.03; mix-blend-mode: soft-light; }
   line-height: 1.2;
   letter-spacing: -0.025em;
 }
-.login-wordmark::before {
+.login-wordmark::before,
+.admin-wordmark::before {
   position: absolute;
   inset: -24px -38px;
   z-index: -1;

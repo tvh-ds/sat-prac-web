@@ -38,10 +38,10 @@ export default function StudentLayout() {
   }
 
   return (
-    <div className="app-layout">
+    <div className="app-layout navy-shell cinematic-shell">
       <header className="app-header">
         <div className="brand">
-          <span className="student-wordmark">the Grit</span>
+          <span className="student-wordmark">Grit</span>
         </div>
         <nav className="student-nav">
           {profileApproved ? (
@@ -77,7 +77,7 @@ export default function StudentLayout() {
         <div className="footer-panel">
           <div className="footer-top">
             <div className="footer-brand">
-              <div className="brand"><span className="student-wordmark">the Grit</span></div>
+              <div className="brand"><span className="student-wordmark">Grit</span></div>
               <p>Focused test practice, score review, and vocabulary work in a calm exam-grade workspace.</p>
             </div>
             <div className="footer-links">
@@ -95,7 +95,7 @@ export default function StudentLayout() {
             </div>
           </div>
           <div className="footer-bottom">
-            <span>© {new Date().getFullYear()} The Grit</span>
+            <span>© {new Date().getFullYear()} Grit</span>
             <span className="status-badge"><span className="status-dot" /> Ready for practice</span>
           </div>
         </div>

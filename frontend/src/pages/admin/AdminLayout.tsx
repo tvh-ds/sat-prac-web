@@ -24,7 +24,7 @@ export default function AdminLayout() {
       <div className="admin-sidebar">
         <div className="brand">
           <small>Admin console</small>
-          The Grit
+          <span className="admin-wordmark">Grit</span>
         </div>
         {link("/admin/students", "Students", Users)}
         {link("/admin/imports", "PDF Imports", FileUp)}
@@ -53,7 +53,7 @@ export default function AdminLayout() {
           <div className="footer-panel">
             <div className="footer-top">
               <div className="footer-brand">
-                <div className="brand"><span className="logo">G</span> The Grit</div>
+                <div className="brand"><span className="admin-wordmark">Grit</span></div>
                 <p>Operational workspace for tests, question review, imports, students, and vocabulary.</p>
               </div>
               <div className="footer-links">
@@ -73,7 +73,7 @@ export default function AdminLayout() {
               </div>
             </div>
             <div className="footer-bottom">
-              <span>© {new Date().getFullYear()} The Grit · Self-hosted</span>
+              <span>© {new Date().getFullYear()} Grit · Self-hosted</span>
               <span className="status-badge"><span className="status-dot" /> Platform ready</span>
             </div>
           </div>

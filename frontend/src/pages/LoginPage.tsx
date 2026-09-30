@@ -42,9 +42,9 @@ export default function LoginPage() {
   return (
     <main className="grit-login">
       <div className="grit-login-layout">
-        <section className="login-editorial" aria-label="The Grit overview">
+        <section className="login-editorial" aria-label="Grit overview">
           <div className="login-brand-row">
-            <span className="login-wordmark">the Grit</span>
+            <span className="login-wordmark">Grit</span>
           </div>
 
           <div className="login-hero-copy">

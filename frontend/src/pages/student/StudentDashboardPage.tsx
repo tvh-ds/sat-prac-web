@@ -107,11 +107,6 @@ export default function StudentDashboardPage() {
       <section className="dashboard-welcome" aria-labelledby="dashboard-greeting">
         <h1 id="dashboard-greeting">{dashboardGreeting(now)}, <span>{profile?.full_name || "there"}.</span></h1>
         <p className="dashboard-due-message">{summary ? <>You have <strong>{summary.dueToday}</strong> {summary.dueToday === 1 ? "assignment" : "assignments"} due today.</> : "Your assignments, all in one place."}</p>
-        <div className="dashboard-counts" aria-label="Filter assignments by state">
-          {(["assigned", "complete", "overdue"] as const).map((state) => <button key={state} className={`dashboard-count dashboard-count-${state}${filter === state ? " is-selected" : ""}`} aria-pressed={filter === state} disabled={!summary || !!loadError} onClick={() => setFilter(state)}>
-            <span>{labels[state]}</span><strong>{summary && !loadError ? summary.counts[state] : "—"}</strong>
-          </button>)}
-        </div>
       </section>
       <section className="dashboard-test-date" aria-labelledby="dashboard-test-date-title">
         <div className="dashboard-date-title"><CalendarDays size={19} aria-hidden="true" /><h2 id="dashboard-test-date-title">Your test day</h2></div>
@@ -133,6 +128,11 @@ export default function StudentDashboardPage() {
         </form>}
         <div id="dashboard-date-feedback" className="dashboard-date-feedback" aria-live="polite">{dateError ? <><span role="alert">{dateError}</span>{!dateReady && <Button variant="ghost" size="sm" onClick={() => void loadDate()}>Retry</Button>}</> : dateNotice}</div>
       </section>
+    </div>
+    <div className="dashboard-counts" aria-label="Filter assignments by state">
+      {(["assigned", "complete", "overdue"] as const).map((state) => <button key={state} className={`dashboard-count dashboard-count-${state}${filter === state ? " is-selected" : ""}`} aria-pressed={filter === state} disabled={!summary || !!loadError} onClick={() => setFilter(state)}>
+        <span>{labels[state]}</span><strong>{summary && !loadError ? summary.counts[state] : "—"}</strong>
+      </button>)}
     </div>
     <section className="card card-pad dashboard-assignment-card" aria-labelledby="dashboard-assignments-title" aria-busy={!data && !loadError}>
       <div className="dashboard-list-heading"><h2 id="dashboard-assignments-title">{filter === "all" ? "Your assignments" : `${labels[filter]} assignments`}</h2><button className={`btn btn-ghost btn-sm${filter === "all" ? " dashboard-all-active" : ""}`} aria-pressed={filter === "all"} onClick={() => setFilter("all")}>All</button></div>

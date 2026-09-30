@@ -35,14 +35,13 @@ export default function StudentTestsPage() {
   const available = fullTests.filter((t) => !t.attempt);
 
   return (
-    <div>
-      <section className="premium-hero reveal">
+    <div className="full-tests-index">
+      <section className="premium-hero full-tests-hero reveal">
         <div className="hero-grid">
           <div className="hero-copy">
-            <div className="hero-badge"><span className="hero-badge-dot" /> Timed modules with automatic scoring</div>
             <div className="section-label">Full-length tests</div>
             <h1>Practice like the room is already silent.</h1>
-            <p>Start a full-length test, resume an active attempt, or review completed work from a focused SAT cockpit built around timing, pacing, and question-level feedback.</p>
+            <p>Settle in for the full exam. Start a test, return to an active attempt, or revisit a completed one.</p>
             <div className="hero-actions">
               <button className="btn btn-primary" onClick={() => document.getElementById("available")?.scrollIntoView({ behavior: "smooth" })}>
                 <Sparkles size={16} strokeWidth={1.7} /> View available tests
@@ -51,11 +50,7 @@ export default function StudentTestsPage() {
                 <FileText size={16} strokeWidth={1.6} /> Browse practice
               </button>
             </div>
-            <div className="hero-meta">
-              <Pill tone="amber"><Clock size={12} /> Timed modules</Pill>
-              <Pill tone="gray">Auto-save</Pill>
-              <Pill tone="gray">Question review</Pill>
-            </div>
+            <div className="hero-meta"><Pill tone="amber"><Clock size={12} /> Timed modules</Pill><Pill tone="gray">Auto-save</Pill><Pill tone="gray">Question review</Pill></div>
           </div>
           <div className="hero-metrics" aria-label="Test activity summary">
             <div className="hero-metric"><strong>{available.length}</strong><span>Available tests</span></div>

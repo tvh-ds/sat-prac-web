@@ -25,10 +25,19 @@ export default function PracticePage() {
   const completed = (sets ?? []).filter((t) => t.attempt?.status === "graded");
 
   return (
-    <div>
-      <div className="section-label">Practice</div>
-      <h1 className="page-title"><span className="hl-muted">Focused </span><span className="hl-bright">practice</span></h1>
-      <p className="page-sub">Short, single-timer sets — graded instantly when you finish.</p>
+    <div className="practice-index">
+      <header className="practice-intro">
+        <div className="practice-intro-copy">
+          <p className="practice-intro-label">Practice</p>
+          <h1>Sharpen one skill at a time.</h1>
+          <p>Short, timed sets with immediate scoring. Choose a set below and keep your momentum.</p>
+        </div>
+        <div className="practice-intro-summary" aria-label="Practice activity summary">
+          <div><strong>{available.length}</strong><span>Ready to start</span></div>
+          <div><strong>{inProgress.length}</strong><span>In progress</span></div>
+          <div><strong>{completed.length}</strong><span>Completed</span></div>
+        </div>
+      </header>
 
       {!sets && <Spinner />}
 
