@@ -142,7 +142,7 @@ export default function StudentDashboardPage() {
           <td><span className="dashboard-item-title">{item.title}</span><span className="dashboard-item-kind">{kinds[item.kind]}</span></td>
           <td data-label="Deadline">{item.kind === "vocabulary" ? "Due today" : item.due_at ? <time dateTime={item.due_at}>{deadlineFormat.format(new Date(item.due_at))}</time> : "No deadline"}</td>
           <td data-label="State"><Pill tone={item.state === "complete" ? "green" : item.state === "overdue" ? "red" : "amber"}>{labels[item.state]}</Pill></td>
-          <td className="dashboard-item-action"><Link className="btn btn-outline btn-sm" to={item.href} aria-label={`Open ${item.title}`}>Open <ArrowUpRight size={15} aria-hidden="true" /></Link></td>
+          <td className="dashboard-item-action"><Link className="btn btn-outline btn-sm" to={item.kind === "vocabulary" ? "/student/vocabulary" : item.href} aria-label={`Open ${item.title}`}>Open <ArrowUpRight size={15} aria-hidden="true" /></Link></td>
         </tr>)}</tbody>
       </table>}
     </section>

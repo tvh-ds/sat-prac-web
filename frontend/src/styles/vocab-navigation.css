@@ -1,0 +1,17 @@
+.deck-status {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  min-height: 24px;
+}
+
+.deck-back {
+  margin-bottom: 16px;
+  gap: 8px;
+}
+
+.deck-search-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}

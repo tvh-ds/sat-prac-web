@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
     }
     const items = assignmentItems(assignments, attempts, now);
     for (const id of dueDeckIds) {
-      items.push({ id: `vocab:${id}`, title: deckMap.get(id)!.name, kind: "vocabulary", due_at: null, state: "assigned", href: `/student/vocabulary/decks/${id}` });
+      items.push({ id: `vocab:${id}`, title: deckMap.get(id)!.name, kind: "vocabulary", due_at: null, state: "assigned", href: "/student/vocabulary" });
     }
     return json({ items });
   } catch (e) {

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { fnJson, getToken } from "../../../lib/supabase";
 import type { VocabDashboard, VocabDeck } from "../../../lib/types";
 import { Button, EmptyState, Modal, Pill, Spinner } from "../../../components/ui";
+import "../../../styles/vocab-navigation.css";
 
 const DAY_MS = 86_400_000;
 
@@ -133,12 +134,15 @@ export default function VocabularyPage() {
         {dash.decks.map((deck) => (
           <div className="card deck-card" key={deck.id}>
             <div className="deck-color" style={{ background: deck.color }} />
+            <div className="deck-status">
+              {deck.assigned && <Pill tone="blue">assigned</Pill>}
+              {deck.due_count > 0 && <Pill tone="amber">Due · {deck.due_count}</Pill>}
+            </div>
             <h3 className="t-title">{deck.name}</h3>
             <p className="t-desc">{deck.description ?? "Word deck"}</p>
             <p className="t-desc">
               {deck.card_count} card{deck.card_count === 1 ? "" : "s"}
               {deck.new_count > 0 ? ` · ${deck.new_count} new` : ""}
-              {deck.due_count > 0 && <span style={{ color: "var(--amber)" }}> · {deck.due_count} due</span>}
             </p>
             <div className="deck-actions">
               <Button variant="outline" onClick={() => navigate(`/student/vocabulary/decks/${deck.id}`)}>Open</Button>
@@ -149,7 +153,6 @@ export default function VocabularyPage() {
                 Sprint
               </Button>
             </div>
-            {deck.assigned ? <Pill tone="blue">assigned</Pill> : deck.due_count > 0 ? <Pill tone="amber">{deck.due_count} due</Pill> : null}
           </div>
         ))}
       </section>

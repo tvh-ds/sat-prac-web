@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
+import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { fnJson, getToken } from "../../../lib/supabase";
 import { extractVocabFile } from "../../../lib/vocabFileImport";
 import type { VocabCard, VocabDeck } from "../../../lib/types";
 import { Button, EmptyState, Modal, Spinner, Pill } from "../../../components/ui";
+import "../../../styles/vocab-navigation.css";
 
 export default function DeckCards() {
   const { deckId } = useParams<{ deckId: string }>();
@@ -114,6 +116,7 @@ export default function DeckCards() {
 
   return (
     <div>
+      <Button variant="ghost" className="deck-back" onClick={() => navigate("/student/vocabulary")}><ArrowLeft size={16} aria-hidden="true" />Decks</Button>
       <div className="page-head-row">
         <div>
           <h1 className="page-title">{deck.name}</h1>
@@ -128,12 +131,8 @@ export default function DeckCards() {
         </div>
       </div>
 
-      <div style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 16 }}>
+      <div className="deck-search-row">
         <input className="f-input" style={{ maxWidth: 320 }} placeholder="Search cards…" value={q} onChange={(e) => setQ(e.target.value)} />
-        <Button variant="ghost" onClick={() => navigate("/student/vocabulary")}>Back to decks</Button>
-        <div style={{ flex: 1 }} />
-        <Button disabled={cards.length === 0} onClick={() => navigate(`/student/vocabulary/study?deck_id=${deck.id}`)}>Study</Button>
-        <Button variant="outline" disabled={cards.length === 0} onClick={() => navigate(`/student/vocabulary/sprint?deck_id=${deck.id}`)}>Sprint</Button>
       </div>
 
       {filtered.length === 0 && (
