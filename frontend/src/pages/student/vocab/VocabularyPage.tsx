@@ -145,7 +145,7 @@ export default function VocabularyPage() {
               {deck.new_count > 0 ? ` · ${deck.new_count} new` : ""}
             </p>
             <div className="deck-actions">
-              <Button variant="outline" onClick={() => navigate(`/student/vocabulary/decks/${deck.id}`)}>Open</Button>
+              <Button variant="outline" onClick={() => navigate(`/student/vocabulary/decks/${deck.id}`)}>Manage</Button>
               <Button disabled={deck.card_count === 0} onClick={() => navigate(`/student/vocabulary/study?deck_id=${deck.id}`)}>
                 Study
               </Button>

@@ -33,6 +33,7 @@ export default function StudentTestsPage() {
   // when its own assignment has no attempt yet — other assignments of the
   // same test do not hide it.
   const available = fullTests.filter((t) => !t.attempt);
+  const listTarget = available.length > 0 ? "available" : inProgressTests.length > 0 ? "in-progress" : graded.length > 0 ? "completed" : null;
 
   return (
     <div className="full-tests-index">
@@ -43,8 +44,8 @@ export default function StudentTestsPage() {
             <h1>Practice like the room is already silent.</h1>
             <p>Settle in for the full exam. Start a test, return to an active attempt, or revisit a completed one.</p>
             <div className="hero-actions">
-              <button className="btn btn-primary" onClick={() => document.getElementById("available")?.scrollIntoView({ behavior: "smooth" })}>
-                <Sparkles size={16} strokeWidth={1.7} /> View available tests
+              <button className="btn btn-primary" disabled={!listTarget} onClick={() => listTarget && document.getElementById(listTarget)?.scrollIntoView({ behavior: "auto" })}>
+                <Sparkles size={16} strokeWidth={1.7} /> View your tests
               </button>
               <button className="btn btn-secondary" onClick={() => navigate("/student/practice")}>
                 <FileText size={16} strokeWidth={1.6} /> Browse practice
@@ -69,7 +70,6 @@ export default function StudentTestsPage() {
 
       {tests && available.length > 0 && (
         <section id="available" className="premium-section">
-          <div className="section-label">Available</div>
           <div className="section-head">
             <h2>Available Full-Length Tests</h2>
             <span className="muted" style={{ fontSize: 12 }}>{available.length} ready</span>
@@ -96,8 +96,7 @@ export default function StudentTestsPage() {
       )}
 
       {tests && inProgressTests.length > 0 && (
-        <section className="premium-section">
-          <div className="section-label">In progress</div>
+        <section id="in-progress" className="premium-section">
           <div className="section-head">
             <h2>In Progress</h2>
             <span className="muted" style={{ fontSize: 12 }}>{inProgressTests.length} ongoing</span>
@@ -120,8 +119,7 @@ export default function StudentTestsPage() {
       )}
 
       {tests && graded.length > 0 && (
-        <section className="premium-section">
-          <div className="section-label">Completed</div>
+        <section id="completed" className="premium-section">
           <div className="section-head">
             <h2>Completed</h2>
             <span className="muted" style={{ fontSize: 12 }}>{graded.length} finished</span>

@@ -1,6 +1,6 @@
 /* ============================================================
-   SAT Practice — Dark Luxury design system
-   Tokens: DESIGN.md + SKILL(1).md — near-black warm + amber gold
+   Shared UI primitives and the active exam baseline.
+   Browsing-page visual tokens and layout live in luxe.css.
    ============================================================ */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&family=Manrope:wght@600&display=swap');
 
@@ -915,7 +915,6 @@ textarea.f-input, textarea.textarea { resize: vertical; min-height: 80px; }
 .deck-card .t-title { margin-top:6px; color:var(--text-primary); font-weight:700; }
 .deck-card .t-desc { color:var(--text-body); font-size:13.5px; }
 .deck-actions { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
-.deck-card .pill { position:absolute; top:16px; right:16px; }
 .color-row { display:flex; gap:8px; margin-top:4px; flex-wrap:wrap; }
 .color-dot { width:28px; height:28px; border-radius:50%; border:2px solid transparent; cursor:pointer; transition: transform 0.12s ease, border-color 0.12s ease; }
 .color-dot:hover { transform:scale(1.12); }

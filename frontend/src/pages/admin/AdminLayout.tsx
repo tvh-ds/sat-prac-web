@@ -1,4 +1,4 @@
-import { Link, NavLink, Navigate, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Navigate, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
 import { Spinner } from "../../components/ui";
 import { Users, FileUp, Database, ClipboardList, Layers, BookOpen, ClipboardCheck, LogOut } from "lucide-react";
@@ -21,63 +21,31 @@ export default function AdminLayout() {
 
   return (
     <div className="admin-layout">
-      <div className="admin-sidebar">
+      <aside className="admin-sidebar">
         <div className="brand">
-          <small>Admin console</small>
           <span className="admin-wordmark">Grit</span>
+          <small>Workspace</small>
         </div>
-        {link("/admin/students", "Students", Users)}
-        {link("/admin/imports", "PDF Imports", FileUp)}
-        {link("/admin/questions", "Practice Question Bank", Database)}
-        {link("/admin/tests", "Full-Length Tests", ClipboardList)}
-        {link("/admin/practice", "Practice Sets", Layers)}
-        {link("/admin/assignments", "Assignments", ClipboardCheck)}
-        {link("/admin/vocabulary", "Vocabulary", BookOpen)}
+        <nav className="admin-nav" aria-label="Admin navigation">
+          {link("/admin/students", "Students", Users)}
+          {link("/admin/imports", "PDF Imports", FileUp)}
+          {link("/admin/questions", "Practice Question Bank", Database)}
+          {link("/admin/tests", "Full-Length Tests", ClipboardList)}
+          {link("/admin/practice", "Practice Sets", Layers)}
+          {link("/admin/assignments", "Assignments", ClipboardCheck)}
+          {link("/admin/vocabulary", "Vocabulary", BookOpen)}
+        </nav>
         <div className="spacer" />
         <div className="sidebar-footer">
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              void signOut().then(() => navigate("/login"));
-            }}
-          >
+          <button type="button" onClick={() => void signOut().then(() => navigate("/login"))}>
             <LogOut size={16} strokeWidth={1.6} />
             <span>Sign out</span>
-          </a>
+          </button>
         </div>
-      </div>
+      </aside>
       <div className="admin-main">
+        <div className="admin-workspace-topline"><span>Grit / Operations</span><span>{profile.full_name ?? user.email}</span></div>
         <Outlet />
-        <div className="footer-wrapper" style={{ paddingLeft: 0, paddingRight: 0, paddingBottom: 0, marginTop: 40 }}>
-          <div className="footer-panel">
-            <div className="footer-top">
-              <div className="footer-brand">
-                <div className="brand"><span className="admin-wordmark">Grit</span></div>
-                <p>Operational workspace for tests, question review, imports, students, and vocabulary.</p>
-              </div>
-              <div className="footer-links">
-                <div className="footer-col">
-                  <h4>Admin</h4>
-                  <Link to="/admin/students">Students</Link>
-                  <Link to="/admin/imports">Imports</Link>
-                  <Link to="/admin/questions">Questions</Link>
-                </div>
-                <div className="footer-col">
-                  <h4>Platform</h4>
-                  <Link to="/student/tests">Student View</Link>
-                  <Link to="/admin/tests">Tests</Link>
-                  <Link to="/admin/practice">Practice</Link>
-                  <Link to="/admin/assignments">Assignments</Link>
-                </div>
-              </div>
-            </div>
-            <div className="footer-bottom">
-              <span>© {new Date().getFullYear()} Grit · Self-hosted</span>
-              <span className="status-badge"><span className="status-dot" /> Platform ready</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

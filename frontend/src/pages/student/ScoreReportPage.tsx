@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import type { ReviewItem, ScoreDetail } from "../../lib/types";
@@ -88,7 +88,7 @@ export default function ScoreReportPage() {
   const pct = totalQ > 0 ? Math.round((correct / totalQ) * 100) : 0;
 
   return (
-    <div style={{ maxWidth: 880 }}>
+    <div className="score-report">
       <div className="section-label">Score report</div>
       <div className="page-head-row">
         <div>
@@ -115,6 +115,7 @@ export default function ScoreReportPage() {
             {unanswered > 0 && <Pill tone="amber">{unanswered} unanswered</Pill>}
           </div>
         </div>
+        <div className="score-orbit" style={{ "--score-pct": `${pct}%` } as CSSProperties} role="img" aria-label={`${pct}% accuracy`}><span>{pct}%</span></div>
         <div style={{ textAlign: "right" }}>
           <div className="lbl">Section accuracy</div>
           <div style={{ fontSize: 16, fontWeight: 700, marginTop: 4 }}>
