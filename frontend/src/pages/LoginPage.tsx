@@ -1,8 +1,9 @@
 import { useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../auth/AuthContext";
 import { Button } from "../components/ui";
+import AuthLayout from "../components/AuthLayout";
 
 export default function LoginPage() {
   const { signIn } = useAuth();
@@ -40,37 +41,7 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="grit-login">
-      <div className="grit-login-layout">
-        <section className="login-editorial" aria-label="Grit overview">
-          <div className="login-brand-row">
-            <span className="login-wordmark">Grit</span>
-          </div>
-
-          <div className="login-hero-copy">
-            <h1>
-              <span className="login-sr-only">Outwork the test.</span>
-              <span className="login-headline-visual" aria-hidden="true">
-                <span className="login-headline-line">Outwork</span>
-                <span className="login-headline-line login-headline-ending">
-                  <span>the</span>{" "}
-                  <span className="login-word-slot">
-                    <span className="login-word login-word-test">test.</span>
-                    <span className="login-word login-word-rest">rest.</span>
-                  </span>
-                </span>
-              </span>
-            </h1>
-            <p>Your all-in-one SAT platform</p>
-          </div>
-
-          <ul className="login-feature-strip" aria-label="Practice features">
-            <li>Full-length tests</li>
-            <li>Focused practice</li>
-            <li>Vocabulary review</li>
-          </ul>
-        </section>
-
+    <AuthLayout>
         <section className="login-panel-shell" aria-labelledby="login-heading">
           <form className="login-card" onSubmit={onSubmit} aria-busy={busy}>
             <p className="login-member-access">Member Access</p>
@@ -107,10 +78,9 @@ export default function LoginPage() {
               </Button>
             </div>
             <span className="login-sr-only" role="status" aria-live="polite">{busy ? "Signing in. Please wait." : ""}</span>
-            <p className="login-account-note">Secure access for students and tutors.</p>
+            <p className="login-account-note">Don't have an account? <Link className="auth-link" to="/signup">Sign up</Link></p>
           </form>
         </section>
-      </div>
-    </main>
+    </AuthLayout>
   );
 }

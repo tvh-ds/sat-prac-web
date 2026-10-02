@@ -128,11 +128,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function refreshProfile() {
-    if (user) {
-      const { data } = await supabase.auth.getSession();
-      const token = data.session?.access_token;
-      if (token) await loadProfileWithToken(user.id, token);
-    }
+    const { data } = await supabase.auth.getSession();
+    const session = data.session;
+    if (session) await loadProfileWithToken(session.user.id, session.access_token);
   }
 
   return (

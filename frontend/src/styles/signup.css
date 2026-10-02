@@ -1,0 +1,23 @@
+.grit-login .auth-link { color: #a3d9ff; text-decoration: underline; text-underline-offset: 3px; font-weight: 600; }
+.grit-login .auth-link:hover { color: #d6eeff; }
+.grit-login .auth-link[aria-disabled="true"] { opacity: .6; cursor: wait; }
+.grit-signup .grit-login-layout { grid-template-columns: minmax(0, 1fr) minmax(0, 600px); gap: clamp(32px, 5vw, 80px); }
+.grit-signup .login-card { max-width: 600px; width: 100%; }
+.signup-group { min-width: 0; padding: 0; margin: 24px 0 0; border: 0; }
+.signup-group legend { width: 100%; padding: 0 0 10px; margin-bottom: 14px; border-bottom: 1px solid var(--border-subtle); color: var(--text-primary); font-size: 14px; font-weight: 650; }
+.signup-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; align-items: start; }
+.grit-signup .field-label { min-height: 36px; margin-bottom: 6px; display: flex; align-items: flex-end; line-height: 1.4; }
+.signup-fields .input { width: 100%; }
+.signup-help { color: var(--text-body); font-size: 12px; line-height: 1.6; margin: 7px 0 0; }
+.signup-privacy { margin: 20px 0 12px; }
+.grit-signup .signup-submit { width: 100%; }
+@media (max-width: 1000px) {
+  .grit-signup .grit-login-layout { grid-template-columns: 1fr; max-width: 600px; min-height: auto; gap: 32px; }
+  .grit-signup .login-editorial { padding: 0; gap: 24px; }
+  .grit-signup .login-hero-copy h1 { font-size: clamp(46px, 8vw, 72px); }
+  .grit-signup .login-feature-strip { display: none; }
+}
+@media (max-width: 540px) {
+  .signup-fields { grid-template-columns: 1fr; gap: 14px; }
+  .grit-signup .field-label { min-height: 0; }
+}

@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useAuth } from "../../auth/AuthContext";
 import { Button, Pill, Spinner } from "../../components/ui";
 import { fnJson, getToken } from "../../lib/supabase";
+import { validZaloPhone } from "../../lib/studentProfile";
 import "../../styles/student-profile.css";
 
 interface ProfileForm {
@@ -9,10 +10,6 @@ interface ProfileForm {
   phone_number: string;
   parent_name: string;
   parent_phone_number: string;
-}
-
-function validZaloPhone(value: string): boolean {
-  return /^\+?[\d\s().-]+$/.test(value.trim()) && (value.match(/\d/g)?.length ?? 0) >= 8;
 }
 
 export default function StudentProfilePage() {
@@ -94,16 +91,9 @@ export default function StudentProfilePage() {
         <Pill tone={statusTone}>{statusText}</Pill>
       </header>
 
-      {status !== "approved" && (
-        <div className={`student-profile-notice${status === "pending" ? " is-pending" : ""}`} role="status">
-          {status === "pending"
-            ? "Your details are submitted for review. You can update and resubmit them, but study areas remain locked until approval."
-            : "Complete every required field and submit the profile for administrator approval. Your study areas will unlock after approval."}
-          {status === "pending" && (
-            <button type="button" className="btn btn-outline btn-sm student-profile-check" onClick={() => void refreshProfile()}>
-              Check approval status
-            </button>
-          )}
+      {status === "incomplete" && (
+        <div className="student-profile-notice" role="status">
+          Complete every required field and submit the profile for administrator approval. Your study areas will unlock after approval.
         </div>
       )}
 

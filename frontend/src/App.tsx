@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from "./auth/AuthContext";
 import { Spinner } from "./components/ui";
 
 const LoginPage = lazy(() => import("./pages/LoginPage"));
+const SignupPage = lazy(() => import("./pages/SignupPage"));
 const StudentLayout = lazy(() => import("./pages/student/StudentLayout"));
 const StudentDashboardPage = lazy(() => import("./pages/student/StudentDashboardPage"));
 const StudentProfilePage = lazy(() => import("./pages/student/StudentProfilePage"));
@@ -66,6 +67,7 @@ export default function App() {
         <Suspense fallback={<Spinner />}>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
             <Route path="/" element={<Navigate to="/student" replace />} />
 
             <Route

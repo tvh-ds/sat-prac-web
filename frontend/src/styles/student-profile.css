@@ -36,16 +36,6 @@
   line-height: 1.55;
 }
 
-.student-profile-notice.is-pending {
-  border-color: var(--border-medium);
-  background: rgba(225, 235, 255, 0.045);
-}
-
-.student-profile-check {
-  display: block;
-  margin-top: 10px;
-}
-
 .student-profile-success {
   margin: 16px 0 0;
   border-color: rgba(99, 208, 146, 0.32);

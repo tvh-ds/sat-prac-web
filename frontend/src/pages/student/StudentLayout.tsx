@@ -76,7 +76,7 @@ export default function StudentLayout() {
   return (
     <div className="app-layout navy-shell luxe-shell">
       <aside className="student-rail" aria-label="Student navigation">
-        <NavLink to="/student/dashboard" className="student-rail-brand" aria-label="Grit dashboard">G<span>.</span></NavLink>
+        <NavLink to={profileApproved ? "/student/dashboard" : "/student/profile"} className="student-rail-brand" aria-label={profileApproved ? "Grit dashboard" : "Grit profile"}>G<span>.</span></NavLink>
         <nav className="student-rail-nav">{navigation(false)}</nav>
         <div className="student-rail-bottom">
           <button className="student-rail-link student-rail-signout" onClick={logout} aria-label="Sign out" title="Sign out">
