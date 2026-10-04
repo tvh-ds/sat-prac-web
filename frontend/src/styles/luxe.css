@@ -211,8 +211,8 @@
 .luxe-shell .review-section-switch, .luxe-shell .score-tabs { display: flex; width: fit-content; gap: 4px; margin-bottom: 35px; padding: 4px; border: 1px solid var(--border-subtle); border-radius: 8px; background: rgba(9, 22, 37, .8); box-shadow: none; }
 .luxe-shell .score-tab { border-radius: 5px; color: var(--text-body); }
 .luxe-shell .score-tab.active { color: #101723; background: var(--accent); }
-.luxe-shell .results-section > .section-label { display: none; }
-.luxe-shell .results-section > .page-title { font-size: clamp(27px, 3vw, 39px); }
+.luxe-shell .review-results-summary > .section-label { display: none; }
+.luxe-shell .review-results-summary > .page-title { font-size: clamp(27px, 3vw, 39px); }
 .luxe-shell .results-section .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin: 32px 0 52px; border-top: 1px solid var(--border-medium); border-bottom: 1px solid var(--border-medium); }
 .luxe-shell .results-section .stat-card { min-height: 185px; padding: 24px clamp(15px, 2vw, 30px); border: 0; border-radius: 0; background: transparent; }
 .luxe-shell .results-section .stat-card + .stat-card { border-left: 1px solid var(--border-subtle); }
@@ -495,8 +495,6 @@
 .luxe-shell .practice-intro::before { width: 58%; height: 88%; top: -25%; right: -4%; background: radial-gradient(ellipse at 68% 40%, rgba(75, 162, 231, .31), transparent 57%), repeating-linear-gradient(150deg, transparent 0 33px, rgba(137, 203, 251, .1) 34px, transparent 35px 68px); transform: skewY(-12deg); box-shadow: none; mask-image: linear-gradient(90deg, transparent, #000 35%, #000); }
 .luxe-shell .practice-intro::after { right: -5%; top: 10px; width: 38%; height: 78%; border: 1px solid rgba(167, 222, 255, .37); border-radius: 11px; background: linear-gradient(145deg, rgba(24, 70, 111, .24), rgba(4, 18, 39, .05)); box-shadow: 19px 19px 0 -1px rgba(3, 8, 20, .9), 19px 19px 0 rgba(138, 208, 255, .19), inset 0 1px 0 rgba(234, 248, 255, .12); transform: perspective(700px) rotateY(-15deg) rotateZ(-7deg); }
 .luxe-shell .practice-intro-summary { position: relative; z-index: 1; }
-.luxe-shell .full-tests-hero::before { width: 420px; height: 310px; right: 1%; top: -30px; background: radial-gradient(ellipse at 60% 55%, rgba(58, 130, 191, .31), transparent 62%), repeating-linear-gradient(90deg, transparent 0 59px, rgba(159, 215, 254, .19) 60px, transparent 61px), repeating-linear-gradient(0deg, transparent 0 59px, rgba(159, 215, 254, .13) 60px, transparent 61px); transform: perspective(420px) rotateX(24deg) rotateZ(-14deg); mask-image: linear-gradient(90deg, transparent, #000 24%, #000); }
-.luxe-shell .full-tests-hero::after { width: 165px; height: 165px; right: 3%; top: -20px; opacity: .55; border-color: rgba(245, 215, 159, .33); box-shadow: 0 0 45px rgba(239, 195, 110, .09), inset 0 0 35px rgba(239, 195, 110, .07); }
 .luxe-shell .full-tests-hero .hero-metrics { border: 1px solid rgba(175, 218, 252, .29); border-radius: 10px; background: linear-gradient(145deg, rgba(27, 56, 87, .61), rgba(9, 24, 45, .7)); box-shadow: 0 20px 52px rgba(0, 5, 16, .25), inset 0 1px 0 rgba(245, 251, 255, .13); backdrop-filter: blur(14px); }
 .luxe-shell .full-tests-index .premium-test-card:hover { background: linear-gradient(90deg, rgba(38, 94, 143, .14), transparent 72%); }
 .luxe-shell .test-card .pill { opacity: 1; }
@@ -709,6 +707,48 @@
 @media (prefers-reduced-motion: reduce) {
   .student-rail { transition: none; }
   .luxe-shell .deck-card { transition: none; }
+}
+
+/* Starfield stays inside the test and results summaries. */
+.luxe-shell .full-tests-hero,
+.luxe-shell .review-results-summary {
+  position: relative;
+  isolation: isolate;
+  padding: clamp(24px, 3vw, 40px);
+  border: 1px solid rgba(173, 220, 255, .22);
+  border-radius: 14px;
+  background:
+    linear-gradient(90deg, rgba(3, 8, 20, .82), rgba(3, 8, 20, .48) 55%, rgba(3, 8, 20, .25)),
+    url("/practice-starry-space.png") center / cover no-repeat,
+    #050a14;
+}
+.luxe-shell .full-tests-hero::before,
+.luxe-shell .full-tests-hero::after { content: none; display: none; }
+.luxe-shell .full-tests-hero .hero-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.luxe-shell .full-tests-hero .hero-metrics,
+.luxe-shell .review-results-summary .stat-grid {
+  border: 1px solid rgba(173, 220, 255, .3);
+  border-radius: 12px;
+  background: linear-gradient(145deg, rgba(25, 55, 82, .6), rgba(7, 19, 36, .72));
+  box-shadow: 0 18px 42px rgba(0, 4, 15, .25), inset 0 1px 0 rgba(247, 252, 255, .15);
+  backdrop-filter: blur(14px) saturate(145%);
+}
+.luxe-shell .review-results-summary .stat-grid { margin: 28px 0 0; }
+.luxe-shell .review-results-summary > .page-title { margin-bottom: 4px; }
+.luxe-shell .review-results-summary > .page-sub { margin-bottom: 0; }
+.luxe-shell .review-results-summary .arch-meta {
+  color: #b6c9df;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+@media (max-width: 620px) {
+  .luxe-shell .full-tests-hero,
+  .luxe-shell .review-results-summary {
+    padding: 22px 18px;
+    background-position: center, 63% center;
+  }
+  .luxe-shell .review-results-summary .stat-grid { margin-top: 24px; }
 }
 
 /* Practice index: starfield atmosphere with tactile, dark glass surfaces. */

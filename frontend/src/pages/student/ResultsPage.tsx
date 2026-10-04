@@ -104,30 +104,32 @@ function ResultsPanel({ history }: { history: ScoreEntry[] }) {
 
   return (
     <div className="results-section">
-      <div className="section-label">Results</div>
-      <h2 className="page-title"><span className="hl-muted">Your</span> <span className="hl-bright">results</span></h2>
-      <p className="page-sub">Completed attempts with full answer reviews.</p>
+      <section className="review-results-summary" aria-label="Results summary">
+        <div className="section-label">Results</div>
+        <h2 className="page-title"><span className="hl-muted">Your</span> <span className="hl-bright">results</span></h2>
+        <p className="page-sub">Completed attempts with full answer reviews.</p>
 
-      <div className="stat-grid">
-        <div className="stat-card reveal">
-          <div className="ico"><Trophy size={18} strokeWidth={1.6} /></div>
-          <div className="num" data-countup={history.length}>{history.length}</div>
-          <div className="lbl">Completed</div>
-          <div className="arch-meta">{withScore.length} graded attempt{withScore.length === 1 ? "" : "s"}</div>
+        <div className="stat-grid">
+          <div className="stat-card reveal">
+            <div className="ico"><Trophy size={18} strokeWidth={1.6} /></div>
+            <div className="num" data-countup={history.length}>{history.length}</div>
+            <div className="lbl">Completed</div>
+            <div className="arch-meta">{withScore.length} graded attempt{withScore.length === 1 ? "" : "s"}</div>
+          </div>
+          <div className="stat-card reveal">
+            <div className="ico"><Target size={18} strokeWidth={1.6} /></div>
+            <div className="num">{avg}%</div>
+            <div className="lbl">Average accuracy</div>
+            <div className="arch-meta">Average across graded attempts</div>
+          </div>
+          <div className="stat-card reveal">
+            <div className="ico"><CheckCircle2 size={18} strokeWidth={1.6} /></div>
+            <div className="num">{totalCorrect}<span className="muted"> / {totalAnswered}</span></div>
+            <div className="lbl">Questions correct</div>
+            <div className="arch-meta">Out of {totalAnswered} answered questions</div>
+          </div>
         </div>
-        <div className="stat-card reveal">
-          <div className="ico"><Target size={18} strokeWidth={1.6} /></div>
-          <div className="num">{avg}%</div>
-          <div className="lbl">Average accuracy</div>
-          <div className="arch-meta">Average across graded attempts</div>
-        </div>
-        <div className="stat-card reveal">
-          <div className="ico"><CheckCircle2 size={18} strokeWidth={1.6} /></div>
-          <div className="num">{totalCorrect}<span className="muted"> / {totalAnswered}</span></div>
-          <div className="lbl">Questions correct</div>
-          <div className="arch-meta">Out of {totalAnswered} answered questions</div>
-        </div>
-      </div>
+      </section>
 
       <div className="section-label" style={{ marginTop: 28 }}>[ Attempts ]</div>
       <div className="section-head">
