@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import type { BatchStudent, PracticeBatchDetail } from "../../lib/types";
@@ -6,6 +6,7 @@ import { Button, Pill, Spinner, fmtDate } from "../../components/ui";
 import MathText from "../../components/MathText";
 import PassageBlock from "../../components/PassageBlock";
 import AssignmentReviewModal from "./AssignmentReviewModal";
+import { useAssignmentAnnotations } from "../../components/AssignmentAnnotations";
 
 function statusTone(s: string): "green" | "amber" | "gray" {
   if (s === "graded" || s === "completed") return "green";
@@ -26,6 +27,10 @@ export default function PracticeBatchPage() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [reviewing, setReviewing] = useState<BatchStudent | null>(null);
+  const annotationQuestions = useMemo(() => (data?.questions ?? []).map((q, i) => ({
+    ...q, question_number: i + 1, choices: [...q.choices].sort((a, b) => a.position - b.position),
+  })), [data]);
+  const annotations = useAssignmentAnnotations(`admin-practice-assignments/${batchId}`, annotationQuestions, data?.batch.title ?? "Assignment review");
 
   async function load() {
     try {
@@ -143,10 +148,12 @@ export default function PracticeBatchPage() {
 
       {tab === "questions" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {annotations.toolbar}
           {data.questions.map((q, i) => (
             <div key={q.question_id} className="card card-pad">
               <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginBottom: 8 }}>
                 <span className="muted" style={{ fontSize: 12, fontWeight: 700 }}>Q{i + 1}</span>
+                {annotations.button(annotationQuestions[i])}
                 <Pill tone="green">{q.correct_count} right</Pill>
                 <Pill tone="red">{q.incorrect_count} wrong</Pill>
                 {q.unanswered_count > 0 && <Pill tone="amber">{q.unanswered_count} unanswered</Pill>}
@@ -155,6 +162,7 @@ export default function PracticeBatchPage() {
                 </span>
               </div>
               <PassageBlock passage={q.passage} compact />
+              {q.stimulus_image_url && <img src={q.stimulus_image_url} alt="Question stimulus" style={{ maxWidth: "100%", maxHeight: 260, objectFit: "contain", marginBottom: 12 }} />}
               <p style={{ fontWeight: 600, fontSize: 14, lineHeight: 1.6, margin: "0 0 10px" }}>
                 <MathText text={q.prompt} />
               </p>
@@ -206,6 +214,7 @@ export default function PracticeBatchPage() {
           )}
         </div>
       )}
+      {annotations.overlay}
 
       {reviewing?.review_attempt_id && (
         <AssignmentReviewModal

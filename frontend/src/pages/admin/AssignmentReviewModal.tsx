@@ -4,6 +4,7 @@ import type { ReviewItem, ScoreDetail } from "../../lib/types";
 import { Button, EmptyState, Modal, Pill, Spinner, fmtDate } from "../../components/ui";
 import MathText from "../../components/MathText";
 import PassageBlock from "../../components/PassageBlock";
+import { useAssignmentAnnotations } from "../../components/AssignmentAnnotations";
 
 type Tab = "all" | "wrong" | "unanswered";
 
@@ -42,6 +43,7 @@ export default function AssignmentReviewModal({
     if (tab === "unanswered" && !r.unanswered) return false;
     return true;
   }), [review, tab]);
+  const annotations = useAssignmentAnnotations(endpoint, review, title);
 
   return (
     <Modal
@@ -72,21 +74,23 @@ export default function AssignmentReviewModal({
             <button className={`score-tab${tab === "wrong" ? " active" : ""}`} onClick={() => setTab("wrong")}>Incorrect ({wrong})</button>
             <button className={`score-tab${tab === "unanswered" ? " active" : ""}`} onClick={() => setTab("unanswered")}>Unanswered ({unanswered})</button>
           </div>
+          {annotations.toolbar}
 
           {filtered.length === 0 ? (
             <EmptyState title="No questions match" />
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {filtered.map((item) => <ReviewCard key={item.question_id} item={item} />)}
+              {filtered.map((item) => <ReviewCard key={item.question_id} item={item} annotate={annotations.button(item)} />)}
             </div>
           )}
         </div>
       )}
+      {annotations.overlay}
     </Modal>
   );
 }
 
-function ReviewCard({ item }: { item: ReviewItem }) {
+function ReviewCard({ item, annotate }: { item: ReviewItem; annotate: React.ReactNode }) {
   return (
     <div className="review-item review-open">
       <div className="qhead">
@@ -94,6 +98,7 @@ function ReviewCard({ item }: { item: ReviewItem }) {
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "flex-end" }}>
           {item.unanswered ? <Pill tone="amber">Unanswered</Pill> : item.is_correct ? <Pill tone="green">Correct</Pill> : <Pill tone="red">Incorrect</Pill>}
           {item.marked_for_review && <Pill tone="amber">Marked</Pill>}
+          {annotate}
         </div>
       </div>
       <div className="muted" style={{ fontSize: 12.5, marginTop: 4 }}>

@@ -321,3 +321,41 @@ Set Supabase `WORKER_URL` to the public worker URL so imports can notify it. Kee
 - Admin APIs enforce role checks before privileged operations.
 - Worker endpoints that mutate imports require `WORKER_AUTH_TOKEN`.
 - PDF-derived answer keys are draft suggestions until individual human approval or admin import approval. AI repair never approves questions. Generated tests preserve answer-key status.
+# Assignment review annotations
+
+Administrators can annotate each question in a student's practice/full-length assignment review,
+and in a practice assignment's All Questions tab. Boards include the passage, prompt, choices,
+question images, and answer context, with white/black backgrounds, pen/highlighter/eraser, pan,
+undo/redo, working-space expansion, and keyboard-editable review notes.
+The board fills the viewport and opens fitted to the complete page. Zoom controls keep vector
+coordinates fixed. The icon/color palette and review notes can be hidden independently.
+Highlight and comment selects actual text lines, creates a linked plain-text box, and supports
+dragging or arrow-key movement. Comments, yellow highlights, and curved arrows are saved and exported.
+Saved comments start collapsed: select their highlighted words to open them, and use the eye-off
+button to hide them again. Hiding does not delete content or exclude it from exports. Arrows terminate
+below the highlighted words. The corner handle supports pointer/keyboard resizing; dimensions persist.
+
+Save annotation explicitly persists editable vector marks and notes in `admin_review_annotations`.
+RLS permits only the owning administrator; students and anonymous users have no access.
+Boards are scoped to the assignment or individual reviewed attempt. Changed question/answer content
+invalidates old boards for that scope instead of placing marks over changed text.
+
+Export reviews includes every saved board in question order, independently of review filters.
+The preview's Print / Save as PDF action opens the browser print dialog; select Save as PDF
+for one combined document and enable background graphics for blackboard pages. Unsaved changes
+are excluded. Long boards may occupy several PDF pages. No external export service receives data.
+
+Migrations: `20261004000000_admin_review_annotations.sql` and
+`20261004010000_review_highlight_comments.sql` (bounded, optional comments; legacy boards remain valid).
+`20261004020000_review_comment_sizes.sql` validates optional resize dimensions within the board.
+Staging reference must be
+`wgkggknyndgaoyazdhdf` before applying it. Storage and the image-enabled assignment endpoint
+were verified on staging; production requires its own deployment request.
+
+Verification:
+```powershell
+node backend/scripts/e2e-review-annotations-staging.mjs --project-ref=wgkggknyndgaoyazdhdf
+```
+The script uses the existing staging administrator configured in `backend/scripts/.env`,
+checks save/reload, malformed documents, anonymous/student denial and ownership, then removes
+only its own temporary annotation row and student fixture.

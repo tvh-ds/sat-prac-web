@@ -278,6 +278,7 @@ export interface BatchQuestionStat {
   prompt: string;
   question_type: string;
   correct_answer: string | null;
+  stimulus_image_url?: string | null;
   passage?: ReviewPassage | null;
   choices: BatchChoiceStat[];
   correct_count: number;

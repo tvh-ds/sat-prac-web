@@ -339,17 +339,20 @@ Deno.serve(async (req) => {
       for (const m of modules) {
         const { data: links, error: lErr } = await svc
           .from("test_module_questions")
-          .select("id, position, question:questions(id, prompt, question_type, correct_answer, passage:passages(id, title, content), choices:question_choices(id, label, text, is_correct, position))")
+          .select("id, position, question:questions(id, prompt, question_type, correct_answer, stimulus_image_path, passage:passages(id, title, content), choices:question_choices(id, label, text, is_correct, position))")
           .eq("module_id", m.id)
           .order("position");
         if (lErr) return error(lErr.message, 500);
         for (const l of links ?? []) {
           const q = l.question as unknown as {
-            id: string; prompt: string; question_type: string; correct_answer: string | null;
+            id: string; prompt: string; question_type: string; correct_answer: string | null; stimulus_image_path: string | null;
             passage: { id: string; title: string | null; content: string } | null;
             choices: Array<{ id: string; label: string; text: string; is_correct: boolean; position: number }>;
           } | null;
           if (!q) continue;
+          const image = q.stimulus_image_path
+            ? await svc.storage.from("question-assets").createSignedUrl(q.stimulus_image_path, 60 * 60)
+            : null;
           const resp = (responses ?? []).filter((r) => r.question_id === q.id);
           const answered = new Set(resp.map((r) => r.attempt_id));
           const correct = resp.filter((r) => r.is_correct === true).length;
@@ -375,6 +378,7 @@ Deno.serve(async (req) => {
             prompt: q.prompt,
             question_type: q.question_type,
             correct_answer: q.correct_answer,
+            stimulus_image_url: image?.data?.signedUrl ?? null,
             passage: q.passage ?? null,
             choices: choiceCounts,
             correct_count: correct,
