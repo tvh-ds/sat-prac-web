@@ -76,7 +76,7 @@ export default function VocabularyPage() {
       <div className="page-head-row">
         <div>
           <h1 className="page-title"><span className="hl-muted">Your</span> <span className="hl-bright">vocabulary</span></h1>
-          <p className="page-sub">Spaced repetition — build streaks that stick.</p>
+          <p className="page-sub">Personalized daily practice</p>
         </div>
         <Button onClick={() => setCreating(true)}>New Deck</Button>
       </div>
