@@ -3,6 +3,7 @@ import express from "express";
 import { loadConfig } from "./config";
 import { Pipeline } from "./pipeline";
 import { AiIngestionReviewService } from "./aiReview";
+import { ClassificationService } from "./classification";
 
 function digest(value: string): Buffer {
   return createHash("sha256").update(value).digest();
@@ -18,6 +19,25 @@ export function createApp(config: ReturnType<typeof loadConfig>) {
 
   const pipeline = new Pipeline(config);
   const aiReview = new AiIngestionReviewService(config);
+  const classification = new ClassificationService(config);
+
+  app.post("/classify", async (req, res) => {
+    if (!requireWorkerAuth(req, res)) return;
+    const { import_id, actor_id, draft_ids } = req.body ?? {};
+    const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuid.test(import_id ?? "") || !uuid.test(actor_id ?? "") || (draft_ids !== undefined &&
+      (!Array.isArray(draft_ids) || !draft_ids.length || draft_ids.length > 150 || draft_ids.some((id: unknown) => typeof id !== "string" || !uuid.test(id))))) {
+      res.status(422).json({ error: "Invalid classification request" }); return;
+    }
+    try {
+      const job = await classification.enqueue(import_id, actor_id, draft_ids);
+      res.status(202).json({ job });
+      setImmediate(() => void classification.poll().catch(() => console.error("[classification] poll failed")));
+    } catch (e) {
+      const unavailable = /not_configured|fetch failed|classifier_http_|insecure_classifier_url/.test(String(e));
+      res.status(unavailable ? 503 : 422).json({ error: unavailable ? "Classification service unavailable" : "No eligible drafts or classification request could not be queued" });
+    }
+  });
 
   function kickAiReview(): void {
     setImmediate(() => {
@@ -72,6 +92,8 @@ export function createApp(config: ReturnType<typeof loadConfig>) {
         res.json({ processed: true, kind: "import", result: { ...result, ai_review_job: review } });
         return;
       }
+      const classificationResult = await classification.poll();
+      if (classificationResult) { res.json({ processed: true, kind: "classification", result: classificationResult }); return; }
       const reviewJob = await aiReview.claimNext();
       if (!reviewJob) {
         res.json({ processed: false });

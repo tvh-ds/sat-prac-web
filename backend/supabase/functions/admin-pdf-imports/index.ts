@@ -5,6 +5,7 @@ import { pdfImportCreateSchema, approveDraftSchema, updateDraftSchema, saveDraft
 import { approveDraft } from "../_shared/drafts.ts";
 import { moduleGroup, groupByModuleKey } from "../_shared/modules.ts";
 import { summarizePdfImportReadiness, type ImportReadinessDraft } from "../_shared/importReadiness.ts";
+import { classificationRoute } from "../_shared/classification.ts";
 
 const WORKER_URL = Deno.env.get("WORKER_URL");
 const WORKER_AUTH_TOKEN = Deno.env.get("WORKER_AUTH_TOKEN");
@@ -180,6 +181,8 @@ Deno.serve(async (req) => {
     const svc = serviceClient();
     const seg = pathSegments(req);
     const id = seg[1];
+    const classificationResponse = await classificationRoute(req, seg, svc, ctx.user.id);
+    if (classificationResponse) return classificationResponse;
 
     if (req.method === "GET" && seg.length === 1) {
       const { data, error: err } = await svc

@@ -23,6 +23,8 @@ export interface WorkerConfig {
   aiReviewCostCeilingUsd: number;
   aiReviewInputPricePerMillion: number;
   aiReviewOutputPricePerMillion: number;
+  classifierUrl?: string;
+  classifierToken?: string;
 }
 
 /**
@@ -73,5 +75,7 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): WorkerConfig {
     aiReviewCostCeilingUsd: Math.max(0, Number(env.AI_REVIEW_COST_CEILING_USD ?? 5)),
     aiReviewInputPricePerMillion: Math.max(0, Number(env.AI_REVIEW_INPUT_USD_PER_MILLION ?? 0)),
     aiReviewOutputPricePerMillion: Math.max(0, Number(env.AI_REVIEW_OUTPUT_USD_PER_MILLION ?? 0)),
+    classifierUrl: env.ML_SERVICE_URL?.trim() || undefined,
+    classifierToken: env.ML_SERVICE_TOKEN?.trim() || undefined,
   };
 }

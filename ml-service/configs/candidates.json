@@ -1,0 +1,14 @@
+{
+  "budget_usd": null,
+  "paid_runs_authorized": false,
+  "text_revision": "PIN_CHECKPOINT_COMMIT_BEFORE_TRAINING",
+  "image_revision": "PIN_CHECKPOINT_COMMIT_BEFORE_TRAINING",
+  "max_length": 1024,
+  "epochs": 4,
+  "max_training_seconds": 3600,
+  "difficulty_head": "multiclass",
+  "images": false,
+  "trees": 500,
+  "max_depth": 4,
+  "tracking_uri": "sqlite:///mlflow.db"
+}

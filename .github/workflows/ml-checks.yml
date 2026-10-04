@@ -1,0 +1,25 @@
+name: ML classification checks
+on:
+  pull_request:
+    paths: ['ml-service/**', 'frontend/src/lib/satTaxonomy.ts', 'backend/supabase/functions/_shared/sat-taxonomy.json', '.github/workflows/ml-checks.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  offline-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.10.9'
+      - run: uv sync --locked --extra candidates --extra experiments --extra dev
+        working-directory: ml-service
+      - run: uv run ruff check src tests
+        working-directory: ml-service
+      - run: uv run pytest -q
+        working-directory: ml-service
+        env:
+          HF_HUB_OFFLINE: '1'
+          TRANSFORMERS_OFFLINE: '1'

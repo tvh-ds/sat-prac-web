@@ -8,6 +8,7 @@ import MathText from "../../components/MathText";
 import KeyStatusBadge, { keyStatusInfo } from "../../components/KeyStatusBadge";
 import { polishTestTitle, EXPECTED_MODULE_COUNTS } from "../../lib/testTitle";
 import ImportStatus from "../../components/ImportStatus";
+import ClassificationPanel from "../../components/ClassificationPanel";
 
 export default function ImportDetailPage() {
   const { importId } = useParams<{ importId: string }>();
@@ -275,6 +276,9 @@ export default function ImportDetailPage() {
           <Pill tone="red">Failed {aiReview?.state_counts.failed ?? 0}</Pill>
         </div>
       </div>
+
+      {importId && importInfo.deterministic_review_status === "passed" &&
+        <ClassificationPanel importId={importId} selectedDraftId={selectedId} onAccepted={refresh} />}
 
       {importInfo.deterministic_review_status === "failed" && (
         <div className="panel" style={{ marginTop: 18, borderColor: "var(--danger)" }}>
@@ -561,7 +565,7 @@ export default function ImportDetailPage() {
               <div className="draft-inline-editor" ref={editorRef}>
                 {selectedDetail ? (
                   <DraftEditor
-                    key={d.id}
+                    key={`${d.id}:${selectedDetail.domain}:${selectedDetail.skill}:${selectedDetail.difficulty}`}
                     draft={selectedDetail}
                     onSaved={(moduleName, position) => moduleName && position ? refreshAfterEditorSave(moduleName, position) : refresh()}
                     moduleSummary={moduleSummary}
