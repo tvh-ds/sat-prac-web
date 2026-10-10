@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import VocabularyAssignments from "./VocabularyAssignments";
 import { fnJson, getToken } from "../../lib/supabase";
 import type { FullTestAssignmentBatch, PracticeAssignmentBatch } from "../../lib/types";
 import { Button, Pill, Spinner, fmtDate } from "../../components/ui";
 
-type Tab = "practice" | "full";
+type Tab = "practice" | "full" | "vocabulary";
 
 export default function AssignmentsPage() {
   const navigate = useNavigate();
-  const [tab, setTab] = useState<Tab>("practice");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tab: Tab = searchParams.get("tab") === "vocabulary" ? "vocabulary" : searchParams.get("tab") === "full" ? "full" : "practice";
+  const setTab = (value: Tab) => setSearchParams(value === "practice" ? {} : { tab: value });
   const [practice, setPractice] = useState<PracticeAssignmentBatch[] | null>(null);
   const [full, setFull] = useState<FullTestAssignmentBatch[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -34,8 +37,8 @@ export default function AssignmentsPage() {
   return (
     <div>
       <div className="section-label">Assignments</div>
-      <h1 className="page-title"><span className="hl-muted">Assigned</span> <span className="hl-bright">tests</span></h1>
-      <p className="page-sub">Track assigned practice sets and full-length test batches, then review student results.</p>
+      <h1 className="page-title"><span className="hl-muted">Assigned</span> <span className="hl-bright">work</span></h1>
+      <p className="page-sub">Track assigned practice sets, full-length tests, and daily vocabulary progress.</p>
 
       {error && <div className="login-error">{error}</div>}
 
@@ -46,7 +49,10 @@ export default function AssignmentsPage() {
         <button className={`score-tab${tab === "full" ? " active" : ""}`} onClick={() => setTab("full")}>
           Full-Length Test ({full?.length ?? "…"})
         </button>
+        <button className={`score-tab${tab === "vocabulary" ? " active" : ""}`} onClick={() => setTab("vocabulary")}>Vocabulary</button>
       </div>
+
+      {tab === "vocabulary" && <VocabularyAssignments />}
 
       {tab === "practice" && !practice && <Spinner />}
       {tab === "practice" && practice && practice.length === 0 && (

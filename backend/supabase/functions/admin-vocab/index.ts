@@ -1,4 +1,5 @@
 import { parseVocabImport, VocabImportError } from "../_shared/vocabImport.ts";
+import { loadVocabularyAssignments } from "../_shared/vocab_assignment_data.ts";
 import { requireRole, HttpError, pathSegments } from "../_shared/auth.ts";
 import { serviceClient } from "../_shared/supabase.ts";
 import { corsHeaders, json, error } from "../_shared/cors.ts";
@@ -42,6 +43,14 @@ Deno.serve(async (req) => {
     const svc = serviceClient();
     const seg = pathSegments(req);
     const url = new URL(req.url);
+
+    if (req.method === "GET" && seg[1] === "assignments" && (seg.length === 2 || seg.length === 3)) {
+      const deckId = seg[2];
+      if (deckId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(deckId)) return error("Invalid deck ID", 422);
+      const report = await loadVocabularyAssignments(svc, new Date(), deckId);
+      if (deckId && !report.decks.length) return error("Assigned active deck not found", 404);
+      return json(report);
+    }
 
     // ------------------------------------------------------------------
     // Decks list + create

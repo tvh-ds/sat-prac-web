@@ -35,6 +35,7 @@ const PracticeStudentPage = lazy(() => import("./pages/student/PracticePage"));
 const PracticeStartPage = lazy(() => import("./pages/student/PracticeStartPage"));
 const AdminVocabPage = lazy(() => import("./pages/admin/AdminVocabPage"));
 const AdminVocabDeckPage = lazy(() => import("./pages/admin/AdminVocabDeckPage"));
+const VocabularyAssignments = lazy(() => import("./pages/admin/VocabularyAssignments"));
 
 function RequireRole({ role, children }: { role: "admin" | "student"; children: React.ReactNode }) {
   const { loading, user, profile, refreshProfile } = useAuth();
@@ -139,6 +140,7 @@ export default function App() {
               <Route path="assignments" element={<AssignmentsPage />} />
               <Route path="assignments/practice/:batchId" element={<PracticeBatchPage />} />
               <Route path="assignments/full/:batchId" element={<FullLengthBatchPage />} />
+              <Route path="assignments/vocabulary/:deckId" element={<VocabularyAssignments />} />
               <Route path="vocabulary" element={<AdminVocabPage />} />
               <Route path="vocabulary/decks/:deckId" element={<AdminVocabDeckPage />} />
             </Route>
