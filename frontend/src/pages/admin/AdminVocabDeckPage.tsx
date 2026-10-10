@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
-import { extractVocabFile } from "../../lib/vocabFileImport";
+import VocabImportModal from "../../components/VocabImportModal";
 import type { AdminVocabDeck, VocabAssignmentStudent, VocabCard } from "../../lib/types";
 import { Button, EmptyState, Modal, Pill, Spinner } from "../../components/ui";
 
@@ -16,10 +16,6 @@ export default function AdminVocabDeckPage() {
   const [editing, setEditing] = useState<VocabCard | "new" | null>(null);
   const [importing, setImporting] = useState(false);
   const [form, setForm] = useState({ word: "", definition: "", example_sentence: "", part_of_speech: "", tags: "" });
-  const [importText, setImportText] = useState("");
-  const [importResult, setImportResult] = useState<string | null>(null);
-  const [importNote, setImportNote] = useState<string | null>(null);
-  const [importLoading, setImportLoading] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -110,43 +106,6 @@ export default function AdminVocabDeckPage() {
     }
   };
 
-  const onImportFile = async (f: File | undefined) => {
-    if (!f) return;
-    setError(null);
-    setImportResult(null);
-    setImportNote(null);
-    setImportLoading(true);
-    try {
-      const r = await extractVocabFile(f);
-      setImportText(r.text);
-      setImportNote(`${r.rows} row(s)${r.pages > 0 ? ` from ${r.pages} page(s)` : ""} loaded — review below, then Import.${r.note ? ` ${r.note}` : ""}`);
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not read file");
-    } finally {
-      setImportLoading(false);
-    }
-  };
-
-  const doImport = async () => {
-    if (!deckId || !importText.trim()) return;
-    setError(null);
-    setImportResult(null);
-    try {
-      const token = await getToken();
-      const res = await fnJson<{ imported: number; skipped: number; total: number }>(`admin-vocab/decks/${deckId}/cards/import`, {
-        method: "POST",
-        body: { text: importText },
-        token,
-      });
-      setImportResult(`${res.imported} imported${res.skipped > 0 ? `, ${res.skipped} skipped (duplicates or invalid)` : ""}.`);
-      setImportText("");
-      loadCards();
-      loadDeck();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Import failed");
-    }
-  };
-
   const saveAssignments = async () => {
     if (!deckId) return;
     setSaving(true);
@@ -220,12 +179,12 @@ export default function AdminVocabDeckPage() {
           <div className="filter-row">
             <input className="f-input" style={{ maxWidth: 320 }} placeholder="Search cards…" value={q} onChange={(e) => setQ(e.target.value)} />
             <div style={{ flex: 1 }} />
-            <Button variant="outline" disabled={deck.status === "archived"} onClick={() => { setImporting(true); setImportResult(null); setImportNote(null); }}>Import file</Button>
+            <Button variant="outline" disabled={deck.status === "archived"} onClick={() => { setImporting(true); }}>Import file</Button>
             <Button disabled={deck.status === "archived"} onClick={() => { setForm({ word: "", definition: "", example_sentence: "", part_of_speech: "", tags: "" }); setEditing("new"); }}>Add Card</Button>
           </div>
 
           {visibleCards.length === 0 && (
-            <EmptyState title="No cards" body="Add cards one at a time or import a PDF/CSV file with word, definition columns." />
+            <EmptyState title="No cards" body="Add cards one at a time or import a CSV file with word and meaning columns." />
           )}
 
           <div className="card-table">
@@ -310,32 +269,11 @@ export default function AdminVocabDeckPage() {
       )}
 
       {importing && (
-        <Modal
-          title="Import Cards"
-          onClose={() => { setImporting(false); setImportResult(null); setImportNote(null); }}
-          footer={
-            <>
-              <Button variant="ghost" onClick={() => { setImporting(false); setImportResult(null); setImportNote(null); }}>Close</Button>
-              <Button onClick={doImport} disabled={!importText.trim() || importLoading}>Import</Button>
-            </>
-          }
-        >
-          <p className="muted" style={{ marginBottom: 8 }}>
-            Upload a file or paste rows below. PDF: two-column text tables (word, then definition). CSV/TXT: one card per line, <code>word, definition</code> (comma- or tab-separated). A header row is detected and skipped; duplicate words are ignored. Review the extracted rows before importing.
-          </p>
-          <input
-            type="file"
-            accept=".pdf,.csv,.tsv,.txt"
-            disabled={importLoading}
-            onChange={(e) => { void onImportFile(e.target.files?.[0]); e.target.value = ""; }}
-            style={{ marginBottom: 8 }}
-          />
-          {importLoading && <p className="muted">Reading file…</p>}
-          {importNote && <p className="ok-text">{importNote}</p>}
-          <textarea className="f-input" rows={8} value={importText} onChange={(e) => setImportText(e.target.value)} placeholder={"word,definition\nmeticulous,showing great attention to detail\npragmatic,dealing with things sensibly"} />
-          {importResult && <p className="ok-text">{importResult}</p>}
-          {error && <p className="form-error">{error}</p>}
-        </Modal>
+        <VocabImportModal
+          endpoint={`admin-vocab/decks/${deckId}/cards/import`}
+          onClose={() => setImporting(false)}
+          onImported={() => { loadCards(); loadDeck(); }}
+        />
       )}
     </div>
   );

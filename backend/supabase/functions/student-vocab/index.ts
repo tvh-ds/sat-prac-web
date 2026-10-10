@@ -1,3 +1,4 @@
+import { parseVocabImport, VocabImportError } from "../_shared/vocabImport.ts";
 ﻿import { requireRole, HttpError, pathSegments } from "../_shared/auth.ts";
 import { serviceClient } from "../_shared/supabase.ts";
 import { corsHeaders, json, error } from "../_shared/cors.ts";
@@ -117,31 +118,6 @@ async function deckIdList(
   const ids = new Set<string>([...(own ?? []).map((d: { id: string }) => d.id)]);
   for (const a of assigned ?? []) ids.add((a as { deck_id: string }).deck_id);
   return [...ids];
-}
-
-function parseImport(text: string): Array<{
-  word: string;
-  definition: string;
-  example_sentence: string | null;
-  part_of_speech: string | null;
-  tags: string[];
-}> {
-  const rows: Array<{ word: string; definition: string; example_sentence: string | null; part_of_speech: string | null; tags: string[] }> = [];
-  for (const raw of text.split(/\r?\n/)) {
-    const line = raw.trim();
-    if (!line) continue;
-    const fields = line.includes("\t") ? line.split("\t").map((f) => f.trim()) : line.split(",").map((f) => f.trim());
-    const [word, definition, example, pos, tagsRaw] = fields;
-    if (!word || !definition) continue;
-    rows.push({
-      word,
-      definition,
-      example_sentence: example || null,
-      part_of_speech: pos || null,
-      tags: tagsRaw ? tagsRaw.split(";").map((t) => t.trim()).filter(Boolean) : [],
-    });
-  }
-  return rows;
 }
 
 Deno.serve(async (req) => {
@@ -323,7 +299,7 @@ Deno.serve(async (req) => {
     if (req.method === "POST" && seg.length === 3 && seg[1] === "cards" && seg[2] === "import") {
       const body = importCardsSchema.parse(await req.json());
       await getOwnDeck(svc, ctx.user.id, body.deck_id);
-      const rows = parseImport(body.text);
+      const rows = parseVocabImport(body.text);
       if (rows.length === 0) return error("No valid word/definition pairs found", 422);
       const { data: existing, error: eErr } = await svc
         .from("vocab_cards")
@@ -331,7 +307,12 @@ Deno.serve(async (req) => {
         .eq("deck_id", body.deck_id);
       if (eErr) return error(eErr.message, 500);
       const have = new Set((existing ?? []).map((r: { word: string }) => r.word.toLowerCase()));
-      const toInsert = rows.filter((r) => !have.has(r.word.toLowerCase()));
+      const toInsert = rows.filter((r) => {
+        const key = r.word.toLowerCase();
+        if (have.has(key)) return false;
+        have.add(key);
+        return true;
+      });
       let inserted = 0;
       for (const row of toInsert) {
         const { error: iErr } = await svc.from("vocab_cards").insert({ ...row, deck_id: body.deck_id });
@@ -540,6 +521,7 @@ Deno.serve(async (req) => {
 
     return error("Not found", 404);
   } catch (e) {
+    if (e instanceof VocabImportError) return error(e.message, 422);
     if (e instanceof HttpError) return error(e.message, e.status);
     if (e instanceof SyntaxError) return error("Invalid JSON body", 400);
     if (e instanceof Error && "issues" in (e as object)) return error("Validation failed", 422, (e as unknown as { issues: unknown }).issues);

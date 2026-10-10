@@ -1,0 +1,16 @@
+.vocab-import { display: grid; gap: 12px; min-width: 0; }
+.vocab-import > p, .vocab-import p { margin: 0; }
+.vocab-import-format { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; }
+.vocab-import-guide { width: 100%; }
+.vocab-import-guide-toggle { border: 0; padding: 0; background: none; color: var(--text-body); font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.vocab-import-guide p { margin-top: 12px; }
+.vocab-import-guide ol { margin: 8px 0 12px; padding-inline-start: 22px; }
+.vocab-import-guide li + li { margin-top: 8px; }
+.vocab-import input[type="file"] { max-width: 100%; }
+.vocab-import-preview { margin-top: 12px; max-height: 340px; overflow: auto; }
+.vocab-import-preview table { width: 100%; table-layout: fixed; border-collapse: collapse; text-align: left; }
+.vocab-import-preview caption { text-align: left; padding-bottom: 8px; font-weight: 600; }
+.vocab-import-preview th, .vocab-import-preview td { padding: 10px 8px; border-bottom: 1px solid var(--border-subtle); vertical-align: top; overflow-wrap: anywhere; }
+.vocab-import-preview th:first-child { width: 28%; }
+.vocab-import-preview td { white-space: pre-wrap; }
+.vocab-import-preview td p { margin-top: 8px; }

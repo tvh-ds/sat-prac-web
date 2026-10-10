@@ -1,3 +1,4 @@
+import { parseVocabImport, VocabImportError } from "../_shared/vocabImport.ts";
 import { requireRole, HttpError, pathSegments } from "../_shared/auth.ts";
 import { serviceClient } from "../_shared/supabase.ts";
 import { corsHeaders, json, error } from "../_shared/cors.ts";
@@ -10,8 +11,6 @@ import {
   assignVocabDeckSchema,
 } from "../_shared/validation.ts";
 
-const HEADERS = new Set(["word", "term", "definition", "def", "meaning"]);
-
 interface CardRow {
   id: string;
   deck_id: string;
@@ -20,22 +19,6 @@ interface CardRow {
   example_sentence: string | null;
   part_of_speech: string | null;
   tags: string[];
-}
-
-function parseWordDefCsv(text: string): Array<{ word: string; definition: string }> {
-  const rows: Array<{ word: string; definition: string }> = [];
-  const lines = text.split(/\r?\n/);
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue;
-    const raw = line.includes("\t") ? line.split("\t") : line.split(",");
-    const fields = raw.map((f) => f.trim().replace(/^"|"$/g, ""));
-    const [word, definition] = fields;
-    if (!word || !definition) continue;
-    if (i === 0 && HEADERS.has(word.toLowerCase())) continue;
-    rows.push({ word, definition });
-  }
-  return rows;
 }
 
 async function getDeckOr404(
@@ -219,7 +202,7 @@ Deno.serve(async (req) => {
 
       if (req.method === "POST" && rest.length === 1 && rest[0] === "import") {
         const body = adminImportCardsSchema.parse(await req.json());
-        const rows = parseWordDefCsv(body.text);
+        const rows = parseVocabImport(body.text);
         if (rows.length === 0) return error("No valid word/definition pairs found", 422);
         const { data: existing, error: eErr } = await svc
           .from("vocab_cards")
@@ -383,6 +366,7 @@ Deno.serve(async (req) => {
 
     return error("Not found", 404);
   } catch (e) {
+    if (e instanceof VocabImportError) return error(e.message, 422);
     if (e instanceof HttpError) return error(e.message, e.status);
     if (e instanceof SyntaxError) return error("Invalid JSON body", 400);
     if (e instanceof Error && "issues" in (e as object)) return error("Validation failed", 422, (e as unknown as { issues: unknown }).issues);
