@@ -240,7 +240,7 @@ export default function ImportDetailPage() {
           </p>
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          {importInfo.deterministic_review_status === "failed" && (
+          {!importInfo.generated_test_id && importInfo.deterministic_review_status === "failed" && (
             <Button variant="outline" disabled={busy || reprocessing} onClick={() => void fullReprocess()}>
               {busy || reprocessing ? "Reprocessing…" : "Full Reprocess"}
             </Button>
@@ -263,6 +263,14 @@ export default function ImportDetailPage() {
           <Button variant="outline" onClick={() => navigate("/admin/imports")}>Back</Button>
         </div>
       </div>
+
+      {importInfo.generated_test_id && importInfo.text_quality?.storage_cleanup && (
+        <p className="muted" style={{ marginTop: 12, fontSize: 13 }}>
+          {importInfo.text_quality.storage_cleanup.status === "complete"
+            ? "Source PDF and temporary images cleaned up. Images used by questions are kept."
+            : "Your test is ready. Source-file cleanup is pending and will retry automatically."}
+        </p>
+      )}
 
       <div className="panel" style={{ marginTop: 18 }}>
         <h3 style={{ margin: 0, fontSize: 15 }}>Human review queue</h3>

@@ -62,6 +62,7 @@ export class AiIngestionReviewService {
 
   async enqueue(importId: string, force = false): Promise<{ id: string; status: string; existing: boolean } | null> {
     let snapshot = await this.loadSnapshot(importId);
+    if (snapshot.importRow.generated_test_id) throw new Error("Source review is closed after test generation");
     if (snapshot.importRow.status !== "completed") throw new Error("AI review requires a completed import");
     const policy = await this.persistDeterministicReview(snapshot);
     if (policy.importFailed || policy.aiDrafts === 0) return null;
@@ -77,6 +78,7 @@ export class AiIngestionReviewService {
     // draft metadata. Create the job from that committed snapshot so it does
     // not immediately become stale.
     snapshot = await this.loadSnapshot(importId);
+    if (snapshot.importRow.generated_test_id || snapshot.importRow.status !== "completed") throw new Error("Import is no longer available for source review");
     const { data: active, error: activeError } = await this.svc.from("ai_ingestion_review_jobs")
       .select("id,status").eq("pdf_import_id", importId).in("status", ["queued", "running"])
       .order("created_at", { ascending: false }).limit(1).maybeSingle();
@@ -208,6 +210,10 @@ export class AiIngestionReviewService {
     let outputTokens = 0;
     try {
       const snapshot = await this.loadSnapshot(job.pdf_import_id);
+      if (snapshot.importRow.generated_test_id) {
+        await this.finishJob(job.id, "cancelled", { error_category: "test_already_generated" });
+        return { jobId: job.id, status: "cancelled", reviewed, failed };
+      }
       if (snapshot.snapshotHash !== job.snapshot_hash) {
         await this.finishJob(job.id, "stale", { latency_ms: Date.now() - started, error_category: "snapshot_changed" });
         return { jobId: job.id, status: "stale", reviewed, failed };

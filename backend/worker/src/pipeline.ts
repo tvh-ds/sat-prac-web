@@ -392,6 +392,7 @@ export class Pipeline {
       .maybeSingle();
     if (error) throw new Error(`load import: ${error.message}`);
     if (!pdfImport) throw new Error(`import not found: ${importId}`);
+    if (pdfImport.generated_test_id) throw new Error("Generated tests cannot be reprocessed; upload a new import");
 
     if (!["uploaded", "failed"].includes(pdfImport.status)) {
       throw new Error(`import ${importId} is in status ${pdfImport.status}; not processable`);
@@ -1404,18 +1405,8 @@ export class Pipeline {
       console.warn(`[pipeline] answer-key columns update skipped: ${e instanceof Error ? e.message : String(e)}`);
     }
 
-    // Purge original PDF from Storage after successful ingest (free tier 1 GB).
-    try {
-      const { data: imp } = await this.svc.from("pdf_imports").select("storage_path").eq("id", importId).maybeSingle();
-      const path = (imp as { storage_path?: string } | null)?.storage_path;
-      if (path) {
-        const { error: rmErr } = await this.svc.storage.from("pdf-imports").remove([path]);
-        if (rmErr) console.warn(`[pipeline] purge storage ${path} failed: ${rmErr.message}`);
-        else console.log(`[pipeline] purged storage object ${path}`);
-      }
-    } catch (e) {
-      console.warn(`[pipeline] purge warning: ${e instanceof Error ? e.message : String(e)}`);
-    }
+    // Retain the PDF for review and Full Reprocess. Source storage is cleaned
+    // only after generate-test commits the complete test.
 
     const report: IngestReport = {
       file: null,

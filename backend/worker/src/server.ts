@@ -3,6 +3,8 @@ import express from "express";
 import { loadConfig } from "./config";
 import { Pipeline } from "./pipeline";
 import { AiIngestionReviewService } from "./aiReview";
+import { createSupabase } from "./supabase";
+import { retryPendingImportStorageCleanup } from "../../supabase/functions/_shared/importStorageCleanup";
 
 function digest(value: string): Buffer {
   return createHash("sha256").update(value).digest();
@@ -18,6 +20,7 @@ export function createApp(config: ReturnType<typeof loadConfig>) {
 
   const pipeline = new Pipeline(config);
   const aiReview = new AiIngestionReviewService(config);
+  const storageClient = createSupabase(config);
 
   function kickAiReview(): void {
     setImmediate(() => {
@@ -64,6 +67,7 @@ export function createApp(config: ReturnType<typeof loadConfig>) {
   app.post("/jobs/poll", async (_req, res) => {
     if (!requireWorkerAuth(_req, res)) return;
     try {
+      await retryPendingImportStorageCleanup(storageClient);
       const next = await pipeline.claimNextPending();
       if (next) {
         const result = await pipeline.processImport(next);

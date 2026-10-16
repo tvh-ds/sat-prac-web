@@ -152,10 +152,12 @@ describe("Pipeline (Parse 5)", () => {
   let tables: Record<string, any[]>;
   let pdfBuffer: Buffer;
   let uploads: string[];
+  let removals: string[];
 
   beforeEach(async () => {
     tables = {};
     uploads = [];
+    removals = [];
     pdfBuffer = await makePdf(FULL_PDF_LINES);
     parseState.text = FULL_PDF_LINES.join("\n");
     parseState.visuals = [];
@@ -174,7 +176,7 @@ describe("Pipeline (Parse 5)", () => {
             return { data: { path }, error: null };
           },
           createSignedUrl: async () => ({ data: { signedUrl: "http://x/page.png" }, error: null }),
-          remove: async () => ({ data: {}, error: null }),
+          remove: async (paths: string[]) => { removals.push(...paths); return { data: {}, error: null }; },
         }),
       },
     };
@@ -187,6 +189,7 @@ describe("Pipeline (Parse 5)", () => {
     const result = await pipeline.processImport("imp-1");
 
     expect(result.status).toBe("completed");
+    expect(removals).toEqual([]); // The source PDF must survive until test generation.
     expect(result.method).toBe("parse_ocr");
     expect(result.pages).toBeGreaterThanOrEqual(1);
     expect(result.drafts).toBeGreaterThanOrEqual(4);

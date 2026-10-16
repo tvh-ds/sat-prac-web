@@ -5,6 +5,7 @@ import { pdfImportCreateSchema, approveDraftSchema, updateDraftSchema, saveDraft
 import { approveDraft } from "../_shared/drafts.ts";
 import { moduleGroup, groupByModuleKey } from "../_shared/modules.ts";
 import { summarizePdfImportReadiness, type ImportReadinessDraft } from "../_shared/importReadiness.ts";
+import { tryCleanupImportedTestStorage } from "../_shared/importStorageCleanup.ts";
 
 const WORKER_URL = Deno.env.get("WORKER_URL");
 const WORKER_AUTH_TOKEN = Deno.env.get("WORKER_AUTH_TOKEN");
@@ -392,9 +393,10 @@ Deno.serve(async (req) => {
     }
 
     if (req.method === "POST" && seg.length === 3 && seg[2] === "process") {
-      const { data: imp, error: impErr } = await svc.from("pdf_imports").select("id,status").eq("id", id).maybeSingle();
+      const { data: imp, error: impErr } = await svc.from("pdf_imports").select("id,status,generated_test_id").eq("id", id).maybeSingle();
       if (impErr) return error(impErr.message, 500);
       if (!imp) return error("Import not found", 404);
+      if (imp.generated_test_id) return error("This import has already become a test. Upload the PDF as a new import to reprocess it.", 409);
       if (!["uploaded", "failed", "completed"].includes(imp.status)) return error("Import is already processing", 409);
       if (imp.status === "completed") {
         const { error: resetErr } = await svc.from("pdf_imports").update({
@@ -413,9 +415,10 @@ Deno.serve(async (req) => {
     }
 
     if (req.method === "POST" && seg.length === 3 && seg[2] === "ai-review") {
-      const { data: imp, error: impErr } = await svc.from("pdf_imports").select("id,status,deterministic_review_status").eq("id", id).maybeSingle();
+      const { data: imp, error: impErr } = await svc.from("pdf_imports").select("id,status,deterministic_review_status,generated_test_id").eq("id", id).maybeSingle();
       if (impErr) return error(impErr.message, 500);
       if (!imp) return error("Import not found", 404);
+      if (imp.generated_test_id) return error("Source review is closed after test generation.", 409);
       if (imp.status !== "completed") return error("AI review requires a completed import", 409);
       if (imp.deterministic_review_status === "failed") return error("Structurally failed imports cannot create AI review jobs", 409);
       const { data: latestJob, error: latestErr } = await svc.from("ai_ingestion_review_jobs")
@@ -560,8 +563,14 @@ Deno.serve(async (req) => {
       if (impErr) return error(impErr.message, 500);
       if (!imp) return error("Import not found", 404);
       if (imp.deterministic_review_status === "failed") return error("Structurally failed imports cannot generate tests. Run Full Reprocess first.", 409);
-      if (imp.generated_test_id) return json({ ok: true, test_id: imp.generated_test_id, already_generated: true });
+      if (imp.generated_test_id) {
+        const storage_cleanup = await tryCleanupImportedTestStorage(svc, id);
+        return json({ ok: true, test_id: imp.generated_test_id, already_generated: true, storage_cleanup });
+      }
       if (imp.deterministic_review_status !== "passed") return error("Import must pass deterministic review before generating a test.", 409);
+      const activeReview = await svc.from("ai_ingestion_review_jobs").select("id").eq("pdf_import_id", id).in("status", ["queued", "running"]).limit(1);
+      if (activeReview.error) return error("Unable to check active source review.", 500);
+      if (activeReview.data.length) return error("Wait for source review to finish before generating the test.", 409);
 
       const body = await req.json().catch(() => ({})) as { acknowledge_incomplete?: boolean };
       const quality = (imp.text_quality ?? {}) as { incomplete_modules?: Array<{ module: string; expected: number; actual: number }> };
@@ -595,6 +604,11 @@ Deno.serve(async (req) => {
       }
 
       let testId: string | null = null;
+      let committed = false;
+      const locked = await svc.from("pdf_imports").update({ status: "parsing" }).eq("id", id)
+        .eq("status", "completed").is("generated_test_id", null).select("id");
+      if (locked.error) return error("Unable to prepare test generation.", 500);
+      if (locked.data.length !== 1) return error("This import is already being processed.", 409);
       try {
         const title = polishTestTitle(imp.original_filename);
         const { data: test, error: tErr } = await svc
@@ -686,7 +700,7 @@ Deno.serve(async (req) => {
           linked += 1;
         }
 
-        if (linked === 0) throw new HttpError(422, "None of the drafts could be approved; nothing was linked into the test");
+        if (failed.length || linked !== usable.length) throw new HttpError(422, "Every draft must be linked successfully before test generation can finish");
 
         // Answer-key status for the generated test (best-effort if migration pending)
         const moduleNameById = new Map<string, string>();
@@ -723,8 +737,13 @@ Deno.serve(async (req) => {
           .eq("id", testId);
         if (keyErr && !/answer_key_status|42703/.test(keyErr.message)) throw new HttpError(500, keyErr.message);
 
-        const { error: uErr } = await svc.from("pdf_imports").update({ generated_test_id: testId }).eq("id", id);
+        const { error: uErr } = await svc.from("pdf_imports").update({
+          generated_test_id: testId,
+          status: "completed",
+          text_quality: { ...(imp.text_quality ?? {}), storage_cleanup: { status: "pending", prefixes: [] } },
+        }).eq("id", id);
         if (uErr) throw new HttpError(500, uErr.message);
+        committed = true;
         await svc.from("audit_logs").insert({
           actor_id: ctx.user.id,
           action: "import.generated_test",
@@ -733,6 +752,7 @@ Deno.serve(async (req) => {
           details: { test_id: testId, title, linked, failed: failed.length },
         });
 
+        const storage_cleanup = await tryCleanupImportedTestStorage(svc, id);
         return json({
           ok: true,
           test_id: testId,
@@ -742,9 +762,13 @@ Deno.serve(async (req) => {
           modules: moduleIds.size,
           answer_key_status: testKeyStatus,
           failed,
+          storage_cleanup,
         }, 201);
       } catch (e) {
-        if (testId) {
+        if (!committed) {
+          await svc.from("pdf_imports").update({ status: "completed" }).eq("id", id).is("generated_test_id", null);
+        }
+        if (testId && !committed) {
           try {
             await svc.from("tests").delete().eq("id", testId);
           } catch {
