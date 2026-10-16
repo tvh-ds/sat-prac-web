@@ -30,11 +30,12 @@ function EditModal({
 }) {
   const [title, setTitle] = useState(set.title);
   const [description, setDescription] = useState(set.description ?? "");
-  const [minutes, setMinutes] = useState(set.time_limit_minutes ?? 10);
+  const [minutes, setMinutes] = useState(String(set.time_limit_minutes ?? 10));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function save() {
+    if (!/^\d+$/.test(minutes) || Number(minutes) < 1 || Number(minutes) > 600) { setError("Enter a whole-number timer between 1 and 600 minutes."); return; }
     setBusy(true);
     setError(null);
     try {
@@ -45,7 +46,7 @@ function EditModal({
         body: {
           title: title.trim(),
           description: description.trim() || null,
-          time_limit_minutes: minutes,
+          time_limit_minutes: Number(minutes),
         },
       });
       onSaved();
@@ -70,7 +71,7 @@ function EditModal({
         min={1}
         max={600}
         value={minutes}
-        onChange={(e) => setMinutes(Math.max(1, Math.min(600, Number(e.target.value) || 1)))}
+        onChange={(e) => setMinutes(e.target.value)}
       />
       <div className="modal-foot" style={{ marginTop: 18 }}>
         <Button variant="outline" onClick={onClose}>Cancel</Button>

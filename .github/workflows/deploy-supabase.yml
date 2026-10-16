@@ -47,6 +47,8 @@ jobs:
         run: |
           deno check supabase/functions/student-dashboard/index.ts
           deno test supabase/functions/_shared/student_dashboard_test.ts
+          deno check supabase/functions/admin-classes/index.ts
+          deno test supabase/functions/_shared/student_classes_test.ts supabase/functions/_shared/validation_test.ts
 
       - uses: supabase/setup-cli@v1
         with:

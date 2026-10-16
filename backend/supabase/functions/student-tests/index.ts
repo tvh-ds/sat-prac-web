@@ -10,7 +10,7 @@ Deno.serve(async (req) => {
 
     const [assignmentsResult, attemptsResult, testsResult] = await Promise.all([
       svc.from("test_assignments")
-        .select("id, test_id, due_at, status, content_scope, module_ids")
+        .select("id, test_id, due_at, status, content_scope, module_ids, class_name")
         .eq("student_id", ctx.user.id),
       svc.from("attempts")
         .select("test_id, assignment_id, id, status, started_at")
@@ -39,7 +39,7 @@ Deno.serve(async (req) => {
       return (a.started_at as string) < (b.started_at as string) ? 1 : -1;
     });
     const attemptMap = new Map(sortedAttempts.map((a) => [(a.assignment_id as string | null) ?? a.test_id, a]));
-    const byTest = new Map<string, Array<{ id: string; due_at: string | null; status: string; content_scope: string | null; module_ids: string[] }>>();
+    const byTest = new Map<string, Array<{ id: string; due_at: string | null; status: string; content_scope: string | null; module_ids: string[]; class_name?: string | null }>>();
     for (const a of assignments ?? []) {
       const tid = a.test_id as string;
       if (!byTest.has(tid)) byTest.set(tid, []);
@@ -111,6 +111,7 @@ Deno.serve(async (req) => {
           description: t.description,
           kind: t.kind,
           assignment_id: assn?.id ?? null,
+          class_name: assn?.class_name ?? null,
           assignment_status: assn?.status ?? null,
           due_at: assn?.due_at ?? null,
           sections: sectionIdsPresent.size,

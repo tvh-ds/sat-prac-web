@@ -115,6 +115,7 @@ export interface TextAnnotation {
 }
 
 export interface TestListItem {
+  class_name?: string | null;
   id: string;
   title: string;
   description: string | null;
@@ -233,7 +234,16 @@ export interface ErrorLogPage {
   page_size: number;
 }
 
+export interface StudentClass {
+  id: string;
+  name: string;
+  created_at: string;
+  student_ids: string[];
+}
+
 export interface PracticeAssignmentBatch {
+  class_id?: string | null;
+  class_name?: string | null;
   id: string;
   source_test_id: string | null;
   snapshot_test_id: string;
@@ -296,6 +306,8 @@ export interface PracticeBatchDetail {
 }
 
 export interface FullTestAssignmentBatch {
+  class_id?: string | null;
+  class_name?: string | null;
   id: string;
   source_test_id: string;
   title: string;

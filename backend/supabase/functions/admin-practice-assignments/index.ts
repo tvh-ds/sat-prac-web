@@ -4,6 +4,7 @@ import { corsHeaders, json, error } from "../_shared/cors.ts";
 import { practiceAssignSchema } from "../_shared/validation.ts";
 import { buildAttemptReview } from "../_shared/attempt_review.ts";
 import { assertAnswerKeys } from "../_shared/answer_keys.ts";
+import { classRecipients } from "../_shared/student_classes.ts";
 
 type Svc = ReturnType<typeof serviceClient>;
 
@@ -126,6 +127,7 @@ Deno.serve(async (req) => {
       const raw = await req.json();
       if (!raw?.set_id || typeof raw.set_id !== "string") return error("set_id is required", 422);
       const body = practiceAssignSchema.parse({ ...raw, set_id: undefined });
+      const recipients = await classRecipients(svc, body);
       const setId = raw.set_id as string;
 
       const { data: template, error: tErr } = await svc
@@ -161,14 +163,7 @@ Deno.serve(async (req) => {
         throw e;
       }
 
-      const { data: students, error: stErr } = await svc
-        .from("student_profiles")
-        .select("id")
-        .in("id", body.student_ids);
-      if (stErr) return error(stErr.message, 500);
-      const validStudentIds = new Set((students ?? []).map((student) => student.id));
-      const assignedStudentIds = body.student_ids.filter((studentId) => validStudentIds.has(studentId));
-      if (assignedStudentIds.length === 0) return error("No valid students selected", 422);
+      const assignedStudentIds = recipients.student_ids;
 
       // Immutable snapshot: clone structure (shared question rows; template
       // edits use copy-on-write so snapshots never change).
@@ -222,6 +217,8 @@ Deno.serve(async (req) => {
         .from("practice_assignment_batches")
         .insert({
           source_test_id: template.id,
+          class_id: recipients.class_id,
+          class_name: recipients.class_name,
           snapshot_test_id: snapshot.id,
           title: template.title,
           timer_minutes: body.timer_minutes,
@@ -235,6 +232,8 @@ Deno.serve(async (req) => {
         .from("test_assignments")
         .insert(
           assignedStudentIds.map((studentId) => ({
+            class_id: recipients.class_id,
+            class_name: recipients.class_name,
             test_id: snapshot.id,
             student_id: studentId,
             due_at: body.due_at ?? null,

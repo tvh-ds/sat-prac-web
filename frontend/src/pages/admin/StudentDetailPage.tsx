@@ -5,6 +5,7 @@ import { fnJson, getToken } from "../../lib/supabase";
 import { EmptyState, Pill, Spinner, fmtDate, fmtSeconds } from "../../components/ui";
 import "../../styles/student-progress.css";
 import StudentInfoTab, { type AdminStudentInfo } from "./StudentInfoTab";
+import ClassBadge from "../../components/ClassBadge";
 
 interface DetailStudent {
   id: string;
@@ -22,6 +23,8 @@ interface DetailStudent {
 }
 
 interface PracticeAssignmentProgress {
+  class_id?: string | null;
+  class_name?: string | null;
   assignment_id: string;
   test_id: string;
   title: string;
@@ -221,6 +224,7 @@ export default function StudentDetailPage() {
                     <tr key={assignment.assignment_id}>
                       <td>
                         <strong className="student-progress-name">{assignment.title}</strong>
+                        <ClassBadge {...assignment} />
                         <span className="student-progress-meta">Assigned {fmtDate(assignment.assigned_at)}</span>
                       </td>
                       <td><Pill tone={practiceStatusTone(assignment.status)}>{practiceStatusLabel(assignment.status)}</Pill></td>

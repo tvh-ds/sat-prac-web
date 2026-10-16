@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import ClassTarget from "../../components/ClassTarget";
 import { Link } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import { Button, Modal, Pill, Spinner, fmtDate } from "../../components/ui";
@@ -134,6 +135,7 @@ export default function TestsPage() {
 }
 
 function AssignModal({ test, onClose, onDone }: { test: TestRow; onClose: () => void; onDone: () => void }) {
+  const [classId, setClassId] = useState("");
   const [students, setStudents] = useState<StudentOption[] | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [scope, setScope] = useState<Scope>("full_test");
@@ -182,7 +184,7 @@ function AssignModal({ test, onClose, onDone }: { test: TestRow; onClose: () => 
   };
 
   async function save() {
-    if (selected.size === 0) {
+    if (!classId && selected.size === 0) {
       setError("Select at least one student");
       return;
     }
@@ -198,7 +200,7 @@ function AssignModal({ test, onClose, onDone }: { test: TestRow; onClose: () => 
         method: "POST",
         token,
         body: {
-          student_ids: [...selected],
+          ...(classId ? { class_id: classId } : { student_ids: [...selected] }),
           content_scope: scope,
           ...(scope === "custom_modules" ? { module_ids: [...customModules] } : {}),
         },
@@ -226,9 +228,10 @@ function AssignModal({ test, onClose, onDone }: { test: TestRow; onClose: () => 
     >
       {error && <div className="login-error" style={{ marginBottom: 12 }}>{error}</div>}
 
-      <h4 style={{ margin: "16px 0 8px" }}>1. Students</h4>
+      <ClassTarget value={classId} onChange={setClassId} disabled={busy || Boolean(success)} />
+      {!classId && <h4 style={{ margin: "16px 0 8px" }}>Students</h4>}
       {!students && <Spinner />}
-      {students && (
+      {students && !classId && (
         <div style={{ display: "flex", flexDirection: "column", gap: 6, maxHeight: 220, overflowY: "auto", border: "1px solid var(--border)", borderRadius: 10, padding: 10 }}>
           {students.map((s) => (
             <label key={s.id} style={{ display: "flex", gap: 8, alignItems: "center", cursor: "pointer", fontSize: 13.5 }}>

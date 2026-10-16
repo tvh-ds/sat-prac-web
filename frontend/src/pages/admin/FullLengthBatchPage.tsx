@@ -4,6 +4,7 @@ import { fnJson, getToken } from "../../lib/supabase";
 import type { BatchStudent, FullTestBatchDetail } from "../../lib/types";
 import { Button, Pill, Spinner, fmtDate } from "../../components/ui";
 import AssignmentReviewModal from "./AssignmentReviewModal";
+import ClassBadge from "../../components/ClassBadge";
 
 function statusTone(s: string): "green" | "amber" | "gray" {
   if (s === "graded" || s === "completed") return "green";
@@ -55,6 +56,7 @@ export default function FullLengthBatchPage() {
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
         <h2 style={{ margin: "4px 0", fontWeight: 700 }}>{b.title}</h2>
+        <ClassBadge {...b} />
         <Pill tone="blue">{scopeLabel(b.content_scope)}</Pill>
         <span className="muted" style={{ fontSize: 13 }}>Assigned {fmtDate(b.assigned_at)} · {b.question_count} question(s) · {data.students.length} student(s)</span>
       </div>

@@ -6,6 +6,7 @@ import { Button, Pill, Spinner, fmtDate } from "../../components/ui";
 import MathText from "../../components/MathText";
 import PassageBlock from "../../components/PassageBlock";
 import AssignmentReviewModal from "./AssignmentReviewModal";
+import ClassBadge from "../../components/ClassBadge";
 import { useAssignmentAnnotations } from "../../components/AssignmentAnnotations";
 
 function statusTone(s: string): "green" | "amber" | "gray" {
@@ -82,6 +83,7 @@ export default function PracticeBatchPage() {
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
         <h2 style={{ margin: "4px 0", fontWeight: 700 }}>{b.title}</h2>
+        <ClassBadge {...b} />
         <Pill tone={released ? "green" : "gray"}>{released ? "Explanations released" : "Explanations hidden"}</Pill>
         <span className="muted" style={{ fontSize: 13 }}>
           Assigned {fmtDate(b.assigned_at)} · {b.timer_minutes} min · {data.questions.length} question(s) · {data.students.length} student(s)

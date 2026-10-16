@@ -1,5 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import ClassesPanel from "./ClassesPanel";
 import { fnJson, getToken } from "../../lib/supabase";
 import { Button, Modal, Pill, Spinner, fmtDate } from "../../components/ui";
 
@@ -14,6 +15,8 @@ interface AdminStudent {
 
 export default function StudentsPage() {
   const navigate = useNavigate();
+  const [params, setParams] = useSearchParams();
+  const classTab = params.get("tab") === "classes";
   const [students, setStudents] = useState<AdminStudent[] | null>(null);
   const [search, setSearch] = useState("");
   const [showCreate, setShowCreate] = useState(false);
@@ -48,15 +51,20 @@ export default function StudentsPage() {
       <h1 className="page-title"><span className="hl-muted">Student</span> <span className="hl-bright">roster</span></h1>
       <p className="page-sub">Admin-created accounts · no self-registration.</p>
 
-      <div className="toolbar">
+      <div className="score-tabs" style={{ marginBottom: 20 }}>
+        <button className={`score-tab${!classTab ? " active" : ""}`} onClick={() => setParams({})}>Students</button>
+        <button className={`score-tab${classTab ? " active" : ""}`} onClick={() => setParams({ tab: "classes" })}>Classes</button>
+      </div>
+      {classTab && <ClassesPanel students={students} />}
+      {!classTab && <div className="toolbar">
         <input className="input" placeholder="Search by name or email…" value={search} onChange={(e) => setSearch(e.target.value)} />
         <Button onClick={() => setShowCreate(true)}>+ New Student</Button>
-      </div>
+      </div>}
 
       {error && <div className="login-error">{error}</div>}
       {loading && !students && <Spinner />}
 
-      {students && (
+      {students && !classTab && (
         <div className="card card-pad">
           <table className="table">
             <thead>

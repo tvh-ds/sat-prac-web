@@ -79,6 +79,7 @@ export default function StudentTestsPage() {
               <div className="card test-card premium-test-card reveal" key={t.assignment_id ?? t.id}>
                 <div style={{ minWidth: 0 }}>
                   <h3 className="t-title">{t.title}</h3>
+                  {t.class_name && <Pill tone="blue">Class: {t.class_name}</Pill>}
                   <p className="t-desc">{t.description ?? "Full-length test"}</p>
                   <p className="arch-meta">{t.modules} module{t.modules === 1 ? "" : "s"} · {t.questions} questions</p>
                   <div className="card-row" style={{ marginTop: 10 }}>
@@ -106,6 +107,7 @@ export default function StudentTestsPage() {
               <div className="card test-card premium-test-card reveal" key={t.assignment_id ?? t.id}>
                 <div style={{ minWidth: 0 }}>
                   <h3 className="t-title">{t.title}</h3>
+                  {t.class_name && <Pill tone="blue">Class: {t.class_name}</Pill>}
                   <p className="t-desc">Started {fmtDate(t.attempt!.started_at)}</p>
                 </div>
                 <div className="card-row">

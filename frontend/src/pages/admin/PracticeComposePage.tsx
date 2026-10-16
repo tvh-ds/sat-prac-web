@@ -42,7 +42,7 @@ export default function PracticeComposePage() {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [minutes, setMinutes] = useState(10);
+  const [minutes, setMinutes] = useState("10");
 
   const [picks, setPicks] = useState<PickItem[]>([]);
   const [creating, setCreating] = useState(false);
@@ -165,11 +165,12 @@ export default function PracticeComposePage() {
 
   async function create() {
     if (picks.length === 0 || creating) return;
+    if (!/^\d+$/.test(minutes) || Number(minutes) < 1 || Number(minutes) > 600) { setError("Enter a whole-number timer between 1 and 600 minutes."); return; }
     setCreating(true);
     setError(null);
     try {
       const token = await getToken();
-      const body = { title: title.trim(), description: description.trim() || null, time_limit_minutes: minutes };
+      const body = { title: title.trim(), description: description.trim() || null, time_limit_minutes: Number(minutes) };
       const bankIds = picks.filter((p) => p.source === "bank").map((p) => p.id);
       const res = await fnJson<{ set: { id: string } }>("admin-practice", {
         method: "POST",
@@ -214,7 +215,7 @@ export default function PracticeComposePage() {
             min={1}
             max={600}
             value={minutes}
-            onChange={(e) => setMinutes(Math.max(1, Math.min(600, Number(e.target.value) || 1)))}
+            onChange={(e) => setMinutes(e.target.value)}
           />
           <div style={{ marginTop: 18, display: "flex", gap: 12 }}>
             <Button size="lg" disabled={!title.trim()} onClick={() => setStep("pick")}>Choose questions</Button>

@@ -34,7 +34,8 @@ Deno.serve(async (req) => {
     if (req.method === "GET" && seg.length === 1) {
       const { data, error: err } = await svc
         .from("student_profiles")
-        .select("id, grade_level, school, profile_status, profile_submitted_at, profile_approved_at, created_at, profiles:profiles!student_profiles_id_fkey(full_name), attempts!attempts_student_id_fkey(id, status)")
+        .select("id, grade_level, school, profile_status, profile_submitted_at, profile_approved_at, created_at, profiles:profiles!student_profiles_id_fkey!inner(full_name), attempts!attempts_student_id_fkey(id, status)")
+        .eq("profiles.role", "student")
         .order("created_at", { ascending: false });
       if (err) return error(err.message, 500);
       const { data: users } = await svc.auth.admin.listUsers({ perPage: 1000 });
@@ -135,7 +136,7 @@ Deno.serve(async (req) => {
       const { data: practiceBatches, error: batchErr } = practiceTestIds.size > 0
         ? await svc
           .from("practice_assignment_batches")
-          .select("snapshot_test_id, title, timer_minutes")
+          .select("snapshot_test_id, title, timer_minutes, class_id, class_name")
           .in("snapshot_test_id", [...practiceTestIds])
         : { data: [], error: null };
       if (batchErr) return error(batchErr.message, 500);
@@ -143,6 +144,8 @@ Deno.serve(async (req) => {
         snapshot_test_id: string;
         title: string;
         timer_minutes: number;
+        class_id: string | null;
+        class_name: string | null;
       }>;
       const batchByTestId = new Map(batchRows.map((batch) => [batch.snapshot_test_id, batch]));
       const testById = new Map(practiceTestRows.map((test) => [test.id, test]));
@@ -207,6 +210,8 @@ Deno.serve(async (req) => {
           assignment_id: assignment.id,
           test_id: assignment.test_id,
           title: batchByTestId.get(assignment.test_id)?.title ?? testById.get(assignment.test_id)?.title ?? "Practice set",
+          class_id: batchByTestId.get(assignment.test_id)?.class_id ?? null,
+          class_name: batchByTestId.get(assignment.test_id)?.class_name ?? null,
           assigned_at: assignment.assigned_at,
           due_at: assignment.due_at,
           status: practiceAssignmentStatus(assignment.status, assignment.due_at, attempt?.status ?? null, now),

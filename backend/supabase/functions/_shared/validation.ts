@@ -182,11 +182,12 @@ export const assignTestSchema = z.object({
 });
 
 export const assignManySchema = z.object({
-  student_ids: z.array(z.string().uuid()).min(1).max(1000),
+  student_ids: z.array(z.string().uuid()).min(1).max(1000).optional(),
+  class_id: z.string().uuid().optional(),
   due_at: z.string().datetime().optional().nullable(),
   content_scope: assignmentScopeSchema.default("full_test"),
   module_ids: z.array(z.string().uuid()).max(4).optional(),
-});
+}).refine((v) => Boolean(v.class_id) !== Boolean(v.student_ids?.length), { message: "Choose students or one class" });
 
 export const pdfImportCreateSchema = z.object({
   storage_path: z.string().min(1),
@@ -346,9 +347,15 @@ export const practiceAddQuestionsSchema = z.object({
 });
 
 export const practiceAssignSchema = z.object({
-  student_ids: z.array(z.string().uuid()).min(1).max(1000),
+  student_ids: z.array(z.string().uuid()).min(1).max(1000).optional(),
+  class_id: z.string().uuid().optional(),
   timer_minutes: z.number().int().min(1).max(600),
   due_at: z.string().datetime().optional().nullable(),
+}).refine((v) => Boolean(v.class_id) !== Boolean(v.student_ids?.length), { message: "Choose students or one class" });
+
+export const studentClassSchema = z.object({
+  name: z.string().trim().min(1).max(100),
+  student_ids: z.array(z.string().uuid()).max(1000),
 });
 
 export const practiceQuestionEditSchema = z.object({

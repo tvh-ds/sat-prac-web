@@ -15,6 +15,7 @@ import {
   assignManySchema,
 } from "../_shared/validation.ts";
 import { buildAttemptReview } from "../_shared/attempt_review.ts";
+import { classRecipients } from "../_shared/student_classes.ts";
 
 type Svc = ReturnType<typeof serviceClient>;
 
@@ -466,6 +467,7 @@ Deno.serve(async (req) => {
 
     if (req.method === "POST" && seg.length === 3 && seg[2] === "assignees") {
       const body = assignManySchema.parse(await req.json());
+      const recipients = await classRecipients(svc, body);
       await ensureModulesValid(svc, id, body.content_scope, body.module_ids);
       const { data: test, error: testErr } = await svc.from("tests").select("id, title").eq("id", id).eq("kind", "full").maybeSingle();
       if (testErr) return error(testErr.message, 500);
@@ -475,6 +477,8 @@ Deno.serve(async (req) => {
         .from("full_test_assignment_batches")
         .insert({
           source_test_id: id,
+          class_id: recipients.class_id,
+          class_name: recipients.class_name,
           title: test.title,
           content_scope: body.content_scope,
           module_ids: body.content_scope === "custom_modules" ? (body.module_ids ?? []) : [],
@@ -485,7 +489,9 @@ Deno.serve(async (req) => {
         .single();
       if (batchErr) return error(batchErr.message, 500);
 
-      const rows = body.student_ids.map((student_id) => ({
+      const rows = recipients.student_ids.map((student_id) => ({
+        class_id: recipients.class_id,
+        class_name: recipients.class_name,
         test_id: id,
         student_id,
         due_at: body.due_at ?? null,
@@ -505,7 +511,7 @@ Deno.serve(async (req) => {
         action: "test.assigned",
         entity_type: "test",
         entity_id: id,
-        details: { count: body.student_ids.length, content_scope: body.content_scope, module_ids: body.module_ids ?? [] },
+        details: { count: recipients.student_ids.length, class_id: recipients.class_id, content_scope: body.content_scope, module_ids: body.module_ids ?? [] },
       });
       return json({ assigned: (data ?? []).length, batch }, 201);
     }

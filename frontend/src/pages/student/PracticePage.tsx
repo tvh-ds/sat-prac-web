@@ -114,6 +114,7 @@ export default function PracticePage() {
             <div className="card test-card practice-set-card reveal" key={t.assignment_id ?? t.id}>
               <div className="practice-set-copy">
                 <h3 className="t-title">{t.title}</h3>
+                {t.class_name && <Pill tone="blue">Class: {t.class_name}</Pill>}
                 <p className="t-desc">{t.description ?? "Practice set"}</p>
               </div>
               <PracticeSetStats set={t} />
@@ -135,6 +136,7 @@ export default function PracticePage() {
             <div className="card test-card practice-set-card reveal" key={t.assignment_id ?? t.id}>
               <div className="practice-set-copy">
                 <h3 className="t-title">{t.title}</h3>
+                {t.class_name && <Pill tone="blue">Class: {t.class_name}</Pill>}
                 <p className="t-desc">Started {fmtDate(t.attempt!.started_at)}</p>
               </div>
               <PracticeSetStats set={t} />
@@ -157,6 +159,7 @@ export default function PracticePage() {
             <div className="card test-card practice-set-card reveal" key={t.assignment_id ?? t.id}>
               <div className="practice-set-copy">
                 <h3 className="t-title">{t.title}</h3>
+                {t.class_name && <Pill tone="blue">Class: {t.class_name}</Pill>}
               </div>
               <PracticeSetStats set={t} />
               <div className="practice-set-actions">

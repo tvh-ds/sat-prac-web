@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import VocabularyAssignments from "./VocabularyAssignments";
+import ClassBadge from "../../components/ClassBadge";
 import { fnJson, getToken } from "../../lib/supabase";
 import type { FullTestAssignmentBatch, PracticeAssignmentBatch } from "../../lib/types";
 import { Button, Pill, Spinner, fmtDate } from "../../components/ui";
@@ -61,15 +62,15 @@ export default function AssignmentsPage() {
         </div>
       )}
       {tab === "practice" && practice && practice.length > 0 && (
-        <div className="card card-pad">
-          <table className="table">
+        <div className="card card-pad" style={{ overflowX: "auto" }}>
+          <table className="table" style={{ minWidth: 760 }}>
             <thead>
               <tr><th>Set</th><th>Assigned</th><th>Timer</th><th>Students</th><th>Avg score</th><th>Explanations</th><th /></tr>
             </thead>
             <tbody>
               {practice.map((b) => (
                 <tr key={b.id}>
-                  <td style={{ fontWeight: 600 }}>{b.title}</td>
+                  <td style={{ fontWeight: 600, minWidth: 240 }}>{b.title}<div style={{ marginTop: 4 }}><ClassBadge {...b} /></div></td>
                   <td>{fmtDate(b.assigned_at)}</td>
                   <td>{b.timer_minutes} min · {b.question_count} qs</td>
                   <td>{b.completed_count}/{b.student_count} done</td>
@@ -90,15 +91,15 @@ export default function AssignmentsPage() {
         </div>
       )}
       {tab === "full" && full && full.length > 0 && (
-        <div className="card card-pad">
-          <table className="table">
+        <div className="card card-pad" style={{ overflowX: "auto" }}>
+          <table className="table" style={{ minWidth: 760 }}>
             <thead>
               <tr><th>Test</th><th>Assigned</th><th>Scope</th><th>Students</th><th>Avg score</th><th>Due</th><th /></tr>
             </thead>
             <tbody>
               {full.map((b) => (
                 <tr key={b.id}>
-                  <td style={{ fontWeight: 600 }}>{b.title}</td>
+                  <td style={{ fontWeight: 600, minWidth: 240 }}>{b.title}<div style={{ marginTop: 4 }}><ClassBadge {...b} /></div></td>
                   <td>{fmtDate(b.assigned_at)}</td>
                   <td>{scopeLabel(b.content_scope)} · {b.question_count} qs</td>
                   <td>{b.completed_count}/{b.student_count} done</td>

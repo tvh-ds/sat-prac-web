@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import type { PracticeSet } from "../../lib/types";
 import { Button, Modal, Spinner, fmtDate } from "../../components/ui";
+import ClassTarget from "../../components/ClassTarget";
 
 interface StudentOption {
   id: string;
@@ -14,7 +15,8 @@ export function AssignModal({ set, onClose, onDone }: { set: PracticeSet; onClos
   const [students, setStudents] = useState<StudentOption[] | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [q, setQ] = useState("");
-  const [minutes, setMinutes] = useState(set.time_limit_minutes ?? 10);
+  const [minutes, setMinutes] = useState(String(set.time_limit_minutes ?? 10));
+  const [classId, setClassId] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -49,8 +51,12 @@ export function AssignModal({ set, onClose, onDone }: { set: PracticeSet; onClos
   }
 
   async function save() {
-    if (selected.size === 0) {
+    if (!classId && selected.size === 0) {
       setError("Select at least one student");
+      return;
+    }
+    if (!/^\d+$/.test(minutes) || Number(minutes) < 1 || Number(minutes) > 600) {
+      setError("Enter a whole-number timer between 1 and 600 minutes.");
       return;
     }
     setBusy(true);
@@ -60,7 +66,7 @@ export function AssignModal({ set, onClose, onDone }: { set: PracticeSet; onClos
       const d = await fnJson<{ batch: { assigned_count: number } }>("admin-practice-assignments", {
         method: "POST",
         token,
-        body: { set_id: set.id, student_ids: [...selected], timer_minutes: minutes },
+        body: { set_id: set.id, ...(classId ? { class_id: classId } : { student_ids: [...selected] }), timer_minutes: Number(minutes) },
       });
       setSuccess(`Assigned to ${d.batch.assigned_count} student(s) with a ${minutes}-minute timer. Students can take it as many times as you assign it.`);
     } catch (e) {
@@ -78,16 +84,17 @@ export function AssignModal({ set, onClose, onDone }: { set: PracticeSet; onClos
         <>
           {success && <span style={{ color: "var(--color-success)", fontSize: 13, marginRight: "auto" }}>{success}</span>}
           {!success && <Button variant="outline" onClick={onClose} disabled={busy}>Cancel</Button>}
-          {!success && <Button disabled={busy || selected.size === 0} onClick={() => void save()}>{busy ? "Assigning…" : `Assign (${selected.size})`}</Button>}
+          {!success && <Button disabled={busy || (!classId && selected.size === 0)} onClick={() => void save()}>{busy ? "Assigning…" : classId ? "Assign to class" : `Assign (${selected.size})`}</Button>}
           {success && <Button onClick={() => { onClose(); onDone(); }}>Done</Button>}
         </>
       }
     >
       {error && <div className="login-error" style={{ marginBottom: 12 }}>{error}</div>}
 
-      <h4 style={{ margin: "0 0 8px" }}>1. Students ({selected.size} selected)</h4>
+      <ClassTarget value={classId} onChange={setClassId} disabled={busy || Boolean(success)} />
+      {!classId && <h4 style={{ margin: "0 0 8px" }}>Students ({selected.size} selected)</h4>}
       {!students && <Spinner />}
-      {students && (
+      {students && !classId && (
         <>
           <input
             className="input"
@@ -115,14 +122,16 @@ export function AssignModal({ set, onClose, onDone }: { set: PracticeSet; onClos
         </>
       )}
 
-      <h4 style={{ margin: "16px 0 8px" }}>2. Timer (minutes)</h4>
+      <label htmlFor="assignment-timer" className="field-label" style={{ marginTop: 16 }}>Timer (minutes)</label>
       <input
         className="input"
         type="number"
+        id="assignment-timer"
         min={1}
         max={600}
         value={minutes}
-        onChange={(e) => setMinutes(Math.max(1, Math.min(600, Number(e.target.value) || 1)))}
+        onChange={(e) => setMinutes(e.target.value)}
+        disabled={busy || Boolean(success)}
         style={{ maxWidth: 160 }}
       />
       <p className="muted" style={{ fontSize: 12.5, marginTop: 8 }}>
@@ -190,8 +199,8 @@ export default function PracticePage() {
       )}
 
       {sets && sets.length > 0 && (
-        <div className="card card-pad">
-          <table className="table">
+        <div className="card card-pad" style={{ overflowX: "auto" }}>
+          <table className="table" style={{ minWidth: 760 }}>
             <thead>
               <tr>
                 <th>Title</th>
