@@ -14,7 +14,17 @@ async function allRows<T>(query: (start: number) => PromiseLike<{ data: unknown[
   }
 }
 
-export async function loadVocabularyAssignments(svc: ReturnType<typeof serviceClient>, now: Date, deckId?: string) {
+export async function vocabularyClassMembers(svc: ReturnType<typeof serviceClient>, classId: string): Promise<string[]> {
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(classId)) throw new HttpError(422, "Invalid class ID");
+  const { data, error } = await svc.from("student_classes").select("id").eq("id", classId).maybeSingle();
+  if (error) throw new HttpError(500, "Unable to load class");
+  if (!data) throw new HttpError(404, "Class not found");
+  const members = await allRows<{ student_id: string }>(start => svc.from("student_class_members").select("student_id").eq("class_id", classId).order("student_id").range(start, start + 499));
+  return members.map(m => m.student_id);
+}
+
+export async function loadVocabularyAssignments(svc: ReturnType<typeof serviceClient>, now: Date, deckId?: string, classId?: string) {
+  const members = classId ? new Set(await vocabularyClassMembers(svc, classId)) : null;
   const today = now.toISOString().slice(0, 10);
   const decks = await allRows<AssignmentDeck>(start => {
     let query = svc.from("vocab_decks").select("id, name, description, color").is("student_id", null).eq("status", "active");
@@ -28,7 +38,7 @@ export async function loadVocabularyAssignments(svc: ReturnType<typeof serviceCl
       allRows<Assignment>(start => svc.from("vocab_deck_assignments").select("deck_id, student_id").in("deck_id", ids).order("deck_id").order("student_id").range(start, start + 499)),
       allRows<AssignmentCard>(start => svc.from("vocab_cards").select("id, deck_id").in("deck_id", ids).order("id").range(start, start + 499)),
     ]);
-    assignments.push(...a); cards.push(...c);
+    assignments.push(...a.filter(row => !members || members.has(row.student_id))); cards.push(...c);
   }
   const states: AssignmentState[] = [], reviews: AssignmentReview[] = [];
   for (let i = 0; i < cards.length; i += 200) {

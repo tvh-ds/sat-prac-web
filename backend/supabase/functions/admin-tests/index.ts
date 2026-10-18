@@ -1,4 +1,5 @@
 import { requireRole, HttpError, pathSegments } from "../_shared/auth.ts";
+import { deleteAssignmentBatch } from "../_shared/delete_assignment_batch.ts";
 import { serviceClient } from "../_shared/supabase.ts";
 import { corsHeaders, json, error } from "../_shared/cors.ts";
 import {
@@ -161,6 +162,10 @@ Deno.serve(async (req) => {
     const svc = serviceClient();
     const seg = pathSegments(req);
     const id = seg[1];
+
+    if (req.method === "DELETE" && seg.length === 3 && seg[1] === "assignment-batches") {
+      return await deleteAssignmentBatch(svc, "full", seg[2], ctx.user.id);
+    }
 
     if (req.method === "GET" && seg.length === 1) {
       const { data, error: err } = await svc

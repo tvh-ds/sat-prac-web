@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import type { BatchStudent, PracticeBatchDetail } from "../../lib/types";
 import { Button, Pill, Spinner, fmtDate } from "../../components/ui";
@@ -7,6 +7,7 @@ import MathText from "../../components/MathText";
 import PassageBlock from "../../components/PassageBlock";
 import AssignmentReviewModal from "./AssignmentReviewModal";
 import ClassBadge from "../../components/ClassBadge";
+import DeleteAssignmentButton from "../../components/DeleteAssignmentButton";
 import { useAssignmentAnnotations } from "../../components/AssignmentAnnotations";
 
 function statusTone(s: string): "green" | "amber" | "gray" {
@@ -22,6 +23,7 @@ function statusLabel(s: string): string {
 }
 
 export default function PracticeBatchPage() {
+  const navigate = useNavigate();
   const { batchId } = useParams<{ batchId: string }>();
   const [data, setData] = useState<PracticeBatchDetail | null>(null);
   const [tab, setTab] = useState<"students" | "questions">("students");
@@ -93,6 +95,7 @@ export default function PracticeBatchPage() {
             {busy ? "Releasing…" : "Release explanations"}
           </Button>
         )}
+        <DeleteAssignmentButton kind="practice" batch={{ ...b, student_count: data.students.length }} disabled={busy} onDeleted={() => navigate("/admin/assignments", { replace: true })} />
       </div>
       {!released && (
         <p className="muted" style={{ fontSize: 13 }}>

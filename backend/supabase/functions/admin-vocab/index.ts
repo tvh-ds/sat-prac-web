@@ -1,5 +1,5 @@
 import { parseVocabImport, VocabImportError } from "../_shared/vocabImport.ts";
-import { loadVocabularyAssignments } from "../_shared/vocab_assignment_data.ts";
+import { loadVocabularyAssignments, vocabularyClassMembers } from "../_shared/vocab_assignment_data.ts";
 import { requireRole, HttpError, pathSegments } from "../_shared/auth.ts";
 import { serviceClient } from "../_shared/supabase.ts";
 import { corsHeaders, json, error } from "../_shared/cors.ts";
@@ -47,9 +47,27 @@ Deno.serve(async (req) => {
     if (req.method === "GET" && seg[1] === "assignments" && (seg.length === 2 || seg.length === 3)) {
       const deckId = seg[2];
       if (deckId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(deckId)) return error("Invalid deck ID", 422);
-      const report = await loadVocabularyAssignments(svc, new Date(), deckId);
-      if (deckId && !report.decks.length) return error("Assigned active deck not found", 404);
+      const classId = url.searchParams.get("class_id") || undefined;
+      const report = await loadVocabularyAssignments(svc, new Date(), deckId, classId);
+      if (deckId && !report.decks.length && !classId) return error("Assigned active deck not found", 404);
       return json(report);
+    }
+
+    if (req.method === "DELETE" && seg[1] === "assignments" && seg.length === 3) {
+      const deckId = seg[2];
+      if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(deckId)) return error("Invalid deck ID", 422);
+      const deck = await getDeckOr404(svc, deckId);
+      if (deck.student_id !== null) return error("This deck is not admin-managed", 409);
+      const classId = url.searchParams.get("class_id");
+      const members = classId ? await vocabularyClassMembers(svc, classId) : null;
+      // A class with no members must never broaden deletion to every student.
+      if (members && !members.length) return json({ ok: true });
+      let query = svc.from("vocab_deck_assignments").delete().eq("deck_id", deckId);
+      if (members) query = query.in("student_id", members);
+      const { error: deleteError } = await query;
+      if (deleteError) return error("Unable to delete vocabulary assignments. Please try again.", 500);
+      await svc.from("audit_logs").insert({ actor_id: ctx.user.id, action: "vocab.assignment_deleted", entity_type: "vocab_deck", entity_id: deckId, details: { class_id: classId } });
+      return json({ ok: true });
     }
 
     // ------------------------------------------------------------------

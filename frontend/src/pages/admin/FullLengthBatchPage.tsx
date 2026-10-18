@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import type { BatchStudent, FullTestBatchDetail } from "../../lib/types";
 import { Button, Pill, Spinner, fmtDate } from "../../components/ui";
 import AssignmentReviewModal from "./AssignmentReviewModal";
 import ClassBadge from "../../components/ClassBadge";
+import DeleteAssignmentButton from "../../components/DeleteAssignmentButton";
 
 function statusTone(s: string): "green" | "amber" | "gray" {
   if (s === "graded" || s === "completed") return "green";
@@ -26,6 +27,7 @@ function scopeLabel(scope: string) {
 }
 
 export default function FullLengthBatchPage() {
+  const navigate = useNavigate();
   const { batchId } = useParams<{ batchId: string }>();
   const [data, setData] = useState<FullTestBatchDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +53,7 @@ export default function FullLengthBatchPage() {
   return (
     <div>
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
-        <Link to="/admin/assignments" className="muted" style={{ textDecoration: "none" }}>← Assignments</Link>
+        <Link to="/admin/assignments?tab=full" className="muted" style={{ textDecoration: "none" }}>← Assignments</Link>
         <h1 className="page-title" style={{ margin: 0 }}>Assigned Full-Length Test</h1>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
@@ -59,6 +61,7 @@ export default function FullLengthBatchPage() {
         <ClassBadge {...b} />
         <Pill tone="blue">{scopeLabel(b.content_scope)}</Pill>
         <span className="muted" style={{ fontSize: 13 }}>Assigned {fmtDate(b.assigned_at)} · {b.question_count} question(s) · {data.students.length} student(s)</span>
+        <DeleteAssignmentButton kind="full" batch={{ ...b, student_count: data.students.length }} onDeleted={() => navigate("/admin/assignments?tab=full", { replace: true })} />
       </div>
       {error && <div className="login-error">{error}</div>}
 

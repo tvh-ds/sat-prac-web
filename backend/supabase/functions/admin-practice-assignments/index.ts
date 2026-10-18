@@ -5,6 +5,7 @@ import { practiceAssignSchema } from "../_shared/validation.ts";
 import { buildAttemptReview } from "../_shared/attempt_review.ts";
 import { assertAnswerKeys } from "../_shared/answer_keys.ts";
 import { classRecipients } from "../_shared/student_classes.ts";
+import { deleteAssignmentBatch } from "../_shared/delete_assignment_batch.ts";
 
 type Svc = ReturnType<typeof serviceClient>;
 
@@ -50,6 +51,10 @@ Deno.serve(async (req) => {
     const svc = serviceClient();
     const seg = pathSegments(req);
     const batchId = seg[1];
+
+    if (req.method === "DELETE" && seg.length === 2) {
+      return await deleteAssignmentBatch(svc, "practice", batchId, ctx.user.id);
+    }
 
     // ---------------------------------------------------------------- list
     if (req.method === "GET" && seg.length === 1) {

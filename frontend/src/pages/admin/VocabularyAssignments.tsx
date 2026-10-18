@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import { Button, EmptyState, Pill, Spinner } from "../../components/ui";
 import "../../styles/student-progress.css";
@@ -37,8 +37,13 @@ function trackedTime(ms: number | null) {
   return seconds < 60 ? `${seconds}s` : `${Math.floor(seconds / 60)}m${seconds % 60 ? ` ${seconds % 60}s` : ""}`;
 }
 
-export default function VocabularyAssignments() {
+export default function VocabularyAssignments({ classId: selectedClassId }: { classId?: string } = {}) {
   const { deckId } = useParams<{ deckId: string }>();
+  const [searchParams] = useSearchParams();
+  const classId = selectedClassId ?? searchParams.get("class_id") ?? "";
+  const classQuery = classId ? `?class_id=${encodeURIComponent(classId)}` : "";
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const [notice, setNotice] = useState("");
   const [data, setData] = useState<Report | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [allAssigned, setAllAssigned] = useState(false);
@@ -47,16 +52,27 @@ export default function VocabularyAssignments() {
     setLoading(true); setError(null);
     try {
       const token = await getToken();
-      setData(await fnJson<Report>(`admin-vocab/assignments${deckId ? `/${deckId}` : ""}`, { token }));
+      setData(await fnJson<Report>(`admin-vocab/assignments${deckId ? `/${deckId}` : ""}${classQuery}`, { token }));
     } catch (e) { setError(e instanceof Error ? e.message : "Could not load vocabulary assignments"); }
     finally { setLoading(false); }
-  }, [deckId]);
+  }, [deckId, classQuery]);
   useEffect(() => { setData(null); void load(); }, [load]);
 
   const deck = deckId ? data?.decks[0] : null;
   const decks = data?.decks.filter(d => allAssigned || d.remaining_today > 0 || d.reviewed_today > 0) ?? [];
+  async function deleteAssignments(d: DeckProgress) {
+    if (deleting || !window.confirm(`Delete vocabulary assignment “${d.name}” for ${classId ? "students in the selected class" : "all assigned students"}? The deck and review history are kept. Students will lose access to this assigned deck.`)) return;
+    setDeleting(d.id); setError(null); setNotice("");
+    try {
+      const token = await getToken();
+      await fnJson(`admin-vocab/assignments/${d.id}${classQuery}`, { method: "DELETE", token });
+      setData(prev => prev ? { ...prev, decks: prev.decks.filter(row => row.id !== d.id) } : null);
+      setNotice(`Vocabulary assignment “${d.name}” deleted.`);
+    } catch (e) { setError(e instanceof Error ? e.message : "Unable to delete vocabulary assignments. Please try again."); }
+    finally { setDeleting(null); }
+  }
   return <div className="student-progress-page">
-    {deckId && <Link className="student-progress-back muted" to="/admin/assignments?tab=vocabulary">← Vocabulary assignments</Link>}
+    {deckId && <Link className="student-progress-back muted" to={`/admin/assignments?tab=vocabulary${classId ? `&class_id=${encodeURIComponent(classId)}` : ""}`}>← Vocabulary assignments</Link>}
     <div className="student-progress-heading">
       <div>
         {deckId ? <h1 className="page-title">{deck?.name ?? "Vocabulary progress"}</h1> : <h2>Assigned vocabulary decks</h2>}
@@ -65,6 +81,8 @@ export default function VocabularyAssignments() {
       <Button variant="outline" size="sm" disabled={loading} onClick={() => void load()}>{loading ? "Refreshing…" : "Refresh"}</Button>
     </div>
     {error && <div className="login-error" role="alert">{error}<Button variant="ghost" onClick={() => void load()}>Try again</Button></div>}
+    <div role="status" className="muted">{notice}</div>
+    {classId && <p className="muted">Showing vocabulary progress for current members of the selected class.</p>}
     {!data && loading && <Spinner />}
     {data && !deckId && <>
       <div className="filter-row" style={{ marginTop: 16 }}>
@@ -76,9 +94,9 @@ export default function VocabularyAssignments() {
           <table className="table student-progress-table">
             <thead><tr><th>Deck</th><th>Students with work due</th><th>Done today</th><th>Cards remaining today</th><th>Reviews today</th><th /></tr></thead>
             <tbody>{decks.map(d => <tr key={d.id}>
-              <td><Link className="student-progress-name" to={`/admin/assignments/vocabulary/${d.id}`}>{d.name}</Link><span className="student-progress-meta">{d.card_count} cards · {d.student_count} students</span></td>
+              <td><Link className="student-progress-name" to={`/admin/assignments/vocabulary/${d.id}${classQuery}`}>{d.name}</Link><span className="student-progress-meta">{d.card_count} cards · {d.student_count} students</span></td>
               <td>{d.students_with_due}</td><td>{d.students_done_today}/{d.student_count}</td><td>{d.remaining_today}</td><td>{d.reviewed_today}</td>
-              <td><Link className="btn btn-outline btn-sm" to={`/admin/assignments/vocabulary/${d.id}`}>View progress</Link></td>
+              <td><div style={{ display: "flex", gap: 8 }}><Link className="btn btn-outline btn-sm" to={`/admin/assignments/vocabulary/${d.id}${classQuery}`}>View progress</Link><Button variant="danger" size="sm" disabled={!!deleting} aria-label={`Delete vocabulary assignment ${d.name}`} onClick={() => void deleteAssignments(d)}>{deleting === d.id ? "Deleting…" : "Delete"}</Button></div></td>
             </tr>)}</tbody>
           </table>
         </div></div>}
