@@ -1,3 +1,4 @@
+import { tryCleanupPublishedTestStorage } from "../_shared/importStorageCleanup.ts";
 import { requireRole, HttpError, pathSegments } from "../_shared/auth.ts";
 import { serviceClient } from "../_shared/supabase.ts";
 import { corsHeaders, json, error } from "../_shared/cors.ts";
@@ -257,6 +258,7 @@ Deno.serve(async (req) => {
         entity_id: snapshot.id,
         details: { source_test_id: template.id, batch_id: batch.id, count: (inserted ?? []).length, timer_minutes: body.timer_minutes },
       });
+      await tryCleanupPublishedTestStorage(svc, snapshot.id);
       return json({ batch: { ...batch, assigned_count: (inserted ?? []).length } }, 201);
     }
 

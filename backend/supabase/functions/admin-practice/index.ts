@@ -1,3 +1,4 @@
+import { tryCleanupPublishedTestStorage } from "../_shared/importStorageCleanup.ts";
 import { requireRole, HttpError, pathSegments } from "../_shared/auth.ts";
 import { serviceClient } from "../_shared/supabase.ts";
 import { corsHeaders, json, error } from "../_shared/cors.ts";
@@ -159,6 +160,7 @@ Deno.serve(async (req) => {
         throw e;
       }
       const set = await createSet(svc, ctx.user.id, { ...body, description: body.description ?? null });
+      await tryCleanupPublishedTestStorage(svc, set.id);
       return json({ set }, 201);
     }
 
@@ -191,6 +193,7 @@ Deno.serve(async (req) => {
       }
 
       await svc.from("audit_logs").insert({ actor_id: ctx.user.id, action: "practice.updated", entity_type: "test", entity_id: id });
+      if (body.status === "published") await tryCleanupPublishedTestStorage(svc, id);
       return json({ ok: true });
     }
 

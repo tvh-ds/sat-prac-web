@@ -267,8 +267,10 @@ export default function ImportDetailPage() {
       {importInfo.generated_test_id && importInfo.text_quality?.storage_cleanup && (
         <p className="muted" style={{ marginTop: 12, fontSize: 13 }}>
           {importInfo.text_quality.storage_cleanup.status === "complete"
-            ? "Source PDF and temporary images cleaned up. Images used by questions are kept."
-            : "Your test is ready. Source-file cleanup is pending and will retry automatically."}
+            ? "Temporary source images cleaned up. Final images used by questions are kept."
+            : importInfo.text_quality.storage_cleanup.status === "awaiting_publication"
+              ? "Source images are kept until publication. Publish the test to keep only its final question images."
+              : "Your test is published. Source-image cleanup is pending; publishing again retries cleanup."}
         </p>
       )}
 

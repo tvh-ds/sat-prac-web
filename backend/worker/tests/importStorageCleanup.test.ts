@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { cleanupImportedTestStorage, tryCleanupImportedTestStorage, retryPendingImportStorageCleanup } from "../../supabase/functions/_shared/importStorageCleanup";
+import { cleanupImportedTestStorage, tryCleanupImportedTestStorage, retryPendingImportStorageCleanup, tryCleanupPublishedTestStorage } from "../../supabase/functions/_shared/importStorageCleanup";
 
 const id = "11111111-1111-4111-8111-111111111111";
 const former = "22222222-2222-4222-8222-222222222222";
@@ -16,6 +16,7 @@ function fixture() {
   const files: Record<string, Set<string>> = { "pdf-imports": new Set(["uploads/source.pdf"]), "question-assets": new Set([image("crop"), image("review"), image("source", former), image("shared", former), image("old"), image("unrelated", other)]) };
   let failTable: string | null = null;
   let failRemove = false;
+  const publication = { eligible: true, whole_import: true };
   const client = {
     from(table: string) {
       const filters: Array<(row: any) => boolean> = [];
@@ -41,7 +42,9 @@ function fixture() {
       };
       return query;
     },
-    rpc: vi.fn(async (_name: string, args: any) => {
+    rpc: vi.fn(async (name: string, args: any) => {
+      if (name === "published_import_cleanup_state") return { data: publication, error: null };
+      if (name === "published_image_imports") return { data: [{ import_id: id }], error: null };
       for (const draft of tables.draft_questions!.filter((d) => d.pdf_import_id === args.p_import_id)) {
         draft.stimulus_source_image_path = draft.stimulus_image_path;
         draft.review_source_image_path = null;
@@ -66,7 +69,7 @@ function fixture() {
       }),
     }) },
   };
-  return { client, tables, files, failRead: (table: string) => { failTable = table; }, failNextRemoval: () => { failRemove = true; } };
+  return { client, tables, files, publication, failRead: (table: string) => { failTable = table; }, failNextRemoval: () => { failRemove = true; } };
 }
 
 describe("post-test source storage cleanup", () => {
@@ -79,14 +82,31 @@ describe("post-test source storage cleanup", () => {
     expect(f.tables.pdf_imports![0].text_quality.storage_cleanup.status).toBe("complete");
   });
   it("does not clean an import before test generation or while review is running", async () => {
-    const f = fixture(); f.tables.pdf_imports![0].generated_test_id = null;
-    await expect(cleanupImportedTestStorage(f.client, id)).rejects.toThrow("generated test");
-    f.tables.pdf_imports![0].generated_test_id = "test";
+    const f = fixture(); f.tables.pdf_imports![0].status = "processing";
+    await expect(cleanupImportedTestStorage(f.client, id)).rejects.toThrow("completed import");
+    f.tables.pdf_imports![0].status = "completed";
     f.tables.ai_ingestion_review_jobs!.push({ id: "job", pdf_import_id: id, status: "running" });
     await expect(cleanupImportedTestStorage(f.client, id)).rejects.toThrow("still running");
     expect(f.files["question-assets"]!.size).toBe(6);
     expect(f.files["pdf-imports"]!.size).toBe(1);
-    expect(f.client.rpc).not.toHaveBeenCalled();
+    expect(f.client.rpc.mock.calls.some(([name]) => name === "release_import_source_images")).toBe(false);
+  });
+  it("retains all source files until publication and avoids retry starvation", async () => {
+    const f = fixture(); f.publication.eligible = false;
+    f.tables.pdf_imports![0].text_quality = { storage_cleanup: { status: "pending" } };
+    expect((await cleanupImportedTestStorage(f.client, id)).status).toBe("awaiting_publication");
+    expect(f.tables.pdf_imports![0].text_quality.storage_cleanup.status).toBe("awaiting_publication");
+    expect(f.files["question-assets"]!.size).toBe(6);
+    expect(f.files["pdf-imports"]!.size).toBe(1);
+    expect(f.client.rpc.mock.calls.some(([name]) => name === "release_import_source_images")).toBe(false);
+  });
+  it("cleans legacy published question imports without deleting the shared source PDF", async () => {
+    const f = fixture(); f.tables.pdf_imports![0].generated_test_id = null;
+    f.publication.whole_import = false;
+    const result = await tryCleanupPublishedTestStorage(f.client, "test");
+    expect(result[0]!.status).toBe("complete");
+    expect(f.files["question-assets"]!.has(image("source", former))).toBe(false);
+    expect(f.files["pdf-imports"]!.size).toBe(1);
   });
   it("paginates storage and reference scans beyond 1,000 rows", async () => {
     const f = fixture();

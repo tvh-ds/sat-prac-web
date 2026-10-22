@@ -1,3 +1,4 @@
+import { tryCleanupPublishedTestStorage } from "../_shared/importStorageCleanup.ts";
 import { requireRole, HttpError, pathSegments } from "../_shared/auth.ts";
 import { deleteAssignmentBatch } from "../_shared/delete_assignment_batch.ts";
 import { serviceClient } from "../_shared/supabase.ts";
@@ -42,6 +43,7 @@ async function activateForAssignment(svc: Svc, testId: string): Promise<void> {
   if (test.status === "archived") throw new HttpError(409, "Archived tests cannot be assigned");
   const { error: updateErr } = await svc.from("tests").update({ status: "published", is_public: false }).eq("id", testId);
   if (updateErr) throw new HttpError(500, updateErr.message);
+  await tryCleanupPublishedTestStorage(svc, testId);
 }
 
 async function ensureModulesValid(
@@ -289,6 +291,7 @@ Deno.serve(async (req) => {
         entity_id: id,
         details: body,
       });
+      if (data.status === "published") await tryCleanupPublishedTestStorage(svc, id);
       return json({ test: data });
     }
 
@@ -426,6 +429,7 @@ Deno.serve(async (req) => {
       const { data, error: err } = await svc.from("tests").update({ status: "published" }).eq("id", id).select("id, status").single();
       if (err) return error(err.message, 500);
       await svc.from("audit_logs").insert({ actor_id: ctx.user.id, action: "test.published", entity_type: "test", entity_id: id });
+      if (data.status === "published") await tryCleanupPublishedTestStorage(svc, id);
       return json({ test: data });
     }
 

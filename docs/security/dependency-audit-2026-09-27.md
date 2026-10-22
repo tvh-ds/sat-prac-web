@@ -27,3 +27,22 @@ its patch update to the dependency maintenance change by **2026-10-27**.
 Vite/launch-editor findings affect development server/editor endpoints, which
 are not served by the production static frontend; keep local servers bound to
 loopback. Existing upgrade deferrals and the **2026-10-27** review date remain.
+
+
+## Worker cleanup release recheck — 2026-10-22
+
+No dependencies changed. The worker's full audit now reports 3 moderate, 2 high,
+and 3 critical findings. Its production-only audit reports one critical finding:
+`proxy-addr` (GHSA-jqcg-44mw-7w3h). The affected behavior requires trusting an
+IPv4-mapped IPv6 proxy subnet. `createApp` does not configure Express `trust
+proxy`, and worker authorization uses its bearer token rather than forwarded IP
+addresses, so this exploit path is not reachable in the current worker. Defer
+the available patch to dependency maintenance by **2026-10-27**.
+
+The additional critical `tinypool` finding concerns worker options/prototype
+pollution in the test tooling. Vitest runs repository-owned tests and options;
+student data cannot configure its worker pool. Vitest UI is not enabled. Vite
+and source-map findings remain confined to development/test/build tooling;
+source maps are not created from uploaded PDFs. Review the deferred test-tool
+upgrades by **2026-10-27**, retaining the earlier loopback-only development
+server constraint. No new runtime dependency is introduced by storage cleanup.

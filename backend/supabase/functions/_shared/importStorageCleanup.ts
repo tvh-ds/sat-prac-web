@@ -1,9 +1,9 @@
 // Storage is not covered by database cascades. Only run after a complete test
-// has been committed; active question images must survive source cleanup.
+// has been published; final cropped question images must survive cleanup.
 type Client = { from(table: string): any; rpc(name: string, args: Record<string, unknown>): any; storage: { from(bucket: string): any } };
 type Row = Record<string, any>;
 export type ImportStorageCleanup = {
-  status: "complete" | "pending";
+  status: "complete" | "pending" | "awaiting_publication";
   deleted_images: number;
   retained_images: number;
   deleted_pdfs: number;
@@ -52,14 +52,20 @@ export async function cleanupImportedTestStorage(client: Client, importId: strin
   const loaded = await client.from("pdf_imports").select("id,status,storage_path,generated_test_id,text_quality").eq("id", importId).single();
   check(loaded, "load generated import");
   const imp = loaded.data;
-  if (imp.status !== "completed" || !imp.generated_test_id) throw new Error("Storage cleanup requires a generated test");
+  if (imp.status !== "completed") throw new Error("Storage cleanup requires a completed import");
+  const state = await client.rpc("published_import_cleanup_state", { p_import_id: importId });
+  check(state, "check publication status");
   const quality = imp.text_quality ?? {};
   const savedPrefixes = quality.storage_cleanup?.prefixes ?? [];
   const mark = async (details: Row) => {
-    const result = await client.from("pdf_imports").update({ text_quality: { ...quality, storage_cleanup: details } }).eq("id", importId).eq("generated_test_id", imp.generated_test_id);
+    const result = await client.from("pdf_imports").update({ text_quality: { ...quality, storage_cleanup: details } }).eq("id", importId);
     check(result, "record storage cleanup");
   };
-  await mark({ status: "pending", prefixes: savedPrefixes });
+  if (!state.data?.eligible) {
+    await mark({ status: "awaiting_publication", prefixes: savedPrefixes, policy_version: 2 });
+    return { status: "awaiting_publication", deleted_images: 0, retained_images: 0, deleted_pdfs: 0 };
+  }
+  await mark({ status: "pending", prefixes: savedPrefixes, policy_version: 2 });
   const jobs = await client.from("ai_ingestion_review_jobs").select("id").eq("pdf_import_id", importId).in("status", ["queued", "running"]).limit(1);
   check(jobs, "check active review jobs");
   if (jobs.data.length) throw new Error("Review is still running");
@@ -89,10 +95,10 @@ export async function cleanupImportedTestStorage(client: Client, importId: strin
   const candidates = [...new Set((await Promise.all([...prefixes].map((p) => listImages(client, p)))).flat())];
   // Persist provenance before releasing references, so a failed deletion can
   // retry the same former refinement directories on the next worker poll.
-  await mark({ status: "pending", prefixes: [...prefixes] });
+  await mark({ status: "pending", prefixes: [...prefixes], policy_version: 2 });
 
   // Keep the final active image for both the test and its editable draft.
-  // Source-page/review evidence is temporary once test generation succeeds.
+  // Source-page/review evidence is temporary once questions are published.
   const released = await client.rpc("release_import_source_images", { p_import_id: importId });
   check(released, "release temporary image references");
   const references = new Set<string>();
@@ -114,7 +120,7 @@ export async function cleanupImportedTestStorage(client: Client, importId: strin
     deletedImages += result.data?.length ?? 0;
   }
   let deletedPdfs = 0;
-  if (imp.storage_path) {
+  if (imp.storage_path && state.data.whole_import) {
     // A shared source PDF must remain available to any other import.
     const shared = await client.from("pdf_imports").select("id").eq("storage_path", imp.storage_path).neq("id", importId).limit(1);
     check(shared, "check shared PDF references");
@@ -125,19 +131,19 @@ export async function cleanupImportedTestStorage(client: Client, importId: strin
     }
   }
   const result: ImportStorageCleanup = { status: "complete", deleted_images: deletedImages, retained_images: candidates.length - unused.length, deleted_pdfs: deletedPdfs };
-  await mark({ ...result, prefixes: [...prefixes], completed_at: new Date().toISOString() });
+  await mark({ ...result, policy_version: 2, prefixes: [...prefixes], completed_at: new Date().toISOString() });
   return result;
 }
 
 export async function retryPendingImportStorageCleanup(client: Client): Promise<void> {
-  const pending = await client.from("pdf_imports").select("id").not("generated_test_id", "is", null)
+  const pending = await client.from("pdf_imports").select("id")
     .eq("text_quality->storage_cleanup->>status", "pending").order("updated_at").limit(1);
   check(pending, "load pending storage cleanup");
   if (pending.data[0]) await tryCleanupImportedTestStorage(client, pending.data[0].id);
 }
 
-// Generation is already committed. Cleanup failures must never roll back or
-// delete the generated test. Repeating generate-test retries cleanup safely.
+// Publication is committed before cleanup. Storage failures keep a durable
+// pending marker and must never roll back or delete the published test.
 export async function tryCleanupImportedTestStorage(client: Client, importId: string): Promise<ImportStorageCleanup> {
   try {
     return await cleanupImportedTestStorage(client, importId);
@@ -145,4 +151,13 @@ export async function tryCleanupImportedTestStorage(client: Client, importId: st
     console.error(`[import-storage] cleanup pending for ${importId}`, error);
     return { status: "pending", deleted_images: 0, retained_images: 0, deleted_pdfs: 0 };
   }
+}
+
+
+export async function tryCleanupPublishedTestStorage(client: Client, testId: string): Promise<ImportStorageCleanup[]> {
+  const imports = await client.rpc("published_image_imports", { p_test_id: testId });
+  if (imports.error) { console.error(`[import-storage] publication cleanup lookup failed: ${imports.error.message}`); return []; }
+  const results: ImportStorageCleanup[] = [];
+  for (const row of imports.data ?? []) results.push(await tryCleanupImportedTestStorage(client, row.import_id));
+  return results;
 }
