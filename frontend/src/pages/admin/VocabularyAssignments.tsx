@@ -4,7 +4,10 @@ import { fnJson, getToken } from "../../lib/supabase";
 import { Button, EmptyState, Pill, Spinner } from "../../components/ui";
 import "../../styles/student-progress.css";
 
+import { DeckStudyHistory, StudentStudyDays, type StudyDay, type DeckDay } from "../../components/VocabularyHistory";
+
 interface StudentProgress {
+  history: StudyDay[];
   student_id: string;
   full_name: string;
   due_remaining: number;
@@ -17,6 +20,7 @@ interface StudentProgress {
   today_status: string;
 }
 interface DeckProgress {
+  history: DeckDay[];
   id: string;
   name: string;
   description: string | null;
@@ -46,7 +50,7 @@ export default function VocabularyAssignments({ classId: selectedClassId }: { cl
   const [notice, setNotice] = useState("");
   const [data, setData] = useState<Report | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [allAssigned, setAllAssigned] = useState(false);
+  const [allAssigned, setAllAssigned] = useState(true);
   const [loading, setLoading] = useState(false);
   const load = useCallback(async () => {
     setLoading(true); setError(null);
@@ -92,26 +96,28 @@ export default function VocabularyAssignments({ classId: selectedClassId }: { cl
       {decks.length === 0 ? <EmptyState title={allAssigned ? "No vocabulary decks assigned" : "No decks due today"} body={allAssigned ? "Assign a deck from Vocabulary to see student progress here." : "No assigned decks have work due or reviews today. Choose All assigned to see every assigned deck."} /> :
         <div className="card card-pad student-progress-panel"><div className="student-progress-table-wrap">
           <table className="table student-progress-table">
-            <thead><tr><th>Deck</th><th>Students with work due</th><th>Done today</th><th>Cards remaining today</th><th>Reviews today</th><th /></tr></thead>
+            <thead><tr><th>Deck</th><th>Students with work due</th><th>Done today</th><th>Cards remaining today</th><th>Reviews today</th><th>Last 7 days · studied / due students</th><th /></tr></thead>
             <tbody>{decks.map(d => <tr key={d.id}>
               <td><Link className="student-progress-name" to={`/admin/assignments/vocabulary/${d.id}${classQuery}`}>{d.name}</Link><span className="student-progress-meta">{d.card_count} cards · {d.student_count} students</span></td>
-              <td>{d.students_with_due}</td><td>{d.students_done_today}/{d.student_count}</td><td>{d.remaining_today}</td><td>{d.reviewed_today}</td>
+              <td>{d.students_with_due}</td><td>{d.students_done_today}/{d.student_count}</td><td>{d.remaining_today}</td><td>{d.reviewed_today}</td><td><DeckStudyHistory deck={d} /></td>
               <td><div style={{ display: "flex", gap: 8 }}><Link className="btn btn-outline btn-sm" to={`/admin/assignments/vocabulary/${d.id}${classQuery}`}>View progress</Link><Button variant="danger" size="sm" disabled={!!deleting} aria-label={`Delete vocabulary assignment ${d.name}`} onClick={() => void deleteAssignments(d)}>{deleting === d.id ? "Deleting…" : "Delete"}</Button></div></td>
-            </tr>)}</tbody>
+          </tr>)}</tbody>
           </table>
         </div></div>}
-      <p className="student-progress-footnote">Decks reviewed today stay visible after their work is completed.</p>
+      <p className="student-progress-footnote">Each day shows students who studied out of students with due cards. Select a day to view names. Days with no due cards are excluded. All dates use UTC.</p>
     </>}
     {deck && <section className="student-progress-section">
+      <h2>Last 7 days</h2><p className="muted">Students who studied / students with cards due. Select a day to see who studied and who did not. Students with no due cards are excluded.</p><DeckStudyHistory key={deck.id} deck={deck} />
       <div className="student-progress-section-head"><div><h2>Student progress today</h2><p>{deck.student_count} students · {deck.students_done_today} done today · {deck.reviewed_today} reviews · {trackedTime(deck.tracked_review_ms)} tracked</p></div></div>
       <div className="card card-pad student-progress-panel"><div className="student-progress-table-wrap">
         <table className="table student-progress-table">
-          <thead><tr><th>Student</th><th>Today</th><th>Cards due now</th><th>Due later today</th><th>New cards</th><th>Reviews today</th><th>Tracked time today</th></tr></thead>
+          <thead><tr><th>Student</th><th>Today</th><th>Cards due now</th><th>Due later today</th><th>New cards</th><th>Reviews today</th><th>Tracked time today</th><th>Last 7 days · cards studied / due</th></tr></thead>
           <tbody>{deck.students.map(s => <tr key={s.student_id}>
             <td><Link className="student-progress-name" to={`/admin/students/${s.student_id}`}>{s.full_name}</Link></td>
             <td><Pill tone={s.remaining_today > 0 ? "amber" : s.today_status === "done_today" ? "green" : "gray"}>{s.remaining_today > 0 ? "Work remaining" : s.today_status === "done_today" ? "Done today" : "No cards due today"}</Pill></td>
             <td>{s.due_remaining}</td><td>{s.due_later_today}</td><td>{s.new_remaining}</td><td>{s.reviewed_today}</td>
             <td>{trackedTime(s.tracked_review_ms)}{s.tracked_review_ms != null && s.tracked_review_count < s.reviewed_today && <span className="student-progress-meta">{s.tracked_review_count}/{s.reviewed_today} timed</span>}</td>
+            <td><details><summary>Study history and daily time</summary><StudentStudyDays days={s.history ?? []} /></details></td>
           </tr>)}</tbody>
         </table>
       </div></div>

@@ -23,9 +23,11 @@ export async function vocabularyClassMembers(svc: ReturnType<typeof serviceClien
   return members.map(m => m.student_id);
 }
 
-export async function loadVocabularyAssignments(svc: ReturnType<typeof serviceClient>, now: Date, deckId?: string, classId?: string) {
+export async function loadVocabularyAssignments(svc: ReturnType<typeof serviceClient>, now: Date, deckId?: string, classId?: string, studentId?: string) {
+  if (studentId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(studentId)) throw new HttpError(422, "Invalid student ID");
   const members = classId ? new Set(await vocabularyClassMembers(svc, classId)) : null;
   const today = now.toISOString().slice(0, 10);
+  const weekStart = new Date(Date.parse(`${today}T00:00:00Z`) - 6 * 86400000).toISOString().slice(0, 10);
   const decks = await allRows<AssignmentDeck>(start => {
     let query = svc.from("vocab_decks").select("id, name, description, color").is("student_id", null).eq("status", "active");
     if (deckId) query = query.eq("id", deckId);
@@ -35,19 +37,24 @@ export async function loadVocabularyAssignments(svc: ReturnType<typeof serviceCl
   for (let i = 0; i < decks.length; i += 200) {
     const ids = decks.slice(i, i + 200).map(d => d.id);
     const [a, c] = await Promise.all([
-      allRows<Assignment>(start => svc.from("vocab_deck_assignments").select("deck_id, student_id").in("deck_id", ids).order("deck_id").order("student_id").range(start, start + 499)),
-      allRows<AssignmentCard>(start => svc.from("vocab_cards").select("id, deck_id").in("deck_id", ids).order("id").range(start, start + 499)),
+      allRows<Assignment>(start => svc.from("vocab_deck_assignments").select("deck_id, student_id, assigned_at").in("deck_id", ids).order("deck_id").order("student_id").range(start, start + 499)),
+      allRows<AssignmentCard>(start => svc.from("vocab_cards").select("id, deck_id, created_at").in("deck_id", ids).order("id").range(start, start + 499)),
     ]);
-    assignments.push(...a.filter(row => !members || members.has(row.student_id))); cards.push(...c);
+    assignments.push(...a.filter(row => (!members || members.has(row.student_id)) && (!studentId || row.student_id === studentId))); cards.push(...c);
   }
+  const assignedStudents = [...new Set(assignments.map(a => a.student_id))];
   const states: AssignmentState[] = [], reviews: AssignmentReview[] = [];
   for (let i = 0; i < cards.length; i += 200) {
+    if (!assignedStudents.length) break;
+    for (let j = 0; j < assignedStudents.length; j += 200) {
+    const students = assignedStudents.slice(j, j + 200);
     const ids = cards.slice(i, i + 200).map(c => c.id);
     const [s, r] = await Promise.all([
-      allRows<AssignmentState>(start => svc.from("vocab_card_state").select("student_id, card_id, due_at").in("card_id", ids).order("student_id").order("card_id").range(start, start + 499)),
-      allRows<AssignmentReview>(start => svc.from("vocab_reviews").select("student_id, card_id, reviewed_on, response_ms").in("card_id", ids).eq("reviewed_on", today).order("id").range(start, start + 499)),
+      allRows<AssignmentState>(start => svc.from("vocab_card_state").select("student_id, card_id, due_at, last_reviewed_at").in("student_id", students).in("card_id", ids).order("student_id").order("card_id").range(start, start + 499)),
+      allRows<AssignmentReview>(start => svc.from("vocab_reviews").select("student_id, card_id, reviewed_on, response_ms, mode, created_at, state_before").in("student_id", students).in("card_id", ids).gte("reviewed_on", weekStart).lte("reviewed_on", today).order("id").range(start, start + 499)),
     ]);
     states.push(...s); reviews.push(...r);
+    }
   }
   const studentIds = [...new Set(assignments.map(a => a.student_id))];
   const profiles: Array<{ id: string; full_name: string }> = [];

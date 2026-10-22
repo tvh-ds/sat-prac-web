@@ -5,6 +5,7 @@ import { fnJson, getToken } from "../../lib/supabase";
 import { EmptyState, Pill, Spinner, fmtDate, fmtSeconds } from "../../components/ui";
 import "../../styles/student-progress.css";
 import StudentInfoTab, { type AdminStudentInfo } from "./StudentInfoTab";
+import { StudentVocabularyHistory } from "../../components/VocabularyHistory";
 import ClassBadge from "../../components/ClassBadge";
 
 interface DetailStudent {
@@ -290,6 +291,7 @@ export default function StudentDetailPage() {
         )}
         <p className="student-progress-footnote">Review time is an estimate from recorded responses, not elapsed session time. The streak includes activity across all vocabulary decks.</p>
       </section>
+      <StudentVocabularyHistory key={studentId} studentId={studentId} />
       </>}
     </div>
   );

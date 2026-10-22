@@ -17,7 +17,28 @@ past assignments or their recipients. Class detail shows its practice and
 full-length assignment history with links to the normal batch result views.
 Class badges appear in admin assignment lists/details, student management's
 practice history, and student test/practice cards. Individual assignments have
-no class badge. Vocabulary assignments are unchanged.
+no class badge.
+
+Class detail also lists every active vocabulary deck assigned to its current
+members, including decks with no work due today. This vocabulary list follows
+current membership; the test assignment history retains original recipients.
+Each deck has a seven-day UTC heatmap showing students who studied due cards
+out of students with due work. Selecting a day lists who studied, who did not,
+and who had no cards due (excluded from participation).
+
+Student progress includes a separate seven-day heatmap per assigned deck with
+unique cards studied out of total cards due. New, overdue, and later-that-day
+cards are included; a repeatedly reviewed card counts once. Daily tables show
+recorded study response time and average accumulated time per distinct timed
+card. Missing timing is labeled Not recorded, with timed/total review counts
+shown to expose partial timing. Sprint reviews are excluded from this history.
+
+Historical due counts rewind FSRS before-snapshots instead of applying today's
+schedule to past days. Assignment/card creation dates bound eligibility. Legacy
+reviews lacking scheduling snapshots show History unavailable instead of an
+inferred missed day. No additional database migration is required; the updated
+admin-vocab function supplies this admin-only history, including student_id
+filtering for individual progress pages.
 
 The roster and class administration APIs and database tables are admin-only.
 Student test lists expose only the class label of the student's own assignment,

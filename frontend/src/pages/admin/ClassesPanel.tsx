@@ -4,6 +4,8 @@ import { fnJson, getToken } from "../../lib/supabase";
 import type { StudentClass } from "../../lib/types";
 import { Button, Modal, Spinner, fmtDate } from "../../components/ui";
 
+import VocabularyAssignments from "./VocabularyAssignments";
+
 type Student = { id: string; full_name: string | null; email: string | null };
 type Assignment = { id: string; title: string; kind: "practice" | "full"; assigned_at: string; timer_minutes?: number };
 
@@ -41,13 +43,14 @@ export default function ClassesPanel({ students }: { students: Student[] | null 
       <div className="toolbar" style={{ justifyContent: "space-between" }}><h2 style={{ margin: 0, overflowWrap: "anywhere" }}>{selected.name}</h2><Button variant="outline" onClick={() => setEditing(selected)} disabled={!students}>Edit class</Button></div>
       <h3>Students ({selected.student_ids.length})</h3>
       {students ? members.length ? <ul style={{ display: "flex", flexWrap: "wrap", gap: "8px 24px", paddingLeft: 20 }}>{members.map((s) => <li key={s.id}><Link to={`/admin/students/${s.id}?tab=manage`}>{s.full_name || s.email || "Student"}</Link></li>)}</ul> : <p className="muted">No members yet. Use Edit class to add students.</p> : <Spinner />}
-      <h3 style={{ marginTop: 28 }}>Assigned work</h3><p className="muted">Original recipients stay the same when class members change.</p>
+      <h3 style={{ marginTop: 28 }}>All assigned practice sets and tests</h3><p className="muted">Original recipients stay the same when class members change.</p>
       {historyError && <div className="login-error" role="alert">{historyError}</div>}
       {!assignments && !historyError && <Spinner />}
       {assignments && !assignments.length && <p className="muted">No work assigned to this class yet. Select it in a practice set or test’s Assign dialog.</p>}
       {assignments && assignments.length > 0 && <div className="card card-pad" style={{ overflowX: "auto" }}><table className="table" style={{ minWidth: 640 }}><thead><tr><th>Assignment</th><th>Type</th><th>Assigned</th><th /></tr></thead><tbody>
         {assignments.map((a) => <tr key={`${a.kind}-${a.id}`}><td style={{ minWidth: 240 }}>{a.title}</td><td>{a.kind === "practice" ? `Practice · ${a.timer_minutes} min` : "Full-length test"}</td><td>{fmtDate(a.assigned_at)}</td><td><Link className="btn btn-outline btn-sm" to={`/admin/assignments/${a.kind}/${a.id}`}>Open assignment</Link></td></tr>)}
       </tbody></table></div>}
+      <VocabularyAssignments key={selected.id} classId={selected.id} />
     </section>}
     {editing && students && <ClassEditor cls={editing === "new" ? null : editing} students={students} onClose={() => setEditing(null)} onSaved={async (id) => { setEditing(null); await load(); setParams({ tab: "classes", class_id: id }); }} />}
   </section>;

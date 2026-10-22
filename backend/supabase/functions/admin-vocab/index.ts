@@ -48,7 +48,7 @@ Deno.serve(async (req) => {
       const deckId = seg[2];
       if (deckId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(deckId)) return error("Invalid deck ID", 422);
       const classId = url.searchParams.get("class_id") || undefined;
-      const report = await loadVocabularyAssignments(svc, new Date(), deckId, classId);
+      const report = await loadVocabularyAssignments(svc, new Date(), deckId, classId, url.searchParams.get("student_id") || undefined);
       if (deckId && !report.decks.length && !classId) return error("Assigned active deck not found", 404);
       return json(report);
     }

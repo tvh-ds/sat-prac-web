@@ -1,0 +1,24 @@
+.vocab-history { margin: 12px 0; padding: 3px; min-width: 0; }
+.vocab-week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 5px; min-width: 310px; max-width: 570px; }
+.vocab-day { display: flex; flex-direction: column; gap: 7px; align-items: center; padding: 9px 4px; border: 1px solid var(--border-subtle); border-radius: 7px; color: var(--text-primary); background: var(--bg-card); font: inherit; cursor: pointer; font-variant-numeric: tabular-nums; }
+.vocab-day span { font-size: 11px; white-space: nowrap; }
+.vocab-day strong { font-size: 13px; }
+.vocab-day--missed { background: #35232b; }
+.vocab-day--partial { background: #203d54; }
+.vocab-day--complete { background: #215448; }
+.vocab-day--none, .vocab-day--unknown { color: var(--text-body); }
+.vocab-day:hover { border-color: var(--accent); }
+.vocab-day:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.vocab-day[aria-pressed="true"] { outline: 2px solid var(--accent); outline-offset: 1px; }
+.vocab-day-roster { margin-top: 16px; white-space: normal; }
+.vocab-roster-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.vocab-roster-groups h4 { margin: 8px 0; }
+.vocab-roster-groups ul { margin: 0; padding-left: 18px; }
+.vocab-roster-groups li { margin: 6px 0; overflow-wrap: anywhere; }
+.vocab-history-table-wrap { overflow-x: auto; margin-top: 14px; }
+.vocab-history-table { min-width: 570px; font-variant-numeric: tabular-nums; }
+.vocab-history-table caption { text-align: left; color: var(--text-body); padding-bottom: 8px; }
+@media (max-width: 600px) {
+  .vocab-history { overflow-x: auto; }
+  .vocab-roster-groups { grid-template-columns: minmax(0, 1fr); }
+}
