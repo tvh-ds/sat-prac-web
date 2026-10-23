@@ -1,0 +1,28 @@
+.admin-nav-group { margin: 22px 12px 8px; color: var(--text-muted); font-size: 12px; font-weight: 600; }
+.admin-progress-scroll { width: 100%; overflow-x: auto; border: 1px solid var(--border-subtle); border-radius: 10px; }
+.admin-progress-table { min-width: 940px; font-variant-numeric: tabular-nums; }
+.admin-progress-table th { white-space: nowrap; }
+.admin-progress-table :is(th, td):first-child { position: sticky; left: 0; z-index: 1; min-width: 200px; max-width: 240px; background: var(--bg-base); border-right: 1px solid var(--border-subtle); }
+.admin-progress-table td:first-child > small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px; }
+.admin-progress-meta { display: block; color: var(--text-muted); font-size: 12px; margin-top: 5px; font-weight: 400; }
+.admin-progress-filters { align-items: end; gap: 16px; margin: 22px 0 16px; flex-wrap: wrap; }
+.admin-progress-filters label { display: grid; gap: 7px; font-size: 13px; min-width: 180px; }
+.admin-progress-filters > span { margin-left: auto; font-size: 13px; padding-bottom: 10px; }
+.admin-progress-note { font-size: 12px; line-height: 1.65; margin: 14px 0 24px; max-width: 90ch; }
+.admin-class-heading { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin: 20px 0; }
+.admin-class-summary { display: flex; gap: 24px; flex-wrap: wrap; border-block: 1px solid var(--border-subtle); padding: 16px 0; margin-bottom: 22px; }
+.admin-class-summary span { color: var(--text-muted); font-size: 14px; }
+.admin-class-summary strong { color: var(--text-primary); margin-right: 6px; font-variant-numeric: tabular-nums; }
+.admin-work-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 20px 0; }
+.admin-work-tabs .btn[aria-current="page"] { border-color: var(--accent); color: var(--accent); }
+.admin-vocab-details { margin: 22px 0; border-top: 1px solid var(--border-subtle); padding-top: 16px; }
+.admin-vocab-details summary { cursor: pointer; font-weight: 600; }
+.admin-vocab-details[open] > summary { margin-bottom: 20px; }
+@media (max-width: 760px) {
+  .admin-sidebar .admin-nav-group { display: none; }
+  .admin-sidebar .admin-nav a:nth-of-type(4) { margin-left: 14px; }
+  .admin-progress-filters label { min-width: 0; width: 100%; }
+  .admin-progress-filters > span { margin-left: 0; }
+  .admin-class-heading { align-items: start; }
+  .admin-class-summary { gap: 12px 20px; }
+}

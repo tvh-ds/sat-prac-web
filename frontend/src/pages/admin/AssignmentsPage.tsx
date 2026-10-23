@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import VocabularyAssignments from "./VocabularyAssignments";
 import ClassBadge from "../../components/ClassBadge";
 import { fnJson, getToken } from "../../lib/supabase";
@@ -10,6 +10,7 @@ type Tab = "practice" | "full" | "vocabulary";
 
 export default function AssignmentsPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const tab: Tab = searchParams.get("tab") === "vocabulary" ? "vocabulary" : searchParams.get("tab") === "full" ? "full" : "practice";
   const setTab = (value: Tab) => setSearchParams(prev => { const next = new URLSearchParams(prev); if (value === "practice") next.delete("tab"); else next.set("tab", value); return next; });
@@ -20,9 +21,13 @@ export default function AssignmentsPage() {
   const [practice, setPractice] = useState<PracticeAssignmentBatch[] | null>(null);
   const [full, setFull] = useState<FullTestAssignmentBatch[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const search = searchParams.get("search") ?? "", completion = searchParams.get("completion") ?? "all";
+  const update = (key: string, value: string) => setSearchParams(previous => { const next = new URLSearchParams(previous); if (value && value !== "all") next.set(key, value); else next.delete(key); return next; }, { replace: true });
+  const matchesWork = (b: PracticeAssignmentBatch | FullTestAssignmentBatch) => b.title.toLowerCase().includes(search.toLowerCase()) && (completion === "all" || (completion === "completed" ? b.student_count > 0 && b.completed_count === b.student_count : b.completed_count < b.student_count));
+  const returnQuery = `?return_to=${encodeURIComponent(location.pathname + location.search)}`;
   const matchesClass = (b: PracticeAssignmentBatch | FullTestAssignmentBatch) => !classId || (classId === "individual" ? !b.class_id && !b.class_name : b.class_id === classId);
-  const visiblePractice = practice?.filter(matchesClass);
-  const visibleFull = full?.filter(matchesClass);
+  const visiblePractice = practice?.filter(matchesClass).filter(matchesWork);
+  const visibleFull = full?.filter(matchesClass).filter(matchesWork);
 
   async function deleteBatch(kind: "practice" | "full", batch: PracticeAssignmentBatch | FullTestAssignmentBatch) {
     if (deleting || !window.confirm(`Delete assignment “${batch.title}” for all ${batch.student_count} students? This permanently removes this assignment, its attempts, and scores. The original ${kind === "practice" ? "practice set" : "test"} is kept. This cannot be undone.`)) return;
@@ -59,7 +64,6 @@ export default function AssignmentsPage() {
 
   return (
     <div>
-      <div className="section-label">Assignments</div>
       <h1 className="page-title"><span className="hl-muted">Assigned</span> <span className="hl-bright">work</span></h1>
       <p className="page-sub">Track assigned practice sets, full-length tests, and daily vocabulary progress.</p>
 
@@ -73,7 +77,8 @@ export default function AssignmentsPage() {
           {tab !== "vocabulary" && <option value="individual">Individual assignments</option>}
           {classes.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
           {classId && classId !== "individual" && !classes.some(c => c.id === classId) && <option value={classId}>Selected class</option>}
-          {tab === "vocabulary" && classId === "individual" && <option value="individual">Individual assignments (tests only)</option>}
+
+      {tab === "vocabulary" && classId === "individual" && <option value="individual">Individual assignments (tests only)</option>}
         </select>
       </div>
 
@@ -86,6 +91,8 @@ export default function AssignmentsPage() {
         </button>
         <button className={`score-tab${tab === "vocabulary" ? " active" : ""}`} onClick={() => setTab("vocabulary")}>Vocabulary</button>
       </div>
+
+      {tab !== "vocabulary" && <div className="toolbar admin-progress-filters"><label>Find assignment<input className="input" type="search" placeholder="Assignment title" value={search} onChange={e => update("search", e.target.value)} /></label><label>Completion<select className="select" value={completion} onChange={e => update("completion", e.target.value)}><option value="all">All assignments</option><option value="completed">Everyone completed</option><option value="incomplete">Incomplete</option></select></label></div>}
 
       {tab === "vocabulary" && (classId === "individual" ? <p className="muted">Vocabulary is assigned to individual students. Choose All classes or a class to view vocabulary progress.</p> : <VocabularyAssignments classId={classId} />)}
 
@@ -110,7 +117,7 @@ export default function AssignmentsPage() {
                   <td>{b.completed_count}/{b.student_count} done</td>
                   <td>{b.avg_accuracy != null ? `${b.avg_accuracy}%` : "—"}</td>
                   <td><Pill tone={b.explanations_released_at ? "green" : "gray"}>{b.explanations_released_at ? "Released" : "Hidden"}</Pill></td>
-                  <td><div style={{ display: "flex", gap: 8 }}><Button variant="outline" size="sm" onClick={() => navigate(`/admin/assignments/practice/${b.id}`)}>Open</Button><Button variant="danger" size="sm" disabled={!!deleting} aria-label={`Delete assignment ${b.title}`} onClick={() => void deleteBatch("practice", b)}>{deleting === b.id ? "Deleting…" : "Delete"}</Button></div></td>
+                  <td><div style={{ display: "flex", gap: 8 }}><Button variant="outline" size="sm" onClick={() => navigate(`/admin/assignments/practice/${b.id}${returnQuery}`)}>Open</Button><Button variant="danger" size="sm" disabled={!!deleting} aria-label={`Delete assignment ${b.title}`} onClick={() => void deleteBatch("practice", b)}>{deleting === b.id ? "Deleting…" : "Delete"}</Button></div></td>
                 </tr>
               ))}
             </tbody>
@@ -139,7 +146,7 @@ export default function AssignmentsPage() {
                   <td>{b.completed_count}/{b.student_count} done</td>
                   <td>{b.avg_accuracy != null ? `${b.avg_accuracy}%` : "—"}</td>
                   <td>{b.due_at ? fmtDate(b.due_at) : "—"}</td>
-                  <td><div style={{ display: "flex", gap: 8 }}><Button variant="outline" size="sm" onClick={() => navigate(`/admin/assignments/full/${b.id}`)}>Open</Button><Button variant="danger" size="sm" disabled={!!deleting} aria-label={`Delete assignment ${b.title}`} onClick={() => void deleteBatch("full", b)}>{deleting === b.id ? "Deleting…" : "Delete"}</Button></div></td>
+                  <td><div style={{ display: "flex", gap: 8 }}><Button variant="outline" size="sm" onClick={() => navigate(`/admin/assignments/full/${b.id}${returnQuery}`)}>Open</Button><Button variant="danger" size="sm" disabled={!!deleting} aria-label={`Delete assignment ${b.title}`} onClick={() => void deleteBatch("full", b)}>{deleting === b.id ? "Deleting…" : "Delete"}</Button></div></td>
                 </tr>
               ))}
             </tbody>

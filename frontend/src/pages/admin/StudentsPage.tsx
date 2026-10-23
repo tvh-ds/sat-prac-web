@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import ClassesPanel from "./ClassesPanel";
+import { Navigate, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import AdminStudentProgressTable from "../../components/AdminStudentProgressTable";
+import type { AssignmentProgress, VocabReport } from "../../lib/adminProgress";
 import { fnJson, getToken } from "../../lib/supabase";
 import { Button, Modal, Pill, Spinner, fmtDate } from "../../components/ui";
 
@@ -10,13 +11,18 @@ interface AdminStudent {
   full_name: string | null;
   profile_status: "incomplete" | "pending" | "approved" | null;
   created_at: string;
+  assignment_progress?: AssignmentProgress[];
   attempts?: { id: string; status: string }[];
 }
 
 export default function StudentsPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [params, setParams] = useSearchParams();
   const classTab = params.get("tab") === "classes";
+  const accounts = params.get("tab") === "accounts";
+  const [vocabulary, setVocabulary] = useState<VocabReport | null>(null);
+  const [vocabError, setVocabError] = useState("");
   const [students, setStudents] = useState<AdminStudent[] | null>(null);
   const [search, setSearch] = useState("");
   const [showCreate, setShowCreate] = useState(false);
@@ -28,7 +34,7 @@ export default function StudentsPage() {
     setError(null);
     try {
       const token = await getToken();
-      const d = await fnJson<{ students: AdminStudent[] }>("admin-students", { token });
+      const d = await fnJson<{ students: AdminStudent[] }>("admin-students?progress=1", { token });
       setStudents(d.students);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Failed to load students");
@@ -39,32 +45,37 @@ export default function StudentsPage() {
 
   useEffect(() => {
     void load();
+    let live = true;
+    void getToken().then(token => fnJson<VocabReport>("admin-vocab/assignments", { token }))
+      .then(data => { if (live) setVocabulary(data); }).catch(e => { if (live) setVocabError(String(e)); });
+    return () => { live = false; };
   }, []);
 
   const filtered = (students ?? []).filter(
     (s) => !search || `${s.email ?? ""} ${s.full_name ?? ""}`.toLowerCase().includes(search.toLowerCase()),
   );
 
+  if (classTab) return <Navigate replace to={params.get("class_id") ? `/admin/classes/${encodeURIComponent(params.get("class_id")!)}` : "/admin/classes"} />;
   return (
     <div>
-      <div className="section-label">Roster</div>
       <h1 className="page-title"><span className="hl-muted">Student</span> <span className="hl-bright">roster</span></h1>
-      <p className="page-sub">Admin-created accounts · no self-registration.</p>
+      <p className="page-sub">Track every student’s assignments and daily vocabulary progress.</p>
 
       <div className="score-tabs" style={{ marginBottom: 20 }}>
-        <button className={`score-tab${!classTab ? " active" : ""}`} onClick={() => setParams({})}>Students</button>
-        <button className={`score-tab${classTab ? " active" : ""}`} onClick={() => setParams({ tab: "classes" })}>Classes</button>
+        <button className={`score-tab${!accounts ? " active" : ""}`} onClick={() => setParams({})}>Progress</button>
+        <button className={`score-tab${accounts ? " active" : ""}`} onClick={() => setParams({ tab: "accounts" })}>Accounts</button>
       </div>
-      {classTab && <ClassesPanel students={students} />}
-      {!classTab && <div className="toolbar">
-        <input className="input" placeholder="Search by name or email…" value={search} onChange={(e) => setSearch(e.target.value)} />
+      {<div className="toolbar">
+        {accounts && <input aria-label="Find account" className="input" placeholder="Search by name or email…" value={search} onChange={(e) => setSearch(e.target.value)} />}
         <Button onClick={() => setShowCreate(true)}>+ New Student</Button>
       </div>}
 
       {error && <div className="login-error">{error}</div>}
       {loading && !students && <Spinner />}
 
-      {students && !classTab && (
+      {vocabError && <div className="login-error" role="alert">Vocabulary progress unavailable. {vocabError}</div>}
+      {students && !accounts && <AdminStudentProgressTable students={students} vocabulary={vocabulary} returnTo={location.pathname + location.search} />}
+      {students && accounts && (
         <div className="card card-pad">
           <table className="table">
             <thead>
@@ -91,8 +102,8 @@ export default function StudentsPage() {
                   <td>{fmtDate(s.created_at)}</td>
                   <td>
                     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                      <Button variant="outline" size="sm" onClick={() => navigate(`/admin/students/${s.id}?tab=manage`)}>Manage</Button>
-                      <Button variant="secondary" size="sm" onClick={() => navigate(`/admin/students/${s.id}?tab=info`)}>Info</Button>
+                      <Button variant="outline" size="sm" onClick={() => navigate(`/admin/students/${s.id}?tab=manage`)}>Progress</Button>
+                      <Button variant="secondary" size="sm" onClick={() => navigate(`/admin/students/${s.id}?tab=info`)}>Profile</Button>
                     </div>
                   </td>
                 </tr>

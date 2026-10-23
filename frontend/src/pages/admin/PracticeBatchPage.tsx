@@ -1,5 +1,6 @@
+import { adminReturnPath } from "../../lib/adminNavigation";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import type { BatchStudent, PracticeBatchDetail } from "../../lib/types";
 import { Button, Pill, Spinner, fmtDate } from "../../components/ui";
@@ -24,6 +25,9 @@ function statusLabel(s: string): string {
 
 export default function PracticeBatchPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [params] = useSearchParams();
+  const back = adminReturnPath(params.get("return_to"), "/admin/assignments");
   const { batchId } = useParams<{ batchId: string }>();
   const [data, setData] = useState<PracticeBatchDetail | null>(null);
   const [tab, setTab] = useState<"students" | "questions">("students");
@@ -80,7 +84,7 @@ export default function PracticeBatchPage() {
   return (
     <div>
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
-        <Link to="/admin/assignments" className="muted" style={{ textDecoration: "none" }}>← Assignments</Link>
+        <Link to={back} className="muted" style={{ textDecoration: "none" }}>← Back to assignments</Link>
         <h1 className="page-title" style={{ margin: 0 }}>Assigned Practice Set</h1>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
@@ -132,7 +136,7 @@ export default function PracticeBatchPage() {
               {data.students.map((s) => (
                 <tr key={s.assignment_id}>
                   <td>
-                    <div style={{ fontWeight: 600 }}>{s.full_name || "Unnamed"}</div>
+                    <Link to={`/admin/students/${s.student_id}?return_to=${encodeURIComponent(location.pathname + location.search)}`} style={{ fontWeight: 600 }}>{s.full_name || "Unnamed"}</Link>
                     {s.email && <div className="muted" style={{ fontSize: 12 }}>{s.email}</div>}
                   </td>
                   <td><Pill tone={statusTone(s.status)}>{statusLabel(s.status)}</Pill></td>

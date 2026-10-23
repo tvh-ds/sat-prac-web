@@ -1,5 +1,6 @@
+import { adminReturnPath } from "../../lib/adminNavigation";
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import type { BatchStudent, FullTestBatchDetail } from "../../lib/types";
 import { Button, Pill, Spinner, fmtDate } from "../../components/ui";
@@ -28,6 +29,9 @@ function scopeLabel(scope: string) {
 
 export default function FullLengthBatchPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [params] = useSearchParams();
+  const back = adminReturnPath(params.get("return_to"), "/admin/assignments?tab=full");
   const { batchId } = useParams<{ batchId: string }>();
   const [data, setData] = useState<FullTestBatchDetail | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -53,7 +57,7 @@ export default function FullLengthBatchPage() {
   return (
     <div>
       <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 4 }}>
-        <Link to="/admin/assignments?tab=full" className="muted" style={{ textDecoration: "none" }}>← Assignments</Link>
+        <Link to={back} className="muted" style={{ textDecoration: "none" }}>← Back to assignments</Link>
         <h1 className="page-title" style={{ margin: 0 }}>Assigned Full-Length Test</h1>
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
@@ -73,7 +77,7 @@ export default function FullLengthBatchPage() {
           <tbody>
             {data.students.map((s) => (
               <tr key={s.assignment_id}>
-                <td><div style={{ fontWeight: 600 }}>{s.full_name || "Unnamed"}</div>{s.email && <div className="muted" style={{ fontSize: 12 }}>{s.email}</div>}</td>
+                <td><Link to={`/admin/students/${s.student_id}?return_to=${encodeURIComponent(location.pathname + location.search)}`} style={{ fontWeight: 600 }}>{s.full_name || "Unnamed"}</Link>{s.email && <div className="muted" style={{ fontSize: 12 }}>{s.email}</div>}</td>
                 <td><Pill tone={statusTone(s.status)}>{statusLabel(s.status)}</Pill></td>
                 <td>{s.started_at ? fmtDate(s.started_at) : "—"}</td>
                 <td>{s.submitted_at ? fmtDate(s.submitted_at) : "—"}</td>

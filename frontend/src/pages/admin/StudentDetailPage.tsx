@@ -1,298 +1,76 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { BookOpen, Clock3, Flame, ListChecks } from "lucide-react";
 import { fnJson, getToken } from "../../lib/supabase";
-import { EmptyState, Pill, Spinner, fmtDate, fmtSeconds } from "../../components/ui";
-import "../../styles/student-progress.css";
+import { Button, Pill, Spinner, fmtDate, fmtSeconds } from "../../components/ui";
 import StudentInfoTab, { type AdminStudentInfo } from "./StudentInfoTab";
-import { StudentVocabularyHistory } from "../../components/VocabularyHistory";
+import AssignmentReviewModal from "./AssignmentReviewModal";
 import ClassBadge from "../../components/ClassBadge";
+import { StudentStudyDays } from "../../components/VocabularyHistory";
+import { assignmentCounts, dailyVocabulary, studyDuration, type AssignmentProgress, type VocabStudentProgress } from "../../lib/adminProgress";
+import { adminReturnPath } from "../../lib/adminNavigation";
+import "../../styles/student-progress.css";
+import "../../styles/admin-progress.css";
 
-interface DetailStudent {
-  id: string;
-  email: string | null;
-  full_name: string | null;
-  phone_number: string | null;
-  parent_name: string | null;
-  parent_phone_number: string | null;
-  profile_status: "incomplete" | "pending" | "approved" | null;
-  profile_submitted_at: string | null;
-  profile_approved_at: string | null;
-  grade_level: string | null;
-  school: string | null;
-  created_at: string;
-}
-
-interface PracticeAssignmentProgress {
-  class_id?: string | null;
-  class_name?: string | null;
-  assignment_id: string;
-  test_id: string;
-  title: string;
-  assigned_at: string;
-  due_at: string | null;
-  status: string;
-  attempt_status: string | null;
-  started_at: string | null;
-  submitted_at: string | null;
-  raw_score: number | null;
-  total_questions: number | null;
-  accuracy: number | null;
-  active_time_seconds: number | null;
-  timer_minutes: number | null;
-}
-
-interface AssignedVocabDeckProgress {
-  deck_id: string;
-  name: string;
-  card_count: number;
-  due_remaining: number;
-  reviewed_today: number;
-  tracked_review_ms: number | null;
-  tracked_review_count: number;
-  today_status: "done_today" | "no_cards_due" | "due_remaining";
-}
-
-interface VocabularySummary {
-  assigned_deck_count: number;
-  decks_done_today: number;
-  decks_with_due: number;
-  cards_due_now: number;
-  reviews_today: number;
-  tracked_review_ms: number | null;
-  tracked_review_count: number;
-}
-
+type Deck = VocabStudentProgress & { deck_id: string; name: string; card_count: number };
 interface DetailResponse {
-  student: DetailStudent;
-  practice_assignments: PracticeAssignmentProgress[];
-  vocabulary: {
-    decks: AssignedVocabDeckProgress[];
-    today: VocabularySummary;
-    streak: { current: number; best: number };
-  };
-}
-
-function formatTrackedTime(milliseconds: number | null): string {
-  if (milliseconds == null) return "Not recorded";
-  const seconds = Math.round(milliseconds / 1000);
-  if (seconds < 60) return `${seconds}s`;
-  const minutes = Math.floor(seconds / 60);
-  const remainder = seconds % 60;
-  return remainder > 0 ? `${minutes}m ${remainder}s` : `${minutes}m`;
-}
-
-function plural(value: number, unit: string): string {
-  return `${value} ${unit}${value === 1 ? "" : "s"}`;
-}
-
-function practiceStatusTone(status: string): "gray" | "green" | "amber" | "red" {
-  if (status === "completed") return "green";
-  if (status === "overdue" || status === "expired") return "red";
-  if (status === "in_progress" || status === "submitted") return "amber";
-  return "gray";
-}
-
-function practiceStatusLabel(status: string): string {
-  if (status === "completed") return "Completed";
-  if (status === "in_progress") return "In progress";
-  return status.replace(/_/g, " ").replace(/^\w/, (first) => first.toUpperCase());
-}
-
-function vocabStatusLabel(deck: AssignedVocabDeckProgress): string {
-  if (deck.today_status === "done_today") return "Done today";
-  if (deck.today_status === "no_cards_due") return "No cards due today";
-  return `${deck.due_remaining} due`;
+  student: AdminStudentInfo;
+  practice_assignments: AssignmentProgress[];
+  full_assignments: AssignmentProgress[];
+  vocabulary: { decks: Deck[]; streak: { current: number; best: number } };
 }
 
 export default function StudentDetailPage() {
   const { studentId = "" } = useParams();
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const activeTab = searchParams.get("tab") === "info" ? "info" : "manage";
+  const [params, setParams] = useSearchParams();
+  const profileTab = params.get("tab") === "info";
   const [data, setData] = useState<DetailResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let alive = true;
-    setData(null);
-    setError(null);
-    void (async () => {
-      try {
-        const token = await getToken();
-        const detail = await fnJson<DetailResponse>(`admin-students/${studentId}`, { token });
-        if (alive) setData(detail);
-      } catch (e) {
-        if (alive) setError(e instanceof Error ? e.message : "Failed to load student progress");
-      }
-    })();
-    return () => { alive = false; };
-  }, [studentId]);
-
+  const [error, setError] = useState("");
+  const [reviewing, setReviewing] = useState<AssignmentProgress | null>(null);
+  const back = adminReturnPath(params.get("return_to"), "/admin/students");
+  const update = (key: string, value: string) => setParams(previous => { const next = new URLSearchParams(previous); if (value && value !== "all") next.set(key, value); else next.delete(key); return next; }, { replace: true });
   async function refresh() {
-    const token = await getToken();
-    const detail = await fnJson<DetailResponse>(`admin-students/${studentId}`, { token });
-    setData(detail);
+    setData(await fnJson<DetailResponse>(`admin-students/${studentId}`, { token: await getToken() }));
   }
-
-  if (error) return <div className="login-error" role="alert">{error}</div>;
+  useEffect(() => {
+    let live = true;
+    setData(null); setError(""); setReviewing(null);
+    void getToken().then(token => fnJson<DetailResponse>(`admin-students/${studentId}`, { token }))
+      .then(result => { if (live) setData(result); }).catch(e => { if (live) setError(e instanceof Error ? e.message : "Unable to load student progress"); });
+    return () => { live = false; };
+  }, [studentId]);
+  if (error) return <div role="alert" className="login-error">{error} <Link to={back}>Go back</Link></div>;
   if (!data) return <Spinner />;
-
-  const practice = data.practice_assignments ?? [];
-  const vocabulary = data.vocabulary;
-  const completedPractice = practice.filter((assignment) => assignment.status === "completed").length;
-  const today = vocabulary.today;
-  const caughtUpDecks = Math.max(0, today.assigned_deck_count - today.decks_with_due);
-  const timedReviewCaption = today.reviews_today === 0
-    ? "No assigned-deck reviews today"
-    : `${today.tracked_review_count} of ${today.reviews_today} reviews timed`;
-
-  return (
-    <div className="student-progress-page">
-      <Link to="/admin/students" className="muted student-progress-back">← Students</Link>
-      <div className="student-progress-heading">
-        <div>
-          <h1 className="page-title">{data.student.full_name ?? "Student"}</h1>
-          <p className="page-sub">
-            {data.student.email ?? "No email"} · {data.student.grade_level ?? "No grade"} · {data.student.school ?? "No school"}
-          </p>
-        </div>
-        <Pill tone={data.student.profile_status === "approved" ? "green" : data.student.profile_status === "pending" ? "amber" : "gray"}>
-          {data.student.profile_status === "approved" ? "Profile approved" : data.student.profile_status === "pending" ? "Profile pending" : "Profile incomplete"}
-        </Pill>
-      </div>
-      <div className="student-detail-tabs" role="tablist" aria-label="Student details">
-        <button type="button" role="tab" aria-selected={activeTab === "manage"} className={activeTab === "manage" ? "active" : ""} onClick={() => setSearchParams({ tab: "manage" })}>Manage</button>
-        <button type="button" role="tab" aria-selected={activeTab === "info"} className={activeTab === "info" ? "active" : ""} onClick={() => setSearchParams({ tab: "info" })}>Info</button>
-      </div>
-      {activeTab === "info" ? (
-        <StudentInfoTab
-          student={data.student as AdminStudentInfo}
-          onRefresh={refresh}
-          onDeleted={() => navigate("/admin/students", { replace: true })}
-        />
-      ) : <>
-      <p className="student-progress-joined">Student since {fmtDate(data.student.created_at)}</p>
-
-      <section className="student-progress-summary" aria-label="Progress summary">
-        <article className="student-progress-metric">
-          <div className="student-progress-metric-label"><ListChecks size={17} aria-hidden="true" /> Practice sets</div>
-          <div className="student-progress-metric-value">{completedPractice}<span> / {practice.length}</span></div>
-          <p>{plural(practice.length, "assignment")} completed</p>
-        </article>
-        <article className="student-progress-metric">
-          <div className="student-progress-metric-label"><BookOpen size={17} aria-hidden="true" /> Decks caught up</div>
-          <div className="student-progress-metric-value">
-            {today.assigned_deck_count > 0 ? <>{caughtUpDecks}<span> / {today.assigned_deck_count}</span></> : "—"}
-          </div>
-          <p>
-            {today.assigned_deck_count === 0
-              ? "No assigned decks"
-              : `${today.decks_done_today} finished today · ${plural(today.cards_due_now, "card")} due now`}
-          </p>
-        </article>
-        <article className="student-progress-metric">
-          <div className="student-progress-metric-label"><Clock3 size={17} aria-hidden="true" /> Tracked review time today</div>
-          <div className="student-progress-metric-value student-progress-time">{formatTrackedTime(today.tracked_review_ms)}</div>
-          <p>{timedReviewCaption}</p>
-        </article>
-        <article className="student-progress-metric">
-          <div className="student-progress-metric-label"><Flame size={17} aria-hidden="true" /> Overall vocab streak</div>
-          <div className="student-progress-metric-value">{plural(vocabulary.streak.current, "day")}</div>
-          <p>Best: {plural(vocabulary.streak.best, "day")}</p>
-        </article>
+  const assignments = [...data.practice_assignments, ...(data.full_assignments ?? [])].sort((a, b) => b.assigned_at.localeCompare(a.assigned_at));
+  const kind = params.get("kind") ?? "all", status = params.get("status") ?? "all", search = params.get("search") ?? "";
+  const visible = assignments.filter(a => (kind === "all" || a.kind === kind) && (status === "all" || (status === "outstanding" ? a.status !== "completed" : a.status === status)) && a.title.toLowerCase().includes(search.toLowerCase()));
+  const daily = dailyVocabulary(data.vocabulary.decks);
+  return <div className="student-progress-page">
+    <Link to={back} className="student-progress-back muted">← {back.startsWith("/admin/classes") ? "Back to class" : back.startsWith("/admin/assignments") ? "Back to assignment" : "Students"}</Link>
+    <div className="student-progress-heading"><div><h1 className="page-title">{data.student.full_name ?? "Student"}</h1><p className="page-sub">{data.student.email} · {data.student.grade_level ?? "No grade"} · {data.student.school ?? "No school"}</p></div><Pill tone={data.student.profile_status === "approved" ? "green" : "gray"}>Profile {data.student.profile_status ?? "incomplete"}</Pill></div>
+    <nav className="admin-work-tabs" aria-label="Student details"><button type="button" className="btn btn-outline" aria-current={!profileTab ? "page" : undefined} onClick={() => update("tab", "manage")}>Progress</button><button type="button" className="btn btn-outline" aria-current={profileTab ? "page" : undefined} onClick={() => update("tab", "info")}>Profile</button></nav>
+    {profileTab ? <StudentInfoTab student={data.student} onRefresh={refresh} onDeleted={() => navigate("/admin/students", { replace: true })} /> : <>
+      <div className="admin-class-summary"><span><strong>{assignmentCounts(assignments, "practice")}</strong>Practice completed / assigned</span><span><strong>{assignmentCounts(assignments, "full")}</strong>Tests completed / assigned</span><span><strong>{daily.remaining}</strong>Vocabulary cards remaining today</span><span><strong>{studyDuration(daily.time)}</strong>Vocabulary study time today</span></div>
+      <section aria-labelledby="assignment-progress-title"><h2 id="assignment-progress-title">All assigned practice sets and tests</h2><p className="muted">Complete retained assignment history, including completed work and assignments without attempts.</p>
+        <div className="toolbar admin-progress-filters"><label>Find assignment<input className="input" type="search" value={search} placeholder="Assignment title" onChange={e => update("search", e.target.value)} /></label><label>Type<select className="select" value={kind} onChange={e => update("kind", e.target.value)}><option value="all">All types</option><option value="practice">Practice sets</option><option value="full">Full-length tests</option></select></label><label>Status<select className="select" value={status} onChange={e => update("status", e.target.value)}><option value="all">All statuses</option><option value="completed">Completed</option><option value="outstanding">Outstanding</option><option value="in_progress">In progress</option><option value="overdue">Overdue</option></select></label><span className="muted">{visible.length} of {assignments.length} assignments</span></div>
+        <div className="admin-progress-scroll"><table className="table admin-progress-table"><thead><tr><th>Assignment</th><th>Type</th><th>Status</th><th>Score</th><th>Recorded active time</th><th>Due</th><th /></tr></thead><tbody>{visible.map(a => <tr key={a.assignment_id}>
+          <td><strong>{a.title}</strong><ClassBadge {...a} /><small className="admin-progress-meta">Assigned {fmtDate(a.assigned_at)}</small></td><td>{a.kind === "practice" ? "Practice set" : "Full-length test"}</td>
+          <td><Pill tone={a.status === "completed" ? "green" : a.status === "overdue" ? "red" : "gray"}>{a.status === "assigned" ? "Not started" : a.status.replace(/_/g, " ").replace(/^./, c => c.toUpperCase())}</Pill></td>
+          <td>{a.raw_score == null ? "—" : <>{a.raw_score}/{a.total_questions}<small className="admin-progress-meta">{a.accuracy}%</small></>}</td>
+          <td>{a.active_time_seconds == null ? "Not recorded" : a.active_time_seconds === 0 ? "0s recorded" : fmtSeconds(a.active_time_seconds)}</td><td>{a.due_at ? fmtDate(a.due_at) : "No due date"}</td>
+          <td><Button variant="outline" size="sm" disabled={!a.attempt_id || a.raw_score == null} onClick={() => setReviewing(a)}>Review answers</Button></td>
+        </tr>)}</tbody></table>{visible.length === 0 && <p className="muted">No assignments match this view.</p>}</div>
+        <p className="admin-progress-note">Recorded active time is saved module timing. A recorded zero does not prove that no time was spent studying.</p>
       </section>
-
-      <section className="student-progress-section" aria-labelledby="practice-progress-title">
-        <div className="student-progress-section-head">
-          <div>
-            <h2 id="practice-progress-title">Assigned practice sets</h2>
-            <p>Latest attempt status, score, and saved active time for each assignment.</p>
-          </div>
-          <span className="student-progress-count">{practice.length}</span>
-        </div>
-        {practice.length === 0 ? (
-          <div className="card card-pad"><EmptyState title="No practice sets assigned" body="Practice-set assignments for this student will appear here." /></div>
-        ) : (
-          <div className="card card-pad student-progress-panel">
-            <div className="student-progress-table-wrap">
-              <table className="table student-progress-table">
-                <thead>
-                  <tr><th>Practice set</th><th>Status</th><th>Latest score</th><th>Active time</th><th>Due</th></tr>
-                </thead>
-                <tbody>
-                  {practice.map((assignment) => (
-                    <tr key={assignment.assignment_id}>
-                      <td>
-                        <strong className="student-progress-name">{assignment.title}</strong>
-                        <ClassBadge {...assignment} />
-                        <span className="student-progress-meta">Assigned {fmtDate(assignment.assigned_at)}</span>
-                      </td>
-                      <td><Pill tone={practiceStatusTone(assignment.status)}>{practiceStatusLabel(assignment.status)}</Pill></td>
-                      <td>
-                        {assignment.raw_score != null && assignment.total_questions != null
-                          ? <>{assignment.raw_score}/{assignment.total_questions}{assignment.accuracy != null ? <span className="student-progress-meta">{assignment.accuracy}%</span> : null}</>
-                          : "—"}
-                      </td>
-                      <td>{assignment.active_time_seconds == null ? "Not recorded" : fmtSeconds(assignment.active_time_seconds)}</td>
-                      <td>{assignment.due_at ? fmtDate(assignment.due_at) : "No due date"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
+      <section className="student-progress-section" aria-labelledby="vocabulary-progress-title"><h2 id="vocabulary-progress-title">Daily vocabulary progress</h2><p className="muted">All assigned decks · today (UTC). New and overdue cards count toward today’s work.</p>
+        <div className="admin-progress-scroll"><table className="table admin-progress-table"><thead><tr><th>Deck</th><th>Today</th><th>Due cards reviewed</th><th>Remaining today</th><th>Due now</th><th>Due later today</th><th>Study time</th><th>Avg time / card</th></tr></thead><tbody>{data.vocabulary.decks.map(deck => { const day = dailyVocabulary([deck]); return <tr key={deck.deck_id}>
+          <td>{deck.name}</td><td><Pill tone={day.status === "Completed" ? "green" : day.remaining > 0 ? "amber" : "gray"}>{day.status}</Pill></td><td>{day.total == null ? `${day.reviewed} / unknown` : day.total === 0 ? "No cards due" : `${day.reviewed}/${day.total}`}</td><td>{day.remaining}</td><td>{day.dueNow}</td><td>{day.dueLater}</td><td>{studyDuration(day.time)}</td><td>{studyDuration(day.average)}</td>
+        </tr>; })}</tbody></table>{data.vocabulary.decks.length === 0 && <p className="muted">No vocabulary decks assigned.</p>}</div>
+        <p className="admin-progress-note">Reviews count distinct due cards. Study time sums recorded study responses, and the average uses distinct timed cards. Sprint reviews are excluded. Remaining includes cards scheduled for another review today. No cards due is separate from completed work.</p>
+        <p className="admin-progress-note">Overall vocabulary streak: {data.vocabulary.streak.current} days · best: {data.vocabulary.streak.best} days.</p>
+        <h3>Last seven days</h3>{data.vocabulary.decks.map(deck => <section className="admin-vocab-details" key={deck.deck_id}><h4>{deck.name}</h4><StudentStudyDays days={deck.history} compactTime /></section>)}
       </section>
-
-      <section className="student-progress-section" aria-labelledby="vocabulary-progress-title">
-        <div className="student-progress-section-head">
-          <div>
-            <h2 id="vocabulary-progress-title">Assigned vocabulary decks</h2>
-            <p>Due cards and review activity for today (UTC). Time sums recorded card-response durations.</p>
-          </div>
-          <span className="student-progress-count">{vocabulary.decks.length}</span>
-        </div>
-        {vocabulary.decks.length === 0 ? (
-          <div className="card card-pad"><EmptyState title="No vocabulary decks assigned" body="Assigned active decks will appear here, with daily review status and tracked time." /></div>
-        ) : (
-          <div className="card card-pad student-progress-panel">
-            <div className="student-progress-table-wrap">
-              <table className="table student-progress-table student-vocab-progress-table">
-                <thead>
-                  <tr><th>Deck</th><th>Today</th><th>Cards due</th><th>Reviews today</th><th>Tracked time today</th></tr>
-                </thead>
-                <tbody>
-                  {vocabulary.decks.map((deck) => (
-                    <tr key={deck.deck_id}>
-                      <td>
-                        <strong className="student-progress-name">{deck.name}</strong>
-                        <span className="student-progress-meta">{plural(deck.card_count, "card")} total</span>
-                      </td>
-                      <td>
-                        <Pill tone={deck.today_status === "done_today" ? "green" : deck.today_status === "due_remaining" ? "amber" : "gray"}>
-                          {vocabStatusLabel(deck)}
-                        </Pill>
-                      </td>
-                      <td>{deck.due_remaining}</td>
-                      <td>{deck.reviewed_today}</td>
-                      <td>
-                        {formatTrackedTime(deck.tracked_review_ms)}
-                        {deck.tracked_review_ms != null && deck.tracked_review_count < deck.reviewed_today && (
-                          <span className="student-progress-meta">{deck.tracked_review_count}/{deck.reviewed_today} timed</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-        <p className="student-progress-footnote">Review time is an estimate from recorded responses, not elapsed session time. The streak includes activity across all vocabulary decks.</p>
-      </section>
-      <StudentVocabularyHistory key={studentId} studentId={studentId} />
-      </>}
-    </div>
-  );
+    </>}
+    {reviewing?.attempt_id && <AssignmentReviewModal title={`Review — ${reviewing.title}`} endpoint={`admin-students/${studentId}/attempts/${reviewing.attempt_id}`} onClose={() => setReviewing(null)} />}
+  </div>;
 }

@@ -2,6 +2,7 @@ import { NavLink, Navigate, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
 import { Spinner } from "../../components/ui";
 import { Users, FileUp, Database, ClipboardList, Layers, BookOpen, ClipboardCheck, LogOut } from "lucide-react";
+import "../../styles/admin-progress.css";
 
 export default function AdminLayout() {
   const { user, profile, loading, signOut } = useAuth();
@@ -27,13 +28,16 @@ export default function AdminLayout() {
           <small>Workspace</small>
         </div>
         <nav className="admin-nav" aria-label="Admin navigation">
+          <p className="admin-nav-group">Teaching</p>
+          {link("/admin/classes", "Classes", Users)}
           {link("/admin/students", "Students", Users)}
-          {link("/admin/imports", "PDF Imports", FileUp)}
-          {link("/admin/questions", "Practice Question Bank", Database)}
-          {link("/admin/tests", "Full-Length Tests", ClipboardList)}
-          {link("/admin/practice", "Practice Sets", Layers)}
           {link("/admin/assignments", "Assignments", ClipboardCheck)}
+          <p className="admin-nav-group">Content library</p>
+          {link("/admin/practice", "Practice Sets", Layers)}
+          {link("/admin/tests", "Full-Length Tests", ClipboardList)}
           {link("/admin/vocabulary", "Vocabulary", BookOpen)}
+          {link("/admin/questions", "Question Bank", Database)}
+          {link("/admin/imports", "PDF Imports", FileUp)}
         </nav>
         <div className="spacer" />
         <div className="sidebar-footer">

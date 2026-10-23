@@ -23,7 +23,7 @@ export default function ClassTarget({ value, onChange, disabled = false }: { val
     </select>
     {loading && <p className="muted" role="status">Loading classes…</p>}
     {error && <p role="alert" className="login-error">{error}</p>}
-    {!loading && !error && !classes.length && <p className="muted">Create a class in Students → Classes to assign work to a group.</p>}
+    {!loading && !error && !classes.length && <p className="muted">Create a class in Classes to assign work to a group.</p>}
     {selected && <p className="muted" style={{ margin: "8px 0 0", fontSize: 13 }}>{selected.student_ids.length === 1 ? "The current member" : `All ${selected.student_ids.length} current members`} of {selected.name} will receive this assignment. Later membership changes won’t change it.</p>}
   </div>;
 }

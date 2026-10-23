@@ -1,62 +1,84 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import type { StudentClass } from "../../lib/types";
+import type { ProgressStudent, VocabReport } from "../../lib/adminProgress";
 import { Button, Modal, Spinner, fmtDate } from "../../components/ui";
-
+import AdminStudentProgressTable from "../../components/AdminStudentProgressTable";
 import VocabularyAssignments from "./VocabularyAssignments";
+import "../../styles/admin-progress.css";
 
-type Student = { id: string; full_name: string | null; email: string | null };
-type Assignment = { id: string; title: string; kind: "practice" | "full"; assigned_at: string; timer_minutes?: number };
+type Student = ProgressStudent;
+type Assignment = { id: string; title: string; kind: "practice" | "full"; assigned_at: string; timer_minutes?: number; student_count: number; completed_count: number; avg_accuracy: number | null };
 
-export default function ClassesPanel({ students }: { students: Student[] | null }) {
-  const [params, setParams] = useSearchParams(), selectedId = params.get("class_id");
+export default function ClassesPage() {
+  const { classId } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [params, setParams] = useSearchParams();
+  const tab = params.get("tab") === "assignments" ? "assignments" : params.get("tab") === "vocabulary" ? "vocabulary" : "students";
   const [classes, setClasses] = useState<StudentClass[] | null>(null);
+  const [students, setStudents] = useState<Student[] | null>(null);
+  const [vocabulary, setVocabulary] = useState<VocabReport | null>(null);
   const [editing, setEditing] = useState<StudentClass | "new" | null>(null);
   const [assignments, setAssignments] = useState<Assignment[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [historyError, setHistoryError] = useState<string | null>(null);
-  async function load() {
-    try { setError(null); const token = await getToken(); setClasses((await fnJson<{ classes: StudentClass[] }>("admin-classes", { token })).classes); }
-    catch (e) { setError(e instanceof Error ? e.message : "Unable to load classes"); }
+  const [error, setError] = useState("");
+  const [historyError, setHistoryError] = useState("");
+  const search = params.get("assignment_search") ?? "";
+  const assignmentKind = params.get("assignment_kind") ?? "all";
+  const assignmentStatus = params.get("assignment_status") ?? "all";
+  const update = (key: string, value: string) => setParams(previous => { const next = new URLSearchParams(previous); if (value && value !== "all") next.set(key, value); else next.delete(key); return next; }, { replace: true });
+  async function loadClasses() {
+    const token = await getToken();
+    setClasses((await fnJson<{ classes: StudentClass[] }>("admin-classes", { token })).classes);
   }
-  useEffect(() => { void load(); }, []);
   useEffect(() => {
     let live = true;
-    setAssignments(null); setHistoryError(null);
-    if (selectedId) void getToken().then((token) => fnJson<{ assignments: Assignment[] }>(`admin-classes/${selectedId}`, { token }))
-      .then((data) => { if (live) setAssignments(data.assignments); })
-      .catch((e) => { if (live) setHistoryError(e instanceof Error ? e.message : "Unable to load assignments"); });
+    void getToken().then(token => Promise.all([
+      fnJson<{ classes: StudentClass[] }>("admin-classes", { token }).then(data => { if (live) setClasses(data.classes); }),
+      fnJson<{ students: Student[] }>("admin-students?progress=1", { token }).then(data => { if (live) setStudents(data.students); }),
+      fnJson<VocabReport>("admin-vocab/assignments", { token }).then(data => { if (live) setVocabulary(data); }),
+    ].map(promise => promise.catch(e => { if (live) setError(e instanceof Error ? e.message : "Unable to load class progress"); })))).catch(e => { if (live) setError(String(e)); });
     return () => { live = false; };
-  }, [selectedId]);
-  const selected = classes?.find((cls) => cls.id === selectedId);
-  const members = (students ?? []).filter((s) => selected?.student_ids.includes(s.id));
-  return <section aria-label="Student classes">
-    <div className="toolbar" style={{ justifyContent: "space-between" }}><p className="muted" style={{ margin: 0 }}>Group students and assign work to a whole class.</p><Button onClick={() => setEditing("new")} disabled={!students}>New Class</Button></div>
-    {error && <div className="login-error" role="alert">{error} <Button size="sm" variant="outline" onClick={() => void load()}>Retry</Button></div>}
+  }, []);
+  useEffect(() => {
+    let live = true;
+    setAssignments(null); setHistoryError("");
+    if (classId) void getToken().then(token => fnJson<{ assignments: Assignment[] }>(`admin-classes/${classId}`, { token }))
+      .then(data => { if (live) setAssignments(data.assignments); })
+      .catch(e => { if (live) setHistoryError(e instanceof Error ? e.message : "Unable to load assignments"); });
+    return () => { live = false; };
+  }, [classId]);
+  const selected = classes?.find(cls => cls.id === classId);
+  const members = (students ?? []).filter(student => selected?.student_ids.includes(student.id));
+  const returnTo = location.pathname + location.search;
+  const visibleAssignments = (assignments ?? []).filter(a => a.title.toLowerCase().includes(search.toLowerCase()) && (assignmentKind === "all" || a.kind === assignmentKind) && (assignmentStatus === "all" || (assignmentStatus === "completed" ? a.student_count > 0 && a.completed_count === a.student_count : a.completed_count < a.student_count)));
+  return <section aria-label="Classes">
+    {!classId ? <>
+      <div className="admin-class-heading"><div><h1 className="page-title">Classes</h1><p className="page-sub">Open a class to track every student, assignment, and daily vocabulary review.</p></div><Button onClick={() => setEditing("new")} disabled={!students}>New class</Button></div>
+      {classes && <div className="admin-progress-scroll"><table className="table"><thead><tr><th>Class</th><th>Students</th><th>Created</th><th /></tr></thead><tbody>{classes.map(cls => <tr key={cls.id}><td><Link to={`/admin/classes/${cls.id}`}>{cls.name}</Link></td><td>{cls.student_ids.length}</td><td>{fmtDate(cls.created_at)}</td><td><Link className="btn btn-outline btn-sm" to={`/admin/classes/${cls.id}`}>View class</Link></td></tr>)}</tbody></table>{classes.length === 0 && <p className="muted">No classes yet. Create a class and add students to get started.</p>}</div>}
+    </> : selected ? <>
+      <Link to="/admin/classes" className="muted">← Classes</Link>
+      <div className="admin-class-heading"><div><h1 className="page-title">{selected.name}</h1><p className="page-sub">Complete progress for every current class member.</p></div><Button variant="outline" onClick={() => setEditing(selected)} disabled={!students}>Edit class</Button></div>
+      <div className="admin-class-summary"><span><strong>{selected.student_ids.length}</strong>Students</span><span><strong>{assignments?.length ?? "—"}</strong>Class assignments</span><span><strong>{assignments ? assignments.reduce((n, a) => n + a.completed_count, 0) : "—"}/{assignments ? assignments.reduce((n, a) => n + a.student_count, 0) : "—"}</strong>Student submissions completed</span><span><strong>{vocabulary ? vocabulary.decks.filter(d => d.students.some(s => selected.student_ids.includes(s.student_id))).length : "—"}</strong>Assigned vocabulary decks</span></div>
+      <nav className="admin-work-tabs" aria-label="Class progress">{(["students", "assignments", "vocabulary"] as const).map(value => <button key={value} type="button" className="btn btn-outline" aria-current={tab === value ? "page" : undefined} onClick={() => update("tab", value)}>{value === "students" ? "Students" : value === "assignments" ? "Assignments" : "Vocabulary"}</button>)}</nav>
+      {tab === "students" && (students ? <AdminStudentProgressTable students={members} vocabulary={vocabulary} returnTo={returnTo} /> : !error && <Spinner />)}
+      {tab === "assignments" && <>
+        <p className="muted">All work assigned to this class, including completed assignments. Counts retain the original recipients when membership changes.</p>
+        {historyError && <div className="login-error" role="alert">{historyError}</div>}
+        {!assignments && !historyError && <Spinner />}
+        <div className="toolbar admin-progress-filters"><label>Find assignment<input className="input" type="search" placeholder="Assignment title" value={search} onChange={e => update("assignment_search", e.target.value)} /></label><label>Type<select className="select" value={assignmentKind} onChange={e => update("assignment_kind", e.target.value)}><option value="all">All types</option><option value="practice">Practice sets</option><option value="full">Full-length tests</option></select></label><label>Completion<select className="select" value={assignmentStatus} onChange={e => update("assignment_status", e.target.value)}><option value="all">All assignments</option><option value="completed">Everyone completed</option><option value="incomplete">Incomplete</option></select></label></div>
+        {assignments && <div className="admin-progress-scroll"><table className="table"><thead><tr><th>Assignment</th><th>Type</th><th>Assigned</th><th>Completed / assigned</th><th>Average score</th><th /></tr></thead><tbody>{visibleAssignments.map(a => <tr key={`${a.kind}-${a.id}`}><td>{a.title}</td><td>{a.kind === "practice" ? "Practice set" : "Full-length test"}</td><td>{fmtDate(a.assigned_at)}</td><td>{a.completed_count}/{a.student_count}</td><td>{a.avg_accuracy == null ? "—" : `${a.avg_accuracy}%`}</td><td><Link className="btn btn-outline btn-sm" to={`/admin/assignments/${a.kind}/${a.id}?return_to=${encodeURIComponent(returnTo)}`}>View students</Link></td></tr>)}</tbody></table>{visibleAssignments.length === 0 && <p className="muted">No assignments match this view.</p>}</div>}
+      </>}
+      {tab === "vocabulary" && <VocabularyAssignments key={selected.id} classId={selected.id} returnTo={returnTo} />}
+    </> : classes ? <p role="alert">Class not found. <Link to="/admin/classes">Return to classes</Link></p> : null}
+    {error && <div className="login-error" role="alert">{error} Reload the page to retry.</div>}
     {!classes && !error && <Spinner />}
-    {classes && !classes.length && <div className="card card-pad"><h2 style={{ marginTop: 0 }}>Create your first class</h2><p className="muted">Choose a class name and add students. Select the class when assigning a practice set or full-length test.</p></div>}
-    {classes && classes.length > 0 && <div className="card card-pad" style={{ overflowX: "auto" }}><table className="table" style={{ minWidth: 640 }}><thead><tr><th>Class</th><th>Students</th><th>Created</th><th /></tr></thead><tbody>
-      {classes.map((cls) => <tr key={cls.id} aria-selected={cls.id === selectedId}><td style={{ fontWeight: 600, minWidth: 220 }}>{cls.name}</td><td>{cls.student_ids.length}</td><td>{fmtDate(cls.created_at)}</td><td><Button variant={cls.id === selectedId ? "secondary" : "outline"} size="sm" onClick={() => setParams({ tab: "classes", class_id: cls.id })}>View class</Button></td></tr>)}
-    </tbody></table></div>}
-    {selected && <section style={{ marginTop: 28 }} aria-label={`${selected.name} details`}>
-      <div className="toolbar" style={{ justifyContent: "space-between" }}><h2 style={{ margin: 0, overflowWrap: "anywhere" }}>{selected.name}</h2><Button variant="outline" onClick={() => setEditing(selected)} disabled={!students}>Edit class</Button></div>
-      <h3>Students ({selected.student_ids.length})</h3>
-      {students ? members.length ? <ul style={{ display: "flex", flexWrap: "wrap", gap: "8px 24px", paddingLeft: 20 }}>{members.map((s) => <li key={s.id}><Link to={`/admin/students/${s.id}?tab=manage`}>{s.full_name || s.email || "Student"}</Link></li>)}</ul> : <p className="muted">No members yet. Use Edit class to add students.</p> : <Spinner />}
-      <h3 style={{ marginTop: 28 }}>All assigned practice sets and tests</h3><p className="muted">Original recipients stay the same when class members change.</p>
-      {historyError && <div className="login-error" role="alert">{historyError}</div>}
-      {!assignments && !historyError && <Spinner />}
-      {assignments && !assignments.length && <p className="muted">No work assigned to this class yet. Select it in a practice set or test’s Assign dialog.</p>}
-      {assignments && assignments.length > 0 && <div className="card card-pad" style={{ overflowX: "auto" }}><table className="table" style={{ minWidth: 640 }}><thead><tr><th>Assignment</th><th>Type</th><th>Assigned</th><th /></tr></thead><tbody>
-        {assignments.map((a) => <tr key={`${a.kind}-${a.id}`}><td style={{ minWidth: 240 }}>{a.title}</td><td>{a.kind === "practice" ? `Practice · ${a.timer_minutes} min` : "Full-length test"}</td><td>{fmtDate(a.assigned_at)}</td><td><Link className="btn btn-outline btn-sm" to={`/admin/assignments/${a.kind}/${a.id}`}>Open assignment</Link></td></tr>)}
-      </tbody></table></div>}
-      <VocabularyAssignments key={selected.id} classId={selected.id} />
-    </section>}
-    {editing && students && <ClassEditor cls={editing === "new" ? null : editing} students={students} onClose={() => setEditing(null)} onSaved={async (id) => { setEditing(null); await load(); setParams({ tab: "classes", class_id: id }); }} />}
+    {editing && students && <ClassEditor cls={editing === "new" ? null : editing} students={students} onClose={() => setEditing(null)} onSaved={async id => { setEditing(null); await loadClasses(); navigate(`/admin/classes/${id}`); }} />}
   </section>;
 }
 
-function ClassEditor({ cls, students, onClose, onSaved }: { cls: StudentClass | null; students: Student[]; onClose: () => void; onSaved: (id: string) => Promise<void> }) {
+export function ClassEditor({ cls, students, onClose, onSaved }: { cls: StudentClass | null; students: Student[]; onClose: () => void; onSaved: (id: string) => Promise<void> }) {
   const [name, setName] = useState(cls?.name ?? ""), [selected, setSelected] = useState(new Set(cls?.student_ids ?? []));
   const [search, setSearch] = useState(""), [busy, setBusy] = useState(false), [error, setError] = useState<string | null>(null);
   const filtered = students.filter((s) => `${s.full_name ?? ""} ${s.email ?? ""}`.toLowerCase().includes(search.trim().toLowerCase()));

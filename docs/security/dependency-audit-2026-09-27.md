@@ -46,3 +46,12 @@ and source-map findings remain confined to development/test/build tooling;
 source maps are not created from uploaded PDFs. Review the deferred test-tool
 upgrades by **2026-10-27**, retaining the earlier loopback-only development
 server constraint. No new runtime dependency is introduced by storage cleanup.
+
+## Admin tracking staging recheck — 2026-10-22
+
+The admin tracking change adds no dependencies. Native audits match the above
+counts: frontend 3 moderate / 2 high, worker 3 moderate / 2 high / 3 critical.
+Existing reachability assessments and the **2026-10-27** maintenance deadline
+remain applicable. The staging Vite server is bound to `127.0.0.1`. New return
+navigation accepts supported local admin paths and rejects backslashes and
+external destinations; it does not accept an arbitrary navigation URL.

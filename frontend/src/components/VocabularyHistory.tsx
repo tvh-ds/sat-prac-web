@@ -4,17 +4,8 @@ import { fnJson, getToken } from "../lib/supabase";
 import { Button, Spinner } from "./ui";
 import "../styles/vocabulary-history.css";
 
-export interface StudyDay {
-  date: string;
-  total_due: number | null;
-  studied_due: number;
-  studied_cards: number;
-  review_count: number;
-  tracked_review_count: number;
-  tracked_ms: number | null;
-  average_card_ms: number | null;
-}
-export interface DeckDay { date: string; students_studied: number; students_with_due: number; students_unknown: number }
+import type { StudyDay, DeckDay } from "../lib/adminProgress";
+export type { StudyDay, DeckDay } from "../lib/adminProgress";
 export interface HistoryStudent { student_id: string; full_name: string; history: StudyDay[] }
 export interface HistoryDeck { id: string; name: string; history: DeckDay[]; students: HistoryStudent[] }
 
@@ -30,17 +21,18 @@ function level(n: number, total: number | null) {
   return total == null ? "unknown" : total === 0 ? "none" : n === 0 ? "missed" : n >= total ? "complete" : "partial";
 }
 
-export function StudentStudyDays({ days }: { days: StudyDay[] }) {
+export function StudentStudyDays({ days, compactTime = false }: { days: StudyDay[]; compactTime?: boolean }) {
   const [selected, setSelected] = useState<string | null>(null);
+  const timeTable = <div className="vocab-history-table-wrap"><table className="table vocab-history-table"><caption>Daily study time (UTC)</caption><thead><tr><th>Day</th><th>Cards studied / due</th><th>Study time</th><th>Avg time / card</th><th>Timed reviews</th></tr></thead><tbody>
+    {days.filter(d => !selected || d.date === selected).map(day => <tr key={day.date}><td>{dateLabel(day.date)}</td><td>{day.total_due == null ? "History unavailable" : day.total_due === 0 ? "No cards due" : `${day.studied_due} / ${day.total_due}`}</td><td>{duration(day.tracked_ms)}</td><td>{duration(day.average_card_ms)}</td><td>{day.tracked_review_count} / {day.review_count}</td></tr>)}
+  </tbody></table></div>;
   return <div className="vocab-history">
     <div className="vocab-week" role="group" aria-label="Cards studied out of cards due over the last seven days">
       {days.map(day => <button type="button" key={day.date} className={`vocab-day vocab-day--${level(day.studied_due, day.total_due)}`} aria-pressed={selected === day.date} onClick={() => setSelected(selected === day.date ? null : day.date)} title={`${day.date}: ${day.studied_due} of ${day.total_due ?? "unknown"} due cards studied`}>
         <span>{dateLabel(day.date)}</span><strong>{day.total_due == null ? "?" : day.total_due === 0 ? "—" : `${day.studied_due}/${day.total_due}`}</strong>
       </button>)}
     </div>
-    <div className="vocab-history-table-wrap"><table className="table vocab-history-table"><caption>Daily study time (UTC)</caption><thead><tr><th>Day</th><th>Cards studied / due</th><th>Study time</th><th>Avg time / card</th><th>Timed reviews</th></tr></thead><tbody>
-      {days.filter(d => !selected || d.date === selected).map(day => <tr key={day.date}><td>{dateLabel(day.date)}</td><td>{day.total_due == null ? "History unavailable" : day.total_due === 0 ? "No cards due" : `${day.studied_due} / ${day.total_due}`}</td><td>{duration(day.tracked_ms)}</td><td>{duration(day.average_card_ms)}</td><td>{day.tracked_review_count} / {day.review_count}</td></tr>)}
-    </tbody></table></div>
+    {compactTime && !selected ? <details className="admin-vocab-details"><summary>Daily study time and average per card</summary>{timeTable}</details> : timeTable}
     <p className="student-progress-footnote">Unique due cards, including new and overdue cards. Repeated reviews count once. Time sums recorded study responses; average divides that time by distinct cards with timing. Sprint reviews are excluded. “?” means historical scheduling data is unavailable.</p>
   </div>;
 }

@@ -19,6 +19,7 @@ const StudySession = lazy(() => import("./pages/student/vocab/StudySession"));
 const SprintSession = lazy(() => import("./pages/student/vocab/SprintSession"));
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
 const StudentsPage = lazy(() => import("./pages/admin/StudentsPage"));
+const ClassesPage = lazy(() => import("./pages/admin/ClassesPanel"));
 const StudentDetailPage = lazy(() => import("./pages/admin/StudentDetailPage"));
 const ImportsPage = lazy(() => import("./pages/admin/ImportsPage"));
 const ImportDetailPage = lazy(() => import("./pages/admin/ImportDetailPage"));
@@ -125,7 +126,9 @@ export default function App() {
                 </RequireRole>
               }
             >
-              <Route index element={<Navigate to="students" replace />} />
+              <Route index element={<Navigate to="classes" replace />} />
+              <Route path="classes" element={<ClassesPage />} />
+              <Route path="classes/:classId" element={<ClassesPage />} />
               <Route path="students" element={<StudentsPage />} />
               <Route path="students/:studentId" element={<StudentDetailPage />} />
               <Route path="imports" element={<ImportsPage />} />

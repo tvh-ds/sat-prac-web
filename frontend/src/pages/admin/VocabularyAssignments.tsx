@@ -1,39 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useParams, useSearchParams } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import { Button, EmptyState, Pill, Spinner } from "../../components/ui";
 import "../../styles/student-progress.css";
 
-import { DeckStudyHistory, StudentStudyDays, type StudyDay, type DeckDay } from "../../components/VocabularyHistory";
+import { DeckStudyHistory, StudentStudyDays } from "../../components/VocabularyHistory";
 
-interface StudentProgress {
-  history: StudyDay[];
-  student_id: string;
-  full_name: string;
-  due_remaining: number;
-  due_later_today: number;
-  new_remaining: number;
-  remaining_today: number;
-  reviewed_today: number;
-  tracked_review_ms: number | null;
-  tracked_review_count: number;
-  today_status: string;
-}
-interface DeckProgress {
-  history: DeckDay[];
-  id: string;
-  name: string;
-  description: string | null;
-  card_count: number;
-  student_count: number;
-  students_done_today: number;
-  students_with_due: number;
-  remaining_today: number;
-  reviewed_today: number;
-  tracked_review_ms: number | null;
-  students: StudentProgress[];
-}
-interface Report { date: string; decks: DeckProgress[] }
+import { dailyVocabulary, studyDuration, type VocabDeckProgress as DeckProgress, type VocabReport as Report } from "../../lib/adminProgress";
+import { adminReturnPath } from "../../lib/adminNavigation";
 
 function trackedTime(ms: number | null) {
   if (ms == null) return "Not recorded";
@@ -41,11 +15,20 @@ function trackedTime(ms: number | null) {
   return seconds < 60 ? `${seconds}s` : `${Math.floor(seconds / 60)}m${seconds % 60 ? ` ${seconds % 60}s` : ""}`;
 }
 
-export default function VocabularyAssignments({ classId: selectedClassId }: { classId?: string } = {}) {
+function completionSummary(deck: DeckProgress) {
+  const eligible = deck.students.filter(student => (student.history.at(-1)?.total_due ?? 0) > 0);
+  return eligible.length ? `${eligible.filter(student => student.remaining_today === 0 && student.reviewed_today > 0).length}/${eligible.length}` : "—";
+}
+
+export default function VocabularyAssignments({ classId: selectedClassId, returnTo }: { classId?: string; returnTo?: string } = {}) {
+  const location = useLocation();
   const { deckId } = useParams<{ deckId: string }>();
   const [searchParams] = useSearchParams();
   const classId = selectedClassId ?? searchParams.get("class_id") ?? "";
   const classQuery = classId ? `?class_id=${encodeURIComponent(classId)}` : "";
+  const source = returnTo ?? location.pathname + location.search;
+  const back = adminReturnPath(searchParams.get("return_to"), `/admin/assignments?tab=vocabulary${classId ? `&class_id=${encodeURIComponent(classId)}` : ""}`);
+  const deckLink = (id: string) => `/admin/assignments/vocabulary/${id}?${new URLSearchParams({ ...(classId ? { class_id: classId } : {}), return_to: source })}`;
   const [deleting, setDeleting] = useState<string | null>(null);
   const [notice, setNotice] = useState("");
   const [data, setData] = useState<Report | null>(null);
@@ -76,7 +59,7 @@ export default function VocabularyAssignments({ classId: selectedClassId }: { cl
     finally { setDeleting(null); }
   }
   return <div className="student-progress-page">
-    {deckId && <Link className="student-progress-back muted" to={`/admin/assignments?tab=vocabulary${classId ? `&class_id=${encodeURIComponent(classId)}` : ""}`}>← Vocabulary assignments</Link>}
+    {deckId && <Link className="student-progress-back muted" to={back}>← Back to vocabulary assignments</Link>}
     <div className="student-progress-heading">
       <div>
         {deckId ? <h1 className="page-title">{deck?.name ?? "Vocabulary progress"}</h1> : <h2>Assigned vocabulary decks</h2>}
@@ -96,32 +79,34 @@ export default function VocabularyAssignments({ classId: selectedClassId }: { cl
       {decks.length === 0 ? <EmptyState title={allAssigned ? "No vocabulary decks assigned" : "No decks due today"} body={allAssigned ? "Assign a deck from Vocabulary to see student progress here." : "No assigned decks have work due or reviews today. Choose All assigned to see every assigned deck."} /> :
         <div className="card card-pad student-progress-panel"><div className="student-progress-table-wrap">
           <table className="table student-progress-table">
-            <thead><tr><th>Deck</th><th>Students with work due</th><th>Done today</th><th>Cards remaining today</th><th>Reviews today</th><th>Last 7 days · studied / due students</th><th /></tr></thead>
+            <thead><tr><th>Deck</th><th>Students with cards remaining</th><th>Completed / known due today</th><th>Cards remaining today</th><th>Reviews today</th><th>Last 7 days · studied / due students</th><th /></tr></thead>
             <tbody>{decks.map(d => <tr key={d.id}>
-              <td><Link className="student-progress-name" to={`/admin/assignments/vocabulary/${d.id}${classQuery}`}>{d.name}</Link><span className="student-progress-meta">{d.card_count} cards · {d.student_count} students</span></td>
-              <td>{d.students_with_due}</td><td>{d.students_done_today}/{d.student_count}</td><td>{d.remaining_today}</td><td>{d.reviewed_today}</td><td><DeckStudyHistory deck={d} /></td>
-              <td><div style={{ display: "flex", gap: 8 }}><Link className="btn btn-outline btn-sm" to={`/admin/assignments/vocabulary/${d.id}${classQuery}`}>View progress</Link><Button variant="danger" size="sm" disabled={!!deleting} aria-label={`Delete vocabulary assignment ${d.name}`} onClick={() => void deleteAssignments(d)}>{deleting === d.id ? "Deleting…" : "Delete"}</Button></div></td>
+              <td><Link className="student-progress-name" to={deckLink(d.id)}>{d.name}</Link><span className="student-progress-meta">{d.card_count} cards · {d.student_count} students</span></td>
+              <td>{d.students_with_due}</td><td>{completionSummary(d)}</td><td>{d.remaining_today}</td><td>{d.reviewed_today}</td><td><DeckStudyHistory deck={d} /></td>
+              <td><div style={{ display: "flex", gap: 8 }}><Link className="btn btn-outline btn-sm" to={deckLink(d.id)}>View progress</Link><Button variant="danger" size="sm" disabled={!!deleting} aria-label={`Delete vocabulary assignment ${d.name}`} onClick={() => void deleteAssignments(d)}>{deleting === d.id ? "Deleting…" : "Delete"}</Button></div></td>
           </tr>)}</tbody>
           </table>
         </div></div>}
-      <p className="student-progress-footnote">Each day shows students who studied out of students with due cards. Select a day to view names. Days with no due cards are excluded. All dates use UTC.</p>
+      <p className="student-progress-footnote">Each day shows students who studied out of students with due cards. Select a day to view names. Days with no due cards are excluded. Daily completion ratios exclude unavailable due history; every student is still listed below. All dates use UTC.</p>
     </>}
-    {deck && <section className="student-progress-section">
-      <h2>Last 7 days</h2><p className="muted">Students who studied / students with cards due. Select a day to see who studied and who did not. Students with no due cards are excluded.</p><DeckStudyHistory key={deck.id} deck={deck} />
+    {(deck ? [deck] : decks).map(deck => <section key={deck.id} className="student-progress-section">
+      {!deckId && <h2>{deck.name} · all students</h2>}
+      {deckId && <><h2>Last 7 days</h2><p className="muted">Students who studied / students with cards due. Select a day to see who studied and who did not. Students with no due cards are excluded.</p><DeckStudyHistory key={deck.id} deck={deck} /></>}
       <div className="student-progress-section-head"><div><h2>Student progress today</h2><p>{deck.student_count} students · {deck.students_done_today} done today · {deck.reviewed_today} reviews · {trackedTime(deck.tracked_review_ms)} tracked</p></div></div>
       <div className="card card-pad student-progress-panel"><div className="student-progress-table-wrap">
         <table className="table student-progress-table">
-          <thead><tr><th>Student</th><th>Today</th><th>Cards due now</th><th>Due later today</th><th>New cards</th><th>Reviews today</th><th>Tracked time today</th><th>Last 7 days · cards studied / due</th></tr></thead>
-          <tbody>{deck.students.map(s => <tr key={s.student_id}>
-            <td><Link className="student-progress-name" to={`/admin/students/${s.student_id}`}>{s.full_name}</Link></td>
-            <td><Pill tone={s.remaining_today > 0 ? "amber" : s.today_status === "done_today" ? "green" : "gray"}>{s.remaining_today > 0 ? "Work remaining" : s.today_status === "done_today" ? "Done today" : "No cards due today"}</Pill></td>
-            <td>{s.due_remaining}</td><td>{s.due_later_today}</td><td>{s.new_remaining}</td><td>{s.reviewed_today}</td>
-            <td>{trackedTime(s.tracked_review_ms)}{s.tracked_review_ms != null && s.tracked_review_count < s.reviewed_today && <span className="student-progress-meta">{s.tracked_review_count}/{s.reviewed_today} timed</span>}</td>
+          <thead><tr><th>Student</th><th>Today</th><th>Due cards reviewed today</th><th>Remaining today</th><th>Due now</th><th>Due later today</th><th>New cards</th><th>Study time today</th><th>Avg time / card</th><th>Last 7 days · cards studied / due</th></tr></thead>
+          <tbody>{deck.students.map(s => { const day = dailyVocabulary([s]); return <tr key={s.student_id}>
+            <td><Link className="student-progress-name" to={`/admin/students/${s.student_id}?return_to=${encodeURIComponent(location.pathname + location.search)}`}>{s.full_name}</Link></td>
+            <td><Pill tone={day.status === "Completed" ? "green" : day.remaining > 0 ? "amber" : "gray"}>{day.status}</Pill></td>
+            <td>{day.total == null ? `${day.reviewed} / unknown` : day.total === 0 ? "No cards due" : `${day.reviewed}/${day.total}`}</td>
+            <td>{s.remaining_today}</td><td>{s.due_remaining + s.new_remaining}</td><td>{s.due_later_today}</td><td>{s.new_remaining}</td>
+            <td>{studyDuration(day.time)}</td><td>{studyDuration(day.average)}</td>
             <td><details><summary>Study history and daily time</summary><StudentStudyDays days={s.history ?? []} /></details></td>
-          </tr>)}</tbody>
+          </tr>; })}</tbody>
         </table>
       </div></div>
       <p className="student-progress-footnote">Review time sums recorded responses, not elapsed session time. Click a student's name to open their full progress.</p>
-    </section>}
+    </section>)}
   </div>;
 }

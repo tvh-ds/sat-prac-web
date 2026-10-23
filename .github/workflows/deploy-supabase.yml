@@ -50,6 +50,9 @@ jobs:
           deno check supabase/functions/admin-classes/index.ts
           deno test supabase/functions/_shared/student_classes_test.ts supabase/functions/_shared/validation_test.ts
 
+      - name: Verify exhaustive admin progress
+        run: deno test supabase/functions/_shared/admin_tracking_test.ts supabase/functions/_shared/student_progress_test.ts supabase/functions/_shared/vocab_assignments_test.ts
+
       - uses: supabase/setup-cli@v1
         with:
           version: 2.115.0

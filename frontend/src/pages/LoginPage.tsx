@@ -21,7 +21,7 @@ export default function LoginPage() {
     setBusy(true);
     try {
       const profile = await signIn(email.trim(), password);
-      navigate(profile?.role === "admin" ? "/admin/students" : "/student", { replace: true });
+      navigate(profile?.role === "admin" ? "/admin/classes" : "/student", { replace: true });
     } catch (err) {
       const raw = (err instanceof Error ? err.message : "").toLowerCase();
       if (/fetch|network|connection/.test(raw)) {

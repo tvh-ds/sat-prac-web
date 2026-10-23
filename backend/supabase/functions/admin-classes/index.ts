@@ -2,6 +2,7 @@ import { requireRole, HttpError, pathSegments } from "../_shared/auth.ts";
 import { serviceClient } from "../_shared/supabase.ts";
 import { corsHeaders, json, error } from "../_shared/cors.ts";
 import { studentClassSchema } from "../_shared/validation.ts";
+import { allProgressRows, loadAssignmentProgress } from "../_shared/assignment_progress.ts";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
@@ -10,22 +11,28 @@ Deno.serve(async (req) => {
     const svc = serviceClient(), seg = pathSegments(req), id = seg[1];
     if (id && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) return error("Invalid class ID", 422);
     if (req.method === "GET" && seg.length === 1) {
-      const { data: classes, error: clsError } = await svc.from("student_classes").select("*, members:student_class_members(student_id)").order("name");
-      if (clsError) return error("Unable to load classes", 500);
-      return json({ classes: (classes ?? []).map(({ members, ...cls }) => ({ ...cls, student_ids: (members ?? []).map((m: { student_id: string }) => m.student_id) })) });
+      const classes = await allProgressRows<{ id: string; name: string; created_at: string }>(start => svc.from("student_classes").select("id,name,created_at").order("id").range(start, start + 499));
+      const members = await allProgressRows<{ class_id: string; student_id: string }>(start => svc.from("student_class_members").select("class_id,student_id").order("class_id").order("student_id").range(start, start + 499));
+      return json({ classes: classes.map(cls => ({ ...cls, student_ids: members.filter(m => m.class_id === cls.id).map(m => m.student_id) })).sort((a, b) => a.name.localeCompare(b.name)) });
     }
     if (req.method === "GET" && seg.length === 2) {
       const { data: cls, error: clsError } = await svc.from("student_classes").select("id,name").eq("id", id).maybeSingle();
       if (clsError) return error("Unable to load class", 500);
       if (!cls) return error("Class not found", 404);
-      const [practice, full] = await Promise.all([
-        svc.from("practice_assignment_batches").select("id,title,assigned_at,class_name,timer_minutes,snapshot_test_id").eq("class_id", id).order("assigned_at", { ascending: false }),
-        svc.from("full_test_assignment_batches").select("id,title,assigned_at,class_name,content_scope").eq("class_id", id).order("assigned_at", { ascending: false }),
+      const [practice, full, progress] = await Promise.all([
+        allProgressRows<{ id: string; title: string; assigned_at: string; timer_minutes: number }>(start => svc.from("practice_assignment_batches").select("id,title,assigned_at,class_name,timer_minutes,snapshot_test_id").eq("class_id", id).order("id").range(start, start + 499)),
+        allProgressRows<{ id: string; title: string; assigned_at: string }>(start => svc.from("full_test_assignment_batches").select("id,title,assigned_at,class_name,content_scope").eq("class_id", id).order("id").range(start, start + 499)),
+        loadAssignmentProgress(svc, new Date()),
       ]);
-      if (practice.error || full.error) return error("Unable to load class assignments", 500);
+      const counts = (batchId: string) => {
+        const rows = progress.filter(a => a.batch_id === batchId);
+        const scored = rows.filter(a => a.accuracy != null);
+        return { student_count: rows.length, completed_count: rows.filter(a => a.status === "completed").length,
+          avg_accuracy: scored.length ? Math.round(scored.reduce((n, a) => n + a.accuracy!, 0) / scored.length * 10) / 10 : null };
+      };
       return json({ class: cls, assignments: [
-        ...(practice.data ?? []).map((a) => ({ ...a, kind: "practice" })),
-        ...(full.data ?? []).map((a) => ({ ...a, kind: "full" })),
+        ...practice.map((a) => ({ ...a, ...counts(a.id), kind: "practice" })),
+        ...full.map((a) => ({ ...a, ...counts(a.id), kind: "full" })),
       ].sort((a, b) => b.assigned_at.localeCompare(a.assigned_at)) });
     }
     if ((req.method === "POST" && seg.length === 1) || (req.method === "PUT" && seg.length === 2)) {

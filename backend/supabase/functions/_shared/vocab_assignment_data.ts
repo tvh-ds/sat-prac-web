@@ -29,7 +29,7 @@ export async function loadVocabularyAssignments(svc: ReturnType<typeof serviceCl
   const today = now.toISOString().slice(0, 10);
   const weekStart = new Date(Date.parse(`${today}T00:00:00Z`) - 6 * 86400000).toISOString().slice(0, 10);
   const decks = await allRows<AssignmentDeck>(start => {
-    let query = svc.from("vocab_decks").select("id, name, description, color").is("student_id", null).eq("status", "active");
+    let query = svc.from("vocab_decks").select("id, name, description, color").is("student_id", null);
     if (deckId) query = query.eq("id", deckId);
     return query.order("id").range(start, start + 499);
   });

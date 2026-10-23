@@ -1,3 +1,4 @@
+import { allProgressRows, loadAssignmentProgress, progressRowsByIds, progressUserEmails } from "../_shared/assignment_progress.ts";
 import { tryCleanupPublishedTestStorage } from "../_shared/importStorageCleanup.ts";
 import { requireRole, HttpError, pathSegments } from "../_shared/auth.ts";
 import { serviceClient } from "../_shared/supabase.ts";
@@ -59,72 +60,25 @@ Deno.serve(async (req) => {
 
     // ---------------------------------------------------------------- list
     if (req.method === "GET" && seg.length === 1) {
-      const { data: batches, error: bErr } = await svc
-        .from("practice_assignment_batches")
-        .select("*")
-        .order("assigned_at", { ascending: false });
-      if (bErr) return error(bErr.message, 500);
-      const rows = batches ?? [];
-      const snapIds = rows.map((b) => b.snapshot_test_id);
-      const sourceIds = rows.map((b) => b.source_test_id).filter(Boolean);
-
-      const [{ data: sources }, { data: assignments }] = await Promise.all([
-        sourceIds.length > 0
-          ? svc.from("tests").select("id, title").in("id", sourceIds)
-          : Promise.resolve({ data: [] as Array<{ id: string; title: string }> }),
-        snapIds.length > 0
-          ? svc.from("test_assignments").select("id, test_id, status").in("test_id", snapIds)
-          : Promise.resolve({ data: [] as Array<{ id: string; test_id: string; status: string }> }),
-      ]);
-      const sourceTitle = new Map((sources ?? []).map((s) => [s.id, s.title]));
-
-      const assignmentIds = (assignments ?? []).map((a) => a.id);
-      const { data: attempts } = assignmentIds.length > 0
-        ? await svc.from("attempts").select("id, assignment_id, status, submitted_at").in("assignment_id", assignmentIds)
-        : { data: [] as Array<{ id: string; assignment_id: string; status: string; submitted_at: string | null }> };
-      const gradedIds = (attempts ?? []).filter((a) => a.status === "graded").map((a) => a.id);
-      const { data: scores } = gradedIds.length > 0
-        ? await svc.from("scores").select("attempt_id, raw_score, total_questions").in("attempt_id", gradedIds)
-        : { data: [] as Array<{ attempt_id: string; raw_score: number; total_questions: number }> };
-      const scoreByAttempt = new Map((scores ?? []).map((s) => [s.attempt_id, s]));
-
-      // question counts per snapshot
-      const { data: snapSections } = snapIds.length > 0
-        ? await svc.from("test_sections").select("id, test_id").in("test_id", snapIds)
-        : { data: [] as Array<{ id: string; test_id: string }> };
-      const secIds = (snapSections ?? []).map((s) => s.id);
-      const { data: snapModules } = secIds.length > 0
-        ? await svc.from("test_modules").select("id, section_id").in("section_id", secIds)
-        : { data: [] as Array<{ id: string; section_id: string }> };
-      const secToSnap = new Map((snapSections ?? []).map((s) => [s.id, s.test_id]));
-      const modIds = (snapModules ?? []).map((m) => m.id);
-      const { data: snapLinks } = modIds.length > 0
-        ? await svc.from("test_module_questions").select("module_id").in("module_id", modIds)
-        : { data: [] as Array<{ module_id: string }> };
-      const modToSnap = new Map((snapModules ?? []).map((m) => [m.id, secToSnap.get(m.section_id)]));
+      const rows = await allProgressRows<{ id: string; snapshot_test_id: string; source_test_id: string | null; assigned_at: string }>(start => svc.from("practice_assignment_batches").select("*").order("id").range(start, start + 499));
+      const progress = await loadAssignmentProgress(svc, new Date());
+      const sources = await progressRowsByIds<{ id: string; title: string }>(svc, "tests", "id,title", "id", rows.flatMap(b => b.source_test_id ? [b.source_test_id] : []));
+      const sections = await progressRowsByIds<{ id: string; test_id: string }>(svc, "test_sections", "id,test_id", "test_id", rows.map(b => b.snapshot_test_id));
+      const modules = await progressRowsByIds<{ id: string; section_id: string }>(svc, "test_modules", "id,section_id", "section_id", sections.map(s => s.id));
+      const links = await progressRowsByIds<{ id: string; module_id: string }>(svc, "test_module_questions", "id,module_id", "module_id", modules.map(m => m.id));
+      const sourceTitle = new Map(sources.map(s => [s.id, s.title]));
+      const sectionTest = new Map(sections.map(s => [s.id, s.test_id]));
+      const moduleTest = new Map(modules.map(m => [m.id, sectionTest.get(m.section_id)]));
       const qCount = new Map<string, number>();
-      for (const l of snapLinks ?? []) {
-        const snap = modToSnap.get(l.module_id);
-        if (snap) qCount.set(snap, (qCount.get(snap) ?? 0) + 1);
-      }
-
-      const list = rows.map((b) => {
-        const batchAssignments = (assignments ?? []).filter((a) => a.test_id === b.snapshot_test_id);
-        const batchAttempts = (attempts ?? []).filter((a) => batchAssignments.some((as) => as.id === a.assignment_id));
-        const graded = batchAttempts.filter((a) => a.status === "graded");
-        const acc = graded
-          .map((a) => scoreByAttempt.get(a.id))
-          .filter((s) => s && Number(s.total_questions) > 0)
-          .map((s) => Number(s!.raw_score) / Number(s!.total_questions));
-        return {
-          ...b,
-          source_title: b.source_test_id ? (sourceTitle.get(b.source_test_id) ?? null) : null,
-          question_count: qCount.get(b.snapshot_test_id) ?? 0,
-          student_count: batchAssignments.length,
-          completed_count: graded.length,
-          avg_accuracy: acc.length > 0 ? Math.round((acc.reduce((x, y) => x + y, 0) / acc.length) * 1000) / 10 : null,
-        };
-      });
+      for (const link of links) { const testId = moduleTest.get(link.module_id); if (testId) qCount.set(testId, (qCount.get(testId) ?? 0) + 1); }
+      const list = rows.map(batch => {
+        const students = progress.filter(a => a.kind === "practice" && a.batch_id === batch.id);
+        const scored = students.filter(a => a.accuracy != null);
+        return { ...batch, source_title: sourceTitle.get(batch.source_test_id ?? "") ?? null,
+          question_count: qCount.get(batch.snapshot_test_id) ?? 0,
+          student_count: students.length, completed_count: students.filter(a => a.status === "completed").length,
+          avg_accuracy: scored.length ? Math.round(scored.reduce((n, a) => n + a.accuracy!, 0) / scored.length * 10) / 10 : null };
+      }).sort((a, b) => b.assigned_at.localeCompare(a.assigned_at));
       return json({ batches: list });
     }
 
@@ -274,30 +228,20 @@ Deno.serve(async (req) => {
       if (bErr) return error(bErr.message, 500);
       if (!batch) return error("Assignment not found", 404);
 
-      const { data: assignments, error: aErr } = await svc
-        .from("test_assignments")
-        .select("id, student_id, status, assigned_at, due_at")
-        .eq("test_id", batch.snapshot_test_id)
-        .order("assigned_at");
-      if (aErr) return error(aErr.message, 500);
-
-      const studentIds = (assignments ?? []).map((a) => a.student_id);
-      const [{ data: profiles }, authList] = await Promise.all([
-        studentIds.length > 0
-          ? svc.from("student_profiles").select("id, profiles:profiles!student_profiles_id_fkey(full_name)").in("id", studentIds)
-          : Promise.resolve({ data: [] as Array<{ id: string; profiles: { full_name?: string } | null }> }),
-        svc.auth.admin.listUsers({ perPage: 1000 }).catch(() => null),
+      const assignments = await allProgressRows<{ id: string; student_id: string; status: string; assigned_at: string; due_at: string | null }>(start => svc.from("test_assignments").select("id,student_id,status,assigned_at,due_at").eq("test_id", batch.snapshot_test_id).order("id").range(start, start + 499));
+      const studentIds = assignments.map(a => a.student_id);
+      const [profiles, emails] = await Promise.all([
+        progressRowsByIds<{ id: string; profiles: { full_name?: string } | null }>(svc, "student_profiles", "id,profiles:profiles!student_profiles_id_fkey(full_name)", "id", studentIds),
+        progressUserEmails(svc),
       ]);
       const nameById = new Map((profiles ?? []).map((p) => {
         const profile = Array.isArray(p.profiles) ? p.profiles[0] : p.profiles;
         return [p.id, profile?.full_name ?? ""];
       }));
-      const emails = new Map(((authList as { users?: Array<{ id: string; email?: string }> } | null)?.users ?? []).map((u) => [u.id, u.email]));
+
 
       const assignmentIds = (assignments ?? []).map((a) => a.id);
-      const { data: attempts } = assignmentIds.length > 0
-        ? await svc.from("attempts").select("id, assignment_id, status, started_at, submitted_at").in("assignment_id", assignmentIds)
-        : { data: [] as Array<{ id: string; assignment_id: string; status: string; started_at: string; submitted_at: string | null }> };
+      const attempts = await progressRowsByIds<{ id: string; assignment_id: string; status: string; started_at: string; submitted_at: string | null }>(svc, "attempts", "id,assignment_id,status,started_at,submitted_at", "assignment_id", assignmentIds);
       // Latest attempt per assignment (a student may retake the same batch).
       const latestByAssignment = new Map<string, { id: string; assignment_id: string; status: string; started_at: string; submitted_at: string | null }>();
       for (const a of (attempts ?? []).sort((x, y) => (x.started_at < y.started_at ? -1 : 1))) {
@@ -308,9 +252,7 @@ Deno.serve(async (req) => {
         latestGradedByAssignment.set(a.assignment_id, a);
       }
       const latestIds = [...latestByAssignment.values()].map((a) => a.id);
-      const { data: scores } = latestIds.length > 0
-        ? await svc.from("scores").select("attempt_id, raw_score, total_questions").in("attempt_id", latestIds)
-        : { data: [] as Array<{ attempt_id: string; raw_score: number; total_questions: number }> };
+      const scores = await progressRowsByIds<{ attempt_id: string; raw_score: number; total_questions: number }>(svc, "scores", "attempt_id,raw_score,total_questions", "attempt_id", latestIds, "attempt_id");
       const scoreByAttempt = new Map((scores ?? []).map((s) => [s.attempt_id, s]));
 
       const students = (assignments ?? []).map((a) => {
@@ -337,9 +279,7 @@ Deno.serve(async (req) => {
       const { sections, modules } = await templateModule(svc, batch.snapshot_test_id);
       void sections;
       const gradedIds = [...latestByAssignment.values()].filter((a) => a.status === "graded").map((a) => a.id);
-      const { data: responses } = gradedIds.length > 0
-        ? await svc.from("attempt_responses").select("attempt_id, question_id, selected_choice_id, typed_answer, is_correct").in("attempt_id", gradedIds)
-        : { data: [] as Array<{ attempt_id: string; question_id: string; selected_choice_id: string | null; typed_answer: string | null; is_correct: boolean | null }> };
+      const responses = await progressRowsByIds<{ attempt_id: string; question_id: string; selected_choice_id: string | null; typed_answer: string | null; is_correct: boolean | null }>(svc, "attempt_responses", "attempt_id,question_id,selected_choice_id,typed_answer,is_correct", "attempt_id", gradedIds, ["attempt_id", "question_id"]);
 
       const questions = [];
       for (const m of modules) {

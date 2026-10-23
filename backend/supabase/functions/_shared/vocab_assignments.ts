@@ -32,8 +32,13 @@ export function vocabularyAssignments(
       const history = vocabularyStudyHistory(deckCards, studentStates, reviewsByStudent.get(student_id) ?? [],
         (assignmentsByDeck.get(deck.id) ?? []).find(a => a.student_id === student_id)?.assigned_at, now);
       const remaining_today = progress.due_remaining + due_later_today + new_remaining;
-      return { ...progress, history, student_id, full_name: names.get(student_id) ?? "Student", new_remaining, due_later_today, remaining_today,
-        today_status: remaining_today > 0 ? "due_remaining" : progress.today_status };
+      const daily = history[history.length - 1];
+      return { ...progress,
+        reviewed_today: daily.review_count, tracked_review_count: daily.tracked_review_count,
+        tracked_review_ms: daily.tracked_ms, average_card_ms: daily.average_card_ms,
+        studied_due_today: daily.studied_due, total_due_today: daily.total_due,
+        history, student_id, full_name: names.get(student_id) ?? "Student", new_remaining, due_later_today, remaining_today,
+        today_status: remaining_today > 0 ? "due_remaining" : daily.review_count > 0 ? "done_today" : "no_cards_due" };
     }).sort((a, b) => a.full_name.localeCompare(b.full_name));
     const tracked = students.reduce((n, s) => n + s.tracked_review_count, 0);
     const history = students[0]?.history.map((day, i) => ({
@@ -88,7 +93,7 @@ export function vocabularyStudyHistory(cards: AssignmentCard[], states: Assignme
     const tracked_ms = timed.length ? timed.reduce((sum, r) => sum + Math.max(0, r.response_ms!), 0) : null;
     return { date, total_due: unknown ? null : total_due, studied_due,
       studied_cards: new Set(dailyReviews.map(r => r.card_id)).size,
-      review_count: dailyReviews.length, tracked_review_count: timed.length, tracked_ms,
+      review_count: dailyReviews.length, tracked_review_count: timed.length, timed_card_count: new Set(timed.map(r => r.card_id)).size, tracked_ms,
       average_card_ms: tracked_ms == null ? null : Math.round(tracked_ms / new Set(timed.map(r => r.card_id)).size) };
   });
 }

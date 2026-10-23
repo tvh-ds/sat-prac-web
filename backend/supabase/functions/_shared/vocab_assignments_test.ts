@@ -23,10 +23,11 @@ Deno.test("assignment daily work includes new, overdue and later-today cards but
 Deno.test("students are isolated and today's reviews preserve missing timing", () => {
   const states = ["a", "b"].flatMap(student_id => cards.map(c => ({ student_id, card_id: c.id, due_at: "2026-10-11T00:00:00Z" })));
   const report = vocabularyAssignments(decks, [{ deck_id: "deck", student_id: "a" }, { deck_id: "deck", student_id: "b" }], cards, states, [
-    { student_id: "a", card_id: "new", reviewed_on: "2026-10-10", response_ms: 1200 },
-    { student_id: "a", card_id: "new", reviewed_on: "2026-10-10", response_ms: null },
-    { student_id: "a", card_id: "new", reviewed_on: "2026-10-09", response_ms: 99000 },
-    { student_id: "outsider", card_id: "new", reviewed_on: "2026-10-10", response_ms: 99000 },
+    { student_id: "a", card_id: "new", reviewed_on: "2026-10-10", response_ms: 1200, mode: "study" },
+    { student_id: "a", card_id: "new", reviewed_on: "2026-10-10", response_ms: null, mode: "study" },
+    { student_id: "a", card_id: "new", reviewed_on: "2026-10-09", response_ms: 99000, mode: "study" },
+    { student_id: "a", card_id: "new", reviewed_on: "2026-10-10", response_ms: 99000, mode: "sprint" },
+    { student_id: "outsider", card_id: "new", reviewed_on: "2026-10-10", response_ms: 99000, mode: "study" },
   ], [{ id: "a", full_name: "Alex" }, { id: "b", full_name: "Blair" }], now)[0];
   equal(report.students[0].reviewed_today, 2);
   equal(report.students[0].tracked_review_count, 1);

@@ -1,3 +1,4 @@
+import { allProgressRows, loadAssignmentProgress, progressRowsByIds, progressUserEmails } from "../_shared/assignment_progress.ts";
 import { tryCleanupPublishedTestStorage } from "../_shared/importStorageCleanup.ts";
 import { requireRole, HttpError, pathSegments } from "../_shared/auth.ts";
 import { deleteAssignmentBatch } from "../_shared/delete_assignment_batch.ts";
@@ -101,39 +102,27 @@ async function questionCountForScope(svc: Svc, testId: string, contentScope: str
 }
 
 async function fullBatchStudents(svc: Svc, batch: { id: string }) {
-  const { data: assignments, error: aErr } = await svc
-    .from("test_assignments")
-    .select("id, student_id, status, assigned_at, due_at")
-    .eq("assignment_batch_id", batch.id)
-    .order("assigned_at");
-  if (aErr) throw new HttpError(500, aErr.message);
-
-  const studentIds = (assignments ?? []).map((a) => a.student_id);
-  const [{ data: profiles }, authList] = await Promise.all([
-    studentIds.length > 0
-      ? svc.from("student_profiles").select("id, profiles:profiles!student_profiles_id_fkey(full_name)").in("id", studentIds)
-      : Promise.resolve({ data: [] as Array<{ id: string; profiles: { full_name?: string } | null }> }),
-    svc.auth.admin.listUsers({ perPage: 1000 }).catch(() => null),
+  const assignments = await allProgressRows<{ id: string; student_id: string; status: string; assigned_at: string; due_at: string | null }>(start => svc.from("test_assignments").select("id,student_id,status,assigned_at,due_at").eq("assignment_batch_id", batch.id).order("id").range(start, start + 499));
+  const studentIds = assignments.map(a => a.student_id);
+  const [profiles, emails] = await Promise.all([
+    progressRowsByIds<{ id: string; profiles: { full_name?: string } | null }>(svc, "student_profiles", "id,profiles:profiles!student_profiles_id_fkey(full_name)", "id", studentIds),
+    progressUserEmails(svc),
   ]);
   const nameById = new Map((profiles ?? []).map((p) => {
     const profile = Array.isArray(p.profiles) ? p.profiles[0] : p.profiles;
     return [p.id, profile?.full_name ?? ""];
   }));
-  const emails = new Map(((authList as { users?: Array<{ id: string; email?: string }> } | null)?.users ?? []).map((u) => [u.id, u.email]));
+
 
   const assignmentIds = (assignments ?? []).map((a) => a.id);
-  const { data: attempts } = assignmentIds.length > 0
-    ? await svc.from("attempts").select("id, assignment_id, status, started_at, submitted_at").in("assignment_id", assignmentIds)
-    : { data: [] as Array<{ id: string; assignment_id: string; status: string; started_at: string; submitted_at: string | null }> };
+  const attempts = await progressRowsByIds<{ id: string; assignment_id: string; status: string; started_at: string; submitted_at: string | null }>(svc, "attempts", "id,assignment_id,status,started_at,submitted_at", "assignment_id", assignmentIds);
   const latestByAssignment = new Map<string, { id: string; assignment_id: string; status: string; started_at: string; submitted_at: string | null }>();
   for (const a of (attempts ?? []).sort((x, y) => (x.started_at < y.started_at ? -1 : 1))) latestByAssignment.set(a.assignment_id, a);
   const latestGradedByAssignment = new Map<string, { id: string; assignment_id: string; status: string; started_at: string; submitted_at: string | null }>();
   for (const a of (attempts ?? []).filter((x) => x.status === "graded").sort((x, y) => (x.started_at < y.started_at ? -1 : 1))) latestGradedByAssignment.set(a.assignment_id, a);
 
   const latestIds = [...latestByAssignment.values()].map((a) => a.id);
-  const { data: scores } = latestIds.length > 0
-    ? await svc.from("scores").select("attempt_id, raw_score, total_questions").in("attempt_id", latestIds)
-    : { data: [] as Array<{ attempt_id: string; raw_score: number; total_questions: number }> };
+  const scores = await progressRowsByIds<{ attempt_id: string; raw_score: number; total_questions: number }>(svc, "scores", "attempt_id,raw_score,total_questions", "attempt_id", latestIds, "attempt_id");
   const scoreByAttempt = new Map((scores ?? []).map((s) => [s.attempt_id, s]));
 
   return (assignments ?? []).map((a) => {
@@ -180,24 +169,15 @@ Deno.serve(async (req) => {
     }
 
     if (req.method === "GET" && seg.length === 2 && seg[1] === "assignment-batches") {
-      const { data: batches, error: bErr } = await svc
-        .from("full_test_assignment_batches")
-        .select("*")
-        .order("assigned_at", { ascending: false });
-      if (bErr) return error(bErr.message, 500);
-
+      const batches = await allProgressRows<{ id: string; source_test_id: string; content_scope: string; module_ids: string[] | null; assigned_at: string }>(start => svc.from("full_test_assignment_batches").select("*").order("id").range(start, start + 499));
+      const progress = await loadAssignmentProgress(svc, new Date());
       const rows = [];
-      for (const b of batches ?? []) {
-        const students = await fullBatchStudents(svc, b);
-        const graded = students.filter((s) => s.review_attempt_id);
-        const acc = students.filter((s) => s.accuracy != null).map((s) => Number(s.accuracy));
-        rows.push({
-          ...b,
-          question_count: await questionCountForScope(svc, b.source_test_id, b.content_scope, b.module_ids),
-          student_count: students.length,
-          completed_count: graded.length,
-          avg_accuracy: acc.length > 0 ? Math.round((acc.reduce((x, y) => x + y, 0) / acc.length) * 10) / 10 : null,
-        });
+      for (const b of batches.sort((a, b) => b.assigned_at.localeCompare(a.assigned_at))) {
+        const students = progress.filter(a => a.kind === "full" && a.batch_id === b.id);
+        const scored = students.filter(a => a.accuracy != null);
+        rows.push({ ...b, question_count: await questionCountForScope(svc, b.source_test_id, b.content_scope, b.module_ids),
+          student_count: students.length, completed_count: students.filter(a => a.status === "completed").length,
+          avg_accuracy: scored.length ? Math.round(scored.reduce((n, a) => n + a.accuracy!, 0) / scored.length * 10) / 10 : null });
       }
       return json({ batches: rows });
     }

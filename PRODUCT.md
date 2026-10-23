@@ -6,7 +6,7 @@ test copies and complete them in the student workspace.
 
 ## Student classes
 
-Admins form named classes under Students → Classes, find students by name or
+Admins form named classes under Classes, find students by name or
 email, and manage membership. A student can belong to multiple classes. Empty
 classes can be prepared before members are added.
 
@@ -14,6 +14,22 @@ The assignment dialog supports individual students or a class. Class assignment
 sends work to every current member; an empty class cannot receive work. Each
 class shows its assigned practice sets and full-length tests with links to the
 assignment results. Class labels identify the destination in assignment views.
+
+Admin opens on Classes. Teaching navigation groups Classes, Students, and
+Assignments before the content library. Each class has its own Students,
+Assignments, and Vocabulary tabs. Lists include every current member and every
+retained class assignment, including completed work; original assignment
+recipients remain visible after membership changes. Student rows summarize all
+their retained work, including individual assignments and other classes.
+
+Vocabulary tracking measures daily review completion, not learned or mastered
+words: unique due cards reviewed, work remaining today (new, overdue, due now,
+and due later), recorded study time, and average time per distinct timed card.
+Every assigned shared deck remains visible, including archived decks. Seven-day
+heatmaps show participation and individual reviewed/due counts, with daily time
+details. No-due days and unknown history remain explicit and are excluded from
+participation ratios. All day boundaries use UTC. Student Progress combines
+practice and full-length test history; account administration lives in Profile.
 
 Assignments preserve the recipients and class name recorded when assigned.
 Later membership changes and renaming do not alter past work. Class membership
