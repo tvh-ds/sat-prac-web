@@ -1,4 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { randomUUID } from "node:crypto";
+import { stimulusAssetKey } from "./stimulusAssetKey";
 import { createSupabase } from "./supabase";
 import { extractText, analyzeTextQuality, type PageText } from "./extractor";
 import { parseQuestions } from "./parser";
@@ -1176,6 +1178,7 @@ export class Pipeline {
 
     for (let qi = 0; qi < questions.length; qi++) {
       const q = questions[qi]!;
+      const draftId = randomUUID();
       const matched = matchedAnswers[qi] ?? null;
       const matchedConfidence = matched
         ? matched.confidence === "low"
@@ -1203,7 +1206,7 @@ export class Pipeline {
         try {
           const stim = await this.uploadStimulus(
             importId,
-            q.sourceQuestionId ?? (q.sourceQuestionNumber > 0 ? String(q.sourceQuestionNumber) : "page-" + q.pageNumber),
+            stimulusAssetKey(q.section, q.sourceModuleName, q.sourceQuestionNumber > 0 ? q.sourceQuestionNumber : null, draftId),
             q.pageNumber,
             pdfBytes,
             boxesForQuestion.get(qi) ?? [],
@@ -1220,6 +1223,7 @@ export class Pipeline {
       const { data: draft, error: dErr } = await this.svc
         .from("draft_questions")
         .insert({
+          id: draftId,
           pdf_import_id: importId,
           page_number: q.pageNumber,
           section: q.section,

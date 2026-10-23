@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import PDFDocument from "pdfkit";
 import { Pipeline, assessAnswerKey, type PipelineConfig } from "../src/pipeline";
+import { stimulusAssetKey } from "../src/stimulusAssetKey";
+import { createCanvas } from "@napi-rs/canvas";
 
 let mockClient: Record<string, unknown>;
 
@@ -240,6 +242,7 @@ describe("Pipeline (Parse 5)", () => {
     expect(plain).toHaveLength(1);
     expect(visual[0].status).toBe("needs_review");
     expect(visual[0].stimulus_image_path).toBeTruthy();
+    expect(visual[0].stimulus_image_path).toContain(`/math-1-q2-${visual[0].id}-page-1.png`);
     expect(visual[0].prompt).not.toContain("[figure");
     expect(visual[0].prompt).toContain("Which statement is best");
     expect(plain[0].stimulus_image_path).toBeFalsy();
@@ -505,5 +508,29 @@ describe("Pipeline (Parse 5)", () => {
     ];
     const pipeline = new Pipeline(config);
     expect(await pipeline.claimNextPending()).toBe("b");
+  });
+
+  it("keeps same-number crops separate across all four modules and on a shared page", async () => {
+    const canvas = createCanvas(1000, 1400);
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, 1000, 1400);
+    ctx.fillStyle = "black";
+    ctx.fillRect(100, 200, 700, 900);
+    const png = Buffer.from(await canvas.encode("png"));
+    const cache = new Map([[1, { sourcePath: "page-1.png", png, W: 1000, H: 1400 }]]);
+    const pipeline = new Pipeline(config);
+    const paths: string[] = [];
+    for (const [i, module] of ["Reading and Writing Module 1", "Reading and Writing Module 2", "Math Module 1", "Math Module 2", "Math Module 2"].entries()) {
+      const key = stimulusAssetKey(module.startsWith("Math") ? "math" : "reading_writing", module, 10, `draft-${i}`);
+      const result = await (pipeline as any).uploadStimulus("imp", key, 1, new Uint8Array(), [{ x1: .1, y1: .2, x2: .6, y2: .5 }], cache);
+      paths.push(result.activePath);
+      expect(result.source).toBe("auto");
+      expect(result.sourcePath).toBe("page-1.png");
+    }
+    expect(new Set(paths).size).toBe(5);
+    expect(paths[0]).toContain("/rw-1-q10-draft-0-auto-crop.png");
+    expect(paths[3]).toContain("/math-2-q10-draft-3-auto-crop.png");
+    expect(uploads).toEqual(paths);
   });
 });

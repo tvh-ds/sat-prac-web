@@ -943,7 +943,8 @@ function DraftEditor({
     setBusy(true);
     try {
       const token = await getToken();
-      const key = draft.source_question_id ?? String(draft.source_question_number);
+      const module = draft.source_module_name?.match(/(?:module\s*)?(\d+)\s*$/i)?.[1] ?? "unknown";
+      const key = `${draft.section === "math" ? "math" : "rw"}-${module}-q${draft.source_question_number ?? "unknown"}-${draft.id}`;
       const path = `imports/${draft.pdf_import_id}/stimuli/${key}-manual-crop.png`;
       const { error: upErr } = await supabase.storage.from("question-assets").upload(path, blob, { contentType: "image/png", upsert: true });
       if (upErr) throw new Error(`Upload failed: ${upErr.message}`);
