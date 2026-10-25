@@ -26,6 +26,7 @@ export async function approveDraft(
   adminId: string,
   draftId: string,
   opts: ApproveDraftOptions = {},
+  policy: { allowIncomplete?: boolean } = {},
 ): Promise<{ question_id: string }> {
   const { data: draft, error: dErr } = await svc
     .from("draft_questions")
@@ -35,7 +36,7 @@ export async function approveDraft(
   if (dErr) throw new HttpError(500, dErr.message);
   if (!draft) throw new HttpError(404, "Draft not found");
 
-  if (draft.has_visual_stimulus && draft.stimulus_crop_status === "pending") {
+  if (!policy.allowIncomplete && draft.has_visual_stimulus && draft.stimulus_crop_status === "pending") {
     throw new HttpError(422, "Crop review required: confirm or adjust this visual draft's crop before approving");
   }
 
@@ -56,7 +57,7 @@ export async function approveDraft(
   }
 
   const choices = (draft.choices ?? []) as Array<{ label: string | null; text: string }>;
-  if (questionType === "multiple_choice" && choices.length < 2) {
+  if (!policy.allowIncomplete && questionType === "multiple_choice" && choices.length < 2) {
     throw new HttpError(422, "Cannot approve: draft has fewer than 2 choices");
   }
 

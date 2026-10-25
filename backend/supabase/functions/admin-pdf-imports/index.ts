@@ -2,6 +2,7 @@ import { requireRole, HttpError, pathSegments } from "../_shared/auth.ts";
 import { serviceClient } from "../_shared/supabase.ts";
 import { corsHeaders, json, error } from "../_shared/cors.ts";
 import { pdfImportCreateSchema, approveDraftSchema, updateDraftSchema, saveDraftEditorSchema, manualImportDraftCreateSchema, aiFindingDecisionSchema } from "../_shared/validation.ts";
+import { importApprovalWarnings } from "../_shared/importApproval.ts";
 import { approveDraft } from "../_shared/drafts.ts";
 import { moduleGroup, groupByModuleKey } from "../_shared/modules.ts";
 import { summarizePdfImportReadiness, type ImportReadinessDraft } from "../_shared/importReadiness.ts";
@@ -36,7 +37,7 @@ async function loadReviewSummary(svc: ReturnType<typeof serviceClient>, importId
     svc.from("ai_ingestion_review_jobs")
       .select("id,status,model,prompt_version,reviewed_drafts,failed_drafts,estimated_cost_usd,started_at,finished_at,error_category")
       .eq("pdf_import_id", importId).order("created_at", { ascending: false }).limit(1).maybeSingle(),
-    svc.from("draft_questions").select("review_state,status,suggested_answer,has_visual_stimulus,stimulus_crop_status,assigned_module_name").eq("pdf_import_id", importId),
+    svc.from("draft_questions").select("review_state,status,suggested_answer,has_visual_stimulus,stimulus_crop_status,assigned_module_name,question_type,choices:draft_question_choices(id)").eq("pdf_import_id", importId),
     svc.from("pdf_imports").select("deterministic_review_status,text_quality").eq("id", importId).maybeSingle(),
   ]);
   if (jobErr) throw new HttpError(500, jobErr.message);
@@ -48,12 +49,8 @@ async function loadReviewSummary(svc: ReturnType<typeof serviceClient>, importId
     if (state && state in counts) counts[state] += 1;
   }
   const drafts = routes ?? [];
-  const assignedCountsValid = fullTestAssignedCountsError(imp?.text_quality, drafts) === null;
-  const canApproveImport = imp?.deterministic_review_status === "passed" && assignedCountsValid && drafts.length > 0 && drafts.every((draft) =>
-    draft.review_state === "complete" && draft.status !== "rejected" && Boolean(draft.suggested_answer?.trim()) &&
-    (!draft.has_visual_stimulus || draft.stimulus_crop_status === "confirmed")
-  );
-  return { current_job: job ?? null, state_counts: counts, total_questions: drafts.length, can_approve_import: canApproveImport };
+  const warnings = importApprovalWarnings(drafts, imp?.deterministic_review_status ?? null, fullTestAssignedCountsError(imp?.text_quality, drafts));
+  return { current_job: job ?? null, state_counts: counts, total_questions: drafts.length, can_approve_import: warnings.length === 0, approval_warnings: warnings };
 }
 
 const FULL_TEST_MODULE_COUNTS: Record<string, number> = {
@@ -432,12 +429,17 @@ Deno.serve(async (req) => {
     }
 
     if (req.method === "POST" && seg.length === 3 && seg[2] === "approve-import") {
+      const body = await req.json().catch(() => ({})) as { acknowledge_warnings?: boolean };
+      const summary = await loadReviewSummary(svc, id);
+      if (summary.approval_warnings.length && body.acknowledge_warnings !== true) {
+        return json({ requires_confirmation: true, warnings: summary.approval_warnings });
+      }
       const { data, error: rpcErr } = await svc.rpc("approve_complete_ingestion_import", {
         p_import_id: id,
         p_admin_id: ctx.user.id,
       });
       if (rpcErr) {
-        return error("Every question must be Complete with a usable answer and confirmed visual crop before approving the import", 409);
+        return error(rpcErr.message, 409);
       }
       return json({ ok: true, approved: data });
     }
@@ -562,51 +564,33 @@ Deno.serve(async (req) => {
         .maybeSingle();
       if (impErr) return error(impErr.message, 500);
       if (!imp) return error("Import not found", 404);
-      if (imp.deterministic_review_status === "failed") return error("Structurally failed imports cannot generate tests. Run Full Reprocess first.", 409);
       if (imp.generated_test_id) {
         const storage_cleanup = await tryCleanupImportedTestStorage(svc, id);
         return json({ ok: true, test_id: imp.generated_test_id, already_generated: true, storage_cleanup });
       }
-      if (imp.deterministic_review_status !== "passed") return error("Import must pass deterministic review before generating a test.", 409);
+      if (!["completed", "failed", "cancelled"].includes(imp.status)) return error("Wait for PDF processing to finish before generating the test.", 409);
       const activeReview = await svc.from("ai_ingestion_review_jobs").select("id").eq("pdf_import_id", id).in("status", ["queued", "running"]).limit(1);
       if (activeReview.error) return error("Unable to check active source review.", 500);
       if (activeReview.data.length) return error("Wait for source review to finish before generating the test.", 409);
 
-      const body = await req.json().catch(() => ({})) as { acknowledge_incomplete?: boolean };
-      const quality = (imp.text_quality ?? {}) as { incomplete_modules?: Array<{ module: string; expected: number; actual: number }> };
-      const incompleteModules = quality.incomplete_modules ?? [];
-      if (incompleteModules.length > 0 && body.acknowledge_incomplete !== true) {
-        const detail = incompleteModules.map((m) => m.module + " " + m.actual + "/" + m.expected).join(", ");
-        return error("Parser validation found incomplete or overfull modules (" + detail + "). Review the source and drafts, then explicitly confirm generation.", 422);
-      }
-
+      const body = await req.json().catch(() => ({})) as { acknowledge_warnings?: boolean };
       const drafts = await loadAllDrafts(svc, id, "*, choices:draft_question_choices(*)");
-      const assignedCountError = fullTestAssignedCountsError(imp.text_quality, drafts);
-      if (assignedCountError) return error(assignedCountError, 422);
-      const incomplete = drafts.filter((d) =>
-        d.review_state !== "complete" || d.status === "rejected" || !String(d.suggested_answer ?? "").trim() ||
-        (d.has_visual_stimulus && d.stimulus_crop_status !== "confirmed")
-      );
-      if (incomplete.length > 0) {
-        return error("Every question must be Complete with a usable answer and confirmed visual crop before generating a test.", 422);
+      const warnings = importApprovalWarnings(drafts, imp.deterministic_review_status, fullTestAssignedCountsError(imp.text_quality, drafts));
+      if (warnings.length && body.acknowledge_warnings !== true) {
+        return error("Confirm the import warnings before generating the test.", 422, warnings);
       }
-      const usable = drafts.filter((d) => d.status !== "rejected");
-      if (usable.length === 0) return error("No reviewable drafts on this import; generate a test needs at least one draft", 422);
+      const usable = drafts;
+      if (usable.length === 0) return error("Test generation needs at least one draft", 422);
 
       const notApproved = usable.filter((d) => d.status !== "approved");
       if (notApproved.length > 0) {
         return error(`${notApproved.length} draft(s) still need approval before generating the full-length test.`, 422);
       }
 
-      const pendingCrops = usable.filter((d) => d.has_visual_stimulus && d.stimulus_crop_status === "pending");
-      if (pendingCrops.length > 0) {
-        return error(`${pendingCrops.length} visual draft(s) still require crop review. Confirm or adjust each crop, then approve the full draft.`, 422);
-      }
-
       let testId: string | null = null;
       let committed = false;
       const locked = await svc.from("pdf_imports").update({ status: "parsing" }).eq("id", id)
-        .eq("status", "completed").is("generated_test_id", null).select("id");
+        .eq("status", imp.status).is("generated_test_id", null).select("id");
       if (locked.error) return error("Unable to prepare test generation.", 500);
       if (locked.data.length !== 1) return error("This import is already being processed.", 409);
       try {
@@ -680,7 +664,7 @@ Deno.serve(async (req) => {
           let questionId = (d.question_id as string | null) ?? null;
           if (!questionId) {
             try {
-              const approved = await approveDraft(svc, ctx.user.id, d.id as string, {});
+              const approved = await approveDraft(svc, ctx.user.id, d.id as string, {}, { allowIncomplete: body.acknowledge_warnings === true });
               questionId = approved.question_id;
             } catch (e) {
               failed.push({
@@ -766,7 +750,7 @@ Deno.serve(async (req) => {
         }, 201);
       } catch (e) {
         if (!committed) {
-          await svc.from("pdf_imports").update({ status: "completed" }).eq("id", id).is("generated_test_id", null);
+          await svc.from("pdf_imports").update({ status: imp.status }).eq("id", id).is("generated_test_id", null);
         }
         if (testId && !committed) {
           try {

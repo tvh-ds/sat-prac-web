@@ -29,6 +29,7 @@ export default function ImportDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [approvalWarnings, setApprovalWarnings] = useState<string[] | null>(null);
   const [generateResult, setGenerateResult] = useState<{ test_id: string; title: string; linked: number; failed: number; already_generated?: boolean } | null>(null);
   const [rejectId, setRejectId] = useState<string | null>(null);
   const [addingQuestion, setAddingQuestion] = useState(false);
@@ -156,19 +157,24 @@ export default function ImportDetailPage() {
     }
   }
 
-  async function approveImport() {
+  async function approveImport(acknowledgeWarnings = false) {
     setGenerating(true);
     setError(null);
     try {
       const token = await getToken();
-      await fnJson(`admin-pdf-imports/${importId}/approve-import`, {
+      const approval = await fnJson<{ requires_confirmation?: boolean; warnings?: string[] }>(`admin-pdf-imports/${importId}/approve-import`, {
         method: "POST",
         token,
-        body: {},
+        body: { acknowledge_warnings: acknowledgeWarnings },
       });
+      if (approval.requires_confirmation) {
+        setApprovalWarnings(approval.warnings ?? ["Some import requirements are missing."]);
+        return;
+      }
+      setApprovalWarnings(null);
       const res = await fnJson<{ test_id: string; title: string; linked: number; failed: number; already_generated?: boolean }>(
         `admin-pdf-imports/${importId}/generate-test`,
-        { method: "POST", token, body: { acknowledge_incomplete: true } },
+        { method: "POST", token, body: { acknowledge_warnings: acknowledgeWarnings } },
       );
       setGenerateResult(res);
       await loadPage(offsetRef.current);
@@ -215,9 +221,6 @@ export default function ImportDetailPage() {
   const questionIssues = importInfo.text_quality?.question_issues ?? [];
   const retryResults = importInfo.text_quality?.ocr_retry_results ?? [];
   const unmatchedKeys = importInfo.text_quality?.unmatched_key_entries ?? [];
-  const allQuestionsComplete = aiReview != null && aiReview.can_approve_import &&
-    aiReview.total_questions > 0 && aiReview.state_counts.complete === aiReview.total_questions;
-
   return (
     <div>
       {error && (
@@ -250,15 +253,13 @@ export default function ImportDetailPage() {
               Open Full-Length Test
             </Button>
           ) : (
-            importInfo.status === "completed" && importInfo.deterministic_review_status !== "failed" && (
               <Button
-                disabled={generating || busy || !allQuestionsComplete}
-                title={allQuestionsComplete ? "Approve the import and assemble the test" : "Every question must be Complete, have a usable answer, and have confirmed visual crops before approval"}
+                disabled={generating || busy}
+                title="Approve the import and assemble the test; missing requirements will show a warning"
                 onClick={() => void approveImport()}
               >
                 {generating ? "Approving…" : "Approve Import"}
               </Button>
-            )
           )}
           <Button variant="outline" onClick={() => navigate("/admin/imports")}>Back</Button>
         </div>
@@ -277,7 +278,7 @@ export default function ImportDetailPage() {
       <div className="panel" style={{ marginTop: 18 }}>
         <h3 style={{ margin: 0, fontSize: 15 }}>Human review queue</h3>
         <p className="muted" style={{ margin: "5px 0 0", fontSize: 12.5 }}>
-          Review means a human must inspect and approve the question. Complete questions are ready for import approval; Failed imports require Full Reprocess.
+          Review questions need inspection. Complete questions are ready for import approval. Missing requirements show a warning that you can confirm to proceed.
         </p>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12 }}>
           <Pill tone="green">Complete {aiReview?.state_counts.complete ?? 0}</Pill>
@@ -289,7 +290,7 @@ export default function ImportDetailPage() {
       {importInfo.deterministic_review_status === "failed" && (
         <div className="panel" style={{ marginTop: 18, borderColor: "var(--danger)" }}>
           <h3 style={{ margin: "0 0 7px", fontSize: 15 }}>Structural review failed</h3>
-          <p style={{ margin: "0 0 8px", fontSize: 13 }}>Processing stopped before question review. AI review, import approval, and test generation are disabled until a full reprocess passes.</p>
+          <p style={{ margin: "0 0 8px", fontSize: 13 }}>Processing stopped before question review. Run Full Reprocess to retry, or approve the import after confirming its warnings.</p>
           <ul style={{ margin: 0, paddingLeft: 18, fontSize: 13 }}>
             {(importInfo.deterministic_major_risks ?? []).map((risk) => <li key={risk.code}>{risk.message}</li>)}
           </ul>
@@ -600,6 +601,23 @@ export default function ImportDetailPage() {
           </div>
         </div>
       </div>
+
+      {approvalWarnings && (
+        <Modal
+          title="Approve import with warnings?"
+          onClose={() => { if (!generating) setApprovalWarnings(null); }}
+          footer={
+            <>
+              <Button variant="outline" disabled={generating} onClick={() => setApprovalWarnings(null)}>Cancel</Button>
+              <Button disabled={generating} onClick={() => void approveImport(true)}>{generating ? "Approving…" : "Confirm approval"}</Button>
+            </>
+          }
+        >
+          <p>The following requirements are missing. You can still approve this import and generate the test.</p>
+          <ul>{approvalWarnings.map((warning, index) => <li key={index}>{warning}</li>)}</ul>
+          <p className="muted">Confirm to include these questions as they are. Missing answers and unreviewed content may affect test accuracy.</p>
+        </Modal>
+      )}
 
       {rejectId && (
         <Modal

@@ -199,7 +199,7 @@ All role-sensitive operations are still enforced server-side in Edge Functions. 
 - Import detail pages page through large draft sets instead of loading every draft at once.
 - Drafts can be edited before approval, including prompt, passage, choices, metadata, answers, and stimulus images. Opening a question shows its assigned SAT module and position; saving an occupied insertion position shifts neighboring questions while the source number stays unchanged.
 - Visual questions can be reviewed with signed image URLs and cropped through `CropImageModal`.
-- Admins approve Review questions individually. When all questions are Complete with answers and confirmed visual crops, Approve Import approves and generates a test in saved assigned-module order. Full tests must finish with 27/27/22/22 module counts.
+- Admins approve Review questions individually. Approve Import remains available regardless of quality readiness. Missing requirements appear in a warning popup; Confirm approval proceeds and generates a test in saved assigned-module order. Review state, answers, visual crops, and 27/27/22/22 module counts are advisory. Active processing and empty imports still prevent generation.
 
 ### Admin Vocabulary
 
