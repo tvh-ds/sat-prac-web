@@ -31,6 +31,7 @@ export default function PracticeBatchPage() {
   const { batchId } = useParams<{ batchId: string }>();
   const [data, setData] = useState<PracticeBatchDetail | null>(null);
   const [tab, setTab] = useState<"students" | "questions">("students");
+  const [wrongOnly, setWrongOnly] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [reviewing, setReviewing] = useState<BatchStudent | null>(null);
@@ -50,6 +51,7 @@ export default function PracticeBatchPage() {
   }
 
   useEffect(() => {
+    setWrongOnly(false);
     void load();
   }, [batchId]);
 
@@ -80,6 +82,10 @@ export default function PracticeBatchPage() {
 
   const b = data.batch;
   const released = !!b.explanations_released_at;
+  const wrongQuestionCount = data.questions.filter((q) => q.incorrect_count > 0).length;
+  const visibleQuestions = data.questions
+    .map((question, index) => ({ question, index }))
+    .filter(({ question }) => !wrongOnly || question.incorrect_count > 0);
 
   return (
     <div>
@@ -157,8 +163,18 @@ export default function PracticeBatchPage() {
 
       {tab === "questions" && (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+            <label style={{ display: "inline-flex", alignItems: "center", gap: 8, cursor: "pointer", fontSize: 14 }}>
+              <input type="checkbox" checked={wrongOnly} onChange={(event) => setWrongOnly(event.target.checked)} />
+              Wrong questions only ({wrongQuestionCount})
+            </label>
+            <span className="muted" style={{ fontSize: 13 }} role="status">
+              Showing {visibleQuestions.length} of {data.questions.length} questions
+            </span>
+          </div>
+          {wrongOnly && <p className="muted" style={{ fontSize: 13, margin: 0 }}>Questions answered incorrectly by at least one student in a completed attempt.</p>}
           {annotations.toolbar}
-          {data.questions.map((q, i) => (
+          {visibleQuestions.map(({ question: q, index: i }) => (
             <div key={q.question_id} className="card card-pad">
               <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap", marginBottom: 8 }}>
                 <span className="muted" style={{ fontSize: 12, fontWeight: 700 }}>Q{i + 1}</span>
@@ -220,6 +236,9 @@ export default function PracticeBatchPage() {
           ))}
           {data.questions.length === 0 && (
             <div className="card card-pad muted" style={{ fontSize: 14 }}>No questions in this assignment.</div>
+          )}
+          {wrongOnly && data.questions.length > 0 && visibleQuestions.length === 0 && (
+            <div className="card card-pad muted" style={{ fontSize: 14 }}>No wrong answers in completed attempts. Clear the filter to see all questions.</div>
           )}
         </div>
       )}
