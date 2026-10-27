@@ -1,8 +1,9 @@
+import { deferComponent } from "../../../components/deferComponent";
 import { useCallback, useEffect, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { fnJson, getToken } from "../../../lib/supabase";
-import VocabImportModal from "../../../components/VocabImportModal";
+const VocabImportModal = deferComponent(() => import("../../../components/VocabImportModal"));
 import type { VocabCard, VocabDeck } from "../../../lib/types";
 import { Button, EmptyState, Modal, Spinner, Pill } from "../../../components/ui";
 import "../../../styles/vocab-navigation.css";

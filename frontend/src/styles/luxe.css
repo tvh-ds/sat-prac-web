@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
 
 /* Grit / technical luxury. Scoped away from the active exam UI. */
 :is(.luxe-shell, .admin-layout, .grit-login, .prep-shell) {
@@ -477,7 +476,7 @@
 
 .luxe-shell .dashboard-top {
   border-color: rgba(233, 215, 171, .3);
-  background: linear-gradient(90deg, rgba(2, 8, 20, .93) 0%, rgba(2, 8, 20, .74) 46%, rgba(3, 11, 23, .48) 100%), url('/cinematic-horizon.png') 56% 52% / cover no-repeat;
+  background: linear-gradient(90deg, rgba(2, 8, 20, .93) 0%, rgba(2, 8, 20, .74) 46%, rgba(3, 11, 23, .48) 100%), url('/cinematic-horizon.webp') 56% 52% / cover no-repeat;
   box-shadow: 0 28px 75px rgba(0, 3, 12, .5), inset 0 1px 0 rgba(255, 237, 197, .18);
 }
 .luxe-shell .dashboard-top::before { width: auto; height: auto; inset: 0; border: 0; border-radius: 0; box-shadow: none; transform: none; background: radial-gradient(ellipse 45% 82% at 84% 92%, rgba(24, 92, 148, .22), transparent 76%); }
@@ -510,7 +509,7 @@
 .luxe-shell .deck-card:hover { background: linear-gradient(90deg, rgba(43, 104, 156, .11), transparent 85%); }
 .luxe-shell .flash-face { background: radial-gradient(ellipse at 50% 0%, rgba(80, 163, 225, .29), transparent 63%), linear-gradient(145deg, #183451, #0b203b); box-shadow: 0 25px 70px rgba(0, 4, 15, .33), inset 0 1px 0 rgba(248, 252, 255, .16); }
 
-.grit-login { background: linear-gradient(90deg, rgba(2, 7, 18, .81) 0%, rgba(2, 7, 18, .56) 45%, rgba(2, 7, 18, .32) 100%), url('/cinematic-horizon.png') 54% 50% / cover no-repeat, #030814; }
+.grit-login { background: linear-gradient(90deg, rgba(2, 7, 18, .81) 0%, rgba(2, 7, 18, .56) 45%, rgba(2, 7, 18, .32) 100%), url('/cinematic-horizon.webp') 54% 50% / cover no-repeat, #030814; }
 .grit-login::before { background: radial-gradient(ellipse 48% 58% at 76% 34%, rgba(135, 191, 236, .12), transparent 80%); mask-image: none; }
 .grit-login::after { display: none; }
 .grit-login .login-hero-copy h1 { color: #fffbf4; text-shadow: 0 8px 35px rgba(0, 0, 0, .48); }
@@ -719,7 +718,7 @@
   border-radius: 14px;
   background:
     linear-gradient(90deg, rgba(3, 8, 20, .82), rgba(3, 8, 20, .48) 55%, rgba(3, 8, 20, .25)),
-    url("/practice-starry-space.png") center / cover no-repeat,
+    url("/practice-starry-space.webp") center / cover no-repeat,
     #050a14;
 }
 .luxe-shell .full-tests-hero::before,
@@ -769,7 +768,7 @@
 }
 .luxe-shell .practice-index::before {
   z-index: 0;
-  background: url("/practice-starry-space.png") 40% top / auto 1100px no-repeat;
+  background: url("/practice-starry-space.webp") 40% top / auto 1100px no-repeat;
   filter: brightness(1.48) contrast(1.14) saturate(1.18);
   mix-blend-mode: screen;
   opacity: .86;
@@ -896,3 +895,8 @@
   .luxe-shell .practice-index .practice-set-card::after { display: none; }
   .luxe-shell .practice-index .practice-set-card:is(:hover, :focus-within) { transform: none; }
 }
+
+/* Shared login/signup links. */
+.grit-login .auth-link { color: #a3d9ff; text-decoration: underline; text-underline-offset: 3px; font-weight: 600; }
+.grit-login .auth-link:hover { color: #d6eeff; }
+.grit-login .auth-link[aria-disabled="true"] { opacity: .6; cursor: wait; }

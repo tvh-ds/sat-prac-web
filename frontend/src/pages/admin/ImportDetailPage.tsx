@@ -1,9 +1,10 @@
+import { deferComponent } from "../../components/deferComponent";
 import { useCallback, useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { fnJson, getToken, supabase } from "../../lib/supabase";
 import type { AiIngestionReviewSummary, IngestionReviewState, DraftQuestion, DraftSummary, ImportDetailSummary, ModuleSummary, PdfImport } from "../../lib/types";
 import { Button, Modal, Pill, Spinner, fmtDate } from "../../components/ui";
-import { CropImageModal } from "../../components/CropImageModal";
+const CropImageModal = deferComponent(async () => ({ default: (await import("../../components/CropImageModal")).CropImageModal }));
 import MathText from "../../components/MathText";
 import KeyStatusBadge, { keyStatusInfo } from "../../components/KeyStatusBadge";
 import { polishTestTitle, EXPECTED_MODULE_COUNTS } from "../../lib/testTitle";

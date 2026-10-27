@@ -1,11 +1,11 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { lazy, Suspense, useEffect, useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import type { StudentClass } from "../../lib/types";
 import type { ProgressStudent, VocabReport } from "../../lib/adminProgress";
 import { Button, Modal, Spinner, fmtDate } from "../../components/ui";
 import AdminStudentProgressTable from "../../components/AdminStudentProgressTable";
-import VocabularyAssignments from "./VocabularyAssignments";
+const VocabularyAssignments = lazy(() => import("./VocabularyAssignments"));
 import "../../styles/admin-progress.css";
 
 type Student = ProgressStudent;
@@ -36,11 +36,27 @@ export default function ClassesPage() {
     let live = true;
     void getToken().then(token => Promise.all([
       fnJson<{ classes: StudentClass[] }>("admin-classes", { token }).then(data => { if (live) setClasses(data.classes); }),
-      fnJson<{ students: Student[] }>("admin-students?progress=1", { token }).then(data => { if (live) setStudents(data.students); }),
-      fnJson<VocabReport>("admin-vocab/assignments", { token }).then(data => { if (live) setVocabulary(data); }),
     ].map(promise => promise.catch(e => { if (live) setError(e instanceof Error ? e.message : "Unable to load class progress"); })))).catch(e => { if (live) setError(String(e)); });
     return () => { live = false; };
   }, []);
+  const viewingClass = !!classId;
+  useEffect(() => {
+    if (!viewingClass) return;
+    let live = true;
+    void getToken().then(token => Promise.all([
+      fnJson<{ students: Student[] }>("admin-students?progress=1", { token }).then(data => { if (live) setStudents(data.students); }),
+      fnJson<VocabReport>("admin-vocab/assignments", { token }).then(data => { if (live) setVocabulary(data); }),
+    ])).catch(e => { if (live) setError(e instanceof Error ? e.message : "Unable to load class progress"); });
+    return () => { live = false; };
+  }, [viewingClass]);
+  useEffect(() => {
+    if (!editing || students || viewingClass) return;
+    let live = true;
+    void getToken().then(token => fnJson<{ students: Student[] }>("admin-students", { token }))
+      .then(data => { if (live) setStudents(data.students); })
+      .catch(e => { if (live) setError(e instanceof Error ? e.message : "Unable to load students"); });
+    return () => { live = false; };
+  }, [editing, students, viewingClass]);
   useEffect(() => {
     let live = true;
     setAssignments(null); setHistoryError("");
@@ -55,7 +71,7 @@ export default function ClassesPage() {
   const visibleAssignments = (assignments ?? []).filter(a => a.title.toLowerCase().includes(search.toLowerCase()) && (assignmentKind === "all" || a.kind === assignmentKind) && (assignmentStatus === "all" || (assignmentStatus === "completed" ? a.student_count > 0 && a.completed_count === a.student_count : a.completed_count < a.student_count)));
   return <section aria-label="Classes">
     {!classId ? <>
-      <div className="admin-class-heading"><div><h1 className="page-title">Classes</h1><p className="page-sub">Open a class to track every student, assignment, and daily vocabulary review.</p></div><Button onClick={() => setEditing("new")} disabled={!students}>New class</Button></div>
+      <div className="admin-class-heading"><div><h1 className="page-title">Classes</h1><p className="page-sub">Open a class to track every student, assignment, and daily vocabulary review.</p></div><Button onClick={() => setEditing("new")}>New class</Button></div>
       {classes && <div className="admin-progress-scroll"><table className="table"><thead><tr><th>Class</th><th>Students</th><th>Created</th><th /></tr></thead><tbody>{classes.map(cls => <tr key={cls.id}><td><Link to={`/admin/classes/${cls.id}`}>{cls.name}</Link></td><td>{cls.student_ids.length}</td><td>{fmtDate(cls.created_at)}</td><td><Link className="btn btn-outline btn-sm" to={`/admin/classes/${cls.id}`}>View class</Link></td></tr>)}</tbody></table>{classes.length === 0 && <p className="muted">No classes yet. Create a class and add students to get started.</p>}</div>}
     </> : selected ? <>
       <Link to="/admin/classes" className="muted">← Classes</Link>
@@ -70,11 +86,12 @@ export default function ClassesPage() {
         <div className="toolbar admin-progress-filters"><label>Find assignment<input className="input" type="search" placeholder="Assignment title" value={search} onChange={e => update("assignment_search", e.target.value)} /></label><label>Type<select className="select" value={assignmentKind} onChange={e => update("assignment_kind", e.target.value)}><option value="all">All types</option><option value="practice">Practice sets</option><option value="full">Full-length tests</option></select></label><label>Completion<select className="select" value={assignmentStatus} onChange={e => update("assignment_status", e.target.value)}><option value="all">All assignments</option><option value="completed">Everyone completed</option><option value="incomplete">Incomplete</option></select></label></div>
         {assignments && <div className="admin-progress-scroll"><table className="table"><thead><tr><th>Assignment</th><th>Type</th><th>Assigned</th><th>Completed / assigned</th><th>Average score</th><th /></tr></thead><tbody>{visibleAssignments.map(a => <tr key={`${a.kind}-${a.id}`}><td>{a.title}</td><td>{a.kind === "practice" ? "Practice set" : "Full-length test"}</td><td>{fmtDate(a.assigned_at)}</td><td>{a.completed_count}/{a.student_count}</td><td>{a.avg_accuracy == null ? "—" : `${a.avg_accuracy}%`}</td><td><Link className="btn btn-outline btn-sm" to={`/admin/assignments/${a.kind}/${a.id}?return_to=${encodeURIComponent(returnTo)}`}>View students</Link></td></tr>)}</tbody></table>{visibleAssignments.length === 0 && <p className="muted">No assignments match this view.</p>}</div>}
       </>}
-      {tab === "vocabulary" && <VocabularyAssignments key={selected.id} classId={selected.id} returnTo={returnTo} />}
+      {tab === "vocabulary" && <Suspense fallback={<Spinner />}><VocabularyAssignments key={selected.id} classId={selected.id} returnTo={returnTo} /></Suspense>}
     </> : classes ? <p role="alert">Class not found. <Link to="/admin/classes">Return to classes</Link></p> : null}
     {error && <div className="login-error" role="alert">{error} Reload the page to retry.</div>}
     {!classes && !error && <Spinner />}
     {editing && students && <ClassEditor cls={editing === "new" ? null : editing} students={students} onClose={() => setEditing(null)} onSaved={async id => { setEditing(null); await loadClasses(); navigate(`/admin/classes/${id}`); }} />}
+    {editing && !students && <Modal title="Loading students" onClose={() => setEditing(null)}>{error ? <p role="alert">{error}</p> : <Spinner />}</Modal>}
   </section>;
 }
 

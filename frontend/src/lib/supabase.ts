@@ -1,4 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
+import { InflightRequests } from "./inflightRequests";
+
+const reads = new InflightRequests();
 
 const url = import.meta.env.VITE_SUPABASE_URL;
 const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -16,18 +19,30 @@ export async function fn(
   options: { method?: string; body?: unknown; token?: string } = {},
 ): Promise<Response> {
   const { method = "GET", body, token } = options;
+  if (method !== "GET") reads.invalidate();
   const headers: Record<string, string> = { apikey: anonKey };
   if (token) headers.Authorization = `Bearer ${token}`;
   if (body !== undefined) headers["Content-Type"] = "application/json";
-  return fetch(`${FUNCTIONS_URL}/${path}`, {
+  const request = fetch(`${FUNCTIONS_URL}/${path}`, {
     method,
     headers,
     body: body !== undefined ? JSON.stringify(body) : undefined,
     cache: method === "GET" ? "no-store" : "default",
   });
+  // Reads issued while a write is pending must not satisfy the refresh after
+  // that write commits (or fails).
+  return method === "GET" ? request : request.finally(() => reads.invalidate());
 }
 
 export async function fnJson<T>(path: string, options: { method?: string; body?: unknown; token?: string } = {}): Promise<T> {
+  if ((options.method ?? "GET") === "GET" && options.body === undefined) {
+    // Keep accounts and tokens isolated; never share a raw Response body.
+    return reads.read(JSON.stringify(["function", path, options.token]), () => readFnJson<T>(path, options));
+  }
+  return readFnJson<T>(path, options);
+}
+
+async function readFnJson<T>(path: string, options: { method?: string; body?: unknown; token?: string }): Promise<T> {
   const res = await fn(path, options);
   const text = await res.text();
   const data = text ? JSON.parse(text) : null;
@@ -45,6 +60,10 @@ export async function rest<T>(
   query: string,
   token: string,
 ): Promise<T> {
+  return reads.read(JSON.stringify(["rest", table, query, token]), () => readRest<T>(table, query, token));
+}
+
+async function readRest<T>(table: string, query: string, token: string): Promise<T> {
   const res = await fetch(`${url}/rest/v1/${table}?${query}`, {
     headers: { apikey: anonKey, Authorization: `Bearer ${token}` },
     cache: "no-store",

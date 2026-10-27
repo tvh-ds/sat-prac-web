@@ -1,6 +1,8 @@
+import { Suspense } from "react";
 import { NavLink, Navigate, Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
 import { Spinner } from "../../components/ui";
+import { preloadRoute } from "../../lib/preloadRoute";
 import { Users, FileUp, Database, ClipboardList, Layers, BookOpen, ClipboardCheck, LogOut } from "lucide-react";
 import "../../styles/admin-progress.css";
 
@@ -14,7 +16,7 @@ export default function AdminLayout() {
   if (profile.role !== "admin") return <Navigate to="/student" replace />;
 
   const link = (to: string, label: string, Icon: React.ElementType, end?: boolean) => (
-    <NavLink to={to} end={end} className={({ isActive }) => (isActive ? "active" : "")}>
+    <NavLink to={to} end={end} onMouseEnter={() => preloadRoute(to)} onFocus={() => preloadRoute(to)} onTouchStart={() => preloadRoute(to)} className={({ isActive }) => (isActive ? "active" : "")}>
       <Icon size={16} strokeWidth={1.6} />
       <span>{label}</span>
     </NavLink>
@@ -49,7 +51,7 @@ export default function AdminLayout() {
       </aside>
       <div className="admin-main">
         <div className="admin-workspace-topline"><span>Grit / Operations</span><span>{profile.full_name ?? user.email}</span></div>
-        <Outlet />
+        <Suspense fallback={<Spinner />}><Outlet /></Suspense>
       </div>
     </div>
   );

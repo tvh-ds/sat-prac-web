@@ -1,7 +1,8 @@
+import { deferComponent } from "../../components/deferComponent";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
-import VocabImportModal from "../../components/VocabImportModal";
+const VocabImportModal = deferComponent(() => import("../../components/VocabImportModal"));
 import type { AdminVocabDeck, VocabAssignmentStudent, VocabCard } from "../../lib/types";
 import { Button, EmptyState, Modal, Pill, Spinner } from "../../components/ui";
 

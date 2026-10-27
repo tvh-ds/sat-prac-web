@@ -6,7 +6,8 @@ import { fnJson, getToken } from "../../lib/supabase";
 import type { ScoreEntry } from "../../lib/types";
 import { EmptyState, Pill, Spinner, fmtDate } from "../../components/ui";
 import { initReveal } from "../../lib/reveal";
-import ErrorLogPanel from "./ErrorLogPanel";
+import { deferComponent } from "../../components/deferComponent";
+const ErrorLogPanel = deferComponent(() => import("./ErrorLogPanel"));
 import "../../styles/student-error-log.css";
 
 type ReviewSection = "results" | "error-log";

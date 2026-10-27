@@ -1,10 +1,11 @@
+import { deferComponent } from "../../components/deferComponent";
 import { adminReturnPath } from "../../lib/adminNavigation";
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import type { BatchStudent, FullTestBatchDetail } from "../../lib/types";
 import { Button, Pill, Spinner, fmtDate } from "../../components/ui";
-import AssignmentReviewModal from "./AssignmentReviewModal";
+const AssignmentReviewModal = deferComponent(() => import("./AssignmentReviewModal"));
 import ClassBadge from "../../components/ClassBadge";
 import DeleteAssignmentButton from "../../components/DeleteAssignmentButton";
 

@@ -1,9 +1,10 @@
+import { deferComponent } from "../../components/deferComponent";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import { Button, Pill, Spinner, fmtDate, fmtSeconds } from "../../components/ui";
 import StudentInfoTab, { type AdminStudentInfo } from "./StudentInfoTab";
-import AssignmentReviewModal from "./AssignmentReviewModal";
+const AssignmentReviewModal = deferComponent(() => import("./AssignmentReviewModal"));
 import ClassBadge from "../../components/ClassBadge";
 import { StudentStudyDays } from "../../components/VocabularyHistory";
 import { assignmentCounts, dailyVocabulary, studyDuration, type AssignmentProgress, type VocabStudentProgress } from "../../lib/adminProgress";

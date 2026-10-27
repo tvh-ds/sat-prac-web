@@ -1,3 +1,4 @@
+import { deferComponent } from "../../components/deferComponent";
 import { adminReturnPath } from "../../lib/adminNavigation";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -6,7 +7,7 @@ import type { BatchStudent, PracticeBatchDetail } from "../../lib/types";
 import { Button, Pill, Spinner, fmtDate } from "../../components/ui";
 import MathText from "../../components/MathText";
 import PassageBlock from "../../components/PassageBlock";
-import AssignmentReviewModal from "./AssignmentReviewModal";
+const AssignmentReviewModal = deferComponent(() => import("./AssignmentReviewModal"));
 import ClassBadge from "../../components/ClassBadge";
 import DeleteAssignmentButton from "../../components/DeleteAssignmentButton";
 import { useAssignmentAnnotations } from "../../components/AssignmentAnnotations";

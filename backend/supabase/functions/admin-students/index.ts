@@ -28,13 +28,15 @@ Deno.serve(async (req) => {
     const id = seg[1];
 
     if (req.method === "GET" && seg.length === 1) {
-      const data = await allProgressRows<Record<string, unknown>>(start => svc
+      const [data, emails, progress] = await Promise.all([
+        allProgressRows<Record<string, unknown>>(start => svc
         .from("student_profiles")
         .select("id,grade_level,school,profile_status,profile_submitted_at,profile_approved_at,created_at,profiles:profiles!student_profiles_id_fkey!inner(full_name),attempts!attempts_student_id_fkey(id,status)")
-        .eq("profiles.role", "student").order("id").range(start, start + 499));
-      const emails = await progressUserEmails(svc);
-      const progress = new URL(req.url).searchParams.get("progress") === "1"
-        ? await loadAssignmentProgress(svc, new Date()) : null;
+        .eq("profiles.role", "student").order("id").range(start, start + 499)),
+        progressUserEmails(svc),
+        new URL(req.url).searchParams.get("progress") === "1"
+          ? loadAssignmentProgress(svc, new Date()) : Promise.resolve(null),
+      ]);
       const byStudent = progress ? Map.groupBy(progress, a => a.student_id) : null;
       return json({
         students: (data ?? []).map((s: Record<string, unknown>) => ({

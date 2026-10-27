@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Navigate, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import AdminStudentProgressTable from "../../components/AdminStudentProgressTable";
 import type { AssignmentProgress, VocabReport } from "../../lib/adminProgress";
@@ -28,28 +28,38 @@ export default function StudentsPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const loadGeneration = useRef(0);
 
   async function load() {
+    const generation = ++loadGeneration.current;
     setLoading(true);
     setError(null);
     try {
       const token = await getToken();
-      const d = await fnJson<{ students: AdminStudent[] }>("admin-students?progress=1", { token });
-      setStudents(d.students);
+      const d = await fnJson<{ students: AdminStudent[] }>(accounts ? "admin-students" : "admin-students?progress=1", { token });
+      if (generation === loadGeneration.current) setStudents(d.students);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to load students");
+      if (generation === loadGeneration.current) setError(e instanceof Error ? e.message : "Failed to load students");
     } finally {
-      setLoading(false);
+      if (generation === loadGeneration.current) setLoading(false);
     }
   }
 
   useEffect(() => {
+    if (classTab) return;
+    setStudents(null);
     void load();
+    return () => { loadGeneration.current++; };
+  }, [accounts, classTab]);
+
+  useEffect(() => {
+    if (accounts || classTab) return;
     let live = true;
+    setVocabError("");
     void getToken().then(token => fnJson<VocabReport>("admin-vocab/assignments", { token }))
       .then(data => { if (live) setVocabulary(data); }).catch(e => { if (live) setVocabError(String(e)); });
     return () => { live = false; };
-  }, []);
+  }, [accounts, classTab]);
 
   const filtered = (students ?? []).filter(
     (s) => !search || `${s.email ?? ""} ${s.full_name ?? ""}`.toLowerCase().includes(search.toLowerCase()),
@@ -73,7 +83,7 @@ export default function StudentsPage() {
       {error && <div className="login-error">{error}</div>}
       {loading && !students && <Spinner />}
 
-      {vocabError && <div className="login-error" role="alert">Vocabulary progress unavailable. {vocabError}</div>}
+      {!accounts && vocabError && <div className="login-error" role="alert">Vocabulary progress unavailable. {vocabError}</div>}
       {students && !accounts && <AdminStudentProgressTable students={students} vocabulary={vocabulary} returnTo={location.pathname + location.search} />}
       {students && accounts && (
         <div className="card card-pad">

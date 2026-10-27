@@ -22,7 +22,14 @@ async function signStimulus(svc: ReturnType<typeof serviceClient>, question: {
 }
 
 async function withStimulus(svc: ReturnType<typeof serviceClient>, questions: Array<Record<string, unknown>>) {
-  return await Promise.all(questions.map((q) => signStimulus(svc, q as { stimulus_image_path?: string | null })));
+  const paths = [...new Set(questions.flatMap(q => typeof q.stimulus_image_path === "string" && q.stimulus_image_path ? [q.stimulus_image_path] : []))];
+  const signed = new Map<string, string>();
+  // One storage request per bounded batch instead of one per question.
+  for (let i = 0; i < paths.length; i += 100) {
+    const { data } = await svc.storage.from("question-assets").createSignedUrls(paths.slice(i, i + 100), 60 * 60);
+    for (const item of data ?? []) if (item.path && item.signedUrl) signed.set(item.path, item.signedUrl);
+  }
+  return questions.map(q => ({ ...q, stimulus_image_url: signed.get(String(q.stimulus_image_path ?? "")) ?? null }));
 }
 
 async function fetchQuestion(svc: ReturnType<typeof serviceClient>, id: string) {
@@ -67,8 +74,6 @@ Deno.serve(async (req) => {
 
       const countQ = svc.from("questions").select("id", { count: "exact", head: true });
       applyFilters(countQ);
-      const { count, error: countErr } = await countQ;
-      if (countErr) return error(countErr.message, 500);
 
       const dataQ = svc
         .from("questions")
@@ -77,7 +82,8 @@ Deno.serve(async (req) => {
       dataQ.order("created_at", { ascending: false });
       dataQ.range(offset, offset + limit - 1);
 
-      const { data, error: err } = await dataQ;
+      const [{ count, error: countErr }, { data, error: err }] = await Promise.all([countQ, dataQ]);
+      if (countErr) return error(countErr.message, 500);
       if (err) return error(err.message, 500);
 
       const questions = await withStimulus(svc, data ?? []);

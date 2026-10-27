@@ -1,3 +1,4 @@
+import { parallelPages } from "../_shared/parallel_pages.ts";
 import { requireRole, HttpError, pathSegments } from "../_shared/auth.ts";
 import { serviceClient } from "../_shared/supabase.ts";
 import { corsHeaders, json, error } from "../_shared/cors.ts";
@@ -186,26 +187,15 @@ Deno.serve(async (req) => {
         .order("created_at", { ascending: false });
       if (err) return error(err.message, 500);
 
-      const countRows: Array<ImportReadinessDraft & { pdf_import_id: string; status: string }> = [];
-      {
-        let offset = 0;
-        const PAGE = 1000;
-        for (;;) {
-          const { data: batch, error: bErr } = await svc
-            .from("draft_questions")
-            .select("id, pdf_import_id, status, page_number, section, source_question_number, source_module_name, source_module_position, suggested_answer, parser_metadata, created_at, answer_keys:draft_answer_keys(detected_answer,status)")
-            .order("pdf_import_id")
-            .order("page_number")
-            .order("source_question_number")
-            .order("created_at")
-            .order("id")
-            .range(offset, offset + PAGE - 1);
-          if (bErr) return error(bErr.message, 500);
-          countRows.push(...((batch ?? []) as unknown as Array<ImportReadinessDraft & { pdf_import_id: string; status: string }>));
-          if ((batch?.length ?? 0) < PAGE) break;
-          offset += PAGE;
-        }
-      }
+      type ReadinessSummary = ImportReadinessDraft & { pdf_import_id: string; status: string; parse_flags?: unknown };
+      const PAGE = 1000;
+      const summaries = await parallelPages<ReadinessSummary>((offset, count) => svc
+        .from("draft_questions")
+        .select("id, pdf_import_id, status, page_number, section, source_question_number, source_module_name, source_module_position, suggested_answer, parse_flags:parser_metadata->parse_flags, created_at, answer_keys:draft_answer_keys(detected_answer,status)", count ? { count: "exact" } : {})
+        .order("pdf_import_id").order("page_number").order("source_question_number").order("created_at").order("id")
+        .range(offset, offset + PAGE - 1) as unknown as PromiseLike<{ data: ReadinessSummary[] | null; count: number | null; error: unknown }>, PAGE);
+      // Readiness only consumes parse_flags, not OCR text or AI traces.
+      const countRows = summaries.map(({ parse_flags, ...row }) => ({ ...row, parser_metadata: { parse_flags } }));
       const rowsByImport = new Map<string, Array<ImportReadinessDraft & { pdf_import_id: string; status: string }>>();
       for (const r of countRows) {
         const rows = rowsByImport.get(r.pdf_import_id) ?? [];

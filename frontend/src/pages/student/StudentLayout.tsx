@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { NavLink, Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { BarChart3, BookOpen, FileText, House, LogOut, Menu, Target, UserRound, X } from "lucide-react";
 import { useAuth } from "../../auth/AuthContext";
 import { Spinner } from "../../components/ui";
+import { preloadRoute } from "../../lib/preloadRoute";
 
 const destinations = [
   { to: "/student/dashboard", label: "Dashboard", Icon: House },
@@ -60,6 +61,9 @@ export default function StudentLayout() {
     <NavLink
       key={to}
       to={to}
+      onMouseEnter={() => preloadRoute(to)}
+      onFocus={() => preloadRoute(to)}
+      onTouchStart={() => preloadRoute(to)}
       end={to === "/student/dashboard"}
       className={({ isActive }) => `student-rail-link${isActive ? " active" : ""}`}
       aria-label={label}
@@ -103,7 +107,7 @@ export default function StudentLayout() {
         </nav>
 
         <main className="app-content student-content-stage">
-          <div key={location.pathname} className="page-fade"><Outlet /></div>
+          <div key={location.pathname} className="page-fade"><Suspense fallback={<Spinner />}><Outlet /></Suspense></div>
         </main>
         <footer className="student-footer"><span>Grit</span><span>Practice with purpose.</span></footer>
       </div>

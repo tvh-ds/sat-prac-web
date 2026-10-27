@@ -2,7 +2,6 @@
    Shared UI primitives and the active exam baseline.
    Browsing-page visual tokens and layout live in luxe.css.
    ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&family=Manrope:wght@600&display=swap');
 
 :root {
   /* Midnight Academy — dark premium, champagne gold + icy blue */
