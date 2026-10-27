@@ -386,6 +386,7 @@ export interface PdfImport {
   draft_counts?: Record<string, number>;
   import_readiness?: PdfImportReadiness;
   text_quality?: {
+    bank_publication?: { status: "published"; published_at: string; question_count: number; bank_total: number };
     storage_cleanup?: { status: "pending" | "complete" | "awaiting_publication"; completed_at?: string };
     modules?: Record<string, number>;
     key_entries?: number;

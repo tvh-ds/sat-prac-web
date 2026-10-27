@@ -8,6 +8,7 @@ import { approveDraft } from "../_shared/drafts.ts";
 import { moduleGroup, groupByModuleKey } from "../_shared/modules.ts";
 import { summarizePdfImportReadiness, type ImportReadinessDraft } from "../_shared/importReadiness.ts";
 import { tryCleanupImportedTestStorage } from "../_shared/importStorageCleanup.ts";
+import { isCollegeBoardRwBank } from "../_shared/collegeboardBank.ts";
 
 const WORKER_URL = Deno.env.get("WORKER_URL");
 const WORKER_AUTH_TOKEN = Deno.env.get("WORKER_AUTH_TOKEN");
@@ -418,7 +419,15 @@ Deno.serve(async (req) => {
       return json({ ok: true }, 202);
     }
 
+    if (req.method === "POST" && seg.length === 3 && seg[2] === "publish-bank") {
+      if (!isCollegeBoardRwBank(id)) return error("Practice-bank publishing is only available for the existing College Board R&W deck.", 409);
+      const { data, error: rpcErr } = await svc.rpc("publish_collegeboard_rw_bank", { p_admin_id: ctx.user.id });
+      if (rpcErr) return error(rpcErr.message, 409);
+      return json({ ok: true, ...data });
+    }
+
     if (req.method === "POST" && seg.length === 3 && seg[2] === "approve-import") {
+      if (isCollegeBoardRwBank(id)) return error("Use Publish to Practice Bank for this College Board deck.", 409);
       const body = await req.json().catch(() => ({})) as { acknowledge_warnings?: boolean };
       const summary = await loadReviewSummary(svc, id);
       if (summary.approval_warnings.length && body.acknowledge_warnings !== true) {
@@ -547,6 +556,7 @@ Deno.serve(async (req) => {
     }
 
     if (req.method === "POST" && seg.length === 3 && seg[2] === "generate-test") {
+      if (isCollegeBoardRwBank(id)) return error("This College Board deck publishes to the Practice Question Bank and cannot generate a full-length test.", 409);
       const { data: imp, error: impErr } = await svc
         .from("pdf_imports")
         .select("id, status, original_filename, generated_test_id, text_quality, deterministic_review_status")

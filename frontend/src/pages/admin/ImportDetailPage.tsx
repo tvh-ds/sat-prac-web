@@ -9,6 +9,7 @@ import MathText from "../../components/MathText";
 import KeyStatusBadge, { keyStatusInfo } from "../../components/KeyStatusBadge";
 import { polishTestTitle, EXPECTED_MODULE_COUNTS } from "../../lib/testTitle";
 import ImportStatus from "../../components/ImportStatus";
+import { isCollegeBoardRwBank } from "../../../../backend/supabase/functions/_shared/collegeboardBank";
 
 export default function ImportDetailPage() {
   const { importId } = useParams<{ importId: string }>();
@@ -163,6 +164,11 @@ export default function ImportDetailPage() {
     setError(null);
     try {
       const token = await getToken();
+      if (isCollegeBoardRwBank(importId)) {
+        await fnJson(`admin-pdf-imports/${importId}/publish-bank`, { method: "POST", token, body: {} });
+        await loadPage(offsetRef.current);
+        return;
+      }
       const approval = await fnJson<{ requires_confirmation?: boolean; warnings?: string[] }>(`admin-pdf-imports/${importId}/approve-import`, {
         method: "POST",
         token,
@@ -213,6 +219,8 @@ export default function ImportDetailPage() {
   if (!importInfo) return <Spinner />;
 
   const selectedDetail = selectedId ? details[selectedId] ?? null : null;
+  const collegeBoardBank = isCollegeBoardRwBank(importId);
+  const bankPublication = collegeBoardBank ? importInfo.text_quality?.bank_publication : undefined;
   const pageStart = draftOffset + 1;
   const pageEnd = Math.min(draftOffset + draftLimit, draftTotal);
   const pageIdx = Math.floor(draftOffset / draftLimit);
@@ -239,7 +247,7 @@ export default function ImportDetailPage() {
               <Pill tone="gray">{importInfo.extraction_method ?? "text"} extract</Pill>
             </span>
             <span style={{ marginLeft: 8 }}>
-              key <KeyStatusBadge imp={importInfo} />
+              {collegeBoardBank ? "Keys stored per question" : <>key <KeyStatusBadge imp={importInfo} /></>}
             </span>
           </p>
         </div>
@@ -249,17 +257,19 @@ export default function ImportDetailPage() {
               {busy || reprocessing ? "Reprocessing…" : "Full Reprocess"}
             </Button>
           )}
-          {importInfo.generated_test_id ? (
+          {bankPublication ? (
+            <Button variant="outline" onClick={() => navigate("/admin/questions")}>Open Practice Question Bank</Button>
+          ) : importInfo.generated_test_id ? (
             <Button variant="outline" onClick={() => navigate(`/admin/tests/${importInfo.generated_test_id}/build`)}>
               Open Full-Length Test
             </Button>
           ) : (
               <Button
                 disabled={generating || busy}
-                title="Approve the import and assemble the test; missing requirements will show a warning"
+                title={collegeBoardBank ? "Publish this deck's remaining questions to the Practice Question Bank" : "Approve the import and assemble the test; missing requirements will show a warning"}
                 onClick={() => void approveImport()}
               >
-                {generating ? "Approving…" : "Approve Import"}
+                {generating ? (collegeBoardBank ? "Publishing…" : "Approving…") : (collegeBoardBank ? "Publish to Practice Bank" : "Approve Import")}
               </Button>
           )}
           <Button variant="outline" onClick={() => navigate("/admin/imports")}>Back</Button>
@@ -279,7 +289,9 @@ export default function ImportDetailPage() {
       <div className="panel" style={{ marginTop: 18 }}>
         <h3 style={{ margin: 0, fontSize: 15 }}>Human review queue</h3>
         <p className="muted" style={{ margin: "5px 0 0", fontSize: 12.5 }}>
-          Review questions need inspection. Complete questions are ready for import approval. Missing requirements show a warning that you can confirm to proceed.
+          {collegeBoardBank
+            ? "Review these visual questions and their crops before publishing them to the Practice Question Bank."
+            : "Review questions need inspection. Complete questions are ready for import approval. Missing requirements show a warning that you can confirm to proceed."}
         </p>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 12 }}>
           <Pill tone="green">Complete {aiReview?.state_counts.complete ?? 0}</Pill>
@@ -309,6 +321,7 @@ export default function ImportDetailPage() {
       )}
 
       {(() => {
+        if (collegeBoardBank) return null;
         const ks = keyStatusInfo(importInfo);
         if (!ks.status || ks.status === "complete") return null;
         return (
@@ -424,6 +437,18 @@ export default function ImportDetailPage() {
         </div>
       )}
 
+      {bankPublication && (
+        <div className="panel" style={{ marginTop: 18, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+          <div>
+            <strong style={{ fontSize: 15 }}>Published to Practice Question Bank</strong>
+            <p className="muted" style={{ margin: "4px 0 0", fontSize: 13 }}>
+              Added {bankPublication.question_count} questions. This College Board deck now has {bankPublication.bank_total} questions in the bank.
+            </p>
+          </div>
+          <Button size="sm" onClick={() => navigate("/admin/questions")}>Open question bank</Button>
+        </div>
+      )}
+
       {generateResult && generateResult.failed > 0 && !importInfo.generated_test_id && (
         <div className="login-error" style={{ marginTop: 14, borderColor: "var(--border-medium)" }}>
           {generateResult.failed} draft(s) could not be approved and were skipped.
@@ -444,17 +469,17 @@ export default function ImportDetailPage() {
 
       {moduleSummary.length > 0 && (
         <div className="panel" style={{ marginTop: 18 }}>
-          <h3 style={{ margin: "0 0 12", fontSize: 15 }}>Draft modules</h3>
+          <h3 style={{ margin: "0 0 12", fontSize: 15 }}>{collegeBoardBank ? "Deck questions" : "Draft modules"}</h3>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))", gap: 12 }}>
             {moduleSummary.map((m) => {
-              const expected = EXPECTED_MODULE_COUNTS[m.module];
+              const expected = collegeBoardBank ? undefined : EXPECTED_MODULE_COUNTS[m.module];
               const ready = m.approved;
               const needsWork = m.total - m.approved - m.rejected;
               return (
                 <div key={m.module} style={{ border: "1px solid var(--border)", borderRadius: 12, padding: 14, background: "var(--surface)" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8 }}>
-                    <strong style={{ fontSize: 13.5 }}>{m.module}</strong>
-                    <Pill tone={ready >= (expected ?? Infinity) ? "green" : "amber"}>
+                    <strong style={{ fontSize: 13.5 }}>{collegeBoardBank ? "Reading and Writing bank drafts" : m.module}</strong>
+                    <Pill tone={ready >= (collegeBoardBank ? m.total : (expected ?? Infinity)) ? "green" : "amber"}>
                       {ready}/{m.total}
                     </Pill>
                   </div>

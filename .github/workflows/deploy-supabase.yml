@@ -54,7 +54,7 @@ jobs:
         run: deno test supabase/functions/_shared/admin_tracking_test.ts supabase/functions/_shared/student_progress_test.ts supabase/functions/_shared/vocab_assignments_test.ts
 
       - name: Verify loading pagination and import readiness
-        run: deno test supabase/functions/_shared/parallel_pages_test.ts supabase/functions/_shared/importReadiness_test.ts
+        run: deno test supabase/functions/_shared/parallel_pages_test.ts supabase/functions/_shared/importReadiness_test.ts supabase/functions/_shared/collegeboardBank_test.ts
 
       - uses: supabase/setup-cli@v1
         with:
