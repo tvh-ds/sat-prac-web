@@ -37,3 +37,14 @@ Deno.test("answersMatch accepts equivalent forms", () => {
   assertEquals(answersMatch(null, "5"), false);
   assertEquals(answersMatch("x", null), false);
 });
+
+Deno.test("answersMatch accepts every official alternative independently", () => {
+  assertEquals(answersMatch("0", "0 | 3"), true);
+  assertEquals(answersMatch("3", "0 | 3"), true);
+  assertEquals(answersMatch("2", "0 | 3"), false);
+  assertEquals(answersMatch("14.67", "14.66 | 14.67 | 44/3"), true);
+  assertEquals(answersMatch("44/3", "14.66 | 14.67 | 44/3"), true);
+  assertEquals(answersMatch("-30", "30 | -30"), true);
+  assertEquals(answersMatch("0 | 3", "0 | 3"), false);
+  assertEquals(answersMatch("1/0", "1/0 | 3"), false);
+});

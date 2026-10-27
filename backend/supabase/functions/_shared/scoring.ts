@@ -19,7 +19,12 @@ export function normalizeMathAnswer(raw: string | null | undefined): string | nu
 
 export function answersMatch(a: string | null | undefined, b: string | null | undefined): boolean {
   if (a == null || b == null) return false;
+  // Official question-bank keys can list multiple valid roots or rounded forms.
+  // Only the stored key may contain alternatives; students submit one answer.
+  if (a.includes("|")) return false;
   const na = normalizeMathAnswer(a);
-  const nb = normalizeMathAnswer(b);
-  return na !== null && na === nb;
+  return na !== null && b.split("|").some((answer) => {
+    const nb = normalizeMathAnswer(answer);
+    return nb !== null && na === nb;
+  });
 }
