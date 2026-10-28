@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { fnJson, getToken } from "../../lib/supabase";
 import type { PracticeSet } from "../../lib/types";
 import { Button, Modal, Spinner, fmtDate } from "../../components/ui";
@@ -143,7 +143,10 @@ export function AssignModal({ set, onClose, onDone }: { set: PracticeSet; onClos
 }
 
 export default function PracticePage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const search = searchParams.get("search") ?? "";
   const [sets, setSets] = useState<PracticeSet[] | null>(null);
+  const visibleSets = sets?.filter(s => s.title.toLowerCase().includes(search.trim().toLowerCase()));
   const [error, setError] = useState<string | null>(null);
   const [assigning, setAssigning] = useState<PracticeSet | null>(null);
 
@@ -180,7 +183,8 @@ export default function PracticePage() {
         Current sets are admin-only templates — assigning publishes a copy to the students you choose. Assigned copies live under Assignments.
       </p>
 
-      <div className="toolbar">
+      <div className="toolbar admin-progress-filters">
+        <label>Find practice set<input className="input" type="search" placeholder="Practice set title" value={search} onChange={e => setSearchParams(previous => { const next = new URLSearchParams(previous); if (e.target.value) next.set("search", e.target.value); else next.delete("search"); return next; }, { replace: true })} /></label>
         <Link to="/admin/practice/new">
           <Button>+ Generate Practice Set</Button>
         </Link>
@@ -198,7 +202,8 @@ export default function PracticePage() {
         </div>
       )}
 
-      {sets && sets.length > 0 && (
+      {sets && sets.length > 0 && visibleSets?.length === 0 && <p role="status" className="muted">No practice sets match your search.</p>}
+      {visibleSets && visibleSets.length > 0 && (
         <div className="card card-pad" style={{ overflowX: "auto" }}>
           <table className="table" style={{ minWidth: 760 }}>
             <thead>
@@ -211,7 +216,7 @@ export default function PracticePage() {
               </tr>
             </thead>
             <tbody>
-              {sets.map((s) => (
+              {visibleSets.map((s) => (
                 <tr key={s.id}>
                   <td>{s.title}</td>
                   <td>{s.question_count}</td>

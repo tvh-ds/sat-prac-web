@@ -22,8 +22,8 @@ export default function AssignmentsPage() {
   const [full, setFull] = useState<FullTestAssignmentBatch[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const search = searchParams.get("search") ?? "", completion = searchParams.get("completion") ?? "all";
-  const update = (key: string, value: string) => setSearchParams(previous => { const next = new URLSearchParams(previous); if (value && value !== "all") next.set(key, value); else next.delete(key); return next; }, { replace: true });
-  const matchesWork = (b: PracticeAssignmentBatch | FullTestAssignmentBatch) => b.title.toLowerCase().includes(search.toLowerCase()) && (completion === "all" || (completion === "completed" ? b.student_count > 0 && b.completed_count === b.student_count : b.completed_count < b.student_count));
+  const update = (key: string, value: string) => setSearchParams(previous => { const next = new URLSearchParams(previous); if (value && (key === "search" || value !== "all")) next.set(key, value); else next.delete(key); return next; }, { replace: true });
+  const matchesWork = (b: PracticeAssignmentBatch | FullTestAssignmentBatch) => `${b.title} ${b.class_name ?? ""}`.toLowerCase().includes(search.trim().toLowerCase()) && (completion === "all" || (completion === "completed" ? b.student_count > 0 && b.completed_count === b.student_count : b.completed_count < b.student_count));
   const returnQuery = `?return_to=${encodeURIComponent(location.pathname + location.search)}`;
   const matchesClass = (b: PracticeAssignmentBatch | FullTestAssignmentBatch) => !classId || (classId === "individual" ? !b.class_id && !b.class_name : b.class_id === classId);
   const visiblePractice = practice?.filter(matchesClass).filter(matchesWork);
@@ -92,14 +92,14 @@ export default function AssignmentsPage() {
         <button className={`score-tab${tab === "vocabulary" ? " active" : ""}`} onClick={() => setTab("vocabulary")}>Vocabulary</button>
       </div>
 
-      {tab !== "vocabulary" && <div className="toolbar admin-progress-filters"><label>Find assignment<input className="input" type="search" placeholder="Assignment title" value={search} onChange={e => update("search", e.target.value)} /></label><label>Completion<select className="select" value={completion} onChange={e => update("completion", e.target.value)}><option value="all">All assignments</option><option value="completed">Everyone completed</option><option value="incomplete">Incomplete</option></select></label></div>}
+      {tab !== "vocabulary" && <div className="toolbar admin-progress-filters"><label>Find assignment<input className="input" type="search" placeholder="Assignment title or class" value={search} onChange={e => update("search", e.target.value)} /></label><label>Completion<select className="select" value={completion} onChange={e => update("completion", e.target.value)}><option value="all">All assignments</option><option value="completed">Everyone completed</option><option value="incomplete">Incomplete</option></select></label></div>}
 
       {tab === "vocabulary" && (classId === "individual" ? <p className="muted">Vocabulary is assigned to individual students. Choose All classes or a class to view vocabulary progress.</p> : <VocabularyAssignments classId={classId} />)}
 
       {tab === "practice" && !practice && <Spinner />}
       {tab === "practice" && visiblePractice && visiblePractice.length === 0 && (
         <div className="card card-pad muted" style={{ fontSize: 14 }}>
-          {classId ? "No practice assignments match this class filter." : "Nothing assigned yet. Open a current practice set and press Assign."}
+          {search.trim() || completion !== "all" ? "No practice assignments match your search and filters." : classId ? "No practice assignments match this class filter." : "Nothing assigned yet. Open a current practice set and press Assign."}
         </div>
       )}
       {tab === "practice" && visiblePractice && visiblePractice.length > 0 && (
@@ -128,7 +128,7 @@ export default function AssignmentsPage() {
       {tab === "full" && !full && <Spinner />}
       {tab === "full" && visibleFull && visibleFull.length === 0 && (
         <div className="card card-pad muted" style={{ fontSize: 14 }}>
-          {classId ? "No full-length test assignments match this class filter." : "No full-length tests have been assigned yet. Approved full-length tests stay on the Full-Length Tests page until you assign them."}
+          {search.trim() || completion !== "all" ? "No full-length test assignments match your search and filters." : classId ? "No full-length test assignments match this class filter." : "No full-length tests have been assigned yet. Approved full-length tests stay on the Full-Length Tests page until you assign them."}
         </div>
       )}
       {tab === "full" && visibleFull && visibleFull.length > 0 && (

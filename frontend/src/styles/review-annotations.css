@@ -36,6 +36,10 @@
 .annotation-sheet .muted, .annotation-sheet .passage-content { color: inherit; }
 .annotation-sheet .card { background: transparent !important; color: inherit; border-color: currentColor; }
 .annotation-question { padding: 36px 48px 20px; font-size: 18px; line-height: 1.65; }
+.annotation-sheet.is-spacious .annotation-question { padding: 100px 180px 100px; }
+.annotation-sheet.is-spacious .annotation-saved-notes { margin-inline: 180px; }
+.annotation-sheet.is-drawing { touch-action: none; user-select: none; -webkit-user-select: none; }
+.annotation-sheet.is-drawing .annotation-highlight-target { pointer-events: none; }
 .annotation-question-number { font-weight: 700; margin-bottom: 16px; font-size: 16px; }
 .annotation-passage { white-space: pre-wrap; padding-bottom: 20px; border-bottom: 1px solid #89969d; }
 .annotation-passage > strong { display: block; margin-bottom: 12px; }
@@ -45,7 +49,7 @@
 .annotation-answer { margin-top: 24px; font-size: 15px; }
 .annotation-saved-notes { margin: 12px 48px 24px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 18px; line-height: 1.6; }
 .annotation-ink { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.annotation-ink.is-interactive { pointer-events: auto; touch-action: none; cursor: crosshair; }
+.annotation-ink.is-interactive { pointer-events: auto; touch-action: none; cursor: crosshair; z-index: 3; user-select: none; -webkit-user-select: none; }
 .annotation-dialog footer { padding: 12px 22px; display: flex; gap: 16px; align-items: flex-end; border-top: 1px solid var(--border-subtle); }
 .annotation-note-label { flex: 1; font-size: 13px; }
 .annotation-note-label textarea { display: block; width: 100%; min-height: 60px; margin-top: 5px; padding: 8px; border: 1px solid var(--border-medium); border-radius: 6px; color: var(--text-primary); background: var(--bg-input,var(--bg-surface)); resize: vertical; }

@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import { pathToFileURL, fileURLToPath } from "node:url";
 import { mkdir } from "node:fs/promises";
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE_PATH ? pathToFileURL(process.env.PLAYWRIGHT_MODULE_PATH).href : "playwright");
-const browser = await chromium.launch({ headless: true });
-const base = "http://127.0.0.1:5173";
+const browser = await chromium.launch({ headless: true, ...(process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : {}) });
+const base = process.env.TEST_BASE_URL ?? "http://127.0.0.1:5173";
 const user = { id: "11111111-1111-4111-8111-111111111111", email: "admin@example.invalid", aud: "authenticated", role: "authenticated", user_metadata: {}, app_metadata: {}, created_at: new Date().toISOString() };
 const encode = x => Buffer.from(JSON.stringify(x)).toString("base64url");
 const token = `${encode({ alg: "HS256" })}.${encode({ sub: user.id, exp: Math.floor(Date.now() / 1000) + 3600 })}.fixture`;
@@ -31,6 +31,7 @@ await page.route("**/*.supabase.co/**", async route => {
   if (req.method() === "DELETE") { deletes.push(url.pathname + url.search); return json(failDelete ? { error: "Delete failed. Please try again." } : { ok: true }, failDelete ? 500 : 200); }
   if (url.pathname.endsWith("/admin-classes")) return json({ classes: [{ id: classId, name: "Class A", student_ids: [] }] });
   if (url.pathname.endsWith("/admin-practice-assignments")) return json({ batches: practice });
+  if (url.pathname.endsWith("/admin-practice")) return json({ sets: [{ id:'set-a', title:'Algebra foundations', question_count:5, time_limit_minutes:10 }, { id:'set-b', title:'Reading transitions', question_count:8, time_limit_minutes:12 }] });
   if (url.pathname.endsWith("/admin-tests/assignment-batches")) return json({ batches: full });
   if (url.pathname.endsWith("/admin-tests/assignment-batches/full-a")) return json({ batch: full[0], students: [] });
   if (url.pathname.endsWith("/admin-practice-assignments/practice-a")) return json({ batch: practice[0], students: [], questions: [] });
@@ -41,6 +42,16 @@ await page.route("**/*.supabase.co/**", async route => {
 try {
   await page.goto(`${base}/admin/assignments`);
   await page.getByRole("button", { name: "Delete assignment Class practice", exact: true }).waitFor();
+  await page.getByLabel('Find assignment').fill('  INDIVIDUAL  ');
+  await page.getByText('Individual practice', { exact:true }).waitFor();
+  assert.equal(await page.getByRole('button', { name:'Delete assignment Class practice', exact:true }).count(), 0);
+  await page.getByLabel('Find assignment').fill('all');
+  await page.getByText('No practice assignments match your search and filters.').waitFor();
+  assert.equal(new URL(page.url()).searchParams.get('search'), 'all');
+  await page.getByLabel('Find assignment').fill(' Class A ');
+  await page.getByRole('button', { name:'Delete assignment Class practice', exact:true }).waitFor();
+  assert.equal(await page.getByText('Individual practice', { exact:true }).count(), 0);
+  await page.getByLabel('Find assignment').fill('');
   await page.getByLabel("Filter by class").selectOption(classId);
   assert.equal(await page.getByText("Individual practice", { exact: true }).count(), 0);
   await page.screenshot({ path: fileURLToPath(new URL("desktop.png", artifacts)), fullPage: true });
@@ -74,7 +85,7 @@ try {
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), "No page overflow on mobile");
   page.once("dialog", dialog => dialog.accept());
   await page.getByRole("button", { name: "Delete vocabulary assignment SAT words", exact: true }).click();
-  await page.getByText("No decks due today", { exact: true }).waitFor();
+  await page.getByText("No vocabulary decks assigned", { exact: true }).waitFor();
   assert.ok(deletes.at(-1).includes(`class_id=${classId}`), "Vocabulary delete retains class scope");
   for (const kind of ["full", "practice"]) {
     await page.goto(`${base}/admin/assignments/${kind}/${kind}-a`);
@@ -95,6 +106,20 @@ try {
     await page.waitForURL(`${base}/admin/assignments${kind === "full" ? "?tab=full" : ""}`);
     assert.ok(deletes.at(-1).endsWith(kind === "full" ? "/admin-tests/assignment-batches/full-a" : "/admin-practice-assignments/practice-a"), "Detail deletes the selected batch");
   }
+  await page.goto(`${base}/admin/practice`);
+  await page.getByText('Algebra foundations', { exact:true }).waitFor();
+  await page.getByLabel('Find practice set').fill(' ALGEBRA ');
+  await page.getByText('Algebra foundations', { exact:true }).waitFor();
+  assert.equal(await page.getByText('Reading transitions', { exact:true }).count(), 0);
+  await page.reload();
+  await page.getByText('Algebra foundations', { exact:true }).waitFor();
+  assert.equal(await page.getByText('Reading transitions', { exact:true }).count(), 0);
+  await page.getByLabel('Find practice set').fill('no match');
+  await page.getByRole('status').filter({ hasText:'No practice sets match your search.' }).waitFor();
+  await page.getByLabel('Find practice set').fill('');
+  await page.getByText('Reading transitions', { exact:true }).waitFor();
+  await page.screenshot({ path:fileURLToPath(new URL('practice-mobile.png', artifacts)), fullPage:true });
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
   assert.deepEqual(errors, []);
   console.log("PASS: class filters, list and detail deletion, cancellation, failure recovery, redirect, vocabulary class scope, desktop/mobile layout");
 } finally { await browser.close(); }

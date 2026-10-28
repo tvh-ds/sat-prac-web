@@ -41,7 +41,7 @@ function CommentMarks({ comments, open }: { comments: BoardComment[]; open?: Set
   return <g>{comments.map(c => {
     const arrow = commentConnector(c);
     return <g key={c.id}>
-      {c.highlights.map((h, i) => <rect key={i} {...h} fill="#ffe43b" opacity=".45" />)}
+      {c.highlights.map((h, i) => <rect key={i} {...h} fill={c.color ?? "#ffe43b"} opacity=".45" />)}
       {(!open || open.has(c.id)) && <><path d={arrow.path} stroke="currentColor" strokeWidth="2" fill="none" />
       <path d={`M${arrow.x - 5},${arrow.y + 9} L${arrow.x},${arrow.y} L${arrow.x + 5},${arrow.y + 9}`} stroke="currentColor" strokeWidth="2" fill="none" /></>}
     </g>;
@@ -51,7 +51,7 @@ function CommentMarks({ comments, open }: { comments: BoardComment[]; open?: Set
 export function BoardSurface({ question, annotation, children }: { question: AnnotationQuestion; annotation: ReviewAnnotation; children?: ReactNode }) {
   // Reserve export space for expanded plain-text comments, including explicit newlines.
   const commentBottom = Math.max(0, ...(annotation.comments ?? []).map(c => c.y + Math.max(commentSize(c).height, 32 + c.text.split("\n").reduce((rows, line) => rows + Math.max(1, Math.ceil(line.length / Math.max(10, Math.floor((commentSize(c).width - 28) / 11)))), 0) * 23)));
-  return <div className={`annotation-sheet is-${annotation.theme}`} style={{ minHeight: Math.max(annotation.height, commentBottom) }}>
+  return <div className={`annotation-sheet is-${annotation.theme}${annotation.spacious ? " is-spacious" : ""}`} style={{ minHeight: Math.max(annotation.height, commentBottom) }}>
     <BoardQuestion question={question} />
     {annotation.notes && <div className="annotation-saved-notes">{annotation.notes}</div>}
     <svg className="annotation-ink" style={{ height: annotation.height }} viewBox={`0 0 960 ${annotation.height}`} aria-hidden="true">
@@ -81,6 +81,8 @@ export default function QuestionAnnotationBoard({ question, initial, onSave, onC
   const [error, setError] = useState("");
   const saved = useRef(JSON.stringify(initial ?? emptyAnnotation()));
   const active = useRef<BoardStroke | null>(null);
+  const drawingPointer = useRef<number | null>(null);
+  const drawingPointerType = useRef("");
   const dialog = useRef<HTMLDivElement>(null);
   const sheet = useRef<HTMLDivElement>(null);
   const svg = useRef<SVGSVGElement>(null);
@@ -146,31 +148,49 @@ export default function QuestionAnnotationBoard({ question, initial, onSave, onC
     const bottom = Math.max(...highlights.map(r => r.y + r.height));
     const contentBottom = sheet.current!.scrollHeight;
     const y = Math.min(19820, Math.max(bottom + 32, contentBottom + 24, ...(board.comments ?? []).map(c => c.y + 200)));
-    const comment = { id: crypto.randomUUID(), highlights, x: 650, y, text: "" };
+    const comment = { id: crypto.randomUUID(), highlights, color, x: 650, y, text: "" };
     checkpoint(); setBoard(b => ({ ...b, height: Math.max(b.height, y + 200), comments: [...(b.comments ?? []), comment] }));
     selection.removeAllRanges(); setOpenComments(ids => new Set([...ids, comment.id])); setNewComment(comment.id);
   }
-  function point(e: PointerEvent<SVGSVGElement>): BoardPoint {
-    const box = e.currentTarget.getBoundingClientRect();
+  function point(e: { clientX: number; clientY: number }, surface: SVGSVGElement): BoardPoint {
+    const box = surface.getBoundingClientRect();
     return [Math.max(0, Math.min(960, (e.clientX - box.left) * 960 / box.width)), Math.max(0, Math.min(board.height, (e.clientY - box.top) * board.height / box.height))];
   }
   function start(e: PointerEvent<SVGSVGElement>) {
-    if (busy || e.button !== 0 || e.isPrimary === false) return;
-    e.preventDefault(); e.currentTarget.setPointerCapture(e.pointerId); checkpoint();
-    const p = point(e);
+    // A pen can be non-primary while a palm is touching the screen.
+    if (busy || e.button !== 0 || (e.pointerType !== "pen" && !e.isPrimary)) return;
+    if (drawingPointer.current !== null) {
+      if (e.pointerType !== "pen" || drawingPointerType.current !== "touch") return;
+      // Let the stylus take over if a palm landed first.
+      const previousPointer = drawingPointer.current;
+      drawingPointer.current = null; active.current = null;
+      if (e.currentTarget.hasPointerCapture(previousPointer)) e.currentTarget.releasePointerCapture(previousPointer);
+    }
+    if (tool !== "pen" && tool !== "highlighter" && tool !== "eraser") return;
+    if (tool !== "eraser" && board.strokes.length >= 2000) { setError("This board has reached its stroke limit. Erase some marks before drawing more."); return; }
+    e.preventDefault(); e.currentTarget.setPointerCapture(e.pointerId); drawingPointer.current = e.pointerId; drawingPointerType.current = e.pointerType; checkpoint();
+    const p = point(e, e.currentTarget);
     if (tool === "eraser") { setBoard(b => ({ ...b, strokes: b.strokes.filter(s => !touchesStroke(s, p)) })); return; }
-    if (board.strokes.length >= 2000) { setError("This board has reached its stroke limit. Erase some marks before drawing more."); return; }
     active.current = { points: [p], color, width: tool === "highlighter" ? 20 : width, opacity: tool === "highlighter" ? 0.3 : 1 };
-    setBoard(b => ({ ...b, strokes: [...b.strokes, active.current!] }));
+    const stroke = active.current;
+    setBoard(b => ({ ...b, strokes: [...b.strokes, stroke] }));
   }
   function move(e: PointerEvent<SVGSVGElement>) {
-    if (!e.currentTarget.hasPointerCapture(e.pointerId) || busy) return;
-    const p = point(e);
-    if (tool === "eraser") { setBoard(b => ({ ...b, strokes: b.strokes.filter(s => !touchesStroke(s, p)) })); return; }
+    if (drawingPointer.current !== e.pointerId || busy) return;
+    e.preventDefault();
+    const samples = e.nativeEvent.getCoalescedEvents?.() ?? [];
+    const points = (samples.length ? samples : [e.nativeEvent]).map(sample => point(sample, e.currentTarget));
+    if (tool === "eraser") { setBoard(b => ({ ...b, strokes: b.strokes.filter(s => !points.some(p => touchesStroke(s, p))) })); return; }
     if (!active.current || active.current.points.length >= 10000) return;
-    active.current = { ...active.current, points: [...active.current.points, p] };
+    active.current = { ...active.current, points: [...active.current.points, ...points].slice(0, 10000) };
     const stroke = active.current;
     setBoard(b => ({ ...b, strokes: [...b.strokes.slice(0, -1), stroke] }));
+  }
+  function finish(e: PointerEvent<SVGSVGElement>) {
+    if (drawingPointer.current !== e.pointerId) return;
+    if (e.type === "pointerup") move(e);
+    active.current = null; drawingPointer.current = null;
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
   }
   async function save() {
     setBusy(true); setError("");
@@ -202,7 +222,7 @@ export default function QuestionAnnotationBoard({ question, initial, onSave, onC
         {iconButton("Close", X, () => closeRef.current())}
       </div></header>
       {palette && <div className="annotation-toolbar" role="group" aria-label="Drawing tools">
-        {(Object.keys(icons) as (keyof typeof icons)[]).map(t => <span key={t}>{iconButton(names[t], icons[t], () => { if (t === "comment" && tool === "comment") addComment(); setTool(t); if (t === "highlighter") setColor("#ffe43b"); }, false, tool === t)}</span>)}
+        {(Object.keys(icons) as (keyof typeof icons)[]).map(t => <span key={t}>{iconButton(names[t], icons[t], () => { if (t === "comment" && tool === "comment") addComment(); setTool(t); }, false, tool === t)}</span>)}
         <span className="annotation-tool-divider" />
         {["#c43d4b", "#ffe43b", "#2684e8", "#25a36f", "#161d28", "#ffffff"].map(ink => <button key={ink} type="button" className="annotation-swatch" style={{ background: ink }} aria-label={`Ink ${ink}`} aria-pressed={color === ink} title={`Ink ${ink}`} disabled={busy} onClick={() => setColor(ink)} />)}
         <input type="color" aria-label="Custom ink color" title="Custom ink color" value={color} onChange={e => setColor(e.target.value)} disabled={busy} />
@@ -215,9 +235,9 @@ export default function QuestionAnnotationBoard({ question, initial, onSave, onC
       </div>}
       <div className="annotation-tool-hint" role="status">{tool === "comment" ? "Select text to create a linked comment; on touch, select text then tap this tool again. Drag the move icon to reposition the box." : tool === "pan" ? "Scroll to move around the board. Fit page shows the whole question and answers." : `${names[tool]} selected. Draw directly on the page.`}</div>
       <div className="annotation-workspace" ref={workspace}><div className="annotation-scaled-page" style={{ width: 960 * zoom, height: board.height * zoom }}>
-        <div ref={page} className={`annotation-sheet is-${board.theme}`} style={{ height: board.height, transform: `scale(${zoom})`, transformOrigin: "top left" }}>
+        <div ref={page} className={`annotation-sheet is-${board.theme}${board.spacious ? " is-spacious" : ""}${tool === "pen" || tool === "highlighter" || tool === "eraser" ? " is-drawing" : ""}`} style={{ height: board.height, transform: `scale(${zoom})`, transformOrigin: "top left" }}>
           <div ref={sheet} onPointerUp={addComment}><BoardQuestion question={question} />{board.notes && <div className="annotation-saved-notes">{board.notes}</div>}</div>
-          <svg ref={svg} className={`annotation-ink${tool === "pan" || tool === "comment" ? "" : " is-interactive"}`} viewBox={`0 0 960 ${board.height}`} aria-label="Drawing surface. Use review notes for keyboard annotations." role="img" onPointerDown={start} onPointerMove={move} onPointerUp={e => { active.current = null; if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId); }} onPointerCancel={() => { active.current = null; }}>
+          <svg ref={svg} className={`annotation-ink${tool === "pan" || tool === "comment" ? "" : " is-interactive"}`} viewBox={`0 0 960 ${board.height}`} aria-label="Drawing surface. Use review notes for keyboard annotations." role="img" onPointerDown={start} onPointerMove={move} onPointerUp={finish} onPointerCancel={finish} onLostPointerCapture={finish} onContextMenu={e => { if (tool !== "pan" && tool !== "comment") e.preventDefault(); }}>
             <CommentMarks comments={board.comments ?? []} open={openComments} />
             {board.strokes.map((s, i) => <path key={i} d={strokePath(s)} stroke={s.color} strokeWidth={s.width} opacity={s.opacity} fill="none" strokeLinecap="round" strokeLinejoin="round" />)}
           </svg>
