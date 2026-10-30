@@ -8,6 +8,7 @@ import { hasRequiredStudentProfile } from "../_shared/student_profile.ts";
 import { vocabularyStreak } from "../_shared/student_progress.ts";
 import { allProgressRows, loadAssignmentProgress, progressUserEmails } from "../_shared/assignment_progress.ts";
 import { loadVocabularyAssignments } from "../_shared/vocab_assignment_data.ts";
+import { loadErrorLogPage } from "../_shared/error_log.ts";
 
 function withAccuracy(score: unknown) {
   const row = Array.isArray(score) ? score[0] : score;
@@ -78,6 +79,14 @@ Deno.serve(async (req) => {
 
     if (!id) return error("Not found", 404);
     if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) return error("Invalid student ID", 422);
+
+    if (req.method === "GET" && seg.length === 3 && seg[2] === "error-log") {
+      const { data: student, error: studentError } = await svc.from("student_profiles")
+        .select("id").eq("id", id).maybeSingle();
+      if (studentError) throw new HttpError(500, "Unable to load student");
+      if (!student) return error("Student not found", 404);
+      return json(await loadErrorLogPage(svc, id, new URL(req.url)));
+    }
 
     // Student detail with every attempt (full-length + practice) for Manage view.
     if (req.method === "GET" && seg.length === 2) {

@@ -16,6 +16,7 @@ import type { ErrorLogItem, ErrorLogPage } from "../../lib/types";
 
 interface ErrorLogPanelProps {
   studentName: string;
+  studentId?: string;
 }
 
 interface SavedReview {
@@ -23,7 +24,9 @@ interface SavedReview {
   reviewed_at: string | null;
 }
 
-export default function ErrorLogPanel({ studentName }: ErrorLogPanelProps) {
+export default function ErrorLogPanel({ studentName, studentId }: ErrorLogPanelProps) {
+  const readOnly = Boolean(studentId);
+  const endpoint = studentId ? `admin-students/${studentId}/error-log` : "student-scores/error-log";
   const [data, setData] = useState<ErrorLogPage | null>(null);
   const [page, setPage] = useState(1);
   const [domain, setDomain] = useState("all");
@@ -42,16 +45,16 @@ export default function ErrorLogPanel({ studentName }: ErrorLogPanelProps) {
         const params = new URLSearchParams({ page: String(page) });
         if (domain !== "all") params.set("domain", domain);
         if (skill !== "all") params.set("skill", skill);
-        const result = await fnJson<ErrorLogPage>(`student-scores/error-log?${params.toString()}`, { token });
+        const result = await fnJson<ErrorLogPage>(`${endpoint}?${params.toString()}`, { token });
         if (current) setData(result);
       } catch (loadError) {
-        if (current) setError(loadError instanceof Error ? loadError.message : "Unable to load your error log.");
+        if (current) setError(loadError instanceof Error ? loadError.message : "Unable to load the error log.");
       } finally {
         if (current) setLoading(false);
       }
     })();
     return () => { current = false; };
-  }, [page, domain, skill, retry]);
+  }, [page, domain, skill, retry, endpoint]);
 
   const handleSaved = useCallback((itemId: string, review: SavedReview) => {
     setData((previous) => {
@@ -63,6 +66,7 @@ export default function ErrorLogPanel({ studentName }: ErrorLogPanelProps) {
       return {
         ...previous,
         needs_review_count: Math.max(0, previous.needs_review_count + Number(isNeedsReview) - Number(wasNeedsReview)),
+        reviewed_count: previous.reviewed_count + Number(wasNeedsReview) - Number(isNeedsReview),
         items: previous.items.map((item) => item.item_id === itemId ? { ...item, ...review } : item),
       };
     });
@@ -77,13 +81,13 @@ export default function ErrorLogPanel({ studentName }: ErrorLogPanelProps) {
     <div className="error-log-section" aria-busy={loading}>
       <div className="error-log-intro">
         <div className="error-log-welcome">
-          <div className="section-label">Error Log</div>
-          <h2>Hey {studentName}, time to do some reviewing!</h2>
+          <h2>{readOnly ? "Error log" : `Hey ${studentName}, time to do some reviewing!`}</h2>
+          {readOnly && <p className="muted">{studentName}’s incorrect and unanswered questions, with their notes and review status.</p>}
         </div>
         <div className="error-log-count" aria-live="polite">
-          <span className="error-log-count-label">Need Review</span>
-          <strong>{data ? data.needs_review_count : "—"}</strong>
-          <span>{data?.needs_review_count === 1 ? "question to revisit" : "questions to revisit"}</span>
+          <span className="error-log-count-label">Questions reviewed</span>
+          <strong>{data ? `${data.reviewed_count} / ${data.review_total}` : "—"}</strong>
+          <span>{data ? `${data.needs_review_count} still need review · all questions in this log` : "Loading review progress…"}</span>
         </div>
         <div className="error-log-toolbar">
           <div className="filter-row error-log-filters">
@@ -128,14 +132,14 @@ export default function ErrorLogPanel({ studentName }: ErrorLogPanelProps) {
       ) : data && data.items.length === 0 ? (
         <EmptyState
           title={filtersAvailable ? "No questions match these filters" : "Nothing to review yet"}
-          body={filtersAvailable ? "Choose another domain or skill to see more questions." : "Incorrect and unanswered questions from your completed attempts will appear here."}
+          body={filtersAvailable ? "Choose another domain or skill to see more questions." : `Incorrect and unanswered questions from ${readOnly ? "this student’s" : "your"} completed attempts will appear here.`}
         />
       ) : data ? (
         <>
           {loading && <div className="error-log-updating" role="status">Updating list…</div>}
           <div className="error-log-list">
             {data.items.map((item) => (
-              <ErrorLogCard key={item.item_id} item={item} onSaved={handleSaved} />
+              <ErrorLogCard key={item.item_id} item={item} onSaved={handleSaved} readOnly={readOnly} />
             ))}
           </div>
           <nav className="error-log-pagination" aria-label="Error log pagination">
@@ -156,7 +160,7 @@ export default function ErrorLogPanel({ studentName }: ErrorLogPanelProps) {
   );
 }
 
-function ErrorLogCard({ item, onSaved }: { item: ErrorLogItem; onSaved: (itemId: string, review: SavedReview) => void }) {
+function ErrorLogCard({ item, onSaved, readOnly }: { item: ErrorLogItem; onSaved: (itemId: string, review: SavedReview) => void; readOnly: boolean }) {
   const [expanded, setExpanded] = useState(true);
   const [notesOpen, setNotesOpen] = useState(false);
   const [noteDraft, setNoteDraft] = useState(item.note_text);
@@ -166,7 +170,7 @@ function ErrorLogCard({ item, onSaved }: { item: ErrorLogItem; onSaved: (itemId:
   useEffect(() => setNoteDraft(item.note_text), [item.note_text]);
 
   const saveReview = async (reviewed: boolean) => {
-    if (saving) return;
+    if (saving || readOnly) return;
     setSaving(true);
     setSaveError(null);
     try {
@@ -190,6 +194,7 @@ function ErrorLogCard({ item, onSaved }: { item: ErrorLogItem; onSaved: (itemId:
   };
 
   const isReviewed = Boolean(item.reviewed_at);
+  const answerLabel = readOnly ? "Student’s answer" : "Your answer";
   const selectedChoice = item.choices.find((choice) => choice.id === item.selected_choice_id);
   const correctAnswerText = item.correct_answers.length > 0
     ? item.correct_answers.map((answer) => `${answer.label}. ${answer.text}`).join(" · ")
@@ -239,16 +244,17 @@ function ErrorLogCard({ item, onSaved }: { item: ErrorLogItem; onSaved: (itemId:
 
       {notesOpen && (
         <div className="error-log-note-panel">
-          <label htmlFor={`error-note-${item.item_id}`}>Notes for this question</label>
+          <label htmlFor={`error-note-${item.item_id}`}>{readOnly ? "Student’s notes" : "Notes for this question"}</label>
           <textarea
             id={`error-note-${item.item_id}`}
             className="input error-log-note-input"
             value={noteDraft}
             maxLength={3000}
-            placeholder="What will you remember next time?"
+            placeholder={readOnly ? "No notes saved for this question." : "What will you remember next time?"}
+            readOnly={readOnly}
             onChange={(event) => setNoteDraft(event.target.value)}
           />
-          <div className="error-log-note-footer">
+          {!readOnly && <div className="error-log-note-footer">
             <span>{noteDraft.length}/3000</span>
             <div>
               <button className="btn btn-secondary btn-sm" type="button" disabled={saving} onClick={() => void saveReview(isReviewed)}>
@@ -258,7 +264,7 @@ function ErrorLogCard({ item, onSaved }: { item: ErrorLogItem; onSaved: (itemId:
                 {saving ? "Saving…" : isReviewed ? "Mark needs review" : "Mark reviewed"}
               </button>
             </div>
-          </div>
+          </div>}
           {saveError && <p className="error-log-note-error" role="alert">{saveError}</p>}
         </div>
       )}
@@ -279,16 +285,16 @@ function ErrorLogCard({ item, onSaved }: { item: ErrorLogItem; onSaved: (itemId:
                     <span className="letter">{choice.label}</span>
                     <span className="error-log-choice-text"><MathText text={choice.text} /></span>
                     {choice.is_correct && <span className="error-log-answer-label correct">Correct answer</span>}
-                    {selected && !choice.is_correct && <span className="error-log-answer-label incorrect">Your answer</span>}
+                    {selected && !choice.is_correct && <span className="error-log-answer-label incorrect">{answerLabel}</span>}
                   </div>
                 );
               })}
-              {item.unanswered && <div className="error-log-unanswered">Your answer: Not answered</div>}
+              {item.unanswered && <div className="error-log-unanswered">{answerLabel}: Not answered</div>}
             </div>
           ) : (
             <div className="answer-chips">
               <div className={`chip ${item.unanswered ? "chip-muted" : "chip-bad"}`}>
-                Your answer: {selectedChoice ? `${selectedChoice.label}. ${selectedChoice.text}` : item.your_answer ?? "Not answered"}
+                {answerLabel}: {selectedChoice ? `${selectedChoice.label}. ${selectedChoice.text}` : item.your_answer ?? "Not answered"}
               </div>
               <div className="chip chip-ok">Correct: {item.correct_answer ?? "—"}</div>
             </div>
@@ -296,7 +302,7 @@ function ErrorLogCard({ item, onSaved }: { item: ErrorLogItem; onSaved: (itemId:
           {!item.unanswered && item.question_type === "multiple_choice" && (
             <div className="error-log-answer-summary">
               <span><strong>Correct:</strong> {correctAnswerText}</span>
-              <span><strong>Your answer:</strong> {item.your_answer ?? "Not answered"}</span>
+              <span><strong>{answerLabel}:</strong> {item.your_answer ?? "Not answered"}</span>
             </div>
           )}
         </div>

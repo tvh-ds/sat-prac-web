@@ -1,5 +1,14 @@
 # Admin class and student tracking
 
+Each student detail page has an Error Log tab showing incorrect and unanswered
+questions from graded attempts, saved student notes, and review status. Admins
+can read this log; only the student can update their notes and mark questions
+reviewed. Questions reviewed shows reviewed / all error-log entries across the
+student's complete history, plus the number still needing review. Domain/skill
+filters and pagination affect the question list without changing that summary.
+Repeated questions in different attempts count separately, matching the student
+log. The API is `GET admin-students/:studentId/error-log` and requires an admin.
+
 The admin workspace starts at `/admin/classes`. The sidebar groups Teaching
 (Classes, Students, Assignments) before content preparation. Legacy
 `/admin/students?tab=classes&class_id=...` links redirect to dedicated class pages.

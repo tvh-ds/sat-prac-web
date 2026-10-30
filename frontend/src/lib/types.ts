@@ -228,6 +228,8 @@ export interface ErrorLogPage {
   items: ErrorLogItem[];
   total: number;
   needs_review_count: number;
+  reviewed_count: number;
+  review_total: number;
   domains: string[];
   skills: string[];
   page: number;

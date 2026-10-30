@@ -5,12 +5,14 @@ import { fnJson, getToken } from "../../lib/supabase";
 import { Button, Pill, Spinner, fmtDate, fmtSeconds } from "../../components/ui";
 import StudentInfoTab, { type AdminStudentInfo } from "./StudentInfoTab";
 const AssignmentReviewModal = deferComponent(() => import("./AssignmentReviewModal"));
+const ErrorLogPanel = deferComponent(() => import("../student/ErrorLogPanel"));
 import ClassBadge from "../../components/ClassBadge";
 import { StudentStudyDays } from "../../components/VocabularyHistory";
 import { assignmentCounts, dailyVocabulary, studyDuration, type AssignmentProgress, type VocabStudentProgress } from "../../lib/adminProgress";
 import { adminReturnPath } from "../../lib/adminNavigation";
 import "../../styles/student-progress.css";
 import "../../styles/admin-progress.css";
+import "../../styles/student-error-log.css";
 
 type Deck = VocabStudentProgress & { deck_id: string; name: string; card_count: number };
 interface DetailResponse {
@@ -25,6 +27,7 @@ export default function StudentDetailPage() {
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const profileTab = params.get("tab") === "info";
+  const errorLogTab = params.get("tab") === "error-log";
   const [data, setData] = useState<DetailResponse | null>(null);
   const [error, setError] = useState("");
   const [reviewing, setReviewing] = useState<AssignmentProgress | null>(null);
@@ -49,8 +52,8 @@ export default function StudentDetailPage() {
   return <div className="student-progress-page">
     <Link to={back} className="student-progress-back muted">← {back.startsWith("/admin/classes") ? "Back to class" : back.startsWith("/admin/assignments") ? "Back to assignment" : "Students"}</Link>
     <div className="student-progress-heading"><div><h1 className="page-title">{data.student.full_name ?? "Student"}</h1><p className="page-sub">{data.student.email} · {data.student.grade_level ?? "No grade"} · {data.student.school ?? "No school"}</p></div><Pill tone={data.student.profile_status === "approved" ? "green" : "gray"}>Profile {data.student.profile_status ?? "incomplete"}</Pill></div>
-    <nav className="admin-work-tabs" aria-label="Student details"><button type="button" className="btn btn-outline" aria-current={!profileTab ? "page" : undefined} onClick={() => update("tab", "manage")}>Progress</button><button type="button" className="btn btn-outline" aria-current={profileTab ? "page" : undefined} onClick={() => update("tab", "info")}>Profile</button></nav>
-    {profileTab ? <StudentInfoTab student={data.student} onRefresh={refresh} onDeleted={() => navigate("/admin/students", { replace: true })} /> : <>
+    <nav className="admin-work-tabs" aria-label="Student details"><button type="button" className="btn btn-outline" aria-current={!profileTab && !errorLogTab ? "page" : undefined} onClick={() => update("tab", "manage")}>Progress</button><button type="button" className="btn btn-outline" aria-current={errorLogTab ? "page" : undefined} onClick={() => update("tab", "error-log")}>Error Log</button><button type="button" className="btn btn-outline" aria-current={profileTab ? "page" : undefined} onClick={() => update("tab", "info")}>Profile</button></nav>
+    {profileTab ? <StudentInfoTab student={data.student} onRefresh={refresh} onDeleted={() => navigate("/admin/students", { replace: true })} /> : errorLogTab ? <ErrorLogPanel key={studentId} studentId={studentId} studentName={data.student.full_name ?? "Student"} /> : <>
       <div className="admin-class-summary"><span><strong>{assignmentCounts(assignments, "practice")}</strong>Practice completed / assigned</span><span><strong>{assignmentCounts(assignments, "full")}</strong>Tests completed / assigned</span><span><strong>{daily.remaining}</strong>Vocabulary cards remaining today</span><span><strong>{studyDuration(daily.time)}</strong>Vocabulary study time today</span></div>
       <section aria-labelledby="assignment-progress-title"><h2 id="assignment-progress-title">All assigned practice sets and tests</h2><p className="muted">Complete retained assignment history, including completed work and assignments without attempts.</p>
         <div className="toolbar admin-progress-filters"><label>Find assignment<input className="input" type="search" value={search} placeholder="Assignment title" onChange={e => update("search", e.target.value)} /></label><label>Type<select className="select" value={kind} onChange={e => update("kind", e.target.value)}><option value="all">All types</option><option value="practice">Practice sets</option><option value="full">Full-length tests</option></select></label><label>Status<select className="select" value={status} onChange={e => update("status", e.target.value)}><option value="all">All statuses</option><option value="completed">Completed</option><option value="outstanding">Outstanding</option><option value="in_progress">In progress</option><option value="overdue">Overdue</option></select></label><span className="muted">{visible.length} of {assignments.length} assignments</span></div>
