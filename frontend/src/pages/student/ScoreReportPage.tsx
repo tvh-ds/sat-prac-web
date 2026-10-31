@@ -184,8 +184,8 @@ export default function ScoreReportPage() {
 
         {data.explanations_released === false && (
           <div className="card card-pad" style={{ marginBottom: 16, fontSize: 13.5 }}>
-            Your teacher has not released explanations for this set yet — you can see your score
-            and the correct answers below. Explanations will appear here once released.
+            You can see your score and the correct answers below. Explanations unlock 7 days after
+            you submit, or sooner if your teacher releases them.
           </div>
         )}
 

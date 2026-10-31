@@ -116,7 +116,7 @@ export default function AssignmentsPage() {
                   <td>{b.timer_minutes} min · {b.question_count} qs</td>
                   <td>{b.completed_count}/{b.student_count} done</td>
                   <td>{b.avg_accuracy != null ? `${b.avg_accuracy}%` : "—"}</td>
-                  <td><Pill tone={b.explanations_released_at ? "green" : "gray"}>{b.explanations_released_at ? "Released" : "Hidden"}</Pill></td>
+                  <td><Pill tone={b.explanations_released_at ? "green" : "gray"}>{b.explanations_released_at ? "Released" : "After 7 days"}</Pill></td>
                   <td><div style={{ display: "flex", gap: 8 }}><Button variant="outline" size="sm" onClick={() => navigate(`/admin/assignments/practice/${b.id}${returnQuery}`)}>Open</Button><Button variant="danger" size="sm" disabled={!!deleting} aria-label={`Delete assignment ${b.title}`} onClick={() => void deleteBatch("practice", b)}>{deleting === b.id ? "Deleting…" : "Delete"}</Button></div></td>
                 </tr>
               ))}

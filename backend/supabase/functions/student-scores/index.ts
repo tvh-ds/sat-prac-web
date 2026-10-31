@@ -4,6 +4,7 @@ import { corsHeaders, json, error } from "../_shared/cors.ts";
 import { requireApprovedStudent } from "../_shared/auth.ts";
 import { errorLogReviewSaveSchema } from "../_shared/validation.ts";
 import { loadErrorLogPage } from "../_shared/error_log.ts";
+import { explanationsAvailable } from "../_shared/explanationRelease.ts";
 
 interface ReviewChoice { id: string; label: string; text: string; is_correct: boolean; position: number }
 interface ReviewQuestion {
@@ -138,23 +139,25 @@ Deno.serve(async (req) => {
       if (!attempt) return error("Attempt not found", 404);
       if (attempt.status !== "graded") return error("Attempt has not been graded yet", 409);
 
-      // Assigned practice sets hide explanations until the teacher releases
-      // them for that specific assignment. Scores and correct answers stay
-      // visible; only explanation text is withheld.
+      // Assigned practice explanations unlock per student seven days after
+      // submission, or earlier when the teacher manually releases the batch.
       let explanationsReleased = true;
       if (attempt.assignment_id) {
-        const { data: asg } = await svc
+        const { data: asg, error: assignmentErr } = await svc
           .from("test_assignments")
           .select("test_id")
           .eq("id", attempt.assignment_id)
           .maybeSingle();
+        if (assignmentErr) return error("Unable to check explanation release", 500);
+        if (!asg) return error("Assignment not found", 404);
         if (asg) {
-          const { data: batch } = await svc
+          const { data: batch, error: batchErr } = await svc
             .from("practice_assignment_batches")
             .select("explanations_released_at")
             .eq("snapshot_test_id", asg.test_id)
             .maybeSingle();
-          if (batch) explanationsReleased = batch.explanations_released_at != null;
+          if (batchErr) return error("Unable to check explanation release", 500);
+          if (batch) explanationsReleased = explanationsAvailable(attempt.submitted_at, batch.explanations_released_at);
         }
       }
 

@@ -89,6 +89,8 @@
   --exam-border-strong: rgba(225,235,255,.28);
   background: #070913;
 }
+.session-root::selection, .session-root *::selection { background: #b9dcff; color: #17191d; }
+.session-root[data-test-theme="dark"]::selection, .session-root[data-test-theme="dark"] *::selection { background: #365d7a; color: #edf2fc; }
 
 .session-root .session-topbar {
   height: 82px;

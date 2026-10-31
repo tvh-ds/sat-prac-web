@@ -33,6 +33,9 @@
 .annotation-workspace { flex: 1; overflow: auto; padding: 16px; background: #162332; min-height: 0; }
 .annotation-sheet { width: 960px; position: relative; background: #fff; color: #16202c; margin: 0 auto; }
 .annotation-sheet.is-black { background: #172326; color: #f3f4e8; }
+/* Board themes are independent of the surrounding app's dark theme. */
+.annotation-sheet::selection, .annotation-sheet *::selection { background: #b9dcff; color: #16202c; }
+.annotation-sheet.is-black::selection, .annotation-sheet.is-black *::selection { background: #365d7a; color: #f3f4e8; }
 .annotation-sheet .muted, .annotation-sheet .passage-content { color: inherit; }
 .annotation-sheet .card { background: transparent !important; color: inherit; border-color: currentColor; }
 .annotation-question { padding: 36px 48px 20px; font-size: 18px; line-height: 1.65; }

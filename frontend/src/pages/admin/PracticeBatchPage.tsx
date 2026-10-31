@@ -97,7 +97,7 @@ export default function PracticeBatchPage() {
       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
         <h2 style={{ margin: "4px 0", fontWeight: 700 }}>{b.title}</h2>
         <ClassBadge {...b} />
-        <Pill tone={released ? "green" : "gray"}>{released ? "Explanations released" : "Explanations hidden"}</Pill>
+        <Pill tone={released ? "green" : "gray"}>{released ? "Explanations released" : "Automatic release after 7 days"}</Pill>
         <span className="muted" style={{ fontSize: 13 }}>
           Assigned {fmtDate(b.assigned_at)} · {b.timer_minutes} min · {data.questions.length} question(s) · {data.students.length} student(s)
         </span>
@@ -110,7 +110,7 @@ export default function PracticeBatchPage() {
       </div>
       {!released && (
         <p className="muted" style={{ fontSize: 13 }}>
-          Students see their score and the correct answers, but no explanations until you release them for this assignment.
+          Explanations unlock for each student 7 days after they submit. Release them now to make them available to everyone in this assignment.
         </p>
       )}
 
